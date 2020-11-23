@@ -47,7 +47,6 @@ public class SavedChipEditor : MonoBehaviour {
 			wireIndex++;
 		}
 
-		FindObjectOfType<UIManager> ().SetChipDisplayName (chipName);
 		this.loadedChipHolder = loadedChip;
 	}
 

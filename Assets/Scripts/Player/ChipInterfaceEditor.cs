@@ -64,8 +64,10 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 	void Update () {
 		if (Application.isPlaying) {
-			UpdateColours ();
-			HandleInput ();
+			if (!InputHelper.MouseOverUIObject ()) {
+				UpdateColours ();
+				HandleInput ();
+			}
 			DrawSignalHandles ();
 		} else {
 			UpdateSizeAndPos ();
@@ -121,7 +123,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 				if (mouseInInputBounds) {
 					float handleY = ClampY (mousePos.y);
 
-					DrawHandle (handleY, HandleState.Default);
+					DrawHandle (handleY, HandleState.Highlighted);
 					float containerX = chipContainer.position.x + chipContainer.localScale.x / 2 * ((editorType == EditorType.Input) ? -1 : 1);
 					Vector3 spawnPos = new Vector3 (containerX, handleY, chipContainer.position.z + forwardDepth);
 

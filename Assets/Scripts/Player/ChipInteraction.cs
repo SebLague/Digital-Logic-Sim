@@ -256,7 +256,8 @@ public class ChipInteraction : InteractionHandler {
 	}
 
 	protected override bool CanReleaseFocus () {
-		if (currentState == State.PlacingNewChips || currentState == State.MovingOldChips || currentState == State.SelectingChips) {
+		if (currentState == State.PlacingNewChips || currentState == State.MovingOldChips) {
+
 			return false;
 		}
 		return true;

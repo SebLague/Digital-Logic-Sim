@@ -29,18 +29,22 @@ public class PinAndWireInteraction : InteractionHandler {
 	}
 
 	void Update () {
-		HandlePinHighlighting ();
-		HandlePinNameDisplay ();
+		bool mouseOverUI = InputHelper.MouseOverUIObject ();
+	
+		if (!mouseOverUI) {
+			HandlePinHighlighting ();
+			HandlePinNameDisplay ();
 
-		switch (currentState) {
-			case State.None:
-				HandleWireHighlighting ();
-				HandleWireDeletion ();
-				HandleWireCreation ();
-				break;
-			case State.PlacingWire:
-				HandleWirePlacement ();
-				break;
+			switch (currentState) {
+				case State.None:
+					HandleWireHighlighting ();
+					HandleWireDeletion ();
+					HandleWireCreation ();
+					break;
+				case State.PlacingWire:
+					HandleWirePlacement ();
+					break;
+			}
 		}
 
 	}
@@ -145,6 +149,7 @@ public class PinAndWireInteraction : InteractionHandler {
 			// Wire can be created from a pin, or from another wire (in which case it uses that wire's start pin)
 			if (pinUnderMouse || highlightedWire) {
 				RequestFocus ();
+				print ("request focus " + HasFocus);
 				if (HasFocus) {
 					currentState = State.PlacingWire;
 					wireToPlace = Instantiate (wirePrefab, parent : wireHolder);

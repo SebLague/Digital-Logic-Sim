@@ -4,17 +4,20 @@ using TMPro;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour {
-	public TMP_Text chipNameUI;
 
-	void Start () { }
+	public GameObject createMenu;
 
-	public void SetChipDisplayName (string chipName) {
-		chipNameUI.transform.parent.parent.GetComponent<TMPro.TMP_InputField> ().text = chipName;
+	public void OpenCreateMenu () {
+		createMenu.SetActive (true);
+	}
+
+	public void CloseCreateMenu () {
+		createMenu.SetActive (false);
 	}
 
 	public void CompleteManufacturing () {
 		string allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789()[]{}/:-–";
-		string chipName = chipNameUI.text.Trim ();
+		string chipName = "";
 
 		string cleanedChipName = "";
 		foreach (char c in chipName) {
@@ -28,7 +31,6 @@ public class UIManager : MonoBehaviour {
 		FindObjectOfType<Player> ().ManufactureChip (chipName, true);
 
 		// Reset scene
-		SetChipDisplayName ("");
 		foreach (var v in FindObjectsOfType<OutputSignal> ()) {
 			v.inputPins[0].ReceiveSignal (0);
 			v.inputPins[0].parentPin = null;
