@@ -1,0 +1,523 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!181963792 &2655988077585873504
+Preset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Palette Comp V1
+  m_TargetType:
+    m_NativeTypeID: 114
+    m_ManagedTypePPtr: {fileID: 11500000, guid: 9d5e11a72a4bd445797f29b9f3d9a6fa,
+      type: 3}
+    m_ManagedTypeFallback: 
+  m_Properties:
+  - target: {fileID: 0}
+    propertyPath: m_Enabled
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorHideFlags
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorClassIdentifier
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: onCol.r
+    value: 0.9245283
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: onCol.g
+    value: 0.13519046
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: onCol.b
+    value: 0.21901982
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: onCol.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: offCol.r
+    value: 0.19855823
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: offCol.g
+    value: 0.28132576
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: offCol.b
+    value: 0.4339623
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: offCol.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highZCol.r
+    value: 0.14150941
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highZCol.g
+    value: 0.14150941
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highZCol.b
+    value: 0.14150941
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highZCol.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: fadedOffCol.r
+    value: 0.16487186
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: fadedOffCol.g
+    value: 0.16823259
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: fadedOffCol.b
+    value: 0.1792453
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: fadedOffCol.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: fadedOnCol.r
+    value: 0.41509432
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: fadedOnCol.g
+    value: 0.09594162
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: fadedOnCol.b
+    value: 0.12940107
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: fadedOnCol.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: controlWireOnCol.r
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: controlWireOnCol.g
+    value: 0.78442526
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: controlWireOnCol.b
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: controlWireOnCol.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: clockWireOnCol.r
+    value: 0.7144718
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: clockWireOnCol.g
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: clockWireOnCol.b
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: clockWireOnCol.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.size
+    value: 19
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[0].name
+    value: AND
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[0].col.r
+    value: 0.18516374
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[0].col.g
+    value: 0.5296745
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[0].col.b
+    value: 0.6886792
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[0].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[1].name
+    value: NOT
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[1].col.r
+    value: 0.6132076
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[1].col.g
+    value: 0.14109226
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[1].col.b
+    value: 0.10702208
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[1].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[2].name
+    value: NAND
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[2].col.r
+    value: 0.40587384
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[2].col.g
+    value: 0.15819688
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[2].col.b
+    value: 0.745283
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[2].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[3].name
+    value: OR
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[3].col.r
+    value: 0.59078735
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[3].col.g
+    value: 0.34901962
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[3].col.b
+    value: 0.6784314
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[3].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[4].name
+    value: XOR
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[4].col.r
+    value: 0.764151
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[4].col.g
+    value: 0.26312745
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[4].col.b
+    value: 0.5095324
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[4].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[5].name
+    value: ADDER
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[5].col.r
+    value: 0.0102349585
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[5].col.g
+    value: 0.4339623
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[5].col.b
+    value: 0.29787466
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[5].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[6].name
+    value: 4BIT ADDER
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[6].col.r
+    value: 0.020247431
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[6].col.g
+    value: 0.6132076
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[6].col.b
+    value: 0.27553475
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[6].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[7].name
+    value: ALU
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[7].col.r
+    value: 0.029369887
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[7].col.g
+    value: 0.5660378
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[7].col.b
+    value: 0.30296534
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[7].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[8].name
+    value: D LATCH
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[8].col.r
+    value: 0.7529412
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[8].col.g
+    value: 0.33333334
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[8].col.b
+    value: 0.17254902
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[8].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[9].name
+    value: FLIP FLOP
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[9].col.r
+    value: 0.7830189
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[9].col.g
+    value: 0.27833405
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[9].col.b
+    value: 0.08495018
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[9].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[10].name
+    value: DECODER
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[10].col.r
+    value: 0.122641504
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[10].col.g
+    value: 0.122641504
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[10].col.b
+    value: 0.122641504
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[10].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[11].name
+    value: TRI-STATE BUFFER
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[11].col.r
+    value: 0.4716981
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[11].col.g
+    value: 0.4716981
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[11].col.b
+    value: 0.4716981
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[11].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[12].name
+    value: PC
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[12].col.r
+    value: 0.8301887
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[12].col.g
+    value: 0.2948939
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[12].col.b
+    value: 0.27020293
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[12].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[13].name
+    value: CU
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[13].col.r
+    value: 0.084905684
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[13].col.g
+    value: 0.084905684
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[13].col.b
+    value: 0.084905684
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[13].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[14].name
+    value: MEM CELL
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[14].col.r
+    value: 0.6792453
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[14].col.g
+    value: 0.4091694
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[14].col.b
+    value: 0.18903525
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[14].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[15].name
+    value: RAM CELL
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[15].col.r
+    value: 0.6784314
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[15].col.g
+    value: 0.4825766
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[15].col.b
+    value: 0.1882353
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[15].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[16].name
+    value: RAM
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[16].col.r
+    value: 0.754717
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[16].col.g
+    value: 0.5939921
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[16].col.b
+    value: 0.29547882
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[16].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[17].name
+    value: REGISTER
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[17].col.r
+    value: 0.7529412
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[17].col.g
+    value: 0.4387117
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[17].col.b
+    value: 0.29411766
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[17].col.a
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[18].name
+    value: NOR
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[18].col.r
+    value: 0.6784314
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[18].col.g
+    value: 0.1882353
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[18].col.b
+    value: 0.34122384
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: chipCols.Array.data[18].col.a
+    value: 0
+    objectReference: {fileID: 0}

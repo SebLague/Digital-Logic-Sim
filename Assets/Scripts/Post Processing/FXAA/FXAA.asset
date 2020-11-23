@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e559dafbeec89490bb3d095706d8a9ef, type: 3}
+  m_Name: FXAA
+  m_EditorClassIdentifier: 
+  luminanceSource: 2
+  contrastThreshold: 0.0312
+  relativeThreshold: 0.063
+  subpixelBlending: 1
+  fxaaShader: {fileID: 4800000, guid: 935232f54c5894b57ad19147233be3ae, type: 3}
+  lowQuality: 0
+  gammaBlending: 0

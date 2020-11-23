@@ -1,0 +1,20 @@
+Some notes to keep track of how things work
+
+Overview:
+Every electrical component has one or more 'terminals'. These are points at which wires can be attached.
+Each frame, the simulation script is run, which first increments the simulationFrame counter, and then tells each power source to emit power.
+To emit power, a power source simply calls the receive power function on its single terminal.
+
+When a terminal receives power it goes through its list of connected wires, and calls the receive power function on the terminal
+on the other end of the wire. To avoid processing the same terminal multiple times (help performance, say no to infinite loops), each
+terminal keeps track of the simulation frame on which it received power, and won't do any processing if it has already received power
+on the current simulation frame.
+
+Some terminals terminate at an electrica compoenent. In this case, the terminal simply submits to the component that it has received power,
+and the component is then responsible for acting on that information.
+
+For example, a relay switch component will need to wait until it has received both a power input and a control signal input
+(on the current simulation frame), before it calls the receive power function on the power terminals.
+
+Built-in chips vs custom chip types created at run-time:
+• Built-in chips are instantiated from prefabs, but new chip types created at runtime are just stored as hidden objects in the scene

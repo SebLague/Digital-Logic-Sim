@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d5e11a72a4bd445797f29b9f3d9a6fa, type: 3}
+  m_Name: Palette Old
+  m_EditorClassIdentifier: 
+  onCol: {r: 0.9245283, g: 0.13519046, b: 0.21901982, a: 0}
+  offCol: {r: 0.1254902, g: 0.14117648, b: 0.18039216, a: 0}
+  highZCol: {r: 0, g: 0, b: 0, a: 0}
+  fadedOffCol: {r: 0.16487186, g: 0.16823259, b: 0.1792453, a: 1}
+  fadedOnCol: {r: 0.41509432, g: 0.09594162, b: 0.12940107, a: 0}
+  controlWireOnCol: {r: 0.40784314, g: 1, b: 0.28627452, a: 0}
+  clockWireOnCol: {r: 0.41037738, g: 0.80362517, b: 1, a: 0}
+  chipCols:
+  - name: AND
+    col: {r: 0.18516374, g: 0.5296745, b: 0.6886792, a: 0}
+  - name: NOT
+    col: {r: 0.6132076, g: 0.14109226, b: 0.10702208, a: 0}
+  - name: NAND
+    col: {r: 0.40587384, g: 0.15819688, b: 0.745283, a: 0}
+  - name: OR
+    col: {r: 0.59078735, g: 0.34901962, b: 0.6784314, a: 0}
+  - name: XOR
+    col: {r: 0.764151, g: 0.26312745, b: 0.5095324, a: 0}
+  - name: ADDER
+    col: {r: 0.0102349585, g: 0.4339623, b: 0.29787466, a: 0}
+  - name: 4BIT ADDER
+    col: {r: 0.020247431, g: 0.6132076, b: 0.27553475, a: 0}
+  - name: ALU
+    col: {r: 0.029369887, g: 0.5660378, b: 0.30296534, a: 0}
+  - name: D LATCH
+    col: {r: 0.7529412, g: 0.33333334, b: 0.17254902, a: 0}
+  - name: FLIP FLOP
+    col: {r: 0.7830189, g: 0.27833405, b: 0.08495018, a: 0}
+  - name: DECODER
+    col: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 0}
+  - name: TRI-STATE BUFFER
+    col: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 0}
+  - name: PC
+    col: {r: 0.8301887, g: 0.2948939, b: 0.27020293, a: 0}
+  - name: CU
+    col: {r: 0.084905684, g: 0.084905684, b: 0.084905684, a: 0}
+  - name: MEM CELL
+    col: {r: 0.6792453, g: 0.4091694, b: 0.18903525, a: 0}
+  - name: RAM CELL
+    col: {r: 0.6784314, g: 0.4825766, b: 0.1882353, a: 0}
+  - name: RAM
+    col: {r: 0.754717, g: 0.5939921, b: 0.29547882, a: 0}
+  - name: REGISTER
+    col: {r: 0.7529412, g: 0.4387117, b: 0.29411766, a: 0}
+  - name: NOR
+    col: {r: 0.6784314, g: 0.1882353, b: 0.34122384, a: 0}

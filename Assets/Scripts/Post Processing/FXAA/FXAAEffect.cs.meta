@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e559dafbeec89490bb3d095706d8a9ef
+timeCreated: 1522063116
+licenseType: Free
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - fxaaShader: {fileID: 4800000, guid: 935232f54c5894b57ad19147233be3ae, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
