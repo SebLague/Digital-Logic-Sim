@@ -21,6 +21,7 @@ public class CreateMenu : MonoBehaviour {
 
 	void ChipNameFieldChanged (string value) {
 		doneButton.interactable = value.Trim ().Length > 0;
+		chipNameField.text = value.ToUpper ();
 	}
 
 	void OpenMenu () {

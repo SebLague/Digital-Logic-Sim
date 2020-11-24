@@ -3,11 +3,13 @@ using UnityEngine;
 
 public class SaveSystem : MonoBehaviour {
 
-	public bool loadSavedChips = true;
-	public string saveProfileName = "Test";
+	public static string activeProjectName = "Test";
 	const string fileExtension = ".txt";
 
+	public bool loadSavedChips = true;
+
 	void Start () {
+		Debug.Log (activeProjectName);
 		// Create save directory (if doesn't exist already)
 		Directory.CreateDirectory (CurrentSaveProfileDirectoryPath);
 		Directory.CreateDirectory (CurrentSaveProfileWiringDirectoryPath);
@@ -19,6 +21,12 @@ public class SaveSystem : MonoBehaviour {
 			ChipLoader.LoadAllChips (chipSavePaths, FindObjectOfType<Player> ());
 			Debug.Log ("Load time: " + sw.ElapsedMilliseconds);
 		}
+	}
+
+	public static void SetActiveProject (string projectName) {
+		// Create save directory (if doesn't exist already)
+		Directory.CreateDirectory (SaveDataDirectoryPath);
+		//var writer = new System.IO.StreamWriter()
 	}
 
 	public void SaveChip (GameObject chipHolder, string chipName) {
@@ -35,7 +43,7 @@ public class SaveSystem : MonoBehaviour {
 
 	string CurrentSaveProfileDirectoryPath {
 		get {
-			return Path.Combine (SaveDataDirectoryPath, saveProfileName);
+			return Path.Combine (SaveDataDirectoryPath, activeProjectName);
 		}
 	}
 
@@ -46,10 +54,15 @@ public class SaveSystem : MonoBehaviour {
 	}
 
 	public static string[] GetSaveNames () {
+		string[] savedProjectPaths = new string[0];
 		if (Directory.Exists (SaveDataDirectoryPath)) {
-			return Directory.GetDirectories (SaveDataDirectoryPath);
+			savedProjectPaths = Directory.GetDirectories (SaveDataDirectoryPath);
 		}
-		return null;
+		for (int i = 0; i < savedProjectPaths.Length; i++) {
+			string[] pathSections = savedProjectPaths[i].Split ('/');
+			savedProjectPaths[i] = pathSections[pathSections.Length - 1];
+		}
+		return savedProjectPaths;
 	}
 
 	public static string SaveDataDirectoryPath {
