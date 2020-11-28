@@ -1,15 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 // Provides input signal (0 or 1) to a chip.
 // When designing a chip, this input signal can be manually set to 0 or 1 by the player.
-
 public class InputSignal : ChipSignal {
 
 	public bool active;
 	public MeshRenderer meshRenderer;
-	//public MeshRenderer wireRenderer;
 	public Palette palette;
 
 	protected override void Start () {
@@ -46,12 +42,5 @@ public class InputSignal : ChipSignal {
 
 	void OnMouseDown () {
 		ToggleActive ();
-	}
-
-	void OnValidate () {
-		if (gameObject && !Application.isPlaying) {
-			outputPins[0].pinName = signalName;
-			gameObject.name = $"Input: {signalName}";
-		}
 	}
 }

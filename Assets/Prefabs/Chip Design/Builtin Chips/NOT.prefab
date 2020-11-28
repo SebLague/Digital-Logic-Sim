@@ -58,7 +58,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 53a340bd89bbc4db696a093736524c3b, type: 2}
+  - {fileID: 2100000, guid: fdcb15ce46186484cb99dad2b41c44be, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -302,7 +302,6 @@ MonoBehaviour:
   container: {fileID: 322412531872686230}
   chipPinPrefab: {fileID: 8774343771143846598, guid: 3f5693e72562648d19f39eace0ccffd6,
     type: 3}
-  customPadding: {x: 0, y: 0}
 --- !u!61 &866551715762075300
 BoxCollider2D:
   m_ObjectHideFlags: 0
