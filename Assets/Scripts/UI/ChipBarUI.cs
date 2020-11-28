@@ -11,14 +11,14 @@ public class ChipBarUI : MonoBehaviour {
 	public float buttonSpacing = 15f;
 	public float buttonWidthPadding = 10;
 	float rightmostButtonEdgeX;
-	Player player;
+	Manager manager;
 	public List<string> hideList;
 
 	void Awake () {
-		player = FindObjectOfType<Player> ();
-		player.onChipManufactured += AddChipButton;
-		for (int i = 0; i < player.builtinChips.Length; i++) {
-			AddChipButton (player.builtinChips[i]);
+		manager = FindObjectOfType<Manager> ();
+		manager.customChipCreated += AddChipButton;
+		for (int i = 0; i < manager.builtinChips.Length; i++) {
+			AddChipButton (manager.builtinChips[i]);
 		}
 	}
 
@@ -43,8 +43,7 @@ public class ChipBarUI : MonoBehaviour {
 		rightmostButtonEdgeX = buttonRect.localPosition.x + buttonRect.sizeDelta.x / 2f;
 
 		// Set button event
-		ChipInteraction chipPlacement = FindObjectOfType<ChipInteraction> ();
-		button.onClick.AddListener (() => chipPlacement.SpawnChip (chip));
+		button.onClick.AddListener (() => manager.SpawnChip (chip));
 	}
 
 }

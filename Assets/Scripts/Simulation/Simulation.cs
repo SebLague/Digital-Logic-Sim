@@ -10,23 +10,17 @@ public class Simulation : MonoBehaviour {
 
 	public int lastStepDurationMillis;
 	static Simulation instance;
-	Player player;
 	InputSignal[] inputSignals;
 	Constant[] constantSignals;
+	ChipEditor chipEditor;
 
 	void Awake () {
 		simulationFrame = 0;
 	}
 
-	public static void SimulationModified (Player player) {
-		Instance.player = player;
-		Instance.inputSignals = FindObjectsOfType<InputSignal> ();
-		Instance.constantSignals = player.chipHolder.GetComponentsInChildren<Constant> (includeInactive: true);
-	}
-
 	void Update () {
 
-		GetInputSignals ();
+		//GetInputSignals ();
 
 		var simulationTimer = System.Diagnostics.Stopwatch.StartNew ();
 		StepSimulation ();
@@ -35,25 +29,37 @@ public class Simulation : MonoBehaviour {
 	}
 
 	void StepSimulation () {
+		RefreshChipEditorReference ();
+
+		List<ChipSignal> inputSignals = chipEditor.inputsEditor.signals;
+
 		simulationFrame++;
 		// Tell all signal generators to send their signal out
-		if (inputSignals != null) {
-			for (int i = 0; i < inputSignals.Length; i++) {
-				inputSignals[i].SendSignal ();
-			}
+
+		for (int i = 0; i < inputSignals.Count; i++) {
+			((InputSignal) inputSignals[i]).SendSignal ();
 		}
 
+		/*
 		// Tell all constants to send their signal out
 		if (constantSignals != null) {
 			for (int i = 0; i < constantSignals.Length; i++) {
 				constantSignals[i].SendSignal ();
 			}
 		}
+	
 
 		if (player != null) {
 			foreach (var cyclicChip in player.allCyclicChips) {
 				cyclicChip.InitSimulationFrame ();
 			}
+		}
+			*/
+	}
+
+	void RefreshChipEditorReference () {
+		if (chipEditor == null) {
+			chipEditor = FindObjectOfType<ChipEditor> ();
 		}
 	}
 

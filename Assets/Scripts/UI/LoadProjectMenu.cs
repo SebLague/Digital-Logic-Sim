@@ -17,7 +17,7 @@ public class LoadProjectMenu : MonoBehaviour {
 	}
 
 	public void LoadProject (string projectName) {
-		SaveSystem.activeProjectName = projectName;
+		SaveSystem.SetActiveProject(projectName);
 		UnityEngine.SceneManagement.SceneManager.LoadScene (1);
 	}
 }

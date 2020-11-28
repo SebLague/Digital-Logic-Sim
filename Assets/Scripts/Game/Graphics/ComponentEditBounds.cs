@@ -7,6 +7,9 @@ public class ComponentEditBounds : MonoBehaviour {
 
 	public float thickness = 0.1f;
 	public Material material;
+	public Transform inputSignalArea;
+	public Transform outputSignalArea;
+
 	Mesh quadMesh;
 	Matrix4x4[] trs;
 
@@ -15,6 +18,11 @@ public class ComponentEditBounds : MonoBehaviour {
 			MeshShapeCreator.CreateQuadMesh (ref quadMesh);
 			CreateMatrices ();
 		}
+	}
+
+	void UpdateSignalAreaSizeAndPos (Transform signalArea) {
+		signalArea.position = new Vector3 (signalArea.position.x, transform.position.y, signalArea.position.z);
+		signalArea.localScale = new Vector3 (signalArea.localScale.x, transform.localScale.y, 1);
 	}
 
 	void CreateMatrices () {
@@ -46,6 +54,8 @@ public class ComponentEditBounds : MonoBehaviour {
 		if (!Application.isPlaying) {
 			MeshShapeCreator.CreateQuadMesh (ref quadMesh);
 			CreateMatrices ();
+			UpdateSignalAreaSizeAndPos (inputSignalArea);
+			UpdateSignalAreaSizeAndPos (outputSignalArea);
 		}
 
 		for (int i = 0; i < 4; i++) {
