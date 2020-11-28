@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using UnityEngine;
 
-public class SaveSystem : MonoBehaviour {
+public static class SaveSystem {
 
 	static string activeProjectName = "Untitled";
 	const string fileExtension = ".txt";
@@ -16,11 +16,11 @@ public class SaveSystem : MonoBehaviour {
 		Directory.CreateDirectory (CurrentSaveProfileWireLayoutDirectoryPath);
 	}
 
-	public static void LoadAll () {
+	public static void LoadAll (Manager manager) {
 		// Load any saved chips
 		var sw = System.Diagnostics.Stopwatch.StartNew ();
 		string[] chipSavePaths = Directory.GetFiles (CurrentSaveProfileDirectoryPath, "*" + fileExtension);
-		ChipLoader.LoadAllChips (chipSavePaths, FindObjectOfType<Manager> ());
+		ChipLoader.LoadAllChips (chipSavePaths, manager);
 		Debug.Log ("Load time: " + sw.ElapsedMilliseconds);
 
 	}

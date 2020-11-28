@@ -5,11 +5,11 @@ public static class CycleDetector {
 
 	static bool currentChipHasCycle;
 
-	public static List<Chip> MarkAllCycles (GameObject chipHolder) {
+	public static List<Chip> MarkAllCycles (ChipEditor chipEditor) {
 		var chipsWithCycles = new List<Chip> ();
-		//Debug.Log ("Mark cycles: " + chipHolder.gameObject.name);
+
 		HashSet<Chip> examinedChips = new HashSet<Chip> ();
-		Chip[] chips = chipHolder.GetComponentsInChildren<Chip> (includeInactive: false);
+		Chip[] chips = chipEditor.chipInteraction.allChips.ToArray ();
 
 		// Clear all cycle markings
 		for (int i = 0; i < chips.Length; i++) {

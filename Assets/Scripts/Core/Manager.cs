@@ -23,7 +23,7 @@ public class Manager : MonoBehaviour {
 
 	void Start () {
 		SaveSystem.Init ();
-		SaveSystem.LoadAll ();
+		SaveSystem.LoadAll (this);
 	}
 
 	public static ChipEditor ActiveChipEditor {
@@ -70,4 +70,9 @@ public class Manager : MonoBehaviour {
 	public void SpawnChip (Chip chip) {
 		activeChipEditor.chipInteraction.SpawnChip (chip);
 	}
+
+	public void LoadMainMenu () {
+		UnityEngine.SceneManagement.SceneManager.LoadScene (0);
+	}
+
 }

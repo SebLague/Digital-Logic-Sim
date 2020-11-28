@@ -90,7 +90,7 @@ public class ChipPackage : MonoBehaviour {
 
 		int numPins = Mathf.Max (chip.inputPins.Length, chip.outputPins.Length);
 		float unpaddedContainerHeight = numPins * (Pin.interactionRadius * 2 + pinSpacePadding);
-		float containerHeight = unpaddedContainerHeight + containerHeightPadding;
+		float containerHeight = Mathf.Max (unpaddedContainerHeight, nameText.preferredHeight) + containerHeightPadding;
 		float topPinY = unpaddedContainerHeight / 2 - Pin.radius;
 		float bottomPinY = -unpaddedContainerHeight / 2 + Pin.radius;
 		const float z = -0.05f;

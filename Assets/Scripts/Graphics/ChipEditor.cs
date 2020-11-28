@@ -24,9 +24,8 @@ public class ChipEditor : MonoBehaviour {
 		foreach (var handler in allHandlers) {
 			handler.InitAllHandlers (allHandlers);
 		}
-	}
 
-	void Start () {
+		pinAndWireInteraction.Init (chipInteraction, inputsEditor, outputsEditor);
 		pinAndWireInteraction.onConnectionChanged += OnChipNetworkModified;
 	}
 
@@ -38,7 +37,7 @@ public class ChipEditor : MonoBehaviour {
 	}
 
 	void OnChipNetworkModified () {
-		CycleDetector.MarkAllCycles (chipImplementationHolder.gameObject);
+		CycleDetector.MarkAllCycles (this);
 	}
 
 	public void LoadFromSaveData (ChipSaveData saveData) {

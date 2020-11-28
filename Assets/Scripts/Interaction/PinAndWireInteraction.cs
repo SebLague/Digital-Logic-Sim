@@ -12,7 +12,7 @@ public class PinAndWireInteraction : InteractionHandler {
 	public LayerMask wireMask;
 	public Transform wireHolder;
 	public Wire wirePrefab;
-	public TMP_Text pinNameText;
+	public PinNameDisplay pinNameDisplay;
 
 	State currentState;
 	Pin pinUnderMouse;
@@ -25,8 +25,13 @@ public class PinAndWireInteraction : InteractionHandler {
 	void Awake () {
 		allWires = new List<Wire> ();
 		wiresByChipInputPin = new Dictionary<Pin, Wire> ();
-		FindObjectOfType<ChipInteraction> ().onDeleteChip += DeleteChipWires;
-		pinNameText.gameObject.SetActive (false);
+		pinNameDisplay.gameObject.SetActive (false);
+	}
+
+	public void Init (ChipInteraction chipInteraction, ChipInterfaceEditor inputEditor, ChipInterfaceEditor outputEditor) {
+		chipInteraction.onDeleteChip += DeleteChipWires;
+		inputEditor.onDeleteChip += DeleteChipWires;
+		outputEditor.onDeleteChip += DeleteChipWires;
 	}
 
 	public override void OrderedUpdate () {
@@ -59,14 +64,12 @@ public class PinAndWireInteraction : InteractionHandler {
 	void HandleWireHighlighting () {
 		var wireUnderMouse = InputHelper.GetObjectUnderMouse2D (wireMask);
 		if (wireUnderMouse) {
-			RequestFocus ();
-			if (HasFocus) {
-				if (highlightedWire) {
-					highlightedWire.SetSelectionState (false);
-				}
-				highlightedWire = wireUnderMouse.GetComponent<Wire> ();
-				highlightedWire.SetSelectionState (true);
+			if (highlightedWire) {
+				highlightedWire.SetSelectionState (false);
 			}
+			highlightedWire = wireUnderMouse.GetComponent<Wire> ();
+			highlightedWire.SetSelectionState (true);
+
 		} else if (highlightedWire) {
 			highlightedWire.SetSelectionState (false);
 			highlightedWire = null;
@@ -76,8 +79,11 @@ public class PinAndWireInteraction : InteractionHandler {
 	void HandleWireDeletion () {
 		if (highlightedWire) {
 			if (InputHelper.AnyOfTheseKeysDown (KeyCode.Backspace, KeyCode.Delete)) {
-				DestroyWire (highlightedWire);
-				onConnectionChanged?.Invoke ();
+				RequestFocus ();
+				if (HasFocus) {
+					DestroyWire (highlightedWire);
+					onConnectionChanged?.Invoke ();
+				}
 			}
 		}
 	}
@@ -200,11 +206,10 @@ public class PinAndWireInteraction : InteractionHandler {
 
 	void HandlePinNameDisplay () {
 		if (pinUnderMouse && Input.GetKey (KeyCode.LeftAlt)) {
-			pinNameText.gameObject.SetActive (true);
-			pinNameText.text = pinUnderMouse.pinName;
-			pinNameText.transform.position = pinUnderMouse.transform.position + Vector3.right * 2;
+			pinNameDisplay.gameObject.SetActive (true);
+			pinNameDisplay.Set (pinUnderMouse);
 		} else {
-			pinNameText.gameObject.SetActive (false);
+			pinNameDisplay.gameObject.SetActive (false);
 		}
 	}
 

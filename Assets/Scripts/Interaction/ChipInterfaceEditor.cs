@@ -5,6 +5,7 @@ using UnityEngine;
 // Allows player to add/remove/move/rename inputs or outputs of a chip.
 public class ChipInterfaceEditor : InteractionHandler {
 
+	public event System.Action<Chip> onDeleteChip;
 	public enum EditorType { Input, Output }
 	public enum HandleState { Default, Highlighted, Selected }
 	const float forwardDepth = -0.1f;
@@ -242,6 +243,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 	void Delete () {
 		if (selectedSignal) {
+			onDeleteChip?.Invoke (selectedSignal);
 			signals.Remove (selectedSignal);
 			Destroy (selectedSignal.gameObject);
 			selectedSignal = null;
