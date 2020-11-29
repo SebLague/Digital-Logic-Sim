@@ -11,19 +11,25 @@ public class ButtonText : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 	public Color normalCol = Color.white;
 	public Color nonInteractableCol = Color.grey;
 	public Color highlightedCol = Color.white;
+	bool highlighted;
 
 	void Start () {
-		buttonText.color = (button.interactable) ? normalCol : nonInteractableCol;
+
+	}
+
+	void Update () {
+		Color col = (highlighted) ? highlightedCol : normalCol;
+		buttonText.color = (button.interactable) ? col : nonInteractableCol;
 	}
 
 	public void OnPointerEnter (PointerEventData eventData) {
 		if (button.interactable) {
-			buttonText.color = highlightedCol;
+			highlighted = true;
 		}
 	}
 
 	public void OnPointerExit (PointerEventData eventData) {
-		buttonText.color = (button.interactable) ? normalCol : nonInteractableCol;
+		highlighted = false;
 	}
 
 	void OnValidate () {

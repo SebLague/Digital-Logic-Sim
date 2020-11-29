@@ -81,7 +81,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pinType: 1
   chip: {fileID: 8869523655109081479}
-  pinName: Out
+  pinName: OUT
   interactable: 1
   cyclic: 0
   index: 0
@@ -206,10 +206,6 @@ MonoBehaviour:
   - {fileID: 8470547330371449853}
   outputPins:
   - {fileID: 5126622102032161408}
-  order: 0
-  currentSequentialOuput: 0
-  targetSequentialOutput: 0
-  gateDelayRemaining: 0
   bounds: {fileID: 0}
   packageColour: {r: 0.22352941, g: 0.47843137, b: 0.59607846, a: 0}
 --- !u!114 &-1534845107842312262
@@ -229,7 +225,6 @@ MonoBehaviour:
   container: {fileID: 6886087423236142444}
   chipPinPrefab: {fileID: 8774343771143846598, guid: 3f5693e72562648d19f39eace0ccffd6,
     type: 3}
-  customPadding: {x: 0, y: 0}
 --- !u!61 &6336459448720122718
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -304,7 +299,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pinType: 0
   chip: {fileID: 8869523655109081479}
-  pinName: In A
+  pinName: A
   interactable: 1
   cyclic: 0
   index: 0
@@ -535,7 +530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pinType: 0
   chip: {fileID: 8869523655109081479}
-  pinName: In B
+  pinName: B
   interactable: 1
   cyclic: 0
   index: 0

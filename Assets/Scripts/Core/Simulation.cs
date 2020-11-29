@@ -9,20 +9,31 @@ public class Simulation : MonoBehaviour {
 	InputSignal[] inputSignals;
 	ChipEditor chipEditor;
 
+	public float minStepTime = 0.075f;
+	float lastStepTime;
+
 	void Awake () {
 		simulationFrame = 0;
 	}
 
 	void Update () {
-		StepSimulation ();
+		if (Time.time - lastStepTime > minStepTime) {
+			lastStepTime = Time.time;
+			StepSimulation ();
+		}
 	}
 
 	void StepSimulation () {
 		RefreshChipEditorReference ();
 
 		List<ChipSignal> inputSignals = chipEditor.inputsEditor.signals;
-
+		var allChips = chipEditor.chipInteraction.allChips;
 		simulationFrame++;
+
+		for (int i = 0; i < allChips.Count; i++) {
+			allChips[i].InitSimulationFrame ();
+		}
+
 		// Tell all signal generators to send their signal out
 		for (int i = 0; i < inputSignals.Count; i++) {
 			((InputSignal) inputSignals[i]).SendSignal ();

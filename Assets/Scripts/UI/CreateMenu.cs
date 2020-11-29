@@ -52,9 +52,17 @@ public class CreateMenu : MonoBehaviour {
 	}
 
 	void ChipNameFieldChanged (string value) {
-		doneButton.interactable = value.Trim ().Length > 0;
-		chipNameField.text = value.ToUpper ();
-		Manager.ActiveChipEditor.chipName = chipNameField.text;
+		string formattedName = value.ToUpper ();
+		doneButton.interactable = IsValidChipName (formattedName.Trim ());
+		chipNameField.text = formattedName;
+		Manager.ActiveChipEditor.chipName = formattedName.Trim ();
+	}
+
+	bool IsValidChipName (string chipName) {
+		if (chipName == "AND" || chipName == "NOT" || chipName.Length == 0) {
+			return false;
+		}
+		return true;
 	}
 
 	void OpenMenu () {

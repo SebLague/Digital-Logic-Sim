@@ -8,25 +8,19 @@ public class Pin : MonoBehaviour {
 	// The chip that this pin is attached to (either as an input or output terminal)
 	public Chip chip;
 	public string pinName;
-	public bool interactable = true;
 
-	[Header ("DEBUG VIS (Don't Edit)")]
-	public bool cyclic;
+	[HideInInspector] public bool cyclic;
 	// Index of this pin in its associated chip's input or output pin array
-	public int index;
+	[HideInInspector] public int index;
 	// The pin from which this pin receives its input signal
 	// (multiple inputs not allowed in order to simplify simulation)
-	public Pin parentPin;
+	[HideInInspector] public Pin parentPin;
 	// The pins which this pin forwards its signal to
-	public List<Pin> childPins = new List<Pin> ();
+	[HideInInspector] public List<Pin> childPins = new List<Pin> ();
 	// Current state of the pin: 0 == LOW, 1 == HIGH
-	public int currentState;
-	public int sequentialState;
-	public int lastInputSimulationFrame;
+	int currentState;
 
 	// Appearance
-	//public const float radius = 0.25f / 2;
-	//public const float interactionRadius = 0.275f / 2;
 	Color defaultCol = Color.black;
 	Color interactCol = new Color (0.7f, 0.7f, 0.7f);
 	Material material;
@@ -76,8 +70,6 @@ public class Pin : MonoBehaviour {
 	// Sets the current state to the signal
 	// Passes the signal on to any connected pins / electronic component
 	public void ReceiveSignal (int signal) {
-		lastInputSimulationFrame = Simulation.simulationFrame;
-
 		currentState = signal;
 
 		if (pinType == PinType.ChipInput && !cyclic) {
@@ -134,14 +126,4 @@ public class Pin : MonoBehaviour {
 		material.color = defaultCol;
 	}
 
-	public static string DefaultName (PinType pinType, int index) {
-		string name = "";
-		string s = "ABC" [index].ToString ();
-		if (pinType == PinType.ChipInput) {
-			name = $"IN ({s})";
-		} else if (pinType == PinType.ChipOutput) {
-			name = "OUT";
-		}
-		return name;
-	}
 }

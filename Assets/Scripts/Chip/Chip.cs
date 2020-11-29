@@ -67,15 +67,6 @@ public class Chip : MonoBehaviour {
 
 	}
 
-	protected void AutoNameAllPins () {
-		for (int i = 0; i < inputPins.Length; i++) {
-			inputPins[i].pinName = Pin.DefaultName (Pin.PinType.ChipInput, i);
-		}
-		for (int i = 0; i < outputPins.Length; i++) {
-			outputPins[i].pinName = Pin.DefaultName (Pin.PinType.ChipOutput, i);
-		}
-	}
-
 	void SetPinIndices () {
 		for (int i = 0; i < inputPins.Length; i++) {
 			inputPins[i].index = i;

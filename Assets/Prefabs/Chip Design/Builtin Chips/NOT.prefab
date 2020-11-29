@@ -159,7 +159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pinType: 0
   chip: {fileID: 1267900139923996690}
-  pinName: In
+  pinName: IN
   interactable: 1
   cyclic: 0
   index: 0
@@ -583,7 +583,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pinType: 1
   chip: {fileID: 1267900139923996690}
-  pinName: Out
+  pinName: OUT
   interactable: 1
   cyclic: 0
   index: 0

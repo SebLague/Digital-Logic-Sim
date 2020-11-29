@@ -19,16 +19,14 @@ public class Wire : MonoBehaviour {
 	public float selectedThickness = 1.2f;
 	bool selected;
 
-	[Header ("Don't Edit")]
-	public bool wireConnected;
-	public Pin startPin;
-	public Pin endPin;
+	bool wireConnected;
+	[HideInInspector] public Pin startPin;
+	[HideInInspector] public Pin endPin;
 	EdgeCollider2D wireCollider;
 	public List<Vector2> anchorPoints { get; private set; }
 	List<Vector2> drawPoints;
 	const float thicknessMultiplier = 0.1f;
-	Texture2D texture;
-	public float length;
+	float length;
 	Material mat;
 	float depth;
 
@@ -110,7 +108,7 @@ public class Wire : MonoBehaviour {
 				onCol = palette.highZCol;
 				offCol = palette.highZCol;
 			}
-			mat.color = (ChipOutputPin.currentState == 0) ? offCol : onCol;
+			mat.color = (ChipOutputPin.State == 0) ? offCol : onCol;
 		} else {
 			mat.color = Color.black;
 		}
@@ -199,19 +197,6 @@ public class Wire : MonoBehaviour {
 		anchorPoints[anchorPoints.Count - 1] = ProcessPoint (pointWorldSpace);
 		anchorPoints.Add (ProcessPoint (pointWorldSpace));
 	}
-
-	/*
-		public void UpdateWirePosition () {
-			//if (!(endPin.chip is Bus)) {
-			UpdateWireEndPoint (endPin.transform.position);
-			//}
-			//	if (!(startPin.chip is Bus)) {
-			anchorPoints[0] = startPin.transform.position;
-			//	}
-			UpdateCollider ();
-			//	wireCollider.points = new Vector2[] { inputPin.transform.position, outputPin.transform.position };
-		}
-	*/
 
 	void UpdateCollider () {
 		wireCollider.points = drawPoints.ToArray ();
