@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ChipBarUI : MonoBehaviour {
-	public Transform mask;
+	public RectTransform bar;
 	public Transform buttonHolder;
 	public Button buttonPrefab;
 	public float buttonSpacing = 15f;
@@ -13,6 +13,7 @@ public class ChipBarUI : MonoBehaviour {
 	float rightmostButtonEdgeX;
 	Manager manager;
 	public List<string> hideList;
+	public Scrollbar horizontalScroll;
 
 	void Awake () {
 		manager = FindObjectOfType<Manager> ();
@@ -20,6 +21,11 @@ public class ChipBarUI : MonoBehaviour {
 		for (int i = 0; i < manager.builtinChips.Length; i++) {
 			AddChipButton (manager.builtinChips[i]);
 		}
+	}
+
+	void Update () {
+		float barPosY = (horizontalScroll.gameObject.activeSelf) ? 16 : 0;
+		bar.localPosition = new Vector3 (0, barPosY, 0);
 	}
 
 	void AddChipButton (Chip chip) {
@@ -39,7 +45,7 @@ public class ChipBarUI : MonoBehaviour {
 
 		// Set button position
 		buttonRect.SetParent (buttonHolder, false);
-		buttonRect.localPosition = new Vector3 (rightmostButtonEdgeX + buttonSpacing + buttonRect.sizeDelta.x / 2f, 0, 0);
+		//buttonRect.localPosition = new Vector3 (rightmostButtonEdgeX + buttonSpacing + buttonRect.sizeDelta.x / 2f, 0, 0);
 		rightmostButtonEdgeX = buttonRect.localPosition.x + buttonRect.sizeDelta.x / 2f;
 
 		// Set button event

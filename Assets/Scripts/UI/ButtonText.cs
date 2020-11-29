@@ -1,20 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[ExecuteInEditMode]
-public class ButtonText : MonoBehaviour {
+public class ButtonText : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
 
 	public Button button;
 	public TMPro.TMP_Text buttonText;
-	public Color interactableCol = Color.white;
+	public Color normalCol = Color.white;
 	public Color nonInteractableCol = Color.grey;
+	public Color highlightedCol = Color.white;
 
-	void Update () {
-		if (button && buttonText) {
-			buttonText.color = (button.interactable) ? interactableCol : nonInteractableCol;
+	void Start () {
+		buttonText.color = (button.interactable) ? normalCol : nonInteractableCol;
+	}
+
+	public void OnPointerEnter (PointerEventData eventData) {
+		if (button.interactable) {
+			buttonText.color = highlightedCol;
 		}
+	}
+
+	public void OnPointerExit (PointerEventData eventData) {
+		buttonText.color = (button.interactable) ? normalCol : nonInteractableCol;
 	}
 
 	void OnValidate () {
@@ -25,4 +34,5 @@ public class ButtonText : MonoBehaviour {
 			buttonText = transform.GetComponentInChildren<TMPro.TMP_Text> ();
 		}
 	}
+
 }

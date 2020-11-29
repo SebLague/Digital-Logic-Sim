@@ -145,6 +145,7 @@ GameObject:
   - component: {fileID: 5803949137318587458}
   - component: {fileID: 5803949137318587459}
   - component: {fileID: 5803949137318587468}
+  - component: {fileID: 7952051276976549764}
   m_Layer: 5
   m_Name: Chip Button
   m_TagString: Untagged
@@ -229,9 +230,9 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 0.7490196}
-    m_HighlightedColor: {r: 0.745283, g: 0.16522783, b: 0.16522783, a: 1}
-    m_PressedColor: {r: 1, g: 0.4292453, b: 0.4568883, a: 1}
+    m_NormalColor: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 1}
+    m_HighlightedColor: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0.7490196}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -252,3 +253,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7952051276976549764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5803949137318587470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05fe525ba216b427e97068d69ff70db4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  button: {fileID: 5803949137318587468}
+  buttonText: {fileID: 5803949136309172089}
+  normalCol: {r: 1, g: 1, b: 1, a: 0.84313726}
+  nonInteractableCol: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  highlightedCol: {r: 0, g: 0, b: 0, a: 1}

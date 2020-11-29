@@ -15,6 +15,9 @@ public class ChipInteraction : InteractionHandler {
 	public Color selectionBoxCol;
 	public Color invalidPlacementCol;
 
+	const float dragDepth = -50;
+	const float chipDepth = -0.2f;
+
 	public List<Chip> allChips { get; private set; }
 
 	State currentState;
@@ -22,7 +25,7 @@ public class ChipInteraction : InteractionHandler {
 	List<Chip> selectedChips;
 	Vector2 selectionBoxStartPos;
 	Mesh selectionMesh;
-	Vector2[] selectedChipsOriginalPos;
+	Vector3[] selectedChipsOriginalPos;
 
 	void Awake () {
 		newChipsToPlace = new List<Chip> ();
@@ -99,7 +102,7 @@ public class ChipInteraction : InteractionHandler {
 						selectedChips.Add (chipUnderMouse);
 					}
 					// Record starting positions of all selected chips for movement
-					selectedChipsOriginalPos = new Vector2[selectedChips.Count];
+					selectedChipsOriginalPos = new Vector3[selectedChips.Count];
 					for (int i = 0; i < selectedChips.Count; i++) {
 						selectedChipsOriginalPos[i] = selectedChips[i].transform.position;
 					}
@@ -161,23 +164,28 @@ public class ChipInteraction : InteractionHandler {
 			// Move selected objects
 			Vector2 deltaMouse = mousePos - selectionBoxStartPos;
 			for (int i = 0; i < selectedChips.Count; i++) {
-				selectedChips[i].transform.position = selectedChipsOriginalPos[i] + deltaMouse;
+				selectedChips[i].transform.position = (Vector2) selectedChipsOriginalPos[i] + deltaMouse;
+				SetDepth (selectedChips[i], dragDepth + selectedChipsOriginalPos[i].z);
 			}
 		}
 		// Mouse released, so stop moving chips
 		if (Input.GetMouseButtonUp (0)) {
 			currentState = State.None;
 
-			// If didn't end up moving the chips, then select just the one under the mouse
 			if (SelectedChipsWithinPlacementArea ()) {
 				const float chipMoveThreshold = 0.001f;
 				Vector2 deltaMouse = mousePos - selectionBoxStartPos;
 
+				// If didn't end up moving the chips, then select just the one under the mouse
 				if (selectedChips.Count > 1 && deltaMouse.magnitude < chipMoveThreshold) {
 					var objectUnderMouse = InputHelper.GetObjectUnderMouse2D (chipMask);
 					if (objectUnderMouse?.GetComponent<Chip> ()) {
 						selectedChips.Clear ();
 						selectedChips.Add (objectUnderMouse.GetComponent<Chip> ());
+					}
+				} else {
+					for (int i = 0; i < selectedChips.Count; i++) {
+						SetDepth (selectedChips[i], selectedChipsOriginalPos[i].z);
 					}
 				}
 			}
@@ -202,8 +210,10 @@ public class ChipInteraction : InteractionHandler {
 			Vector2 mousePos = InputHelper.MouseWorldPos;
 			float offsetY = 0;
 
-			foreach (var chipToPlace in newChipsToPlace) {
+			for (int i = 0; i < newChipsToPlace.Count; i++) {
+				Chip chipToPlace = newChipsToPlace[i];
 				chipToPlace.transform.position = mousePos + Vector2.down * offsetY;
+				SetDepth (chipToPlace, dragDepth);
 				offsetY += chipToPlace.BoundsSize.y + chipStackSpacing;
 			}
 
@@ -215,6 +225,11 @@ public class ChipInteraction : InteractionHandler {
 	}
 
 	void PlaceNewChips () {
+		float startDepth = (allChips.Count > 0) ? allChips[allChips.Count - 1].transform.position.z : 0;
+		for (int i = 0; i < newChipsToPlace.Count; i++) {
+			SetDepth (newChipsToPlace[i], startDepth + (newChipsToPlace.Count - i) * chipDepth);
+		}
+
 		allChips.AddRange (newChipsToPlace);
 		selectedChips.Clear ();
 		newChipsToPlace.Clear ();
@@ -264,6 +279,10 @@ public class ChipInteraction : InteractionHandler {
 			}
 		}
 		return true;
+	}
+
+	void SetDepth (Chip chip, float depth) {
+		chip.transform.position = new Vector3 (chip.transform.position.x, chip.transform.position.y, depth);
 	}
 
 	protected override bool CanReleaseFocus () {
