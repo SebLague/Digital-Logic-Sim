@@ -51,7 +51,7 @@ public static class SaveSystem {
 			savedProjectPaths = Directory.GetDirectories (SaveDataDirectoryPath);
 		}
 		for (int i = 0; i < savedProjectPaths.Length; i++) {
-			string[] pathSections = savedProjectPaths[i].Split ('/');
+			string[] pathSections = savedProjectPaths[i].Split (Path.DirectorySeparatorChar);
 			savedProjectPaths[i] = pathSections[pathSections.Length - 1];
 		}
 		return savedProjectPaths;
