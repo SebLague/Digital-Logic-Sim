@@ -32,6 +32,10 @@ public class ButtonText : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 		highlighted = false;
 	}
 
+	void OnEnable () {
+		highlighted = false;
+	}
+
 	void OnValidate () {
 		if (button == null) {
 			button = GetComponent<Button> ();

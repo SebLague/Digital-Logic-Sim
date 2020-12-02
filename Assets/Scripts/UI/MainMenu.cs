@@ -15,8 +15,16 @@ public class MainMenu : MonoBehaviour {
 
 	public void StartNewProject () {
 		string projectName = projectNameField.text;
-		SaveSystem.SetActiveProject(projectName);
+		SaveSystem.SetActiveProject (projectName);
 		UnityEngine.SceneManagement.SceneManager.LoadScene (1);
+	}
+
+	public void SetResolution16x9 (int width) {
+		Screen.SetResolution (width, Mathf.RoundToInt (width * (9 / 16f)), Screen.fullScreenMode);
+	}
+
+	public void ToggleFullScreen () {
+		Screen.fullScreen = !Screen.fullScreen;
 	}
 
 	public void Quit () {
