@@ -1,18 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public static class InputHelper {
-	static Camera mainCam;
+	static Camera _mainCamera;
 
 	// Constructor
-	static InputHelper () {
-		mainCam = mainCam = Camera.main;
+	static Camera MainCamera {
+		get {
+			if (_mainCamera == null) {
+				_mainCamera = Camera.main;
+			}
+			return _mainCamera;
+		}
 	}
 
 	public static Vector2 MouseWorldPos {
 		get {
-			return mainCam.ScreenToWorldPoint (Input.mousePosition);
+			return MainCamera.ScreenToWorldPoint (Input.mousePosition);
 		}
 	}
 
