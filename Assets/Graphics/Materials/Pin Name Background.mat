@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Pin Name Background
-  m_Shader: {fileID: 4800000, guid: 41a9daea5f98345789396358e29d2157, type: 3}
+  m_Shader: {fileID: 4800000, guid: 3b679458bc9614d6c9b7375137a71926, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0

@@ -86,20 +86,20 @@ public class CreateMenu : MonoBehaviour {
 
 	void SetSuggestedColour () {
 		Color suggestedChipColour = suggestedColours[suggestedColourIndex];
+		suggestedChipColour.a = 1;
 		suggestedColourIndex = (suggestedColourIndex + 1) % suggestedColours.Length;
 
 		float hue;
 		float sat;
 		float val;
 		Color.RGBToHSV (suggestedChipColour, out hue, out sat, out val);
-		hueSlider.value = hue;
-		saturationSlider.value = sat;
-		valueSlider.value = val;
+		hueSlider.SetValueWithoutNotify (hue);
+		saturationSlider.SetValueWithoutNotify (sat);
+		valueSlider.SetValueWithoutNotify (val);
 		UpdateColour (suggestedChipColour);
 	}
 
 	void UpdateColour (Color chipCol) {
-
 		var cols = chipNameField.colors;
 		cols.normalColor = chipCol;
 		cols.highlightedColor = chipCol;
