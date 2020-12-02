@@ -21,9 +21,15 @@ public class ChipBarUI : MonoBehaviour {
 		for (int i = 0; i < manager.builtinChips.Length; i++) {
 			AddChipButton (manager.builtinChips[i]);
 		}
+
+		Canvas.ForceUpdateCanvases ();
 	}
 
-	void Update () {
+	void LateUpdate () {
+		UpdateBarPos ();
+	}
+
+	void UpdateBarPos () {
 		float barPosY = (horizontalScroll.gameObject.activeSelf) ? 16 : 0;
 		bar.localPosition = new Vector3 (0, barPosY, 0);
 	}
