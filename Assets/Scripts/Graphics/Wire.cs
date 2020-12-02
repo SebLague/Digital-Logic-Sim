@@ -8,8 +8,6 @@ public class Wire : MonoBehaviour {
 
 	LineRenderer lineRenderer;
 	public Color editCol;
-	public Color validCol;
-	public Color invalidCol;
 	public Palette palette;
 	//public Color
 	public Color placedCol;

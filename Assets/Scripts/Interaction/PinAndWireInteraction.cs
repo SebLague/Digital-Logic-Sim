@@ -63,7 +63,7 @@ public class PinAndWireInteraction : InteractionHandler {
 
 	void HandleWireHighlighting () {
 		var wireUnderMouse = InputHelper.GetObjectUnderMouse2D (wireMask);
-		if (wireUnderMouse) {
+		if (wireUnderMouse && pinUnderMouse == null) {
 			if (highlightedWire) {
 				highlightedWire.SetSelectionState (false);
 			}

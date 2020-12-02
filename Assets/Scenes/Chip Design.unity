@@ -2625,7 +2625,7 @@ Transform:
   - {fileID: 748670170}
   - {fileID: 2121371804}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1579521359
 MonoBehaviour:
@@ -2641,7 +2641,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bar: {fileID: 1348053200}
   buttonHolder: {fileID: 606875003}
-  buttonPrefab: {fileID: 5803949137318587468, guid: 0b5f6ee9ad6fd4e199ceb4306aa8814e,
+  buttonPrefab: {fileID: -2340461920023726934, guid: 0b5f6ee9ad6fd4e199ceb4306aa8814e,
     type: 3}
   buttonSpacing: 5
   buttonWidthPadding: 15
@@ -3761,7 +3761,7 @@ PrefabInstance:
     - target: {fileID: 4750937599765430253, guid: d48b4f02647794ac2aba95960c3d59ab,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4750937599765430253, guid: d48b4f02647794ac2aba95960c3d59ab,
         type: 3}

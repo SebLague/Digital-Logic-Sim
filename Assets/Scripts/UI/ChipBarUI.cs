@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ChipBarUI : MonoBehaviour {
 	public RectTransform bar;
 	public Transform buttonHolder;
-	public Button buttonPrefab;
+	public CustomButton buttonPrefab;
 	public float buttonSpacing = 15f;
 	public float buttonWidthPadding = 10;
 	float rightmostButtonEdgeX;
@@ -33,7 +33,7 @@ public class ChipBarUI : MonoBehaviour {
 			//Debug.Log("Hiding")
 			return;
 		}
-		Button button = Instantiate (buttonPrefab);
+		CustomButton button = Instantiate (buttonPrefab);
 		button.gameObject.name = "Create (" + chip.chipName + ")";
 		// Set button text
 		var buttonTextUI = button.GetComponentInChildren<TMP_Text> ();
@@ -49,7 +49,8 @@ public class ChipBarUI : MonoBehaviour {
 		rightmostButtonEdgeX = buttonRect.localPosition.x + buttonRect.sizeDelta.x / 2f;
 
 		// Set button event
-		button.onClick.AddListener (() => manager.SpawnChip (chip));
+		//button.onClick.AddListener (() => manager.SpawnChip (chip));
+		button.onPointerDown += (() => manager.SpawnChip (chip));
 	}
 
 }
