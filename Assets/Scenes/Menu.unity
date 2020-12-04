@@ -462,8 +462,6 @@ MonoBehaviour:
   projectNameField: {fileID: 1670382600}
   confirmProjectButton: {fileID: 5803949137266396444}
   fullscreenToggle: {fileID: 73739993}
-  textA: {fileID: 0}
-  textB: {fileID: 0}
 --- !u!4 &111305409
 Transform:
   m_ObjectHideFlags: 0
@@ -1192,7 +1190,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Version 0.23 <size=25><color=#505050>(last updated 4 Dec 2020)</color></size>
+  m_text: Version 0.24 <size=25><color=#505050>(last updated 5 Dec 2020)</color></size>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

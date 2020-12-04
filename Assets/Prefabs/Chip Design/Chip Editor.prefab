@@ -1701,6 +1701,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4750937600310344742}
   - component: {fileID: 4750937600310344738}
+  - component: {fileID: 2647783974511930239}
   - component: {fileID: 4750937600310344741}
   m_Layer: 0
   m_Name: Output Bar
@@ -1751,6 +1752,20 @@ MonoBehaviour:
   deleteButtonX: -0.75
   showPreviewSignal: 1
   groupSpacing: 0.22
+--- !u!114 &2647783974511930239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4750937600310344745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22d8e53977a5246748d884cfc9bec669, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textPrefab: {fileID: 6800009612402404466, guid: f52dbf9025a6f4b30a182a0f202170e7,
+    type: 3}
 --- !u!61 &4750937600310344741
 BoxCollider2D:
   m_ObjectHideFlags: 0

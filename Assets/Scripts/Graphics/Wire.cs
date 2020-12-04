@@ -80,7 +80,6 @@ public class Wire : MonoBehaviour {
 		// How far are start and end points from the pins they're connected to (chip has been moved)
 		Vector2 startPointError = (Vector2) startPin.transform.position - anchorPoints[0];
 		Vector2 endPointError = (Vector2) endPin.transform.position - anchorPoints[anchorPoints.Count - 1];
-		Debug.Log (endPointError.sqrMagnitude + "  " + maxSqrError);
 
 		if (startPointError.sqrMagnitude > maxSqrError || endPointError.sqrMagnitude > maxSqrError) {
 			// If start and end points are both same offset from where they should be, can move all anchor points (entire wire)
