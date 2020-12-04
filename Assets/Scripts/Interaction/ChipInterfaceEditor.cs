@@ -34,7 +34,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 	public float groupSpacing = 1;
 
 	ChipSignal highlightedSignal;
-	ChipSignal selectedSignal;
+	List<ChipSignal> selectedSignals;
 	ChipSignal[] previewSignals;
 
 	BoxCollider2D inputBounds;
@@ -56,6 +56,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 	void Awake () {
 		signals = new List<ChipSignal> ();
+		selectedSignals = new List<ChipSignal> ();
 		inputBounds = GetComponent<BoxCollider2D> ();
 		MeshShapeCreator.CreateQuadMesh (ref quadMesh);
 		handleMat = CreateUnlitMaterial (handleCol);
@@ -108,17 +109,25 @@ public class ChipInterfaceEditor : InteractionHandler {
 			}
 
 			// If a signal is selected, handle movement/renaming/deletion
-			if (selectedSignal) {
+			if (selectedSignals.Count > 0) {
 				if (isDragging) {
-					float handleNewY = ClampY (mousePos.y + (dragHandleStartY - dragMouseStartY));
-					SetYPos (selectedSignal.transform, handleNewY);
+					float handleNewY = (mousePos.y + (dragHandleStartY - dragMouseStartY));
+					bool cancel = Input.GetKeyDown (KeyCode.Escape);
+					if (cancel) {
+						handleNewY = dragHandleStartY;
+					}
+
+					for (int i = 0; i < selectedSignals.Count; i++) {
+						float y = CalcY (handleNewY, selectedSignals.Count, i);
+						SetYPos (selectedSignals[i].transform, y);
+					}
+
 					if (Input.GetMouseButtonUp (0)) {
 						isDragging = false;
 					}
 
 					// Cancel drag and deselect
-					if (Input.GetKeyDown (KeyCode.Escape)) {
-						SetYPos (selectedSignal.transform, dragHandleStartY);
+					if (cancel) {
 						FocusLost ();
 					}
 				}
@@ -151,7 +160,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 	float CalcY (float mouseY, int groupSize, int index) {
 		float centreY = mouseY;
-		float halfExtent = groupSpacing * (currentGroupSize - 1f);
+		float halfExtent = groupSpacing * (groupSize - 1f);
 		float maxY = centreY + halfExtent + handleSize.y / 2f;
 		float minY = centreY - halfExtent - handleSize.y / 2f;
 
@@ -161,7 +170,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 			centreY += (BoundsBottom - minY);
 		}
 
-		float t = (currentGroupSize > 1) ? index / (currentGroupSize - 1f) : 0.5f;
+		float t = (groupSize > 1) ? index / (groupSize - 1f) : 0.5f;
 		t = t * 2 - 1;
 		float posY = centreY - t * halfExtent;
 		return posY;
@@ -187,9 +196,10 @@ public class ChipInterfaceEditor : InteractionHandler {
 			// Spawn signals
 			if (spawn) {
 				ChipSignal spawnedSignal = Instantiate (signalPrefab, spawnPos, Quaternion.identity, signalHolder);
-				spawnedSignal.groupID = (isGroup) ? currentGroupID : -1;
+				if (isGroup) {
+					spawnedSignal.SetGroup (currentGroupID);
+				}
 				signals.Add (spawnedSignal);
-				SelectSignal (spawnedSignal);
 			}
 			// Display previews 
 			else if (showPreviewSignal) {
@@ -206,6 +216,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 				// This will be used to identify which signals were created together as a group
 				currentGroupID++;
 			}
+			SelectSignal (signals[signals.Count - 1]);
 		}
 	}
 
@@ -243,7 +254,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 	protected override void FocusLost () {
 		highlightedSignal = null;
-		selectedSignal = null;
+		selectedSignals.Clear ();
 
 		deleteButton.gameObject.SetActive (false);
 		nameField.gameObject.SetActive (false);
@@ -252,7 +263,8 @@ public class ChipInterfaceEditor : InteractionHandler {
 	}
 
 	void UpdateButtonAndNameField () {
-		if (selectedSignal) {
+		if (selectedSignals.Count > 0) {
+			var selectedSignal = selectedSignals[0];
 			deleteButton.transform.position = Camera.main.WorldToScreenPoint (selectedSignal.transform.position + Vector3.right * deleteButtonX);
 			// Update signal name
 			selectedSignal.UpdateSignalName (nameField.text);
@@ -266,7 +278,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 			if (signals[i] == highlightedSignal) {
 				handleState = HandleState.Highlighted;
 			}
-			if (signals[i] == selectedSignal) {
+			if (selectedSignals.Contains (signals[i])) {
 				handleState = HandleState.Selected;
 			}
 
@@ -285,10 +297,9 @@ public class ChipInterfaceEditor : InteractionHandler {
 			Vector2 handleCentre = new Vector2 (transform.position.x, handleY);
 			Vector2 mousePos = InputHelper.MouseWorldPos;
 
-			const float selectionBufferX = 0.1f;
 			const float selectionBufferY = 0.1f;
 
-			float halfSizeX = (handleSize.x + selectionBufferX) / 2f;
+			float halfSizeX = transform.localScale.x / 2f;
 			float halfSizeY = (handleSize.y + selectionBufferY) / 2f;
 			bool insideX = mousePos.x >= handleCentre.x - halfSizeX && mousePos.x <= handleCentre.x + halfSizeX;
 			bool insideY = mousePos.y >= handleCentre.y - halfSizeY && mousePos.y <= handleCentre.y + halfSizeY;
@@ -307,15 +318,27 @@ public class ChipInterfaceEditor : InteractionHandler {
 	// Select signal (starts dragging, shows rename field)
 	void SelectSignal (ChipSignal signalToDrag) {
 		// Dragging
-		selectedSignal = signalToDrag;
+		selectedSignals.Clear ();
+		for (int i = 0; i < signals.Count; i++) {
+			if (signals[i] == signalToDrag || ChipSignal.InSameGroup (signals[i], signalToDrag)) {
+				selectedSignals.Add (signals[i]);
+			}
+		}
+
 		isDragging = true;
 
 		dragMouseStartY = InputHelper.MouseWorldPos.y;
-		dragHandleStartY = selectedSignal.transform.position.y;
+		if (selectedSignals.Count % 2 == 0) {
+			int indexA = Mathf.Max (0, selectedSignals.Count / 2 - 1);
+			int indexB = selectedSignals.Count / 2;
+			dragHandleStartY = (selectedSignals[indexA].transform.position.y + selectedSignals[indexB].transform.position.y) / 2f;
+		} else {
+			dragHandleStartY = selectedSignals[selectedSignals.Count / 2].transform.position.y;
+		}
 
 		// Name input field
 		nameField.gameObject.SetActive (true);
-		nameField.text = (selectedSignal).signalName;
+		nameField.text = (selectedSignals[0]).signalName;
 		nameField.Select ();
 		// Delete button
 		deleteButton.gameObject.SetActive (true);
@@ -324,13 +347,13 @@ public class ChipInterfaceEditor : InteractionHandler {
 	}
 
 	void Delete () {
-		if (selectedSignal) {
-			onDeleteChip?.Invoke (selectedSignal);
-			signals.Remove (selectedSignal);
-			Destroy (selectedSignal.gameObject);
-			selectedSignal = null;
-			FocusLost ();
+		for (int i = selectedSignals.Count - 1; i >= 0; i--) {
+			onDeleteChip?.Invoke (selectedSignals[i]);
+			signals.Remove (selectedSignals[i]);
+			Destroy (selectedSignals[i].gameObject);
 		}
+		selectedSignals.Clear ();
+		FocusLost ();
 	}
 
 	void DrawHandle (float y, HandleState handleState = HandleState.Default) {

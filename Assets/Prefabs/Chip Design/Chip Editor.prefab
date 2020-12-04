@@ -808,14 +808,14 @@ MonoBehaviour:
   nameField: {fileID: 3488882055607390314}
   deleteButton: {fileID: 5708581670757464792}
   signalHolder: {fileID: 4750937600123747354}
-  handleSize: {x: 0.15, y: 0.45}
+  handleSize: {x: 0.15, y: 0.4}
   handleCol: {r: 0.22745098, g: 0.22745098, b: 0.22745098, a: 0}
   highlightedHandleCol: {r: 0.496, g: 0.496, b: 0.496, a: 0}
   selectedHandleCol: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 0}
   renameFieldX: 2
   deleteButtonX: 0.95
   showPreviewSignal: 1
-  groupSpacing: 0.25
+  groupSpacing: 0.22
 --- !u!61 &4750937598926047526
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1252,14 +1252,14 @@ MonoBehaviour:
   nameField: {fileID: 3488882055607390314}
   deleteButton: {fileID: 5708581670757464792}
   signalHolder: {fileID: 4750937600234680856}
-  handleSize: {x: 0.15, y: 0.45}
+  handleSize: {x: 0.15, y: 0.4}
   handleCol: {r: 0.22745098, g: 0.22745098, b: 0.22745098, a: 0}
   highlightedHandleCol: {r: 0.496, g: 0.496, b: 0.496, a: 0}
   selectedHandleCol: {r: 0.8773585, g: 0.8773585, b: 0.8773585, a: 0}
   renameFieldX: -2
   deleteButtonX: -0.95
   showPreviewSignal: 1
-  groupSpacing: 0.25
+  groupSpacing: 0.22
 --- !u!61 &4750937600310344741
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1694,6 +1694,7 @@ GameObject:
   - component: {fileID: 3715784084014550639}
   - component: {fileID: 7382301814192858433}
   - component: {fileID: 3488882055607390314}
+  - component: {fileID: 3226749567443621798}
   m_Layer: 5
   m_Name: Rename Signal
   m_TagString: Untagged
@@ -1855,6 +1856,20 @@ MonoBehaviour:
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 0
   m_InputValidator: {fileID: 0}
+--- !u!114 &3226749567443621798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7608708825312222924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f4dac9f7803c4e658c584f0517cd8e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputField: {fileID: 3488882055607390314}
+  validChars: abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]
 --- !u!1 &7657302050105167206
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,7 +10,7 @@ public class ChipSignal : Chip {
 	public MeshRenderer pinRenderer;
 	public MeshRenderer wireRenderer;
 
-	public int groupID;
+	int groupID = -1;
 
 	[HideInInspector]
 	public string signalName;
@@ -31,6 +31,14 @@ public class ChipSignal : Chip {
 		if (indicatorRenderer && interactable) {
 			indicatorRenderer.material.color = (state == 1) ? palette.onCol : palette.offCol;
 		}
+	}
+
+	public void SetGroup (int id) {
+		this.groupID = id;
+	}
+
+	public static bool InSameGroup (ChipSignal signalA, ChipSignal signalB) {
+		return (signalA.groupID == signalB.groupID) && (signalA.groupID != -1);
 	}
 
 	public virtual void UpdateSignalName (string newName) {
