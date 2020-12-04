@@ -83,14 +83,14 @@ public class ChipPackage : MonoBehaviour {
 	public void SetSizeAndSpacing (Chip chip) {
 		nameText.fontSize = 2.5f;
 
-		float containerHeightPadding = 0.1f;
+		float containerHeightPadding = 0;
 		float containerWidthPadding = 0.1f;
-		float pinSpacePadding = 0.015f;
+		float pinSpacePadding = Pin.radius * 0.2f;
 		float containerWidth = nameText.preferredWidth + Pin.interactionRadius * 2f + containerWidthPadding;
 
 		int numPins = Mathf.Max (chip.inputPins.Length, chip.outputPins.Length);
-		float unpaddedContainerHeight = numPins * (Pin.interactionRadius * 2 + pinSpacePadding);
-		float containerHeight = Mathf.Max (unpaddedContainerHeight, nameText.preferredHeight) + containerHeightPadding;
+		float unpaddedContainerHeight = numPins * (Pin.radius * 2 + pinSpacePadding);
+		float containerHeight = Mathf.Max (unpaddedContainerHeight, nameText.preferredHeight + 0.05f) + containerHeightPadding;
 		float topPinY = unpaddedContainerHeight / 2 - Pin.radius;
 		float bottomPinY = -unpaddedContainerHeight / 2 + Pin.radius;
 		const float z = -0.05f;
