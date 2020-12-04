@@ -4,9 +4,7 @@
 // When designing a chip, this input signal can be manually set to 0 or 1 by the player.
 public class InputSignal : ChipSignal {
 
-	public bool active;
-	public MeshRenderer meshRenderer;
-	public Palette palette;
+	int currentState;
 
 	protected override void Start () {
 		base.Start ();
@@ -14,25 +12,22 @@ public class InputSignal : ChipSignal {
 	}
 
 	public void ToggleActive () {
-		active = !active;
+		currentState = 1 - currentState;
 		SetCol ();
 	}
 
 	public void SendSignal (int signal) {
-		active = signal == 1;
+		currentState = signal;
 		outputPins[0].ReceiveSignal (signal);
 		SetCol ();
 	}
 
 	public void SendSignal () {
-		int state = (active) ? 1 : 0;
-		outputPins[0].ReceiveSignal (state);
+		outputPins[0].ReceiveSignal (currentState);
 	}
 
 	void SetCol () {
-		if (meshRenderer) {
-			meshRenderer.material.color = (active) ? palette.onCol : palette.offCol;
-		}
+		SetDisplayState (currentState);
 	}
 
 	public override void UpdateSignalName (string newName) {

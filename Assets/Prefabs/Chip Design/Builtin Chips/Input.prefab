@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4370981688201696047}
   - component: {fileID: 2072548877}
   m_Layer: 0
-  m_Name: INPUT
+  m_Name: Input
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52,10 +52,11 @@ MonoBehaviour:
   outputPins:
   - {fileID: 1644414816724565277}
   bounds: {fileID: 0}
-  signalName: 
-  active: 0
-  meshRenderer: {fileID: 8517369164244439844}
   palette: {fileID: 11400000, guid: bed15cc57ce1e4a35bde62f3a99891c7, type: 2}
+  indicatorRenderer: {fileID: 8517369164244439844}
+  pinRenderer: {fileID: 3784613928615055263}
+  wireRenderer: {fileID: 8004754418866402433}
+  signalName: 
 --- !u!58 &2072548877
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -347,3 +348,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85b497f44243f4a26bbdedfec0c3e09a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!23 &3784613928615055263 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6598688158339663940, guid: 3f5693e72562648d19f39eace0ccffd6,
+    type: 3}
+  m_PrefabInstance: {fileID: 8004754419733301211}
+  m_PrefabAsset: {fileID: 0}

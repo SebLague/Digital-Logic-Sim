@@ -55,6 +55,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 		highlightedHandleMat = CreateUnlitMaterial (highlightedHandleCol);
 		selectedHandleMat = CreateUnlitMaterial (selectedHandleCol);
 		previewSignal = Instantiate (signalPrefab);
+		previewSignal.SetInteractable (false);
 		previewSignal.gameObject.SetActive (false);
 		previewSignal.signalName = "Preview";
 		previewSignal.transform.SetParent (transform, true);
@@ -130,7 +131,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 					if (showPreviewSignal) {
 						previewSignal.gameObject.SetActive (true);
-						previewSignal.transform.position = spawnPos;
+						previewSignal.transform.position = spawnPos - Vector3.forward * forwardDepth;
 					}
 
 					// Spawn
