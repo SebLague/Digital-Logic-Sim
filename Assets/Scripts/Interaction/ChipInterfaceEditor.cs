@@ -8,6 +8,8 @@ public class ChipInterfaceEditor : InteractionHandler {
 	const int maxGroupSize = 8;
 
 	public event System.Action<Chip> onDeleteChip;
+	public event System.Action onChipsAddedOrDeleted;
+
 	public enum EditorType { Input, Output }
 	public enum HandleState { Default, Highlighted, Selected }
 	const float forwardDepth = -0.1f;
@@ -53,10 +55,13 @@ public class ChipInterfaceEditor : InteractionHandler {
 	// Grouping
 	int currentGroupSize = 1;
 	int currentGroupID;
+	Dictionary<int, ChipSignal[]> groupsByID;
 
 	void Awake () {
 		signals = new List<ChipSignal> ();
 		selectedSignals = new List<ChipSignal> ();
+		groupsByID = new Dictionary<int, ChipSignal[]> ();
+
 		inputBounds = GetComponent<BoxCollider2D> ();
 		MeshShapeCreator.CreateQuadMesh (ref quadMesh);
 		handleMat = CreateUnlitMaterial (handleCol);
@@ -73,7 +78,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 			previewSignals[i] = previewSignal;
 		}
 
-		deleteButton.onClick.AddListener (Delete);
+		deleteButton.onClick.AddListener (DeleteSelected);
 	}
 
 	public override void OrderedUpdate () {
@@ -176,40 +181,44 @@ public class ChipInterfaceEditor : InteractionHandler {
 		return posY;
 	}
 
+	public ChipSignal[][] GetGroups () {
+		var keys = groupsByID.Keys;
+		ChipSignal[][] groups = new ChipSignal[keys.Count][];
+		int i = 0;
+		foreach (var key in keys) {
+			groups[i] = groupsByID[key];
+			i++;
+		}
+		return groups;
+	}
+
 	// Handles spawning if user clicks, otherwise displays preview
 	void HandleSpawning () {
-		bool isGroup = currentGroupSize > 1;
+
 		float containerX = chipContainer.position.x + chipContainer.localScale.x / 2 * ((editorType == EditorType.Input) ? -1 : 1);
 		float centreY = ClampY (InputHelper.MouseWorldPos.y);
 
 		// Spawn on mouse down
-		bool spawn = Input.GetMouseButtonDown (0);
+		if (Input.GetMouseButtonDown (0)) {
+			bool isGroup = currentGroupSize > 1;
+			ChipSignal[] spawnedSignals = new ChipSignal[currentGroupSize];
 
-		for (int i = 0; i < currentGroupSize; i++) {
-			//float t = (currentGroupSize > 1) ? i / (currentGroupSize - 1f) : 0.5f;
-			//t = t * 2 - 1;
-			//float posY = centreY - t * groupSpacing * (currentGroupSize - 1f);
-			float posY = CalcY (InputHelper.MouseWorldPos.y, currentGroupSize, i);
-			Vector3 spawnPos = new Vector3 (containerX, posY, chipContainer.position.z + forwardDepth);
-			DrawHandle (posY, HandleState.Highlighted);
+			for (int i = 0; i < currentGroupSize; i++) {
+				float posY = CalcY (InputHelper.MouseWorldPos.y, currentGroupSize, i);
+				Vector3 spawnPos = new Vector3 (containerX, posY, chipContainer.position.z + forwardDepth);
 
-			// Spawn signals
-			if (spawn) {
 				ChipSignal spawnedSignal = Instantiate (signalPrefab, spawnPos, Quaternion.identity, signalHolder);
 				if (isGroup) {
-					spawnedSignal.SetGroup (currentGroupID);
+					spawnedSignal.GroupID = currentGroupID;
+					spawnedSignal.displayGroupDecimalValue = true;
 				}
 				signals.Add (spawnedSignal);
-			}
-			// Display previews 
-			else if (showPreviewSignal) {
-				previewSignals[i].gameObject.SetActive (true);
-				previewSignals[i].transform.position = spawnPos - Vector3.forward * forwardDepth;
-			}
-		}
+				spawnedSignals[i] = spawnedSignal;
 
-		if (spawn) {
+			}
+
 			if (isGroup) {
+				groupsByID.Add (currentGroupID, spawnedSignals);
 				// Reset group size after spawning
 				currentGroupSize = 1;
 				// Generate new ID for next group
@@ -217,6 +226,19 @@ public class ChipInterfaceEditor : InteractionHandler {
 				currentGroupID++;
 			}
 			SelectSignal (signals[signals.Count - 1]);
+			onChipsAddedOrDeleted?.Invoke ();
+		}
+		// Draw handle and signal previews
+		else {
+			for (int i = 0; i < currentGroupSize; i++) {
+				float posY = CalcY (InputHelper.MouseWorldPos.y, currentGroupSize, i);
+				Vector3 spawnPos = new Vector3 (containerX, posY, chipContainer.position.z + forwardDepth);
+				DrawHandle (posY, HandleState.Highlighted);
+				if (showPreviewSignal) {
+					previewSignals[i].gameObject.SetActive (true);
+					previewSignals[i].transform.position = spawnPos - Vector3.forward * forwardDepth;
+				}
+			}
 		}
 	}
 
@@ -264,11 +286,12 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 	void UpdateButtonAndNameField () {
 		if (selectedSignals.Count > 0) {
-			var selectedSignal = selectedSignals[0];
-			deleteButton.transform.position = Camera.main.WorldToScreenPoint (selectedSignal.transform.position + Vector3.right * deleteButtonX);
-			// Update signal name
-			selectedSignal.UpdateSignalName (nameField.text);
-			nameField.transform.position = Camera.main.WorldToScreenPoint (selectedSignal.transform.position + Vector3.right * renameFieldX);
+			deleteButton.transform.position = Camera.main.WorldToScreenPoint (selectedSignals[0].transform.position + Vector3.right * deleteButtonX);
+			nameField.transform.position = Camera.main.WorldToScreenPoint (selectedSignals[0].transform.position + Vector3.right * renameFieldX);
+			// Update signal names
+			for (int i = 0; i < selectedSignals.Count; i++) {
+				selectedSignals[i].UpdateSignalName (nameField.text);
+			}
 		}
 	}
 
@@ -346,12 +369,17 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 	}
 
-	void Delete () {
+	void DeleteSelected () {
 		for (int i = selectedSignals.Count - 1; i >= 0; i--) {
-			onDeleteChip?.Invoke (selectedSignals[i]);
-			signals.Remove (selectedSignals[i]);
-			Destroy (selectedSignals[i].gameObject);
+			ChipSignal signalToDelete = selectedSignals[i];
+			if (groupsByID.ContainsKey (signalToDelete.GroupID)) {
+				groupsByID.Remove (signalToDelete.GroupID);
+			}
+			onDeleteChip?.Invoke (signalToDelete);
+			signals.Remove (signalToDelete);
+			Destroy (signalToDelete.gameObject);
 		}
+		onChipsAddedOrDeleted?.Invoke ();
 		selectedSignals.Clear ();
 		FocusLost ();
 	}

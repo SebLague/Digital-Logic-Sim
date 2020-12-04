@@ -5,12 +5,15 @@ using UnityEngine;
 // Base class for input and output signals
 public class ChipSignal : Chip {
 
+	public int currentState;
+
 	public Palette palette;
 	public MeshRenderer indicatorRenderer;
 	public MeshRenderer pinRenderer;
 	public MeshRenderer wireRenderer;
 
 	int groupID = -1;
+	public bool displayGroupDecimalValue;
 
 	[HideInInspector]
 	public string signalName;
@@ -33,12 +36,17 @@ public class ChipSignal : Chip {
 		}
 	}
 
-	public void SetGroup (int id) {
-		this.groupID = id;
-	}
-
 	public static bool InSameGroup (ChipSignal signalA, ChipSignal signalB) {
 		return (signalA.groupID == signalB.groupID) && (signalA.groupID != -1);
+	}
+
+	public int GroupID {
+		get {
+			return groupID;
+		}
+		set {
+			groupID = value;
+		}
 	}
 
 	public virtual void UpdateSignalName (string newName) {

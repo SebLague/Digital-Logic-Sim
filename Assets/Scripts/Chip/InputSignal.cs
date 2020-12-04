@@ -4,7 +4,6 @@
 // When designing a chip, this input signal can be manually set to 0 or 1 by the player.
 public class InputSignal : ChipSignal {
 
-	int currentState;
 
 	protected override void Start () {
 		base.Start ();
