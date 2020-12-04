@@ -224,9 +224,10 @@ public class Wire : MonoBehaviour {
 
 	Vector2 ProcessPoint (Vector2 endPointWorldSpace) {
 		if (Input.GetKey (KeyCode.LeftShift)) {
-			Vector2 a = drawPoints[drawPoints.Count - 2];
+			Vector2 a = anchorPoints[anchorPoints.Count - 2];
 			Vector2 b = endPointWorldSpace;
 			Vector2 mid = (a + b) / 2;
+			
 			bool xAxisLonger = (Mathf.Abs (a.x - b.x) > Mathf.Abs (a.y - b.y));
 			if (xAxisLonger) {
 				return new Vector2 (b.x, a.y);
