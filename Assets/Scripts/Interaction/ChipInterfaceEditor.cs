@@ -286,8 +286,11 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 	void UpdateButtonAndNameField () {
 		if (selectedSignals.Count > 0) {
-			deleteButton.transform.position = Camera.main.WorldToScreenPoint (selectedSignals[0].transform.position + Vector3.right * deleteButtonX);
-			nameField.transform.position = Camera.main.WorldToScreenPoint (selectedSignals[0].transform.position + Vector3.right * renameFieldX);
+			//deleteButton.transform.position = Camera.main.WorldToScreenPoint (selectedSignals[0].transform.position + Vector3.right * deleteButtonX);
+			//nameField.transform.position = Camera.main.WorldToScreenPoint (selectedSignals[0].transform.position + Vector3.right * renameFieldX);
+			nameField.transform.position = selectedSignals[0].transform.position + Vector3.right * renameFieldX;
+			deleteButton.transform.position = selectedSignals[0].transform.position + Vector3.right * deleteButtonX;
+
 			// Update signal names
 			for (int i = 0; i < selectedSignals.Count; i++) {
 				selectedSignals[i].UpdateSignalName (nameField.text);
