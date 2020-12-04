@@ -10,6 +10,8 @@ public class ChipSignal : Chip {
 	public MeshRenderer pinRenderer;
 	public MeshRenderer wireRenderer;
 
+	public int groupID;
+
 	[HideInInspector]
 	public string signalName;
 	protected bool interactable = true;

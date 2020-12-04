@@ -5,6 +5,8 @@ using UnityEngine;
 // Allows player to add/remove/move/rename inputs or outputs of a chip.
 public class ChipInterfaceEditor : InteractionHandler {
 
+	const int maxGroupSize = 8;
+
 	public event System.Action<Chip> onDeleteChip;
 	public enum EditorType { Input, Output }
 	public enum HandleState { Default, Highlighted, Selected }
@@ -29,10 +31,11 @@ public class ChipInterfaceEditor : InteractionHandler {
 	public float renameFieldX = 2;
 	public float deleteButtonX = 1;
 	public bool showPreviewSignal;
+	public float groupSpacing = 1;
 
 	ChipSignal highlightedSignal;
 	ChipSignal selectedSignal;
-	ChipSignal previewSignal;
+	ChipSignal[] previewSignals;
 
 	BoxCollider2D inputBounds;
 
@@ -47,6 +50,10 @@ public class ChipInterfaceEditor : InteractionHandler {
 	float dragHandleStartY;
 	float dragMouseStartY;
 
+	// Grouping
+	int currentGroupSize = 1;
+	int currentGroupID;
+
 	void Awake () {
 		signals = new List<ChipSignal> ();
 		inputBounds = GetComponent<BoxCollider2D> ();
@@ -54,11 +61,16 @@ public class ChipInterfaceEditor : InteractionHandler {
 		handleMat = CreateUnlitMaterial (handleCol);
 		highlightedHandleMat = CreateUnlitMaterial (highlightedHandleCol);
 		selectedHandleMat = CreateUnlitMaterial (selectedHandleCol);
-		previewSignal = Instantiate (signalPrefab);
-		previewSignal.SetInteractable (false);
-		previewSignal.gameObject.SetActive (false);
-		previewSignal.signalName = "Preview";
-		previewSignal.transform.SetParent (transform, true);
+
+		previewSignals = new ChipSignal[maxGroupSize];
+		for (int i = 0; i < maxGroupSize; i++) {
+			var previewSignal = Instantiate (signalPrefab);
+			previewSignal.SetInteractable (false);
+			previewSignal.gameObject.SetActive (false);
+			previewSignal.signalName = "Preview";
+			previewSignal.transform.SetParent (transform, true);
+			previewSignals[i] = previewSignal;
+		}
 
 		deleteButton.onClick.AddListener (Delete);
 	}
@@ -120,35 +132,103 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 			}
 
-			previewSignal.gameObject.SetActive (false);
+			HidePreviews ();
 			if (highlightedSignal == null && !isDragging) {
 				if (mouseInInputBounds) {
-					float handleY = ClampY (mousePos.y);
 
-					DrawHandle (handleY, HandleState.Highlighted);
-					float containerX = chipContainer.position.x + chipContainer.localScale.x / 2 * ((editorType == EditorType.Input) ? -1 : 1);
-					Vector3 spawnPos = new Vector3 (containerX, handleY, chipContainer.position.z + forwardDepth);
-
-					if (showPreviewSignal) {
-						previewSignal.gameObject.SetActive (true);
-						previewSignal.transform.position = spawnPos - Vector3.forward * forwardDepth;
+					if (InputHelper.AnyOfTheseKeysDown (KeyCode.Plus, KeyCode.KeypadPlus, KeyCode.Equals)) {
+						currentGroupSize = Mathf.Clamp (currentGroupSize + 1, 1, maxGroupSize);
+					} else if (InputHelper.AnyOfTheseKeysDown (KeyCode.Minus, KeyCode.KeypadMinus, KeyCode.Underscore)) {
+						currentGroupSize = Mathf.Clamp (currentGroupSize - 1, 1, maxGroupSize);
 					}
 
-					// Spawn
-					if (Input.GetMouseButtonDown (0)) {
-						ChipSignal spawnedSignal = Instantiate (signalPrefab, spawnPos, Quaternion.identity, signalHolder);
-						signals.Add (spawnedSignal);
-						SelectSignal (spawnedSignal);
-					}
+					HandleSpawning ();
+
 				}
 			}
 		}
 	}
 
+	float CalcY (float mouseY, int groupSize, int index) {
+		float centreY = mouseY;
+		float halfExtent = groupSpacing * (currentGroupSize - 1f);
+		float maxY = centreY + halfExtent + handleSize.y / 2f;
+		float minY = centreY - halfExtent - handleSize.y / 2f;
+
+		if (maxY > BoundsTop) {
+			centreY -= (maxY - BoundsTop);
+		} else if (minY < BoundsBottom) {
+			centreY += (BoundsBottom - minY);
+		}
+
+		float t = (currentGroupSize > 1) ? index / (currentGroupSize - 1f) : 0.5f;
+		t = t * 2 - 1;
+		float posY = centreY - t * halfExtent;
+		return posY;
+	}
+
+	// Handles spawning if user clicks, otherwise displays preview
+	void HandleSpawning () {
+		bool isGroup = currentGroupSize > 1;
+		float containerX = chipContainer.position.x + chipContainer.localScale.x / 2 * ((editorType == EditorType.Input) ? -1 : 1);
+		float centreY = ClampY (InputHelper.MouseWorldPos.y);
+
+		// Spawn on mouse down
+		bool spawn = Input.GetMouseButtonDown (0);
+
+		for (int i = 0; i < currentGroupSize; i++) {
+			//float t = (currentGroupSize > 1) ? i / (currentGroupSize - 1f) : 0.5f;
+			//t = t * 2 - 1;
+			//float posY = centreY - t * groupSpacing * (currentGroupSize - 1f);
+			float posY = CalcY (InputHelper.MouseWorldPos.y, currentGroupSize, i);
+			Vector3 spawnPos = new Vector3 (containerX, posY, chipContainer.position.z + forwardDepth);
+			DrawHandle (posY, HandleState.Highlighted);
+
+			// Spawn signals
+			if (spawn) {
+				ChipSignal spawnedSignal = Instantiate (signalPrefab, spawnPos, Quaternion.identity, signalHolder);
+				spawnedSignal.groupID = (isGroup) ? currentGroupID : -1;
+				signals.Add (spawnedSignal);
+				SelectSignal (spawnedSignal);
+			}
+			// Display previews 
+			else if (showPreviewSignal) {
+				previewSignals[i].gameObject.SetActive (true);
+				previewSignals[i].transform.position = spawnPos - Vector3.forward * forwardDepth;
+			}
+		}
+
+		if (spawn) {
+			if (isGroup) {
+				// Reset group size after spawning
+				currentGroupSize = 1;
+				// Generate new ID for next group
+				// This will be used to identify which signals were created together as a group
+				currentGroupID++;
+			}
+		}
+	}
+
+	void HidePreviews () {
+		for (int i = 0; i < previewSignals.Length; i++) {
+			previewSignals[i].gameObject.SetActive (false);
+		}
+	}
+
+	float BoundsTop {
+		get {
+			return transform.position.y + transform.localScale.y / 2;
+		}
+	}
+
+	float BoundsBottom {
+		get {
+			return transform.position.y - transform.localScale.y / 2f;
+		}
+	}
+
 	float ClampY (float y) {
-		float minY = transform.position.y - transform.localScale.y / 2f + handleSize.y / 2f;
-		float maxY = transform.position.y + transform.localScale.y / 2 - handleSize.y / 2f;
-		return Mathf.Clamp (y, minY, maxY);
+		return Mathf.Clamp (y, BoundsBottom + handleSize.y / 2f, BoundsTop - handleSize.y / 2f);
 	}
 
 	protected override bool CanReleaseFocus () {
@@ -167,7 +247,8 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 		deleteButton.gameObject.SetActive (false);
 		nameField.gameObject.SetActive (false);
-		previewSignal.gameObject.SetActive (false);
+		HidePreviews ();
+		currentGroupSize = 1;
 	}
 
 	void UpdateButtonAndNameField () {

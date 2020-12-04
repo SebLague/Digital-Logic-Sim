@@ -815,6 +815,7 @@ MonoBehaviour:
   renameFieldX: 2
   deleteButtonX: 0.95
   showPreviewSignal: 1
+  groupSpacing: 0.25
 --- !u!61 &4750937598926047526
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1258,6 +1259,7 @@ MonoBehaviour:
   renameFieldX: -2
   deleteButtonX: -0.95
   showPreviewSignal: 1
+  groupSpacing: 0.25
 --- !u!61 &4750937600310344741
 BoxCollider2D:
   m_ObjectHideFlags: 0
