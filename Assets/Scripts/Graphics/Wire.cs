@@ -76,10 +76,11 @@ public class Wire : MonoBehaviour {
 	}
 
 	void UpdateWirePos () {
-		const float maxSqrError = 0.001f;
+		const float maxSqrError = 0.00001f;
 		// How far are start and end points from the pins they're connected to (chip has been moved)
 		Vector2 startPointError = (Vector2) startPin.transform.position - anchorPoints[0];
 		Vector2 endPointError = (Vector2) endPin.transform.position - anchorPoints[anchorPoints.Count - 1];
+		Debug.Log (endPointError.sqrMagnitude + "  " + maxSqrError);
 
 		if (startPointError.sqrMagnitude > maxSqrError || endPointError.sqrMagnitude > maxSqrError) {
 			// If start and end points are both same offset from where they should be, can move all anchor points (entire wire)
@@ -91,6 +92,7 @@ public class Wire : MonoBehaviour {
 
 			anchorPoints[0] = startPin.transform.position;
 			anchorPoints[anchorPoints.Count - 1] = endPin.transform.position;
+			Debug.Log (endPin.transform.position);
 			UpdateSmoothedLine ();
 			UpdateCollider ();
 		}
@@ -227,7 +229,7 @@ public class Wire : MonoBehaviour {
 			Vector2 a = anchorPoints[anchorPoints.Count - 2];
 			Vector2 b = endPointWorldSpace;
 			Vector2 mid = (a + b) / 2;
-			
+
 			bool xAxisLonger = (Mathf.Abs (a.x - b.x) > Mathf.Abs (a.y - b.y));
 			if (xAxisLonger) {
 				return new Vector2 (b.x, a.y);

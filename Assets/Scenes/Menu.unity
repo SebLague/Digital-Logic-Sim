@@ -1103,7 +1103,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Version 0.22 <size=25><color=#505050>(last updated 4 Dec 2020)</color></size>
+  m_text: Version 0.23 <size=25><color=#505050>(last updated 4 Dec 2020)</color></size>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4372,18 +4372,26 @@ MonoBehaviour:
     on the right).
 
 
-    <size=header><color=header>Adding Chips and Wires</color></size>
+    <size=header><color=header>Adding Chips</color></size>
 
     From
     the bar on the bottom you can drag in chips to use as components in your current
-    chip design. Initially these will just be the built-in AND and NOT chips, but
-    new chips you create will appear there as well.
+    chip design (click multiple times to stack and place multiple chips at once).
+    Initially only the built-in AND and NOT chips will be available, but as you create
+    new chips they will appear here as well. You can delete chips by selecting them
+    (which is done either by clicking on a chip, or clicking and dragging to select
+    multiple chips) and then pressing backspace.
 
 
-    Join chips together by
-    clicking on a pin (the black dots) to start creating a wire. Click on another
-    pin to complete the connection. To see the name of a pin, hold Alt while hovering
-    over it.
+    <size=header><color=header>Adding
+    Wires</color></size>
+
+    Connect chips together by clicking on a pin (the black
+    dots) to start creating a wire. Then click on another pin to complete the connection.
+    Clicking over empty space while drawing the wire will allow you to lay out its
+    path. You can also hold shift to make the wires straight. To delete a wire, hover
+    the mouse over it and press backspace. To see the name of a pin, hold Alt while
+    hovering over it.
 
 
     <size=header><color=header>Finally...</color></size>
@@ -4481,7 +4489,7 @@ MonoBehaviour:
     colour: {r: 0.8679245, g: 0.8679245, b: 0.8679245, a: 0}
   sizes:
   - name: header
-    fontSize: 35
+    fontSize: 30
 --- !u!222 &1763289328
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4694,7 +4702,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<size=35><color=#DDDDDD>Overview</color></size>
+  m_text: '<size=30><color=#DDDDDD>Overview</color></size>
 
     You begin with two
     types of chips: AND and NOT. From these you can build anything you want.
@@ -4705,7 +4713,7 @@ MonoBehaviour:
     with.
 
 
-    <size=35><color=#DDDDDD>Inputs and Outputs</color></size>
+    <size=30><color=#DDDDDD>Inputs and Outputs</color></size>
 
     Add
     inputs to your chip by clicking on the bar on the left side of the screen.
@@ -4718,24 +4726,32 @@ MonoBehaviour:
     on the right).
 
 
-    <size=35><color=#DDDDDD>Adding Chips and Wires</color></size>
+    <size=30><color=#DDDDDD>Adding Chips</color></size>
 
     From
     the bar on the bottom you can drag in chips to use as components in your current
-    chip design. Initially these will just be the built-in AND and NOT chips, but
-    new chips you create will appear there as well.
+    chip design (click multiple times to stack and place multiple chips at once).
+    Initially only the built-in AND and NOT chips will be available, but as you create
+    new chips they will appear here as well. You can delete chips by selecting them
+    (which is done either by clicking on a chip, or clicking and dragging to select
+    multiple chips) and then pressing backspace.
 
 
-    Join chips together by
-    clicking on a pin (the black dots) to start creating a wire. Click on another
-    pin to complete the connection. To see the name of a pin, hold Alt while hovering
-    over it.
+    <size=30><color=#DDDDDD>Adding
+    Wires</color></size>
+
+    Connect chips together by clicking on a pin (the black
+    dots) to start creating a wire. Then click on another pin to complete the connection.
+    Clicking over empty space while drawing the wire will allow you to lay out its
+    path. You can also hold shift to make the wires straight. To delete a wire, hover
+    the mouse over it and press backspace. To see the name of a pin, hold Alt while
+    hovering over it.
 
 
-    <size=35><color=#DDDDDD>Finally...</color></size>
+    <size=30><color=#DDDDDD>Finally...</color></size>
 
-    You can
-    click on the inputs you''ve added to toggle them ON and OFF. The signal will
+    You
+    can click on the inputs you''ve added to toggle them ON and OFF. The signal will
     propagate through the wires and chips, up to the outputs you added. Once the
     chip is behaving how you want, click the Create button in the top left. Give
     the chip a name, and then confirm. You can then move on to making a new chip.'
@@ -4765,8 +4781,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
