@@ -36,7 +36,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 	public float groupSpacing = 1;
 
 	ChipSignal highlightedSignal;
-	List<ChipSignal> selectedSignals;
+	public List<ChipSignal> selectedSignals { get; private set; }
 	ChipSignal[] previewSignals;
 
 	BoxCollider2D inputBounds;

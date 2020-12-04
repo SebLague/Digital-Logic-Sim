@@ -1337,8 +1337,8 @@ MonoBehaviour:
   handleCol: {r: 0.22745098, g: 0.22745098, b: 0.22745098, a: 0}
   highlightedHandleCol: {r: 0.496, g: 0.496, b: 0.496, a: 0}
   selectedHandleCol: {r: 0.8962264, g: 0.8962264, b: 0.8962264, a: 0}
-  renameFieldX: 2
-  deleteButtonX: 0.95
+  renameFieldX: 1.85
+  deleteButtonX: 0.75
   showPreviewSignal: 1
   groupSpacing: 0.22
 --- !u!61 &4750937598926047526
@@ -1747,8 +1747,8 @@ MonoBehaviour:
   handleCol: {r: 0.22745098, g: 0.22745098, b: 0.22745098, a: 0}
   highlightedHandleCol: {r: 0.496, g: 0.496, b: 0.496, a: 0}
   selectedHandleCol: {r: 0.8773585, g: 0.8773585, b: 0.8773585, a: 0}
-  renameFieldX: -2
-  deleteButtonX: -0.95
+  renameFieldX: -1.85
+  deleteButtonX: -0.75
   showPreviewSignal: 1
   groupSpacing: 0.22
 --- !u!61 &4750937600310344741

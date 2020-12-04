@@ -23,7 +23,7 @@ public class DecimalDisplay : MonoBehaviour {
 
 	void UpdateDisplay () {
 		for (int i = 0; i < displayGroups.Count; i++) {
-			displayGroups[i].UpdateDisplay (transform);
+			displayGroups[i].UpdateDisplay (signalEditor);
 		}
 	}
 
@@ -50,16 +50,21 @@ public class DecimalDisplay : MonoBehaviour {
 		public ChipSignal[] signals;
 		public TMP_Text text;
 
-		public void UpdateDisplay (Transform transform) {
-			float yPos = (signals[0].transform.position.y + signals[signals.Length - 1].transform.position.y) / 2f;
-			text.transform.position = new Vector3 (transform.position.x, yPos, -0.5f);
+		public void UpdateDisplay (ChipInterfaceEditor editor) {
+			if (editor.selectedSignals.Contains (signals[0])) {
+				text.gameObject.SetActive (false);
+			} else {
+				text.gameObject.SetActive (true);
+				float yPos = (signals[0].transform.position.y + signals[signals.Length - 1].transform.position.y) / 2f;
+				text.transform.position = new Vector3 (editor.transform.position.x, yPos, -0.5f);
 
-			int decimalValue = 0;
-			for (int i = 0; i < signals.Length; i++) {
-				int signalState = signals[signals.Length - 1 - i].currentState;
-				decimalValue |= signalState << i;
+				int decimalValue = 0;
+				for (int i = 0; i < signals.Length; i++) {
+					int signalState = signals[signals.Length - 1 - i].currentState;
+					decimalValue |= signalState << i;
+				}
+				text.text = decimalValue + "";
 			}
-			text.text = decimalValue + "";
 		}
 	}
 }
