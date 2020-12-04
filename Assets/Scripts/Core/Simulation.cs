@@ -24,16 +24,23 @@ public class Simulation : MonoBehaviour {
 	}
 
 	void StepSimulation () {
+		simulationFrame++;
 		RefreshChipEditorReference ();
 
-		List<ChipSignal> inputSignals = chipEditor.inputsEditor.signals;
-		var allChips = chipEditor.chipInteraction.allChips;
-		simulationFrame++;
+		// Clear output signals
+		List<ChipSignal> outputSignals = chipEditor.outputsEditor.signals;
+		for (int i = 0; i < outputSignals.Count; i++) {
+			outputSignals[i].SetDisplayState (0);
+		}
 
+		// Init chips
+		var allChips = chipEditor.chipInteraction.allChips;
 		for (int i = 0; i < allChips.Count; i++) {
 			allChips[i].InitSimulationFrame ();
 		}
 
+		// Process inputs
+		List<ChipSignal> inputSignals = chipEditor.inputsEditor.signals;
 		// Tell all signal generators to send their signal out
 		for (int i = 0; i < inputSignals.Count; i++) {
 			((InputSignal) inputSignals[i]).SendSignal ();
