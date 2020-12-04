@@ -353,6 +353,7 @@ GameObject:
   m_Component:
   - component: {fileID: 111305409}
   - component: {fileID: 111305408}
+  - component: {fileID: 111305410}
   m_Layer: 0
   m_Name: Menu Manager
   m_TagString: Untagged
@@ -388,6 +389,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &111305410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111305407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 707e03c65a80345cf9c9e26633c5010e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &147685494
 GameObject:
   m_ObjectHideFlags: 0
@@ -1016,7 +1029,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Version 0.2 <size=25><color=#505050>(last updated 4 Dec 2020)</color></size>
+  m_text: Version 0.21 <size=25><color=#505050>(last updated 4 Dec 2020)</color></size>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3452,7 +3465,7 @@ Canvas:
   m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
