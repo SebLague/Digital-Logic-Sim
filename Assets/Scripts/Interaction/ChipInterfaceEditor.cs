@@ -21,8 +21,10 @@ public class ChipInterfaceEditor : InteractionHandler {
 	[Header ("References")]
 	public Transform chipContainer;
 	public ChipSignal signalPrefab;
+	public RectTransform propertiesUI;
 	public TMPro.TMP_InputField nameField;
 	public UnityEngine.UI.Button deleteButton;
+	public UnityEngine.UI.Toggle twosComplementToggle;
 	public Transform signalHolder;
 
 	[Header ("Appearance")]
@@ -30,8 +32,8 @@ public class ChipInterfaceEditor : InteractionHandler {
 	public Color handleCol;
 	public Color highlightedHandleCol;
 	public Color selectedHandleCol;
-	public float renameFieldX = 2;
-	public float deleteButtonX = 1;
+	public float propertiesUIX;
+	public Vector2 propertiesHeightMinMax;
 	public bool showPreviewSignal;
 	public float groupSpacing = 1;
 
@@ -78,6 +80,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 			previewSignals[i] = previewSignal;
 		}
 
+		propertiesUI.gameObject.SetActive (false);
 		deleteButton.onClick.AddListener (DeleteSelected);
 	}
 
@@ -137,7 +140,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 					}
 				}
 
-				UpdateButtonAndNameField ();
+				UpdateUIProperties ();
 
 				// Finished with selected signal, so deselect it
 				if (Input.GetKeyDown (KeyCode.Return)) {
@@ -277,23 +280,21 @@ public class ChipInterfaceEditor : InteractionHandler {
 	protected override void FocusLost () {
 		highlightedSignal = null;
 		selectedSignals.Clear ();
+		propertiesUI.gameObject.SetActive (false);
 
-		deleteButton.gameObject.SetActive (false);
-		nameField.gameObject.SetActive (false);
 		HidePreviews ();
 		currentGroupSize = 1;
 	}
 
-	void UpdateButtonAndNameField () {
+	void UpdateUIProperties () {
 		if (selectedSignals.Count > 0) {
-			//deleteButton.transform.position = Camera.main.WorldToScreenPoint (selectedSignals[0].transform.position + Vector3.right * deleteButtonX);
-			//nameField.transform.position = Camera.main.WorldToScreenPoint (selectedSignals[0].transform.position + Vector3.right * renameFieldX);
-			nameField.transform.position = selectedSignals[0].transform.position + Vector3.right * renameFieldX;
-			deleteButton.transform.position = selectedSignals[0].transform.position + Vector3.right * deleteButtonX;
+			Vector3 centre = (selectedSignals[0].transform.position + selectedSignals[selectedSignals.Count - 1].transform.position) / 2;
+			propertiesUI.transform.position = centre + Vector3.right * propertiesUIX;
 
-			// Update signal names
+			// Update signal properties
 			for (int i = 0; i < selectedSignals.Count; i++) {
 				selectedSignals[i].UpdateSignalName (nameField.text);
+				selectedSignals[i].useTwosComplement = twosComplementToggle.isOn;
 			}
 		}
 	}
@@ -350,6 +351,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 				selectedSignals.Add (signals[i]);
 			}
 		}
+		bool isGroup = selectedSignals.Count > 1;
 
 		isDragging = true;
 
@@ -362,13 +364,15 @@ public class ChipInterfaceEditor : InteractionHandler {
 			dragHandleStartY = selectedSignals[selectedSignals.Count / 2].transform.position.y;
 		}
 
-		// Name input field
-		nameField.gameObject.SetActive (true);
-		nameField.text = (selectedSignals[0]).signalName;
+		// Enable UI:
+		propertiesUI.gameObject.SetActive (true);
+		propertiesUI.sizeDelta = new Vector2 (propertiesUI.sizeDelta.x, (isGroup) ? propertiesHeightMinMax.y : propertiesHeightMinMax.x);
+		nameField.text = selectedSignals[0].signalName;
 		nameField.Select ();
-		// Delete button
-		deleteButton.gameObject.SetActive (true);
-		UpdateButtonAndNameField ();
+		nameField.caretPosition = nameField.text.Length;
+		twosComplementToggle.gameObject.SetActive (isGroup);
+		twosComplementToggle.isOn = selectedSignals[0].useTwosComplement;
+		UpdateUIProperties ();
 
 	}
 

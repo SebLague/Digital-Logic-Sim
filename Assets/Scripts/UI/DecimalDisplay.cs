@@ -58,10 +58,16 @@ public class DecimalDisplay : MonoBehaviour {
 				float yPos = (signals[0].transform.position.y + signals[signals.Length - 1].transform.position.y) / 2f;
 				text.transform.position = new Vector3 (editor.transform.position.x, yPos, -0.5f);
 
+				bool useTwosComplement = signals[0].useTwosComplement;
+
 				int decimalValue = 0;
 				for (int i = 0; i < signals.Length; i++) {
 					int signalState = signals[signals.Length - 1 - i].currentState;
-					decimalValue |= signalState << i;
+					if (useTwosComplement && i == signals.Length - 1) {
+						decimalValue |= -(signalState << i);
+					} else {
+						decimalValue |= signalState << i;
+					}
 				}
 				text.text = decimalValue + "";
 			}

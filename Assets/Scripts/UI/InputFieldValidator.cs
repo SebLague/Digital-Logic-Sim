@@ -1,12 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 public class InputFieldValidator : MonoBehaviour {
 
 	public TMP_InputField inputField;
-	public string validChars = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]";
+	public string validChars = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]<>";
 
 	void Awake () {
 		inputField.onValueChanged.AddListener (OnEdit);
