@@ -91,7 +91,6 @@ public class Wire : MonoBehaviour {
 
 			anchorPoints[0] = startPin.transform.position;
 			anchorPoints[anchorPoints.Count - 1] = endPin.transform.position;
-			Debug.Log (endPin.transform.position);
 			UpdateSmoothedLine ();
 			UpdateCollider ();
 		}
