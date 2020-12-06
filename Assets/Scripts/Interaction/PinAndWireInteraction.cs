@@ -6,13 +6,14 @@ using UnityEngine;
 public class PinAndWireInteraction : InteractionHandler {
 
 	public event System.Action onConnectionChanged;
+	public event System.Action<Pin> onMouseOverPin;
+	public event System.Action<Pin> onMouseExitPin;
 
 	enum State { None, PlacingWire }
 	public LayerMask pinMask;
 	public LayerMask wireMask;
 	public Transform wireHolder;
 	public Wire wirePrefab;
-	public PinNameDisplay pinNameDisplay;
 
 	State currentState;
 	Pin pinUnderMouse;
@@ -25,7 +26,6 @@ public class PinAndWireInteraction : InteractionHandler {
 	void Awake () {
 		allWires = new List<Wire> ();
 		wiresByChipInputPin = new Dictionary<Pin, Wire> ();
-		pinNameDisplay.gameObject.SetActive (false);
 	}
 
 	public void Init (ChipInteraction chipInteraction, ChipInterfaceEditor inputEditor, ChipInterfaceEditor outputEditor) {
@@ -39,7 +39,6 @@ public class PinAndWireInteraction : InteractionHandler {
 
 		if (!mouseOverUI) {
 			HandlePinHighlighting ();
-			HandlePinNameDisplay ();
 
 			switch (currentState) {
 				case State.None:
@@ -191,25 +190,19 @@ public class PinAndWireInteraction : InteractionHandler {
 			if (pinUnderMouse != newPinUnderMouse) {
 				if (pinUnderMouse != null) {
 					pinUnderMouse.MouseExit ();
+					onMouseExitPin?.Invoke (pinUnderMouse);
 				}
 				newPinUnderMouse.MouseEnter ();
 				pinUnderMouse = newPinUnderMouse;
+				onMouseOverPin?.Invoke (pinUnderMouse);
 
 			}
 		} else {
 			if (pinUnderMouse) {
 				pinUnderMouse.MouseExit ();
+				onMouseExitPin?.Invoke (pinUnderMouse);
 				pinUnderMouse = null;
 			}
-		}
-	}
-
-	void HandlePinNameDisplay () {
-		if (pinUnderMouse && Input.GetKey (KeyCode.LeftAlt)) {
-			pinNameDisplay.gameObject.SetActive (true);
-			pinNameDisplay.Set (pinUnderMouse);
-		} else {
-			pinNameDisplay.gameObject.SetActive (false);
 		}
 	}
 

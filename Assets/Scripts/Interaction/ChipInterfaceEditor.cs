@@ -289,7 +289,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 	void UpdateUIProperties () {
 		if (selectedSignals.Count > 0) {
 			Vector3 centre = (selectedSignals[0].transform.position + selectedSignals[selectedSignals.Count - 1].transform.position) / 2;
-			propertiesUI.transform.position = centre + Vector3.right * propertiesUIX;
+			propertiesUI.transform.position = new Vector3 (centre.x + propertiesUIX, centre.y, propertiesUI.transform.position.z);
 
 			// Update signal properties
 			for (int i = 0; i < selectedSignals.Count; i++) {

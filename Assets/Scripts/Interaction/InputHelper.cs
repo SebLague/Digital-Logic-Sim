@@ -41,4 +41,13 @@ public static class InputHelper {
 		return false;
 	}
 
+	public static bool AnyOfTheseKeysHeld (params KeyCode[] keys) {
+		for (int i = 0; i < keys.Length; i++) {
+			if (Input.GetKey (keys[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
