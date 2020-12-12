@@ -5,16 +5,25 @@ using UnityEngine;
 
 public static class ChipLoader {
 
-	public static void LoadAllChips (string[] chipPaths, Manager manager) {
+	public static SavedChip[] GetAllSavedChips(string[] chipPaths)
+    {
 		SavedChip[] savedChips = new SavedChip[chipPaths.Length];
 
 		// Read saved chips from file
-		for (int i = 0; i < chipPaths.Length; i++) {
-			using (StreamReader reader = new StreamReader (chipPaths[i])) {
-				string chipSaveString = reader.ReadToEnd ();
-				savedChips[i] = JsonUtility.FromJson<SavedChip> (chipSaveString);
+		for (int i = 0; i < chipPaths.Length; i++)
+		{
+			using (StreamReader reader = new StreamReader(chipPaths[i]))
+			{
+				string chipSaveString = reader.ReadToEnd();
+				savedChips[i] = JsonUtility.FromJson<SavedChip>(chipSaveString);
 			}
 		}
+		return savedChips;
+	}
+
+	public static void LoadAllChips (string[] chipPaths, Manager manager) 
+	{
+		SavedChip[] savedChips = GetAllSavedChips(chipPaths);
 
 		SortChipsByOrderOfCreation (ref savedChips);
 		// Maintain dictionary of loaded chips (initially just the built-in chips)
