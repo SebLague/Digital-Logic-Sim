@@ -15,14 +15,26 @@ public class ChipBarUI : MonoBehaviour {
 	public List<string> hideList;
 	public Scrollbar horizontalScroll;
 
+	public List<CustomButton> customButton = new List<CustomButton>();
+
 	void Awake () {
 		manager = FindObjectOfType<Manager> ();
 		manager.customChipCreated += AddChipButton;
-		for (int i = 0; i < manager.builtinChips.Length; i++) {
-			AddChipButton (manager.builtinChips[i]);
-		}
+		ReloadBar();
+	}
 
-		Canvas.ForceUpdateCanvases ();
+	public void ReloadBar()
+    {	
+		foreach(CustomButton button in customButton)
+        {
+			Destroy(button.gameObject);
+		}
+		customButton.Clear();
+		for (int i = 0; i < manager.builtinChips.Length; i++)
+		{
+			AddChipButton(manager.builtinChips[i]);
+		}
+		Canvas.ForceUpdateCanvases();
 	}
 
 	void LateUpdate () {
@@ -57,6 +69,8 @@ public class ChipBarUI : MonoBehaviour {
 		// Set button event
 		//button.onClick.AddListener (() => manager.SpawnChip (chip));
 		button.onPointerDown += (() => manager.SpawnChip (chip));
+
+		customButton.Add(button);
 	}
 
 }

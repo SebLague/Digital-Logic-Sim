@@ -59,10 +59,7 @@ public class CreateMenu : MonoBehaviour {
 	}
 
 	bool IsValidChipName (string chipName) {
-		if (chipName == "AND" || chipName == "NOT" || chipName.Length == 0) {
-			return false;
-		}
-		return true;
+		return chipName != "AND" && chipName != "NOT" && chipName.Length != 0;
 	}
 
 	void OpenMenu () {

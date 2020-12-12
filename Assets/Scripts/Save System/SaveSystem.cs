@@ -16,13 +16,22 @@ public static class SaveSystem {
 		Directory.CreateDirectory (CurrentSaveProfileWireLayoutDirectoryPath);
 	}
 
+	public static string[] GetChipSavePaths()
+    {
+		return Directory.GetFiles(CurrentSaveProfileDirectoryPath, "*" + fileExtension);
+	}
+
 	public static void LoadAll (Manager manager) {
 		// Load any saved chips
-		var sw = System.Diagnostics.Stopwatch.StartNew ();
-		string[] chipSavePaths = Directory.GetFiles (CurrentSaveProfileDirectoryPath, "*" + fileExtension);
-		ChipLoader.LoadAllChips (chipSavePaths, manager);
+		var sw = System.Diagnostics.Stopwatch.StartNew();
+		ChipLoader.LoadAllChips (GetChipSavePaths(), manager);
 		Debug.Log ("Load time: " + sw.ElapsedMilliseconds);
+	}
 
+	public static SavedChip[] GetAllSavedChips()
+	{
+		// Load any saved chips
+		return ChipLoader.GetAllSavedChips(GetChipSavePaths());
 	}
 
 	public static string GetPathToSaveFile (string saveFileName) {
