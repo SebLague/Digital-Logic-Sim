@@ -97,7 +97,7 @@ public class Wire : MonoBehaviour {
 	}
 
 	void SetWireCol () {
-		if(startPin.pinBits != Pin.PinBits.Simple)
+		if(startPin.wireType != Pin.WireType.Simple)
         {
 			mat.color = palette.busColor;
 			return;

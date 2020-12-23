@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CustomChip : Chip {
@@ -7,6 +8,18 @@ public class CustomChip : Chip {
 
 	public InputSignal[] inputSignals;
 	public OutputSignal[] outputSignals;
+
+	public void ApplyWireModes()
+    {
+        foreach (var (pin, sig) in inputPins.Zip(inputSignals, (x, y) => (x, y)))
+        {
+			pin.wireType = sig.wireType;
+        }
+		foreach (var (pin, sig) in outputPins.Zip(outputSignals, (x, y) => (x, y)))
+		{
+			pin.wireType = sig.wireType;
+		}
+	}
 
 	public override void ReceiveInputSignal (Pin pin) {
 		base.ReceiveInputSignal (pin);

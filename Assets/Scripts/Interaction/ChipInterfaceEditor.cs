@@ -91,14 +91,14 @@ public class ChipInterfaceEditor : InteractionHandler {
     {
 		foreach (var pin in selectedSignals.SelectMany(x => x.inputPins))
 		{
-			pin.pinBits = (Pin.PinBits)mode;
+			pin.wireType = (Pin.WireType)mode;
 		}
 		foreach (InputSignal signal in selectedSignals)
         {
 			var pin = signal.outputPins[0];
 			if (pin == null)
 				return;
-			pin.pinBits = (Pin.PinBits)mode;
+			pin.wireType = (Pin.WireType)mode;
 			if (pin.State == 1)
 				signal.ToggleActive();
 		}

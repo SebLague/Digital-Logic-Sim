@@ -36,7 +36,7 @@ public class InputSignal : ChipSignal {
 	}
 
 	void OnMouseDown () {
-		if(outputPins.Any(x => x.pinBits == Pin.PinBits.Simple))
+		if(outputPins.Any(x => x.wireType == Pin.WireType.Simple))
 			ToggleActive ();
 	}
 }
