@@ -87,15 +87,19 @@ public class ChipInterfaceEditor : InteractionHandler {
 		modeDropdown.onValueChanged.AddListener(ModeChanged);
 	}
 
+	// Event handler when changed input or output pin wire type
     private void ModeChanged(int mode)
     {
+		if (selectedSignals.Count == 0)
+			return;
+
+		//Change pin wire mode
 		foreach (var pin in selectedSignals.SelectMany(x => x.inputPins))
 		{
 			pin.wireType = (Pin.WireType)mode;
 		}
-		if (selectedSignals.Count == 0)
-			return;
 
+		//Turn off input pins
 		if (selectedSignals[0] is InputSignal)
         {
 			foreach (InputSignal signal in selectedSignals)
@@ -103,7 +107,6 @@ public class ChipInterfaceEditor : InteractionHandler {
 				var pin = signal.outputPins[0];
 				if (pin == null)
 					return;
-				pin.wireType = (Pin.WireType)mode;
 				if (pin.State == 1)
 					signal.ToggleActive();
 			}

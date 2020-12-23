@@ -102,6 +102,7 @@ public class Pin : MonoBehaviour {
 	}
 
 	public static bool IsValidConnection (Pin pinA, Pin pinB) {
+		// Connection failes when pin wire types are different
 		if (pinA.wireType != pinB.wireType)
 			return false;
 		// Connection is valid if one pin is an output pin, and the other is an input pin

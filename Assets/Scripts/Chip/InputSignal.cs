@@ -36,7 +36,8 @@ public class InputSignal : ChipSignal {
 	}
 
 	void OnMouseDown () {
-		if(outputPins.Any(x => x.wireType == Pin.WireType.Simple))
+		// Allow only to click on single wires, not on bus wires
+		if(outputPins.All(x => x.wireType == Pin.WireType.Simple))
 			ToggleActive ();
 	}
 }
