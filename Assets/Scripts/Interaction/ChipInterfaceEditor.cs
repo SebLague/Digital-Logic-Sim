@@ -88,8 +88,8 @@ public class ChipInterfaceEditor : InteractionHandler {
 	}
 
 	// Event handler when changed input or output pin wire type
-    private void ModeChanged(int mode)
-    {
+	private void ModeChanged(int mode)
+	{
 		if (selectedSignals.Count == 0)
 			return;
 
@@ -101,7 +101,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 		//Turn off input pins
 		if (selectedSignals[0] is InputSignal)
-        {
+		{
 			foreach (InputSignal signal in selectedSignals)
 			{
 				var pin = signal.outputPins[0];
@@ -110,11 +110,11 @@ public class ChipInterfaceEditor : InteractionHandler {
 				if (pin.State == 1)
 					signal.ToggleActive();
 			}
-        }
+		}
 
 	}
 
-    public override void OrderedUpdate () {
+	public override void OrderedUpdate () {
 		if (!InputHelper.MouseOverUIObject ()) {
 			UpdateColours ();
 			HandleInput ();

@@ -7,8 +7,8 @@ using UnityEngine.XR;
 
 namespace Assets.Scripts.Chip
 {
-    public class BusEncoder : BuiltinChip
-    {
+	public class BusEncoder : BuiltinChip
+	{
 		protected override void Awake()
 		{
 			base.Awake();
@@ -18,10 +18,10 @@ namespace Assets.Scripts.Chip
 		{
 			int outputSignal = 0;
 			foreach(var inputState in inputPins.Select(x => x.State))
-            {
+			{
 				outputSignal <<= 1;
 				outputSignal |= inputState;
-            }
+			}
 			outputPins[0].ReceiveSignal(outputSignal);
 		}
 	}

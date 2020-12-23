@@ -97,10 +97,10 @@ public class Wire : MonoBehaviour {
 	void SetWireCol () {
 		//Fix color for bus wires
 		if(startPin.wireType != Pin.WireType.Simple)
-        {
+		{
 			mat.color = palette.busColor;
 			return;
-        }
+		}
 
 		if (wireConnected) {
 			Color onCol = palette.onCol;
