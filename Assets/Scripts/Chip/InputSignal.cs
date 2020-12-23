@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 // Provides input signal (0 or 1) to a chip.
 // When designing a chip, this input signal can be manually set to 0 or 1 by the player.
@@ -35,6 +36,7 @@ public class InputSignal : ChipSignal {
 	}
 
 	void OnMouseDown () {
-		ToggleActive ();
+		if(outputPins.Any(x => x.pinBits == Pin.PinBits.Simple))
+			ToggleActive ();
 	}
 }

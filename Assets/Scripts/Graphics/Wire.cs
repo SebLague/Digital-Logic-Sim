@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class Wire : MonoBehaviour {
 
 	public Material simpleMat;
-
 	LineRenderer lineRenderer;
 	public Color editCol;
 	public Palette palette;
@@ -97,6 +97,12 @@ public class Wire : MonoBehaviour {
 	}
 
 	void SetWireCol () {
+		if(startPin.pinBits != Pin.PinBits.Simple)
+        {
+			mat.color = palette.busColor;
+			return;
+        }
+
 		if (wireConnected) {
 			Color onCol = palette.onCol;
 			Color offCol = palette.offCol;

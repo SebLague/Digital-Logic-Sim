@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 // Allows player to add/remove/move/rename inputs or outputs of a chip.
@@ -25,6 +26,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 	public TMPro.TMP_InputField nameField;
 	public UnityEngine.UI.Button deleteButton;
 	public UnityEngine.UI.Toggle twosComplementToggle;
+	public TMPro.TMP_Dropdown modeDropdown;
 	public Transform signalHolder;
 
 	[Header ("Appearance")]
@@ -82,9 +84,27 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 		propertiesUI.gameObject.SetActive (false);
 		deleteButton.onClick.AddListener (DeleteSelected);
+		modeDropdown.onValueChanged.AddListener(ModeChanged);
 	}
 
-	public override void OrderedUpdate () {
+    private void ModeChanged(int mode)
+    {
+		foreach (var pin in selectedSignals.SelectMany(x => x.inputPins))
+		{
+			pin.pinBits = (Pin.PinBits)mode;
+		}
+		foreach (InputSignal signal in selectedSignals)
+        {
+			var pin = signal.outputPins[0];
+			if (pin == null)
+				return;
+			pin.pinBits = (Pin.PinBits)mode;
+			if (pin.State == 1)
+				signal.ToggleActive();
+		}
+	}
+
+    public override void OrderedUpdate () {
 		if (!InputHelper.MouseOverUIObject ()) {
 			UpdateColours ();
 			HandleInput ();
@@ -108,6 +128,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 		if (HasFocus) {
 
 			highlightedSignal = GetSignalUnderMouse ();
+
 
 			// If a signal is highlighted (mouse is over its handle), then select it on mouse press
 			if (highlightedSignal) {
@@ -372,6 +393,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 		nameField.caretPosition = nameField.text.Length;
 		twosComplementToggle.gameObject.SetActive (isGroup);
 		twosComplementToggle.isOn = selectedSignals[0].useTwosComplement;
+		modeDropdown.gameObject.SetActive(!isGroup);
 		UpdateUIProperties ();
 
 	}

@@ -3,8 +3,10 @@ using UnityEngine;
 
 public class Pin : MonoBehaviour {
 
+	public enum PinBits { Simple, Bus4, Bus8, Bus16, Bus32 }
 	public enum PinType { ChipInput, ChipOutput }
 	public PinType pinType;
+	public PinBits pinBits;
 	// The chip that this pin is attached to (either as an input or output terminal)
 	public Chip chip;
 	public string pinName;
@@ -100,6 +102,8 @@ public class Pin : MonoBehaviour {
 	}
 
 	public static bool IsValidConnection (Pin pinA, Pin pinB) {
+		if (pinA.pinBits != pinB.pinBits)
+			return false;
 		// Connection is valid if one pin is an output pin, and the other is an input pin
 		return pinA.pinType != pinB.pinType;
 	}
