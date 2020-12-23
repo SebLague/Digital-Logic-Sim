@@ -93,15 +93,22 @@ public class ChipInterfaceEditor : InteractionHandler {
 		{
 			pin.wireType = (Pin.WireType)mode;
 		}
-		foreach (InputSignal signal in selectedSignals)
+		if (selectedSignals.Count == 0)
+			return;
+
+		if (selectedSignals[0] is InputSignal)
         {
-			var pin = signal.outputPins[0];
-			if (pin == null)
-				return;
-			pin.wireType = (Pin.WireType)mode;
-			if (pin.State == 1)
-				signal.ToggleActive();
-		}
+			foreach (InputSignal signal in selectedSignals)
+			{
+				var pin = signal.outputPins[0];
+				if (pin == null)
+					return;
+				pin.wireType = (Pin.WireType)mode;
+				if (pin.State == 1)
+					signal.ToggleActive();
+			}
+        }
+
 	}
 
     public override void OrderedUpdate () {

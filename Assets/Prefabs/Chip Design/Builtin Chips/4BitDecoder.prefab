@@ -82,7 +82,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pinType: 0
-  pinBits: 1
+  wireType: 1
   chip: {fileID: 6632021948943085525}
   pinName: IN
   cyclic: 0
@@ -199,7 +199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pinType: 1
-  pinBits: 0
+  wireType: 0
   chip: {fileID: 6632021948943085525}
   pinName: OUT4
   cyclic: 0
@@ -416,7 +416,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pinType: 1
-  pinBits: 0
+  wireType: 0
   chip: {fileID: 6632021948943085525}
   pinName: OUT1
   cyclic: 0
@@ -644,7 +644,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pinType: 1
-  pinBits: 0
+  wireType: 0
   chip: {fileID: 6632021948943085525}
   pinName: OUT3
   cyclic: 0
@@ -761,7 +761,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pinType: 1
-  pinBits: 0
+  wireType: 0
   chip: {fileID: 6632021948943085525}
   pinName: OUT2
   cyclic: 0
