@@ -93,13 +93,13 @@ public class ChipInterfaceEditor : InteractionHandler {
 		if (selectedSignals.Count == 0)
 			return;
 
-		//Change pin wire mode
+		//Change output pin wire mode
 		foreach (var pin in selectedSignals.SelectMany(x => x.inputPins))
 		{
 			pin.wireType = (Pin.WireType)mode;
 		}
 
-		//Turn off input pins
+		//Change input pin wire mode
 		if (selectedSignals[0] is InputSignal)
 		{
 			foreach (InputSignal signal in selectedSignals)
@@ -107,11 +107,13 @@ public class ChipInterfaceEditor : InteractionHandler {
 				var pin = signal.outputPins[0];
 				if (pin == null)
 					return;
+				pin.wireType = (Pin.WireType)mode;
+				//Turn off input pin
 				if (pin.State == 1)
 					signal.ToggleActive();
 			}
 		}
-
+		//modeDropdown.SetValueWithoutNotify(0);
 	}
 
 	public override void OrderedUpdate () {
@@ -377,6 +379,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 	void SelectSignal (ChipSignal signalToDrag) {
 		// Dragging
 		selectedSignals.Clear ();
+
 		for (int i = 0; i < signals.Count; i++) {
 			if (signals[i] == signalToDrag || ChipSignal.InSameGroup (signals[i], signalToDrag)) {
 				selectedSignals.Add (signals[i]);
@@ -385,6 +388,20 @@ public class ChipInterfaceEditor : InteractionHandler {
 		bool isGroup = selectedSignals.Count > 1;
 
 		isDragging = true;
+
+		var wireType = Pin.WireType.Simple;
+		if (selectedSignals[0] is InputSignal)
+		{
+			var signal = selectedSignals[0];
+			var pin = signal.outputPins[0];
+			wireType = pin.wireType;
+		}
+		if (selectedSignals[0] is OutputSignal)
+		{
+			var signal = selectedSignals[0];
+			var pin = signal.inputPins[0];
+			wireType = pin.wireType;
+		}
 
 		dragMouseStartY = InputHelper.MouseWorldPos.y;
 		if (selectedSignals.Count % 2 == 0) {
@@ -404,8 +421,9 @@ public class ChipInterfaceEditor : InteractionHandler {
 		twosComplementToggle.gameObject.SetActive (isGroup);
 		twosComplementToggle.isOn = selectedSignals[0].useTwosComplement;
 		modeDropdown.gameObject.SetActive(!isGroup);
-		UpdateUIProperties ();
 
+		modeDropdown.SetValueWithoutNotify((int)wireType);
+		UpdateUIProperties ();
 	}
 
 	void DeleteSelected () {
