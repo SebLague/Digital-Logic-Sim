@@ -50,10 +50,12 @@ public class ChipEditor : MonoBehaviour {
 		// Load component chips
 		for (int i = 0; i < saveData.componentChips.Length; i++) {
 			Chip componentChip = saveData.componentChips[i];
-			if (componentChip as InputSignal) {
-				inputsEditor.LoadSignal (componentChip as InputSignal);
-			} else if (componentChip as OutputSignal) {
-				outputsEditor.LoadSignal (componentChip as OutputSignal);
+			if (componentChip is InputSignal inp) {
+				inp.wireType = inp.outputPins[0].wireType;
+				inputsEditor.LoadSignal (inp);
+			} else if (componentChip is OutputSignal outp) {
+				outp.wireType = outp.inputPins[0].wireType;
+				outputsEditor.LoadSignal (outp);
 			} else {
 				chipInteraction.LoadChip (componentChip);
 			}

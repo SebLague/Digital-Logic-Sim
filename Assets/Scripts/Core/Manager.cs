@@ -68,6 +68,9 @@ public class Manager : MonoBehaviour {
 	}
 
 	public void SpawnChip (Chip chip) {
+		if (chip is CustomChip custom)
+			custom.ApplyWireModes();
+
 		activeChipEditor.chipInteraction.SpawnChip (chip);
 	}
 
