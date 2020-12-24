@@ -49,7 +49,7 @@ MonoBehaviour:
   pinType: 0
   wireType: 0
   chip: {fileID: 7051442128332312624}
-  pinName: IN1
+  pinName: IN5
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -888,7 +888,7 @@ MonoBehaviour:
   pinType: 0
   wireType: 0
   chip: {fileID: 7051442128332312624}
-  pinName: IN3
+  pinName: IN7
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -1297,7 +1297,7 @@ MonoBehaviour:
   pinType: 0
   wireType: 0
   chip: {fileID: 7051442128332312624}
-  pinName: IN2
+  pinName: IN6
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -1414,7 +1414,7 @@ MonoBehaviour:
   pinType: 0
   wireType: 0
   chip: {fileID: 7051442128332312624}
-  pinName: IN4
+  pinName: IN8
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}

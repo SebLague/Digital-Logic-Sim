@@ -49,7 +49,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT4
+  pinName: OUT13
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -166,7 +166,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT4
+  pinName: OUT8
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -283,7 +283,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT3
+  pinName: OUT11
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -564,7 +564,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT4
+  pinName: OUT15
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -798,7 +798,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT2
+  pinName: OUT10
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -915,7 +915,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT4
+  pinName: OUT7
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -1144,7 +1144,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT1
+  pinName: OUT9
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -1261,7 +1261,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT4
+  pinName: OUT16
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -1378,7 +1378,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT4
+  pinName: OUT12
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -1612,7 +1612,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT4
+  pinName: OUT14
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -1808,7 +1808,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT4
+  pinName: OUT5
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
@@ -2191,7 +2191,7 @@ MonoBehaviour:
   pinType: 1
   wireType: 0
   chip: {fileID: 6632021948943085525}
-  pinName: OUT4
+  pinName: OUT6
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
