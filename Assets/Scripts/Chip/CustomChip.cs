@@ -14,11 +14,11 @@ public class CustomChip : Chip {
 	{
 		foreach (var (pin, sig) in inputPins.Zip(inputSignals, (x, y) => (x, y)))
 		{
-			pin.wireType = sig.wireType;
+			pin.wireType = sig.outputPins[0].wireType;
 		}
 		foreach (var (pin, sig) in outputPins.Zip(outputSignals, (x, y) => (x, y)))
 		{
-			pin.wireType = sig.wireType;
+			pin.wireType = sig.inputPins[0].wireType;
 		}
 	}
 
