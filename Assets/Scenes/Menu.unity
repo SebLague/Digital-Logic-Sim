@@ -1166,10 +1166,10 @@ RectTransform:
   m_Father: {fileID: 924983195}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -261, y: 24.00002}
-  m_SizeDelta: {x: 491.95654, y: 47.9095}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 838.6, y: -4.30011}
+  m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &568398903
 MonoBehaviour:
@@ -1300,10 +1300,10 @@ RectTransform:
   m_Father: {fileID: 924983195}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 202.8, y: 23.999975}
-  m_SizeDelta: {x: 388.69128, y: 47.909546}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -752, y: -4.299975}
+  m_SizeDelta: {x: 392.20923, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &594853820
 MonoBehaviour:
@@ -1522,11 +1522,11 @@ RectTransform:
   m_Father: {fileID: 1360311115}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -100, y: 185}
-  m_Pivot: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 438.9}
+  m_SizeDelta: {x: 200, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &616973204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1573,12 +1573,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 133.15
-  m_fontSizeBase: 160
+  m_fontSize: 165
+  m_fontSizeBase: 165
   m_fontWeight: 400
-  m_enableAutoSizing: 1
-  m_fontSizeMin: 130
-  m_fontSizeMax: 165
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -2231,10 +2231,10 @@ RectTransform:
   m_Father: {fileID: 1360311115}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -0.00018310547, y: 23.954956}
-  m_SizeDelta: {x: -0.00024414062, y: 47.909546}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -0.00067139, y: -515.7}
+  m_SizeDelta: {x: 1920.0018, y: 47.909546}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &924983196
 MonoBehaviour:
@@ -2681,9 +2681,9 @@ Camera:
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.10918477
+    x: 0.0002952218
     y: 0
-    width: 0.78163046
+    width: 0.99940956
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
