@@ -2248,9 +2248,9 @@ Camera:
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.0002952218
+    x: 0.018328607
     y: 0
-    width: 0.99940956
+    width: 0.9633428
     height: 1
   near clip plane: 0.3
   far clip plane: 1500
@@ -5224,6 +5224,7 @@ MonoBehaviour:
   - {fileID: 1267900139923996690, guid: b19a100a3d81b4c6e9a0c3c1362706c3, type: 3}
   - {fileID: 4370981688201696047, guid: fecc938b0c660450ba39ad175f13ffc0, type: 3}
   - {fileID: 894826051406503273, guid: 808e12d27921848a59bac447b93aec0f, type: 3}
+  - {fileID: 115530211412355723, guid: 65fccb77ce2e8b141be2883a450bd104, type: 3}
 --- !u!4 &1830893909
 Transform:
   m_ObjectHideFlags: 0
@@ -6365,7 +6366,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 371857214}
   m_HandleRect: {fileID: 371857213}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
