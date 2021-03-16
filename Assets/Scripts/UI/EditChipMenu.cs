@@ -52,7 +52,7 @@ public class EditChipMenu : MonoBehaviour
         nameBeforeChanging = chip.chipName;
         doneButton.interactable = true;
         deleteButton.interactable = ChipSaver.IsSafeToDelete(nameBeforeChanging);
-        viewButton.interactable = IsValidChipName(chip.chipName);
+        viewButton.interactable = ChipSaver.IsSafeToDelete(nameBeforeChanging);
         focused = true;
     }
 
@@ -89,7 +89,11 @@ public class EditChipMenu : MonoBehaviour
 
     public bool IsValidChipName(string chipName)
     {
-        return chipName != "AND" && chipName != "NOT" && chipName.Length != 0;
+        return chipName != "AND" && 
+               chipName != "NOT" &&
+               chipName != "XOR" &&
+               chipName != "OR"  &&
+               chipName.Length != 0;
     }
 
     public void DeleteChip()

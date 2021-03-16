@@ -43,7 +43,7 @@ public static class ChipSaver {
 
 	public static bool IsSafeToDelete(string chipName)
 	{
-		if (chipName == "AND" || chipName == "NOT")
+		if (chipName == "AND" || chipName == "NOT"  || chipName == "OR"  || chipName == "XOR")
 		{
 			return false;
 		}
