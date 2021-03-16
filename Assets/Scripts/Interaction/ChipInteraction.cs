@@ -126,7 +126,8 @@ public class ChipInteraction : InteractionHandler {
 
 	void HandleDeletion () {
 		// Delete any selected chips
-		if (InputHelper.AnyOfTheseKeysDown (KeyCode.Backspace, KeyCode.Delete)) {
+		if (InputHelper.AnyOfTheseKeysDown (KeyCode.Backspace, KeyCode.Delete) ||
+			Input.GetMouseButton(2)) {
 			for (int i = selectedChips.Count - 1; i >= 0; i--) {
 				DeleteChip (selectedChips[i]);
 				selectedChips.RemoveAt (i);
