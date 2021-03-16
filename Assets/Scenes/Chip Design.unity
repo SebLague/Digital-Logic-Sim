@@ -2248,10 +2248,10 @@ Camera:
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.0002952218
-    y: 0
-    width: 0.99940956
-    height: 1
+    x: 0
+    y: 0.022436857
+    width: 1
+    height: 0.9551263
   near clip plane: 0.3
   far clip plane: 1500
   field of view: 60
@@ -7183,7 +7183,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 133.05347, y: 44.79991}
+  m_SizeDelta: {x: 102.29413, y: 44.79991}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5803949136508767239
 MonoBehaviour:
@@ -7706,7 +7706,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: CREATE
+  m_text: SAVE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
