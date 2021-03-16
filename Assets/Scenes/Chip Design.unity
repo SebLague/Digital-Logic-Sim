@@ -474,6 +474,7 @@ GameObject:
   - component: {fileID: 110983297}
   - component: {fileID: 110983299}
   - component: {fileID: 110983298}
+  - component: {fileID: 110983300}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -543,6 +544,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 110983296}
   m_CullTransparentMesh: 0
+--- !u!61 &110983300
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 110983296}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 308.7986, y: 289.6339}
+  m_EdgeRadius: 0
 --- !u!1 &146413473
 GameObject:
   m_ObjectHideFlags: 0
@@ -1793,7 +1820,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 710308878}
   m_OnClick:
     m_PersistentCalls:
@@ -2888,10 +2915,10 @@ Camera:
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.099384844
-    y: 0
-    width: 0.8012303
-    height: 1
+    x: 0
+    y: 0.021874994
+    width: 1
+    height: 0.95625
   near clip plane: 0.3
   far clip plane: 1500
   field of view: 60
@@ -4296,6 +4323,7 @@ MonoBehaviour:
   chipNameField: {fileID: 2046203511}
   doneButton: {fileID: 288326063}
   deleteButton: {fileID: 1697958801}
+  viewButton: {fileID: 710308877}
   panel: {fileID: 110983296}
   chipBarUI: {fileID: 56665579}
 --- !u!114 &1315485476
@@ -8130,7 +8158,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 371857214}
   m_HandleRect: {fileID: 371857213}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

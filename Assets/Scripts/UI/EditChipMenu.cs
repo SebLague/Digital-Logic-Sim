@@ -13,6 +13,7 @@ public class EditChipMenu : MonoBehaviour
     public TMP_InputField chipNameField;
     public Button doneButton;
     public Button deleteButton;
+    public Button viewButton;
     public GameObject panel;
     public ChipBarUI chipBarUI;
 
@@ -20,6 +21,7 @@ public class EditChipMenu : MonoBehaviour
     private string nameBeforeChanging;
 
     private bool init = false;
+    private bool focused = false;
 
     public void Init()
     {
@@ -31,7 +33,7 @@ public class EditChipMenu : MonoBehaviour
         chipNameField.onValueChanged.AddListener(ChipNameFieldChanged);
         doneButton.onClick.AddListener(FinishCreation);
         deleteButton.onClick.AddListener(DeleteChip);
-        UnityEngine.Debug.Log("Adding listener");
+        viewButton.onClick.AddListener(ViewChip);
         manager = FindObjectOfType<Manager>();
         FindObjectOfType<ChipInteraction>().editChipMenu = this;
         panel.gameObject.SetActive(false);
@@ -50,6 +52,8 @@ public class EditChipMenu : MonoBehaviour
         nameBeforeChanging = chip.chipName;
         doneButton.interactable = true;
         deleteButton.interactable = ChipSaver.IsSafeToDelete(nameBeforeChanging);
+        viewButton.interactable = IsValidChipName(chip.chipName);
+        focused = true;
     }
 
     public void ChipNameFieldChanged(string value)
@@ -115,6 +119,31 @@ public class EditChipMenu : MonoBehaviour
     public void CloseEditChipMenu()
     {
         panel.gameObject.SetActive(false);
+        focused = false;
     }
 
+    public void ViewChip()
+    {
+
+    }
+
+    public void Update()
+    {
+        if (focused) {
+            if (Input.GetMouseButtonDown(0) || 
+                Input.GetMouseButtonDown(1) ||
+                Input.GetMouseButtonDown(2))
+            {
+                Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
+
+                if(hit.collider != null) {
+                    // If click is outside the panel
+                    if (hit.collider.name != panel.name) {
+                        CloseEditChipMenu();
+                    }
+                }
+            }
+        }
+    }
 }
