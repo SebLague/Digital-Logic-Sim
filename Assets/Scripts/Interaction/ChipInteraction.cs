@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class ChipInteraction : InteractionHandler {
@@ -14,6 +15,8 @@ public class ChipInteraction : InteractionHandler {
 	public float selectionBoundsBorderPadding = 0.1f;
 	public Color selectionBoxCol;
 	public Color invalidPlacementCol;
+
+	public EditChipMenu editChipMenu;
 
 	const float dragDepth = -50;
 	const float chipDepth = -0.2f;
@@ -32,6 +35,8 @@ public class ChipInteraction : InteractionHandler {
 		selectedChips = new List<Chip> ();
 		allChips = new List<Chip> ();
 		MeshShapeCreator.CreateQuadMesh (ref selectionMesh);
+		editChipMenu = GameObject.Find("Edit Chip Menu").GetComponent <EditChipMenu> ();
+		editChipMenu.Init();
 	}
 
 	public override void OrderedUpdate () {
@@ -62,16 +67,24 @@ public class ChipInteraction : InteractionHandler {
 	public void SpawnChip (Chip chipPrefab) {
 		RequestFocus ();
 		if (HasFocus) {
-			currentState = State.PlacingNewChips;
-
-			if (newChipsToPlace.Count == 0) {
-				selectedChips.Clear ();
+			if (Input.GetMouseButtonDown(0))
+			{
+				// Spawn chip
+				currentState = State.PlacingNewChips;
+				if (newChipsToPlace.Count == 0)
+				{
+					selectedChips.Clear();
+				}
+				var newChip = Instantiate(chipPrefab, parent: chipHolder);
+				newChip.gameObject.SetActive(true);
+				selectedChips.Add(newChip);
+				newChipsToPlace.Add(newChip);
 			}
-
-			var newChip = Instantiate (chipPrefab, parent : chipHolder);
-			newChip.gameObject.SetActive (true);
-			selectedChips.Add (newChip);
-			newChipsToPlace.Add (newChip);
+			else if (Input.GetMouseButtonDown(1))
+			{
+				// Open chip edit menu
+				editChipMenu.EditChip(chipPrefab);
+			}
 		}
 	}
 
@@ -286,11 +299,7 @@ public class ChipInteraction : InteractionHandler {
 	}
 
 	protected override bool CanReleaseFocus () {
-		if (currentState == State.PlacingNewChips || currentState == State.MovingOldChips) {
-
-			return false;
-		}
-		return true;
+		return currentState != State.PlacingNewChips && currentState != State.MovingOldChips;
 	}
 
 	protected override void FocusLost () {
