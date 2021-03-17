@@ -53,7 +53,7 @@ public class EditChipMenu : MonoBehaviour
         nameBeforeChanging = chip.chipName;
         doneButton.interactable = true;
         deleteButton.interactable = ChipSaver.IsSafeToDelete(nameBeforeChanging);
-        viewButton.interactable = ChipSaver.IsSafeToDelete(nameBeforeChanging);
+        viewButton.interactable = chip.canBeEdited;
         focused = true;
         currentChip = chip;
     }

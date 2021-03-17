@@ -80,7 +80,7 @@ public static class ChipLoader {
 		// Connect pins with wires
 		for (int chipIndex = 0; chipIndex < chipToLoad.savedComponentChips.Length; chipIndex++) {
 			Chip loadedComponentChip = loadedChipData.componentChips[chipIndex];
-			for (int inputPinIndex = 0; inputPinIndex < loadedComponentChip.inputPins.Length; inputPinIndex++) {
+			for (int inputPinIndex = 0; inputPinIndex < loadedComponentChip.inputPins.Length && inputPinIndex < chipToLoad.savedComponentChips[chipIndex].inputPins.Length; inputPinIndex++) {
 				SavedInputPin savedPin = chipToLoad.savedComponentChips[chipIndex].inputPins[inputPinIndex];
 				Pin pin = loadedComponentChip.inputPins[inputPinIndex];
 
@@ -134,7 +134,7 @@ public static class ChipLoader {
 		// Connect pins with wires
 		for (int chipIndex = 0; chipIndex < chipToLoad.savedComponentChips.Length; chipIndex++) {
 			Chip loadedComponentChip = loadedChipData.componentChips[chipIndex];
-			for (int inputPinIndex = 0; inputPinIndex < loadedComponentChip.inputPins.Length; inputPinIndex++) {
+			for (int inputPinIndex = 0; inputPinIndex < loadedComponentChip.inputPins.Length && inputPinIndex < chipToLoad.savedComponentChips[chipIndex].inputPins.Length; inputPinIndex++) {
 				SavedInputPin savedPin = chipToLoad.savedComponentChips[chipIndex].inputPins[inputPinIndex];
 				Pin pin = loadedComponentChip.inputPins[inputPinIndex];
 

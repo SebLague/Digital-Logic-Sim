@@ -73,6 +73,7 @@ public class Manager : MonoBehaviour {
 		package.gameObject.SetActive (false);
 
 		Chip customChip = package.GetComponent<Chip> ();
+		customChip.canBeEdited = true;
 		customChipCreated?.Invoke (customChip);
 		currentChipCreationIndex++;
 		spawnableChips.Add(customChip);
@@ -90,6 +91,7 @@ public class Manager : MonoBehaviour {
 		package.gameObject.SetActive (false);
 
 		Chip customChip = package.GetComponent<Chip> ();
+		customChip.canBeEdited = true;
 		int index = spawnableChips.FindIndex(c => c.chipName == original);
 		if (index >= 0) {
 			spawnableChips[index] = customChip;
