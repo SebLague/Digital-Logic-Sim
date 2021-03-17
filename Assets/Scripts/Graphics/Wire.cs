@@ -18,8 +18,10 @@ public class Wire : MonoBehaviour {
 	bool selected;
 
 	bool wireConnected;
-	[HideInInspector] public Pin startPin;
-	[HideInInspector] public Pin endPin;
+	// [HideInInspector] 
+	public Pin startPin;
+	// [HideInInspector] 
+	public Pin endPin;
 	EdgeCollider2D wireCollider;
 	public List<Vector2> anchorPoints { get; private set; }
 	List<Vector2> drawPoints;

@@ -981,6 +981,7 @@ MonoBehaviour:
   selectionBoundsBorderPadding: 0.25
   selectionBoxCol: {r: 1, g: 1, b: 1, a: 0.101960786}
   invalidPlacementCol: {r: 0.990566, g: 0.35978103, b: 0.35978103, a: 0.29803923}
+  editChipMenu: {fileID: 0}
 --- !u!1 &4750937598611645874
 GameObject:
   m_ObjectHideFlags: 0
@@ -1224,7 +1225,7 @@ GameObject:
   - component: {fileID: 5537867366871689101}
   m_Layer: 0
   m_Name: Chip Editor
-  m_TagString: Untagged
+  m_TagString: ChipEditor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

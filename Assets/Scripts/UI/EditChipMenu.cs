@@ -18,6 +18,7 @@ public class EditChipMenu : MonoBehaviour
     public ChipBarUI chipBarUI;
 
     private Manager manager;
+    private Chip currentChip;
     private string nameBeforeChanging;
 
     private bool init = false;
@@ -54,6 +55,7 @@ public class EditChipMenu : MonoBehaviour
         deleteButton.interactable = ChipSaver.IsSafeToDelete(nameBeforeChanging);
         viewButton.interactable = ChipSaver.IsSafeToDelete(nameBeforeChanging);
         focused = true;
+        currentChip = chip;
     }
 
     public void ChipNameFieldChanged(string value)
@@ -124,11 +126,15 @@ public class EditChipMenu : MonoBehaviour
     {
         panel.gameObject.SetActive(false);
         focused = false;
+        currentChip = null;
     }
 
     public void ViewChip()
     {
-
+        if (currentChip != null) {
+            manager.ViewChip(currentChip);
+            CloseEditChipMenu();
+        }
     }
 
     public void Update()
