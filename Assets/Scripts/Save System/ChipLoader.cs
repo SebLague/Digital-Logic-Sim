@@ -117,6 +117,7 @@ public static class ChipLoader {
 			}
 
 			Chip loadedComponentChip = GameObject.Instantiate (previouslyLoadedChips[componentName], pos, Quaternion.identity, chipEditor.chipImplementationHolder);
+			loadedComponentChip.gameObject.SetActive(true);
 			loadedChipData.componentChips[i] = loadedComponentChip;
 
 			// Load input pin names
@@ -165,7 +166,7 @@ public static class ChipLoader {
 		chips = sortedChips.ToArray ();
 	}
 
-	public static ChipSaveData GetChipSaveData(Chip chip, Chip[] builtinChips, Wire wirePrefab, ChipEditor chipEditor) {
+	public static ChipSaveData GetChipSaveData(Chip chip, Chip[] builtinChips, List<Chip> spawnableChips, Wire wirePrefab, ChipEditor chipEditor) {
 		// @NOTE: chipEditor can be removed here if the wire connections is done inside ChipEditor.LoadFromSaveData instead of ChipLoader.LoadChipWithWires
 		SavedChip chipToTryLoad;
 		ChipSaveData loadedChipData = new ChipSaveData ();
@@ -186,6 +187,9 @@ public static class ChipLoader {
 		for (int i = 0; i < builtinChips.Length; i++) {
 			Chip builtinChip = builtinChips[i];
 			loadedChips.Add (builtinChip.chipName, builtinChip);
+		}
+		foreach (Chip loadedChip in spawnableChips) {
+			loadedChips.Add (loadedChip.chipName, loadedChip);
 		}
 
 		return LoadChipWithWires (chipToTryLoad, loadedChips, wirePrefab, chipEditor);

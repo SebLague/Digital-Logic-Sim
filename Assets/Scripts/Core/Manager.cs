@@ -51,7 +51,7 @@ public class Manager : MonoBehaviour {
 		LoadNewEditor ();
 		UIManager.ChangeState(UIManagerState.Update);
 
-		ChipSaveData chipSaveData = ChipLoader.GetChipSaveData(chip, builtinChips, wirePrefab, activeChipEditor);
+		ChipSaveData chipSaveData = ChipLoader.GetChipSaveData(chip, builtinChips, spawnableChips, wirePrefab, activeChipEditor);
 		activeChipEditor.LoadFromSaveData(chipSaveData);
 	}
 
@@ -84,7 +84,6 @@ public class Manager : MonoBehaviour {
 		if (oldPackage != null) {
 			Destroy(oldPackage.gameObject);
 		}
-
 
 		ChipPackage package = Instantiate (chipPackagePrefab, parent : transform);
 		package.PackageCustomChip (activeChipEditor);
