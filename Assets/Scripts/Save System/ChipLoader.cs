@@ -67,12 +67,12 @@ public static class ChipLoader {
 			loadedChipData.componentChips[i] = loadedComponentChip;
 
 			// Load input pin names
-			for (int inputIndex = 0; inputIndex < componentToLoad.inputPins.Length; inputIndex++) {
+			for (int inputIndex = 0; inputIndex < componentToLoad.inputPins.Length && inputIndex < loadedChipData.componentChips[i].inputPins.Length; inputIndex++) {
 				loadedChipData.componentChips[i].inputPins[inputIndex].pinName = componentToLoad.inputPins[inputIndex].name;
 			}
 
 			// Load output pin names
-			for (int ouputIndex = 0; ouputIndex < componentToLoad.outputPinNames.Length; ouputIndex++) {
+			for (int ouputIndex = 0; ouputIndex < componentToLoad.outputPinNames.Length && ouputIndex < loadedChipData.componentChips[i].outputPins.Length; ouputIndex++) {
 				loadedChipData.componentChips[i].outputPins[ouputIndex].pinName = componentToLoad.outputPinNames[ouputIndex];
 			}
 		}
@@ -121,12 +121,12 @@ public static class ChipLoader {
 			loadedChipData.componentChips[i] = loadedComponentChip;
 
 			// Load input pin names
-			for (int inputIndex = 0; inputIndex < componentToLoad.inputPins.Length; inputIndex++) {
+			for (int inputIndex = 0; inputIndex < componentToLoad.inputPins.Length && inputIndex < loadedChipData.componentChips[i].inputPins.Length; inputIndex++) {
 				loadedChipData.componentChips[i].inputPins[inputIndex].pinName = componentToLoad.inputPins[inputIndex].name;
 			}
 
 			// Load output pin names
-			for (int ouputIndex = 0; ouputIndex < componentToLoad.outputPinNames.Length; ouputIndex++) {
+			for (int ouputIndex = 0; ouputIndex < componentToLoad.outputPinNames.Length && ouputIndex < loadedChipData.componentChips[i].outputPins.Length; ouputIndex++) {
 				loadedChipData.componentChips[i].outputPins[ouputIndex].pinName = componentToLoad.outputPinNames[ouputIndex];
 			}
 		}
