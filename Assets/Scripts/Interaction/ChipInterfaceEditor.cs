@@ -37,6 +37,13 @@ public class ChipInterfaceEditor : InteractionHandler {
 	public bool showPreviewSignal;
 	public float groupSpacing = 1;
 
+	string currentEditorName;
+	public ChipEditor CurrentEditor {
+		set {
+			currentEditorName = value.chipName;
+		}
+	}
+
 	ChipSignal highlightedSignal;
 	public List<ChipSignal> selectedSignals { get; private set; }
 	ChipSignal[] previewSignals;
@@ -92,8 +99,15 @@ public class ChipInterfaceEditor : InteractionHandler {
 		DrawSignalHandles ();
 	}
 
-	public void LoadSignal (ChipSignal signal) {
+	public void LoadSignal (InputSignal signal) {
 		signal.transform.parent = signalHolder;
+		signal.signalName = signal.outputPins[0].pinName;
+		signals.Add (signal);
+	}
+
+	public void LoadSignal (OutputSignal signal) {
+		signal.transform.parent = signalHolder;
+		signal.signalName = signal.inputPins[0].pinName;
 		signals.Add (signal);
 	}
 
@@ -372,6 +386,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 		nameField.caretPosition = nameField.text.Length;
 		twosComplementToggle.gameObject.SetActive (isGroup);
 		twosComplementToggle.isOn = selectedSignals[0].useTwosComplement;
+		deleteButton.interactable = ChipSaver.IsSignalSafeToDelete(currentEditorName, signalToDrag.signalName);
 		UpdateUIProperties ();
 
 	}

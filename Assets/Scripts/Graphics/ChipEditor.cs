@@ -19,6 +19,11 @@ public class ChipEditor : MonoBehaviour {
 	[HideInInspector]
 	public int creationIndex;
 
+	void Start() {
+		inputsEditor.CurrentEditor = this;
+		outputsEditor.CurrentEditor = this;	
+	}
+
 	void Awake () {
 		InteractionHandler[] allHandlers = { inputsEditor, outputsEditor, chipInteraction, pinAndWireInteraction };
 		foreach (var handler in allHandlers) {

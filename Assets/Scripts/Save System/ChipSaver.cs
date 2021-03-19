@@ -58,6 +58,28 @@ public static class ChipSaver {
 		return true;
 	}
 
+	public static bool IsSignalSafeToDelete(string chipName, string signalName)
+	{
+		SavedChip[] savedChips = SaveSystem.GetAllSavedChips();
+		for (int i = 0; i < savedChips.Length; i++)
+		{
+			if (savedChips[i].componentNameList.Contains(chipName))
+			{
+				SavedChip parentChip = savedChips[i];
+				int currentChipIndex = Array.FindIndex(parentChip.savedComponentChips, scc => scc.chipName == chipName);
+				SavedComponentChip currentChip = parentChip.savedComponentChips[currentChipIndex];
+				int currentSignalIndex = Array.FindIndex(currentChip.outputPinNames, name => name == signalName);
+
+				if (Array.Find(currentChip.inputPins, pin => pin.name == signalName && pin.parentChipIndex >= 0) != null) {
+					return false;
+				} else if (currentSignalIndex >= 0 && parentChip.savedComponentChips.Any(scc => scc.inputPins.Any(pin => pin.parentChipIndex == currentChipIndex && pin.parentChipOutputIndex == currentSignalIndex))) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	public static void Delete(string chipName)
 	{
 		File.Delete(SaveSystem.GetPathToSaveFile(chipName));

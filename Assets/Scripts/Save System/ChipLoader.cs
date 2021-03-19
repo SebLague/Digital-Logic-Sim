@@ -167,7 +167,10 @@ public static class ChipLoader {
 	}
 
 	public static ChipSaveData GetChipSaveData(Chip chip, Chip[] builtinChips, List<Chip> spawnableChips, Wire wirePrefab, ChipEditor chipEditor) {
-		// @NOTE: chipEditor can be removed here if the wire connections is done inside ChipEditor.LoadFromSaveData instead of ChipLoader.LoadChipWithWires
+		// @NOTE: chipEditor can be removed here if:
+		//     * Chip & wire instatiation is inside their respective implementation holders is inside the chipEditor
+		//     * the wire connections are done inside ChipEditor.LoadFromSaveData instead of ChipLoader.LoadChipWithWires
+		
 		SavedChip chipToTryLoad;
 		ChipSaveData loadedChipData = new ChipSaveData ();
 		SavedChip[] savedChips = SaveSystem.GetAllSavedChips();
