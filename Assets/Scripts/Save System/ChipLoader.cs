@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -104,6 +105,7 @@ public static class ChipLoader {
 		loadedChipData.chipColour = chipToLoad.colour;
 		loadedChipData.chipNameColour = chipToLoad.nameColour;
 		loadedChipData.creationIndex = chipToLoad.creationIndex;
+		List<Wire> wiresToLoad = new List<Wire>();
 
 		// Spawn component chips (the chips used to create this chip)
 		// These will have been loaded already, and stored in the previouslyLoadedChips dictionary
@@ -144,11 +146,14 @@ public static class ChipLoader {
 					pin.cyclic = savedPin.isCylic;
 					if (Pin.TryConnect (connectedPin, pin)) {
 						Wire loadedWire = GameObject.Instantiate (wirePrefab, chipEditor.wireHolder);
-						loadedWire.Connect (connectedPin, loadedComponentChip.inputPins[inputPinIndex]);
+						loadedWire.Connect (connectedPin, pin);
+						wiresToLoad.Add(loadedWire);
 					}
 				}
 			}
 		}
+
+		loadedChipData.wires = wiresToLoad.ToArray();
 
 		return loadedChipData;
 	}
@@ -172,7 +177,6 @@ public static class ChipLoader {
 		//     * the wire connections are done inside ChipEditor.LoadFromSaveData instead of ChipLoader.LoadChipWithWires
 		
 		SavedChip chipToTryLoad;
-		ChipSaveData loadedChipData = new ChipSaveData ();
 		SavedChip[] savedChips = SaveSystem.GetAllSavedChips();
 
 		using (StreamReader reader = new StreamReader(SaveSystem.GetPathToSaveFile(chip.name)))
@@ -182,7 +186,7 @@ public static class ChipLoader {
 		}
 
 		if (chipToTryLoad == null)
-			return loadedChipData;
+			return null;
 
 		SortChipsByOrderOfCreation (ref savedChips);
 		// Maintain dictionary of loaded chips (initially just the built-in chips)
@@ -192,10 +196,25 @@ public static class ChipLoader {
 			loadedChips.Add (builtinChip.chipName, builtinChip);
 		}
 		foreach (Chip loadedChip in spawnableChips) {
+			if (loadedChips.ContainsKey(loadedChip.chipName)) continue;
 			loadedChips.Add (loadedChip.chipName, loadedChip);
 		}
 
-		return LoadChipWithWires (chipToTryLoad, loadedChips, wirePrefab, chipEditor);
+		ChipSaveData loadedChipData = LoadChipWithWires (chipToTryLoad, loadedChips, wirePrefab, chipEditor);
+		SavedWireLayout wireLayout = LoadWiringFile(SaveSystem.GetPathToWireSaveFile(loadedChipData.chipName));
+
+		// Set wires anchor points
+		for (int i = 0; i < wireLayout.serializableWires.Length; i++) {
+			string startPinName = loadedChipData.componentChips[wireLayout.serializableWires[i].parentChipIndex].outputPins[wireLayout.serializableWires[i].parentChipOutputIndex].pinName;
+			string endPinName = loadedChipData.componentChips[wireLayout.serializableWires[i].childChipIndex].inputPins[wireLayout.serializableWires[i].childChipInputIndex].pinName;
+
+			int wireIndex = Array.FindIndex(loadedChipData.wires, w => w.startPin.pinName == startPinName && w.endPin.pinName == endPinName);
+			if (wireIndex >= 0) {
+				loadedChipData.wires[wireIndex].SetAnchorPoints(wireLayout.serializableWires[i].anchorPoints);
+			}
+		}
+		
+		return loadedChipData;
 	}
 
 }
