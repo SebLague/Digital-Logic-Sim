@@ -62,8 +62,8 @@ public class Manager : MonoBehaviour {
 	}
 
 	void UpdateChip () {
-		ChipSaver.Save (activeChipEditor);
-		TryPackageAndReplaceChip(activeChipEditor.chipName);
+		Chip updatedChip = TryPackageAndReplaceChip(activeChipEditor.chipName);
+		ChipSaver.Update (activeChipEditor, updatedChip);
 		LoadNewEditor ();
 	}
 
