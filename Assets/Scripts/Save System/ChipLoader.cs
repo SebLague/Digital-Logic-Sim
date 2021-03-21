@@ -217,4 +217,68 @@ public static class ChipLoader {
 		return loadedChipData;
 	}
 
+	public static void Import(string path)
+	{
+		SavedChip[] allChips = SaveSystem.GetAllSavedChips();
+		List<string> newChipsPath = new List<string>();
+		Dictionary<string, string> nameUpdateLookupTable = new Dictionary<string, string>();
+
+		using (StreamReader reader = new StreamReader(path)) {
+			int numberOfChips = Int32.Parse(reader.ReadLine());
+
+			for (int i = 0; i < numberOfChips; i++) {
+				string chipName = reader.ReadLine();
+				int saveDataLength = Int32.Parse(reader.ReadLine());
+				int wireSaveDataLength = Int32.Parse(reader.ReadLine());				
+
+				string saveData = "";
+				string wireSaveData = "";
+
+				for (int j = 0; j < saveDataLength; j++) {
+					saveData += reader.ReadLine() + "\n";
+				}
+				for (int j = 0; j < wireSaveDataLength; j++) {
+					wireSaveData += reader.ReadLine() + "\n";
+				}
+
+				// Rename chip if already exist
+				if(Array.FindIndex(allChips, c => c.name == chipName) >= 0) {
+					int nameCounter = 2;
+					string newName;
+					do {
+						newName = chipName + nameCounter.ToString();
+						nameCounter++;
+					} while(Array.FindIndex(allChips, c => c.name == newName) >= 0);
+
+					nameUpdateLookupTable.Add(chipName, newName);
+					chipName = newName;
+				}
+
+				// Update name inside file if there was some names changed
+				foreach (KeyValuePair<string, string> nameToReplace in nameUpdateLookupTable) {
+					saveData = saveData.Replace(
+						"\"name\": \"" + nameToReplace.Key + "\"",
+						"\"name\": \"" + nameToReplace.Value + "\""
+					).Replace(
+						"\"chipName\": \"" + nameToReplace.Key + "\"",
+						"\"chipName\": \"" + nameToReplace.Value + "\""
+					);
+				}
+
+				string chipSaveFile = SaveSystem.GetPathToSaveFile(chipName);
+				string chipWireSaveFile = SaveSystem.GetPathToWireSaveFile(chipName);
+				newChipsPath.Add(chipSaveFile);
+
+				using (StreamWriter writer = new StreamWriter(chipSaveFile))
+				{
+					writer.Write(saveData);
+				}
+
+				using (StreamWriter writer = new StreamWriter(chipWireSaveFile))
+				{
+					writer.Write(wireSaveData);
+				}
+			}
+		}
+	}
 }

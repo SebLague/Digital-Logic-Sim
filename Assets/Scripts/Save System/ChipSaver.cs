@@ -37,24 +37,55 @@ public static class ChipSaver {
 		}
 	}
 
-	public static void Export(Chip chip, string destinationPath) {
-		string chipSaveFile = SaveSystem.GetPathToSaveFile(chip.chipName);
-		string chipWireSaveFile = SaveSystem.GetPathToWireSaveFile(chip.chipName);
+	public static void Export(Chip exportedChip, string destinationPath) {
+		Dictionary<int, string> chipsToExport = FindChildrenChips(exportedChip.chipName);
 
-		using (StreamReader reader = new StreamReader(chipSaveFile)) {
-			string saveString = reader.ReadToEnd ();
-			
-			using (StreamReader wireReader = new StreamReader(chipWireSaveFile)) {
-				string wiringSaveString = wireReader.ReadToEnd ();
+		using (StreamWriter writer = new StreamWriter(destinationPath))
+		{
+			writer.WriteLine(chipsToExport.Count);
 
-				using (StreamWriter writer = new StreamWriter(destinationPath))
-				{
-					writer.WriteLine(saveString.Length);
-					writer.Write(saveString);
-					writer.Write(wiringSaveString);
+			foreach (KeyValuePair<int, string> chip in chipsToExport.OrderBy(x => x.Key)) {
+				string chipSaveFile = SaveSystem.GetPathToSaveFile(chip.Value);
+				string chipWireSaveFile = SaveSystem.GetPathToWireSaveFile(chip.Value);
+
+				using (StreamReader reader = new StreamReader(chipSaveFile)) {
+					string saveString = reader.ReadToEnd ();
+					
+					using (StreamReader wireReader = new StreamReader(chipWireSaveFile)) {
+						string wiringSaveString = wireReader.ReadToEnd ();
+
+						writer.WriteLine(chip.Value);
+						writer.WriteLine(saveString.Split('\n').Length);
+						writer.WriteLine(wiringSaveString.Split('\n').Length);
+						writer.WriteLine(saveString);
+						writer.WriteLine(wiringSaveString);
+					}
 				}
 			}
 		}
+	}
+
+	static Dictionary<int, string> FindChildrenChips(string chipName) {
+		Dictionary<int, string> childrenChips = new Dictionary<int, string>();
+
+		Manager manager = GameObject.FindObjectOfType<Manager>();
+		SavedChip[] allChips = SaveSystem.GetAllSavedChips();
+		SavedChip currentChip = Array.Find(allChips, c => c.name == chipName);
+		if (currentChip == null) return childrenChips;
+		
+		childrenChips.Add(currentChip.creationIndex, chipName);
+
+		foreach (SavedComponentChip scc in currentChip.savedComponentChips) {
+			if (Array.FindIndex(manager.builtinChips, c => c.chipName == scc.chipName) != -1)
+				continue;
+
+			foreach(KeyValuePair<int, string> chip in FindChildrenChips(scc.chipName)) {
+				if (childrenChips.ContainsKey(chip.Key)) continue;
+				childrenChips.Add(chip.Key, chip.Value);
+			}
+		}
+		
+		return childrenChips;
 	}
 
 	public static void Update(ChipEditor chipEditor, Chip chip)
