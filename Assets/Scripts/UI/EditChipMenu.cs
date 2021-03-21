@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
+using UnityEditor;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ public class EditChipMenu : MonoBehaviour
     public Button doneButton;
     public Button deleteButton;
     public Button viewButton;
+    public Button exportButton;
     public GameObject panel;
     public ChipBarUI chipBarUI;
 
@@ -30,11 +32,13 @@ public class EditChipMenu : MonoBehaviour
         {
             return;
         }
+
         chipBarUI = GameObject.Find("Chip Bar").GetComponent<ChipBarUI>();
         chipNameField.onValueChanged.AddListener(ChipNameFieldChanged);
         doneButton.onClick.AddListener(FinishCreation);
         deleteButton.onClick.AddListener(DeleteChip);
         viewButton.onClick.AddListener(ViewChip);
+        exportButton.onClick.AddListener(ExportChip);
         manager = FindObjectOfType<Manager>();
         FindObjectOfType<ChipInteraction>().editChipMenu = this;
         panel.gameObject.SetActive(false);
@@ -45,7 +49,7 @@ public class EditChipMenu : MonoBehaviour
     {
         panel.gameObject.SetActive(true);
         GameObject chipUI = GameObject.Find("Create (" + chip.chipName + ")");
-        this.gameObject.transform.position = chipUI.transform.position + new Vector3(7.5f, -1.2f, 0);
+        this.gameObject.transform.position = chipUI.transform.position + new Vector3(7.5f, -0.65f, 0);
         float xVal = Math.Min(this.gameObject.transform.position.x, 13.9f);
         xVal = Math.Max(xVal, -0.1f);
         this.gameObject.transform.position = new Vector3(xVal, this.gameObject.transform.position.y, this.gameObject.transform.position.z);
@@ -54,6 +58,7 @@ public class EditChipMenu : MonoBehaviour
         doneButton.interactable = true;
         deleteButton.interactable = ChipSaver.IsSafeToDelete(nameBeforeChanging);
         viewButton.interactable = chip.canBeEdited;
+        exportButton.interactable = chip.canBeEdited;
         focused = true;
         currentChip = chip;
     }
@@ -134,6 +139,20 @@ public class EditChipMenu : MonoBehaviour
         if (currentChip != null) {
             manager.ViewChip(currentChip);
             CloseEditChipMenu();
+        }
+    }
+
+    public void ExportChip()
+    {
+        string path = EditorUtility.SaveFilePanel(
+            "Export chip design",
+            "",
+            currentChip.chipName + ".dls",
+            "dls"
+        );
+        
+        if (path.Length != 0) {
+            ChipSaver.Export(currentChip, path);
         }
     }
 

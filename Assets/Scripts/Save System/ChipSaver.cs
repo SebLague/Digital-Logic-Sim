@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using System;
+using System.IO.Compression;
 
 public static class ChipSaver {
 
@@ -33,6 +34,26 @@ public static class ChipSaver {
 		using (StreamWriter writer = new StreamWriter(wireLayoutSavePath))
 		{
 			writer.Write(wiringSaveString);
+		}
+	}
+
+	public static void Export(Chip chip, string destinationPath) {
+		string chipSaveFile = SaveSystem.GetPathToSaveFile(chip.chipName);
+		string chipWireSaveFile = SaveSystem.GetPathToWireSaveFile(chip.chipName);
+
+		using (StreamReader reader = new StreamReader(chipSaveFile)) {
+			string saveString = reader.ReadToEnd ();
+			
+			using (StreamReader wireReader = new StreamReader(chipWireSaveFile)) {
+				string wiringSaveString = wireReader.ReadToEnd ();
+
+				using (StreamWriter writer = new StreamWriter(destinationPath))
+				{
+					writer.WriteLine(saveString.Length);
+					writer.Write(saveString);
+					writer.Write(wiringSaveString);
+				}
+			}
 		}
 	}
 
