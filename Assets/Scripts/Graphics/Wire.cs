@@ -18,6 +18,7 @@ public class Wire : MonoBehaviour {
 	bool selected;
 
 	bool wireConnected;
+	bool simActive = false;
 	[HideInInspector] public Pin startPin;
 	[HideInInspector] public Pin endPin;
 	EdgeCollider2D wireCollider;
@@ -61,7 +62,7 @@ public class Wire : MonoBehaviour {
 	}
 
 	void LateUpdate () {
-		SetWireCol ();
+		SetWireCol();
 		if (wireConnected) {
 			float depthOffset = 5;
 
@@ -96,6 +97,17 @@ public class Wire : MonoBehaviour {
 		}
 	}
 
+
+	public void SetWireToOff()
+	{
+		simActive = false;
+	}
+
+	public void SetWireToOn()
+	{
+		simActive = true;
+	}
+
 	void SetWireCol () {
 		if (wireConnected) {
 			Color onCol = palette.onCol;
@@ -106,7 +118,12 @@ public class Wire : MonoBehaviour {
 				onCol = palette.highZCol;
 				offCol = palette.highZCol;
 			}
-			mat.color = (ChipOutputPin.State == 0) ? offCol : onCol;
+
+			if (simActive) {
+				mat.color = (ChipOutputPin.State == 0) ? offCol : onCol;
+			} else {
+				mat.color = offCol;
+			}
 		} else {
 			mat.color = Color.black;
 		}

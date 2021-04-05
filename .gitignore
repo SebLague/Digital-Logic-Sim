@@ -10,6 +10,11 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
+# To ignore some local things
+/UserSettings/
+/Digital Logic Sim.app/
+*.DS_Store
+
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta
 

@@ -21,6 +21,12 @@ public class InputSignal : ChipSignal {
 		SetCol ();
 	}
 
+	public void SendOffSignal()
+	{
+		outputPins[0].ReceiveSignal(0);
+		SetCol();
+	}
+
 	public void SendSignal () {
 		outputPins[0].ReceiveSignal (currentState);
 	}

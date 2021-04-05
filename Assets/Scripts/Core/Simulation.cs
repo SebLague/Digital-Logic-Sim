@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Simulation : MonoBehaviour {
 
@@ -8,24 +9,31 @@ public class Simulation : MonoBehaviour {
 	static Simulation instance;
 	InputSignal[] inputSignals;
 	ChipEditor chipEditor;
+	public bool active = false;
 
 	public float minStepTime = 0.075f;
 	float lastStepTime;
+
+	public void toogleActive() {
+		active = !active;
+		if (!active) { StepSimulation(turnOffSimulation: true); }
+    }
 
 	void Awake () {
 		simulationFrame = 0;
 	}
 
 	void Update () {
-		if (Time.time - lastStepTime > minStepTime) {
+		if (Time.time - lastStepTime > minStepTime && active) {
 			lastStepTime = Time.time;
 			StepSimulation ();
 		}
 	}
 
-	void StepSimulation () {
+	void StepSimulation (bool turnOffSimulation = false) {
 		simulationFrame++;
-		RefreshChipEditorReference ();
+
+		RefreshChipEditorReference();
 
 		// Clear output signals
 		List<ChipSignal> outputSignals = chipEditor.outputsEditor.signals;
@@ -39,13 +47,31 @@ public class Simulation : MonoBehaviour {
 			allChips[i].InitSimulationFrame ();
 		}
 
+
 		// Process inputs
 		List<ChipSignal> inputSignals = chipEditor.inputsEditor.signals;
 		// Tell all signal generators to send their signal out
 		for (int i = 0; i < inputSignals.Count; i++) {
-			((InputSignal) inputSignals[i]).SendSignal ();
+			if (turnOffSimulation) {
+				// ((InputSignal)inputSignals[i]).SendOffSignal();
+			} else
+            {
+				((InputSignal)inputSignals[i]).SendSignal();
+			}
 		}
 
+		var allWires = chipEditor.pinAndWireInteraction.allWires;
+		for (int i = 0; i < allWires.Count; i++)
+		{
+			if (turnOffSimulation)
+			{
+				allWires[i].SetWireToOff();
+			} else
+            {
+				allWires[i].SetWireToOn();
+			}
+		}
+		
 	}
 
 	void RefreshChipEditorReference () {
