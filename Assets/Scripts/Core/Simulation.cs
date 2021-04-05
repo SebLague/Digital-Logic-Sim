@@ -16,7 +16,7 @@ public class Simulation : MonoBehaviour {
 
 	public void toogleActive() {
 		active = !active;
-		if (!active) { StepSimulation(turnOffSimulation: true); }
+		if (!active) { StepSimulation(); }
     }
 
 	void Awake () {
@@ -30,51 +30,58 @@ public class Simulation : MonoBehaviour {
 		}
 	}
 
-	void StepSimulation (bool turnOffSimulation = false) {
+	private void clearOutputSignals() {
+		List<ChipSignal> outputSignals = chipEditor.outputsEditor.signals;
+		for (int i = 0; i < outputSignals.Count; i++)
+		{
+			outputSignals[i].SetDisplayState(0);
+		}
+	}
+
+	private void processInputs()
+    {
+		List<ChipSignal> inputSignals = chipEditor.inputsEditor.signals;
+		for (int i = 0; i < inputSignals.Count; i++) {
+			((InputSignal)inputSignals[i]).SendSignal();
+		}
+	}
+
+	void StepSimulation () {
 		simulationFrame++;
 
 		RefreshChipEditorReference();
 
-		// Clear output signals
-		List<ChipSignal> outputSignals = chipEditor.outputsEditor.signals;
-		for (int i = 0; i < outputSignals.Count; i++) {
-			outputSignals[i].SetDisplayState (0);
+		if (active) {
+			clearOutputSignals();
+			initChips();
+			processInputs();
 		}
+        
 
-		// Init chips
-		var allChips = chipEditor.chipInteraction.allChips;
-		for (int i = 0; i < allChips.Count; i++) {
-			allChips[i].InitSimulationFrame ();
-		}
-
-
-		// Process inputs
-		List<ChipSignal> inputSignals = chipEditor.inputsEditor.signals;
-		// Tell all signal generators to send their signal out
-		for (int i = 0; i < inputSignals.Count; i++) {
-			if (turnOffSimulation) {
-				// ((InputSignal)inputSignals[i]).SendOffSignal();
-			} else
-            {
-				((InputSignal)inputSignals[i]).SendSignal();
-			}
-		}
 
 		var allWires = chipEditor.pinAndWireInteraction.allWires;
-		for (int i = 0; i < allWires.Count; i++)
-		{
-			if (turnOffSimulation)
-			{
-				allWires[i].SetWireToOff();
-			} else
-            {
-				allWires[i].SetWireToOn();
+		for (int i = 0; i < allWires.Count; i++) {
+			if (!active) {
+				allWires[i].tellWireSimIsOff();
+			} else {
+				allWires[i].tellWireSimIsOn();
 			}
 		}
+
+		if (!active) { clearOutputSignals(); }
 		
 	}
 
-	void RefreshChipEditorReference () {
+    private void initChips()
+    {
+        var allChips = chipEditor.chipInteraction.allChips;
+        for (int i = 0; i < allChips.Count; i++)
+        {
+            allChips[i].InitSimulationFrame();
+        }
+    }
+
+    void RefreshChipEditorReference () {
 		if (chipEditor == null) {
 			chipEditor = FindObjectOfType<ChipEditor> ();
 		}

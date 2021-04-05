@@ -98,12 +98,12 @@ public class Wire : MonoBehaviour {
 	}
 
 
-	public void SetWireToOff()
+	public void tellWireSimIsOff()
 	{
 		simActive = false;
 	}
 
-	public void SetWireToOn()
+	public void tellWireSimIsOn()
 	{
 		simActive = true;
 	}
