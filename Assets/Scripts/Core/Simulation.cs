@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Simulation : MonoBehaviour {
 
@@ -14,7 +13,7 @@ public class Simulation : MonoBehaviour {
 	public float minStepTime = 0.075f;
 	float lastStepTime;
 
-	public void toogleActive() {
+	public void ToogleActive() {
 		active = !active;
 		if (!active) { StepSimulation(); }
     }
@@ -22,6 +21,7 @@ public class Simulation : MonoBehaviour {
 	void Awake () {
 		simulationFrame = 0;
 	}
+	
 
 	void Update () {
 		if (Time.time - lastStepTime > minStepTime && active) {
@@ -30,16 +30,14 @@ public class Simulation : MonoBehaviour {
 		}
 	}
 
-	private void clearOutputSignals() {
+	private void ClearOutputSignals() {
 		List<ChipSignal> outputSignals = chipEditor.outputsEditor.signals;
-		for (int i = 0; i < outputSignals.Count; i++)
-		{
+		for (int i = 0; i < outputSignals.Count; i++) {
 			outputSignals[i].SetDisplayState(0);
 		}
 	}
 
-	private void processInputs()
-    {
+	private void ProcessInputs() {
 		List<ChipSignal> inputSignals = chipEditor.inputsEditor.signals;
 		for (int i = 0; i < inputSignals.Count; i++) {
 			((InputSignal)inputSignals[i]).SendSignal();
@@ -52,12 +50,11 @@ public class Simulation : MonoBehaviour {
 		RefreshChipEditorReference();
 
 		if (active) {
-			clearOutputSignals();
-			initChips();
-			processInputs();
+			ClearOutputSignals();
+			InitChips();
+			ProcessInputs();
 		}
         
-
 
 		var allWires = chipEditor.pinAndWireInteraction.allWires;
 		for (int i = 0; i < allWires.Count; i++) {
@@ -68,12 +65,11 @@ public class Simulation : MonoBehaviour {
 			}
 		}
 
-		if (!active) { clearOutputSignals(); }
+		if (!active) { ClearOutputSignals(); }
 		
 	}
 
-    private void initChips()
-    {
+    private void InitChips() {
         var allChips = chipEditor.chipInteraction.allChips;
         for (int i = 0; i < allChips.Count; i++)
         {
