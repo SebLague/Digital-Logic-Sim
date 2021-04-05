@@ -12,12 +12,15 @@ public class CreateGroup : MonoBehaviour
     public TMP_InputField groupSizeInput;
     public Button setSizeButton;
     public GameObject menuHolder;
+    private bool menuActive;
 
     int groupSizeValue;
 
     // Start is called before the first frame update
     void Start ()
     {
+        menuActive = false;
+        groupSizeValue = 8;
         setSizeButton.onClick.AddListener (SetGroupSize);
         groupSizeInput.onValueChanged.AddListener (SetCurrentText);
     }
@@ -26,14 +29,24 @@ public class CreateGroup : MonoBehaviour
         groupSizeValue = int.Parse(groupSize);
     }
 
-    void CloseMenu () {
+    public void CloseMenu () {
+        onGroupSizeSettingPressed.Invoke(groupSizeValue);
+        menuActive = false;
         menuHolder.SetActive(false);
     }
-    
+
+    public void OpenMenu ()
+    {
+        menuActive = true;
+        menuHolder.SetActive(true);
+    }
+
     void SetGroupSize () {
-        if (onGroupSizeSettingPressed != null) {
-            onGroupSizeSettingPressed.Invoke (groupSizeValue);
+        if (menuActive) {
+            CloseMenu();
+        } else {
+            OpenMenu();
         }
-        CloseMenu ();
+
     }
 }
