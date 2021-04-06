@@ -32,11 +32,12 @@ public static class ChipLoader {
 			Chip builtinChip = manager.builtinChips[i];
 			loadedChips.Add (builtinChip.chipName, builtinChip);
 		}
-
 		for (int i = 0; i < savedChips.Length; i++) {
 			SavedChip chipToTryLoad = savedChips[i];
 			ChipSaveData loadedChipData = LoadChip (chipToTryLoad, loadedChips, manager.wirePrefab);
 			Chip loadedChip = manager.LoadChip (loadedChipData);
+			if (loadedChip is CustomChip custom)
+				custom.ApplyWireModes();
 			loadedChips.Add (loadedChip.chipName, loadedChip);
 		}
 	}
@@ -69,11 +70,13 @@ public static class ChipLoader {
 			// Load input pin names
 			for (int inputIndex = 0; inputIndex < componentToLoad.inputPins.Length; inputIndex++) {
 				loadedChipData.componentChips[i].inputPins[inputIndex].pinName = componentToLoad.inputPins[inputIndex].name;
+				loadedChipData.componentChips[i].inputPins[inputIndex].wireType = componentToLoad.inputPins[inputIndex].wireType;
 			}
 
 			// Load output pin names
-			for (int ouputIndex = 0; ouputIndex < componentToLoad.outputPinNames.Length; ouputIndex++) {
-				loadedChipData.componentChips[i].outputPins[ouputIndex].pinName = componentToLoad.outputPinNames[ouputIndex];
+			for (int ouputIndex = 0; ouputIndex < componentToLoad.outputPins.Length; ouputIndex++) {
+				loadedChipData.componentChips[i].outputPins[ouputIndex].pinName = componentToLoad.outputPins[ouputIndex].name;
+				loadedChipData.componentChips[i].outputPins[ouputIndex].wireType = componentToLoad.outputPins[ouputIndex].wireType;
 			}
 		}
 

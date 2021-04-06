@@ -34,6 +34,7 @@ public class Simulation : MonoBehaviour {
 		List<ChipSignal> outputSignals = chipEditor.outputsEditor.signals;
 		for (int i = 0; i < outputSignals.Count; i++) {
 			outputSignals[i].SetDisplayState(0);
+			outputSignals[i].currentState = 0;
 		}
 	}
 
