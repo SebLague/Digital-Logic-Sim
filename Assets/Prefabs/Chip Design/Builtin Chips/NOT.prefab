@@ -160,14 +160,10 @@ MonoBehaviour:
   pinType: 0
   chip: {fileID: 1267900139923996690}
   pinName: IN
-  interactable: 1
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
   childPins: []
-  currentState: 0
-  sequentialState: 0
-  lastInputSimulationFrame: 0
 --- !u!58 &768468710238907868
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -258,7 +254,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2212649132965788341}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.06935847, y: -0.41493428, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3234827502093921508}
@@ -584,14 +580,10 @@ MonoBehaviour:
   pinType: 1
   chip: {fileID: 1267900139923996690}
   pinName: OUT
-  interactable: 1
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
   childPins: []
-  currentState: 0
-  sequentialState: 0
-  lastInputSimulationFrame: 0
 --- !u!58 &5042285142486190648
 CircleCollider2D:
   m_ObjectHideFlags: 0

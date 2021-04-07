@@ -20,6 +20,7 @@ public class ChipBarUI : MonoBehaviour {
 	void Awake () {
 		manager = FindObjectOfType<Manager> ();
 		manager.customChipCreated += AddChipButton;
+		manager.customChipUpdated += UpdateChipButton;
 		ReloadBar();
 	}
 
@@ -68,9 +69,22 @@ public class ChipBarUI : MonoBehaviour {
 
 		// Set button event
 		//button.onClick.AddListener (() => manager.SpawnChip (chip));
-		button.onPointerDown += (() => manager.SpawnChip (chip));
+		button.AddListener(() => manager.SpawnChip (chip));
 
 		customButton.Add(button);
+	}
+
+	void UpdateChipButton (Chip chip) {
+		if (hideList.Contains (chip.chipName)) {
+			//Debug.Log("Hiding")
+			return;
+		}
+
+		CustomButton button = customButton.Find(g => g.name == "Create (" + chip.chipName + ")");
+		if (button != null) {
+			button.ClearEvents();
+			button.AddListener(() => manager.SpawnChip (chip));
+		}
 	}
 
 }

@@ -77,7 +77,7 @@ public class PinAndWireInteraction : InteractionHandler {
 
 	void HandleWireDeletion () {
 		if (highlightedWire) {
-			if (InputHelper.AnyOfTheseKeysDown (KeyCode.Backspace, KeyCode.Delete)) {
+			if (InputHelper.AnyOfTheseKeysDown (KeyCode.Backspace, KeyCode.Delete) || Input.GetMouseButton(2)) {
 				RequestFocus ();
 				if (HasFocus) {
 					DestroyWire (highlightedWire);

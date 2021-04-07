@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
+using UnityEditor;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -13,16 +14,18 @@ public class EditChipMenu : MonoBehaviour
     public TMP_InputField chipNameField;
     public Button doneButton;
     public Button deleteButton;
+    public Button viewButton;
+    public Button exportButton;
     public GameObject panel;
     public ChipBarUI chipBarUI;
 
-    public Button dismiss;
-
     private Manager manager;
+    private Chip currentChip;
     private string nameBeforeChanging;
     public bool isActive;
 
     private bool init = false;
+    private bool focused = false;
 
     public void Init()
     {
@@ -30,15 +33,16 @@ public class EditChipMenu : MonoBehaviour
         {
             return;
         }
+
         chipBarUI = GameObject.Find("Chip Bar").GetComponent<ChipBarUI>();
         chipNameField.onValueChanged.AddListener(ChipNameFieldChanged);
         doneButton.onClick.AddListener(FinishCreation);
         deleteButton.onClick.AddListener(DeleteChip);
-        UnityEngine.Debug.Log("Adding listener");
+        viewButton.onClick.AddListener(ViewChip);
+        exportButton.onClick.AddListener(ExportChip);
         manager = FindObjectOfType<Manager>();
         FindObjectOfType<ChipInteraction>().editChipMenu = this;
         panel.gameObject.SetActive(false);
-        dismiss.gameObject.SetActive(false);
         init = true;
         isActive = false;
     }
@@ -46,10 +50,9 @@ public class EditChipMenu : MonoBehaviour
     public void EditChip(Chip chip)
     {
         panel.gameObject.SetActive(true);
-        dismiss.gameObject.SetActive(true);
         isActive = true;
         GameObject chipUI = GameObject.Find("Create (" + chip.chipName + ")");
-        this.gameObject.transform.position = chipUI.transform.position + new Vector3(7.5f, -1.2f, 0);
+        this.gameObject.transform.position = chipUI.transform.position + new Vector3(7.5f, -0.65f, 0);
         float xVal = Math.Min(this.gameObject.transform.position.x, 13.9f);
         xVal = Math.Max(xVal, -0.1f);
         this.gameObject.transform.position = new Vector3(xVal, this.gameObject.transform.position.y, this.gameObject.transform.position.z);
@@ -57,6 +60,10 @@ public class EditChipMenu : MonoBehaviour
         nameBeforeChanging = chip.chipName;
         doneButton.interactable = true;
         deleteButton.interactable = ChipSaver.IsSafeToDelete(nameBeforeChanging);
+        viewButton.interactable = chip.canBeEdited;
+        exportButton.interactable = chip.canBeEdited;
+        focused = true;
+        currentChip = chip;
     }
 
     public void ChipNameFieldChanged(string value)
@@ -92,7 +99,11 @@ public class EditChipMenu : MonoBehaviour
 
     public bool IsValidChipName(string chipName)
     {
-        return chipName != "AND" && chipName != "NOT" && chipName.Length != 0;
+        return chipName != "AND" &&
+               chipName != "NOT" &&
+               chipName != "XOR" &&
+               chipName != "OR"  &&
+               chipName.Length != 0;
     }
 
     public void DeleteChip()
@@ -123,7 +134,49 @@ public class EditChipMenu : MonoBehaviour
     {
         panel.gameObject.SetActive(false);
         isActive = false;
-        dismiss.gameObject.SetActive(false);
+        focused = false;
+        currentChip = null;
     }
 
+    public void ViewChip()
+    {
+        if (currentChip != null) {
+            manager.ViewChip(currentChip);
+            CloseEditChipMenu();
+        }
+    }
+
+    public void ExportChip()
+    {
+        string path = EditorUtility.SaveFilePanel(
+            "Export chip design",
+            "",
+            currentChip.chipName + ".dls",
+            "dls"
+        );
+
+        if (path.Length != 0) {
+            ChipSaver.Export(currentChip, path);
+        }
+    }
+
+    public void Update()
+    {
+        if (focused) {
+            if (Input.GetMouseButtonDown(0) ||
+                Input.GetMouseButtonDown(1) ||
+                Input.GetMouseButtonDown(2))
+            {
+                Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
+
+                if(hit.collider != null) {
+                    // If click is outside the panel
+                    if (hit.collider.name != panel.name) {
+                        CloseEditChipMenu();
+                    }
+                }
+            }
+        }
+    }
 }

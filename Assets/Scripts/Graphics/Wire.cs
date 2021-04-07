@@ -5,9 +5,11 @@ using UnityEngine;
 public class Wire : MonoBehaviour {
 
 	public Material simpleMat;
+
 	LineRenderer lineRenderer;
 	public Color editCol;
 	public Palette palette;
+	//public Color
 	public Color placedCol;
 	public float curveSize = 0.5f;
 	public int resolution = 10;
@@ -16,9 +18,12 @@ public class Wire : MonoBehaviour {
 	bool selected;
 
 	bool wireConnected;
-	bool simActive = false;
-	[HideInInspector] public Pin startPin;
-	[HideInInspector] public Pin endPin;
+	// [HideInInspector] 
+	public Pin startPin;
+	// [HideInInspector] 
+	public Pin endPin;
+
+	public bool simActive = false;
 	EdgeCollider2D wireCollider;
 	public List<Vector2> anchorPoints { get; private set; }
 	List<Vector2> drawPoints;
@@ -48,6 +53,16 @@ public class Wire : MonoBehaviour {
 		}
 	}
 
+	public void tellWireSimIsOff()
+	{
+		simActive = false;
+	}
+
+	public void tellWireSimIsOn()
+	{
+		simActive = true;
+	}
+
 	public void SetAnchorPoints (Vector2[] newAnchorPoints) {
 		anchorPoints = new List<Vector2> (newAnchorPoints);
 		UpdateSmoothedLine ();
@@ -60,7 +75,7 @@ public class Wire : MonoBehaviour {
 	}
 
 	void LateUpdate () {
-		SetWireCol();
+		SetWireCol ();
 		if (wireConnected) {
 			float depthOffset = 5;
 
@@ -95,18 +110,7 @@ public class Wire : MonoBehaviour {
 		}
 	}
 
-
-	public void tellWireSimIsOff()
-	{
-		simActive = false;
-	}
-
-	public void tellWireSimIsOn()
-	{
-		simActive = true;
-	}
-
-	void SetWireCol () {
+	void SetWireCol() {
 		if (wireConnected) {
 			Color onCol = palette.onCol;
 			Color offCol = palette.offCol;
@@ -115,9 +119,7 @@ public class Wire : MonoBehaviour {
 			if (ChipOutputPin.State == -1) {
 				onCol = palette.highZCol;
 				offCol = palette.highZCol;
-			}
-
-			if (simActive) {
+			} if (simActive) {
 				if (startPin.wireType != Pin.WireType.Simple) {
 					mat.color = (ChipOutputPin.State == 0) ? offCol : palette.busColor;
 				} else {
