@@ -13,6 +13,7 @@
 # To ignore some local things
 /UserSettings/
 /Digital Logic Sim.app/
+*Digital Logic Sim*
 *.DS_Store
 
 # Never ignore Asset meta data
@@ -62,4 +63,3 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
-

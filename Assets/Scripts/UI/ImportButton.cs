@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using SFB;
 
 public class ImportButton : MonoBehaviour
 {
@@ -15,13 +16,19 @@ public class ImportButton : MonoBehaviour
     }
 
     void ImportChip() {
-        string path = EditorUtility.OpenFilePanel(
-            "Import chip design",
-            "",
-            "dls"
-        );
-        ChipLoader.Import(path);
-        EditChipBar();
+        var extensions = new[] {
+            new ExtensionFilter("Chip desig", "dls"),
+        };
+
+
+        StandaloneFileBrowser.OpenFilePanelAsync("Import chip design", "", extensions, true, (string[] paths) => {
+            if (paths[0] != null && paths[0] != "") {
+
+                ChipLoader.Import(paths[0]);
+                EditChipBar();
+            }
+        });
+        
     }
 
     void EditChipBar()

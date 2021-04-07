@@ -1,0 +1,145 @@
+fileFormatVersion: 2
+guid: 7d459a96865cc4aaab657012c6dc4833
+timeCreated: 1491979494
+licenseType: Pro
+PluginImporter:
+  serializedVersion: 2
+  iconMap: {}
+  executionOrder: {}
+  isPreloaded: 0
+  isOverridable: 0
+  platformData:
+    data:
+      first:
+        '': Any
+      second:
+        enabled: 0
+        settings:
+          Exclude Android: 1
+          Exclude Editor: 0
+          Exclude Linux: 1
+          Exclude Linux64: 1
+          Exclude LinuxUniversal: 1
+          Exclude OSXIntel: 1
+          Exclude OSXIntel64: 1
+          Exclude OSXUniversal: 1
+          Exclude WebGL: 1
+          Exclude Win: 0
+          Exclude Win64: 0
+          Exclude iOS: 1
+    data:
+      first:
+        '': Editor
+      second:
+        enabled: 0
+        settings:
+          CPU: AnyCPU
+          OS: AnyOS
+    data:
+      first:
+        Android: Android
+      second:
+        enabled: 0
+        settings:
+          CPU: ARMv7
+    data:
+      first:
+        Any: 
+      second:
+        enabled: 0
+        settings: {}
+    data:
+      first:
+        Editor: Editor
+      second:
+        enabled: 1
+        settings:
+          DefaultValueInitialized: true
+    data:
+      first:
+        Facebook: Win
+      second:
+        enabled: 0
+        settings:
+          CPU: AnyCPU
+    data:
+      first:
+        Facebook: Win64
+      second:
+        enabled: 0
+        settings:
+          CPU: AnyCPU
+    data:
+      first:
+        Standalone: Linux
+      second:
+        enabled: 0
+        settings:
+          CPU: None
+    data:
+      first:
+        Standalone: Linux64
+      second:
+        enabled: 0
+        settings:
+          CPU: None
+    data:
+      first:
+        Standalone: LinuxUniversal
+      second:
+        enabled: 0
+        settings:
+          CPU: None
+    data:
+      first:
+        Standalone: OSXIntel
+      second:
+        enabled: 0
+        settings:
+          CPU: None
+    data:
+      first:
+        Standalone: OSXIntel64
+      second:
+        enabled: 0
+        settings:
+          CPU: None
+    data:
+      first:
+        Standalone: OSXUniversal
+      second:
+        enabled: 0
+        settings:
+          CPU: None
+    data:
+      first:
+        Standalone: Win
+      second:
+        enabled: 1
+        settings:
+          CPU: AnyCPU
+    data:
+      first:
+        Standalone: Win64
+      second:
+        enabled: 1
+        settings:
+          CPU: AnyCPU
+    data:
+      first:
+        Windows Store Apps: WindowsStoreApps
+      second:
+        enabled: 0
+        settings:
+          CPU: AnyCPU
+    data:
+      first:
+        iPhone: iOS
+      second:
+        enabled: 0
+        settings:
+          CompileFlags: 
+          FrameworkDependencies: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

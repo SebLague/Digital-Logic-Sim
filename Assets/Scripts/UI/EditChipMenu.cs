@@ -2,12 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
-using UnityEditor;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Diagnostics;
 using System;
+using SFB;
 
 public class EditChipMenu : MonoBehaviour
 {
@@ -148,13 +148,7 @@ public class EditChipMenu : MonoBehaviour
 
     public void ExportChip()
     {
-        string path = EditorUtility.SaveFilePanel(
-            "Export chip design",
-            "",
-            currentChip.chipName + ".dls",
-            "dls"
-        );
-
+        string path = StandaloneFileBrowser.SaveFilePanel("Export chip design", "", currentChip.chipName + ".dls", "dls");
         if (path.Length != 0) {
             ChipSaver.Export(currentChip, path);
         }
