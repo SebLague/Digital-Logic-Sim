@@ -55,6 +55,7 @@ public class EditChipMenu : MonoBehaviour
         chipNameField.text = chip.chipName;
         nameBeforeChanging = chip.chipName;
         doneButton.interactable = true;
+        chipNameField.interactable = ChipSaver.IsSafeToDelete(nameBeforeChanging);
         deleteButton.interactable = ChipSaver.IsSafeToDelete(nameBeforeChanging);
         viewButton.interactable = chip.canBeEdited;
         exportButton.interactable = chip.canBeEdited;
@@ -66,7 +67,6 @@ public class EditChipMenu : MonoBehaviour
     {
         string formattedName = value.ToUpper();
         doneButton.interactable = IsValidChipName(formattedName.Trim());
-        chipNameField.interactable = IsValidChipName(formattedName.Trim());
         chipNameField.text = formattedName;
     }
 
@@ -104,12 +104,10 @@ public class EditChipMenu : MonoBehaviour
         };
 
         // If chipName is in notValidArray then is not a valid name
-        if (notValidArray.Any(chipName.Contains)) {
-            return false;
-        } else if (chipName.Length != 0) {
-            return false;
-        } else {
+        if (!notValidArray.Any(chipName.Contains) && chipName.Length != 0) {
             return true;
+        } else {
+            return false;
         }
     }
 

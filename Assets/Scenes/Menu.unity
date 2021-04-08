@@ -1205,7 +1205,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Version 0.32 - Unofficial <size=25><color=#505050> (7 Apr 2021)</color></size>
+  m_text: Version 0.33 - Unofficial <size=25><color=#505050> (8 Apr 2021)</color></size>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3181,9 +3181,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.033947855
+    y: 0.0022194684
     width: 1
-    height: 0.9321043
+    height: 0.99556106
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -4639,10 +4639,11 @@ MonoBehaviour:
     chips. This PR resolves issue #10 and relates to issue #32. Menu is opened when
     user right clicks one of their custom chips. Deleting is only allowed if no other
     chip depends on it. Renaming is only allowed if it is an unused name.\n\n<size=header><color=header><color=#75ADFF><link=\"https://github.com/Tigralt\">Tigralt</link></color>
-    - Import/Export/Edit/View Chips</color></size>\nImproves  <color=#75ADFF>gml16</color>'s
-    'Edit Chips Menu'. New Features: View created chips, edit them and save the changes.
-    Export chips to share them and import them to the program. Also adds OR and XOR
-    as default gates. \n\n<size=header><color=header><color=#75ADFF><link=\"https://github.com/sagitarious12\">sagitarious12</link></color>
+    - Import/Export/Edit/View Chips & Persistent Settings</color></size>\nImproves 
+    <color=#75ADFF>gml16</color>'s 'Edit Chips Menu'. New Features: View created
+    chips, edit them and save the changes. Export chips to share them and import
+    them to the program. Also adds OR and XOR as default gates. Also added persistent
+    settings.\n\n<size=header><color=header><color=#75ADFF><link=\"https://github.com/sagitarious12\">sagitarious12</link></color>
     - Set Group Size</color></size>\nThis adds a button on the left side just above
     where the input pins are which allows for setting the group size in game. Group
     sizing was built but it was inaccessible to those that downloaded the game without
@@ -4657,10 +4658,10 @@ MonoBehaviour:
     many bits from one place to another and your board will be full of wires. So
     wires that can transfer 4bits, 8bits, 16bits and more at once can become very
     useful and make your project look much better.\n\n<size=header><color=header><color=#75ADFF><link=\"https://github.com/AOx0\">AOx0</link></color>
-    - Run/Stop Button</color></size>\nMerged all forks and tweaked all to compile.
-    Pause/Play the simulation when you want, i thought this would solve the program's
-    bad performance on macOS but turned out it didn't, still is a pretty button-option
-    to have."
+    - Run/Stop Button</color></size>\nMerged all forks and tweaked everything for
+    the program to compile. Pause/Play the simulation when you want, i thought this
+    would solve the program's bad performance on macOS but turned out it didn't,
+    still is a pretty button-option to have."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6949,10 +6950,11 @@ MonoBehaviour:
     chips. This PR resolves issue #10 and relates to issue #32. Menu is opened when
     user right clicks one of their custom chips. Deleting is only allowed if no other
     chip depends on it. Renaming is only allowed if it is an unused name.\n\n<size=30><color=#DDDDDD><color=#75ADFF><link=\"https://github.com/Tigralt\">Tigralt</link></color>
-    - Import/Export/Edit/View Chips</color></size>\nImproves  <color=#75ADFF>gml16</color>'s
-    'Edit Chips Menu'. New Features: View created chips, edit them and save the changes.
-    Export chips to share them and import them to the program. Also adds OR and XOR
-    as default gates. \n\n<size=30><color=#DDDDDD><color=#75ADFF><link=\"https://github.com/sagitarious12\">sagitarious12</link></color>
+    - Import/Export/Edit/View Chips & Persistent Settings</color></size>\nImproves 
+    <color=#75ADFF>gml16</color>'s 'Edit Chips Menu'. New Features: View created
+    chips, edit them and save the changes. Export chips to share them and import
+    them to the program. Also adds OR and XOR as default gates. Also added persistent
+    settings.\n\n<size=30><color=#DDDDDD><color=#75ADFF><link=\"https://github.com/sagitarious12\">sagitarious12</link></color>
     - Set Group Size</color></size>\nThis adds a button on the left side just above
     where the input pins are which allows for setting the group size in game. Group
     sizing was built but it was inaccessible to those that downloaded the game without
@@ -6967,10 +6969,10 @@ MonoBehaviour:
     many bits from one place to another and your board will be full of wires. So
     wires that can transfer 4bits, 8bits, 16bits and more at once can become very
     useful and make your project look much better.\n\n<size=30><color=#DDDDDD><color=#75ADFF><link=\"https://github.com/AOx0\">AOx0</link></color>
-    - Run/Stop Button</color></size>\nMerged all forks and tweaked all to compile.
-    Pause/Play the simulation when you want, i thought this would solve the program's
-    bad performance on macOS but turned out it didn't, still is a pretty button-option
-    to have."
+    - Run/Stop Button</color></size>\nMerged all forks and tweaked everything for
+    the program to compile. Pause/Play the simulation when you want, i thought this
+    would solve the program's bad performance on macOS but turned out it didn't,
+    still is a pretty button-option to have."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
