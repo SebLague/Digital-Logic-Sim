@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEditor;
 using SFB;
 
 public class ImportButton : MonoBehaviour
@@ -17,7 +14,7 @@ public class ImportButton : MonoBehaviour
 
     void ImportChip() {
         var extensions = new[] {
-            new ExtensionFilter("Chip desig", "dls"),
+            new ExtensionFilter("Chip design", "dls"),
         };
 
 

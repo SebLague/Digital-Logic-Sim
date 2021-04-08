@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 using System;
-using System.IO.Compression;
 
 public static class ChipSaver {
 
@@ -154,10 +151,16 @@ public static class ChipSaver {
 
 	public static bool IsSafeToDelete(string chipName)
 	{
-		if (chipName == "AND" || chipName == "NOT"  || chipName == "OR"  || chipName == "XOR")
-		{
+		String[] notValidArray = {
+			"AND", "NOT", "OR", "XOR", "HDD",
+			"4 BIT ENCODER", "4 BIT DECODER",
+			"8 BIT ENCODER", "8 BIT DECODER",
+			"16 BIT ENCODER", "16 BIT DECODER"
+		};
+		if (notValidArray.Any(chipName.Contains)) {
 			return false;
 		}
+
 		SavedChip[] savedChips = SaveSystem.GetAllSavedChips();
 		for (int i = 0; i < savedChips.Length; i++)
 		{

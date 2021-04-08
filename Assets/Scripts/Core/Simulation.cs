@@ -14,8 +14,15 @@ public class Simulation : MonoBehaviour {
 	float lastStepTime;
 
 	public void ToogleActive() {
+		// Method called by the "Run/Stop" button that toogles simulation active/inactive
 		active = !active;
-		if (!active) { StepSimulation(); }
+
+		simulationFrame++;
+		if (active) {
+			ResumeSimulation();
+		} else {
+			StopSimulation();
+		}
     }
 
 	void Awake () {
@@ -24,8 +31,11 @@ public class Simulation : MonoBehaviour {
 	
 
 	void Update () {
+
+		// If simulation is off StepSimulation is not executed. 
 		if (Time.time - lastStepTime > minStepTime && active) {
 			lastStepTime = Time.time;
+			simulationFrame++;
 			StepSimulation ();
 		}
 	}
@@ -45,29 +55,36 @@ public class Simulation : MonoBehaviour {
 		}
 	}
 
-	void StepSimulation () {
-		simulationFrame++;
-
+	void StopSimulation() {
 		RefreshChipEditorReference();
-
-		if (active) {
-			ClearOutputSignals();
-			InitChips();
-			ProcessInputs();
-		}
-        
 
 		var allWires = chipEditor.pinAndWireInteraction.allWires;
 		for (int i = 0; i < allWires.Count; i++) {
-			if (!active) {
-				allWires[i].tellWireSimIsOff();
-			} else {
-				allWires[i].tellWireSimIsOn();
-			}
+			// Tell all wires the simulation is inactive makes them all inactive (gray colored)
+			allWires[i].tellWireSimIsOff();
 		}
 
-		if (!active) { ClearOutputSignals(); }
-		
+		// If sim is not active all output signals are set with a temporal value of 0
+		// (group signed/unsigned displayed value) and get gray colored (turned off)
+		ClearOutputSignals();
+	}
+
+	void ResumeSimulation() {
+		StepSimulation();
+
+		var allWires = chipEditor.pinAndWireInteraction.allWires;
+		for (int i = 0; i < allWires.Count; i++)
+		{
+			// Tell all wires the simulation is active makes them all active (dynamic colored based on the circuits logic)
+			allWires[i].tellWireSimIsOn();
+		}
+	}
+
+	void StepSimulation () {
+		RefreshChipEditorReference();
+		ClearOutputSignals();
+		InitChips();
+		ProcessInputs();		
 	}
 
     private void InitChips() {
