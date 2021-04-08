@@ -1,13 +1,9 @@
-﻿using System.CodeDom;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Remoting.Messaging;
-using UnityEngine;
+﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-using System.Diagnostics;
 using System;
 using SFB;
+using System.Linq;
 
 public class EditChipMenu : MonoBehaviour
 {
@@ -70,6 +66,7 @@ public class EditChipMenu : MonoBehaviour
     {
         string formattedName = value.ToUpper();
         doneButton.interactable = IsValidChipName(formattedName.Trim());
+        chipNameField.interactable = IsValidChipName(formattedName.Trim());
         chipNameField.text = formattedName;
     }
 
@@ -99,11 +96,21 @@ public class EditChipMenu : MonoBehaviour
 
     public bool IsValidChipName(string chipName)
     {
-        return chipName != "AND" &&
-               chipName != "NOT" &&
-               chipName != "XOR" &&
-               chipName != "OR"  &&
-               chipName.Length != 0;
+        String[] notValidArray = {
+            "AND", "NOT", "OR", "XOR", "HDD",
+            "4 BIT ENCODER", "4 BIT DECODER",
+            "8 BIT ENCODER", "8 BIT DECODER",
+            "16 BIT ENCODER", "16 BIT DECODER"
+        };
+
+        // If chipName is in notValidArray then is not a valid name
+        if (notValidArray.Any(chipName.Contains)) {
+            return false;
+        } else if (chipName.Length != 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public void DeleteChip()
