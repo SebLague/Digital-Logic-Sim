@@ -15,4 +15,5 @@ MonoBehaviour:
   onCol: {r: 0.9245283, g: 0.13519046, b: 0.21901982, a: 1}
   offCol: {r: 0.1254902, g: 0.14117648, b: 0.18039216, a: 1}
   highZCol: {r: 0, g: 0, b: 0, a: 0}
+  busColor: {r: 0.39488173, g: 1, b: 0, a: 1}
   nonInteractableCol: {r: 0.24528301, g: 0.24528301, b: 0.24528301, a: 1}

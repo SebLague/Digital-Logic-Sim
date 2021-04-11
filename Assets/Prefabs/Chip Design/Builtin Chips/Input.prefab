@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 761073645497421232}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.709, y: 2.2, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 46390951077938526}
@@ -52,6 +52,7 @@ MonoBehaviour:
   outputPins:
   - {fileID: 1644414816724565277}
   bounds: {fileID: 0}
+  currentState: 0
   palette: {fileID: 11400000, guid: bed15cc57ce1e4a35bde62f3a99891c7, type: 2}
   indicatorRenderer: {fileID: 8517369164244439844}
   pinRenderer: {fileID: 3784613928615055263}

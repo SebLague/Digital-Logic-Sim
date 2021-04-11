@@ -15,6 +15,7 @@ public class ChipSignal : Chip {
 	int groupID = -1;
 	public bool displayGroupDecimalValue { get; set; } = false;
 	public bool useTwosComplement { get; set; } = true;
+	public Pin.WireType wireType = Pin.WireType.Simple;
 
 	[HideInInspector]
 	public string signalName;

@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 // Allows player to add/remove/move/rename inputs or outputs of a chip.
 public class ChipInterfaceEditor : InteractionHandler {
 
-	const int maxGroupSize = 8;
+	const int maxGroupSize = 16;
 
 	public event System.Action<Chip> onDeleteChip;
 	public event System.Action onChipsAddedOrDeleted;
@@ -25,6 +26,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 	public TMPro.TMP_InputField nameField;
 	public UnityEngine.UI.Button deleteButton;
 	public UnityEngine.UI.Toggle twosComplementToggle;
+	public TMPro.TMP_Dropdown modeDropdown;
 	public Transform signalHolder;
 
 	[Header ("Appearance")]
@@ -36,6 +38,13 @@ public class ChipInterfaceEditor : InteractionHandler {
 	public Vector2 propertiesHeightMinMax;
 	public bool showPreviewSignal;
 	public float groupSpacing = 1;
+
+	string currentEditorName;
+	public ChipEditor CurrentEditor {
+		set {
+			currentEditorName = value.chipName;
+		}
+	}
 
 	ChipSignal highlightedSignal;
 	public List<ChipSignal> selectedSignals { get; private set; }
@@ -82,6 +91,37 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 		propertiesUI.gameObject.SetActive (false);
 		deleteButton.onClick.AddListener (DeleteSelected);
+		FindObjectOfType<CreateGroup> ().onGroupSizeSettingPressed += SetGroupSize;
+		modeDropdown.onValueChanged.AddListener(ModeChanged);
+	}
+
+	// Event handler when changed input or output pin wire type
+	private void ModeChanged(int mode)
+	{
+		if (selectedSignals.Count == 0)
+			return;
+
+		//Change output pin wire mode
+		foreach (var pin in selectedSignals.SelectMany(x => x.inputPins))
+		{
+			pin.wireType = (Pin.WireType)mode;
+		}
+
+		//Change input pin wire mode
+		if (selectedSignals[0] is InputSignal)
+		{
+			foreach (InputSignal signal in selectedSignals)
+			{
+				var pin = signal.outputPins[0];
+				if (pin == null)
+					return;
+				pin.wireType = (Pin.WireType)mode;
+				//Turn off input pin
+				if (pin.State == 1)
+					signal.ToggleActive();
+			}
+		}
+		//modeDropdown.SetValueWithoutNotify(0);
 	}
 
 	public override void OrderedUpdate () {
@@ -92,8 +132,19 @@ public class ChipInterfaceEditor : InteractionHandler {
 		DrawSignalHandles ();
 	}
 
-	public void LoadSignal (ChipSignal signal) {
+	void SetGroupSize (int groupSize) {
+		currentGroupSize = groupSize;
+	}
+
+	public void LoadSignal (InputSignal signal) {
 		signal.transform.parent = signalHolder;
+		signal.signalName = signal.outputPins[0].pinName;
+		signals.Add (signal);
+	}
+
+	public void LoadSignal (OutputSignal signal) {
+		signal.transform.parent = signalHolder;
+		signal.signalName = signal.inputPins[0].pinName;
 		signals.Add (signal);
 	}
 
@@ -108,6 +159,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 		if (HasFocus) {
 
 			highlightedSignal = GetSignalUnderMouse ();
+
 
 			// If a signal is highlighted (mouse is over its handle), then select it on mouse press
 			if (highlightedSignal) {
@@ -346,6 +398,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 	void SelectSignal (ChipSignal signalToDrag) {
 		// Dragging
 		selectedSignals.Clear ();
+
 		for (int i = 0; i < signals.Count; i++) {
 			if (signals[i] == signalToDrag || ChipSignal.InSameGroup (signals[i], signalToDrag)) {
 				selectedSignals.Add (signals[i]);
@@ -354,6 +407,20 @@ public class ChipInterfaceEditor : InteractionHandler {
 		bool isGroup = selectedSignals.Count > 1;
 
 		isDragging = true;
+
+		var wireType = Pin.WireType.Simple;
+		if (selectedSignals[0] is InputSignal)
+		{
+			var signal = selectedSignals[0];
+			var pin = signal.outputPins[0];
+			wireType = pin.wireType;
+		}
+		if (selectedSignals[0] is OutputSignal)
+		{
+			var signal = selectedSignals[0];
+			var pin = signal.inputPins[0];
+			wireType = pin.wireType;
+		}
 
 		dragMouseStartY = InputHelper.MouseWorldPos.y;
 		if (selectedSignals.Count % 2 == 0) {
@@ -372,8 +439,12 @@ public class ChipInterfaceEditor : InteractionHandler {
 		nameField.caretPosition = nameField.text.Length;
 		twosComplementToggle.gameObject.SetActive (isGroup);
 		twosComplementToggle.isOn = selectedSignals[0].useTwosComplement;
+		modeDropdown.gameObject.SetActive(!isGroup);
+		deleteButton.interactable = ChipSaver.IsSignalSafeToDelete(currentEditorName, signalToDrag.signalName);
 		UpdateUIProperties ();
 
+		modeDropdown.SetValueWithoutNotify((int)wireType);
+		UpdateUIProperties ();
 	}
 
 	void DeleteSelected () {

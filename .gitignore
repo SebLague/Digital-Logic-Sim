@@ -10,6 +10,13 @@
 /[Ll]ogs/
 /[Mm]emoryCaptures/
 
+# To ignore some local things
+/UserSettings/
+/Digital Logic Sim.app/
+*Digital Logic Sim*
+*.DS_Store
+/.vscode/
+
 # Never ignore Asset meta data
 !/[Aa]ssets/**/*.meta
 
@@ -57,4 +64,3 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
-

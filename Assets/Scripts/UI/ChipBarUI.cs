@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,14 +14,27 @@ public class ChipBarUI : MonoBehaviour {
 	public List<string> hideList;
 	public Scrollbar horizontalScroll;
 
+	public List<CustomButton> customButton = new List<CustomButton>();
+
 	void Awake () {
 		manager = FindObjectOfType<Manager> ();
 		manager.customChipCreated += AddChipButton;
-		for (int i = 0; i < manager.builtinChips.Length; i++) {
-			AddChipButton (manager.builtinChips[i]);
-		}
+		manager.customChipUpdated += UpdateChipButton;
+		ReloadBar();
+	}
 
-		Canvas.ForceUpdateCanvases ();
+	public void ReloadBar()
+    {	
+		foreach(CustomButton button in customButton)
+        {
+			Destroy(button.gameObject);
+		}
+		customButton.Clear();
+		for (int i = 0; i < manager.builtinChips.Length; i++)
+		{
+			AddChipButton(manager.builtinChips[i]);
+		}
+		Canvas.ForceUpdateCanvases();
 	}
 
 	void LateUpdate () {
@@ -56,7 +68,22 @@ public class ChipBarUI : MonoBehaviour {
 
 		// Set button event
 		//button.onClick.AddListener (() => manager.SpawnChip (chip));
-		button.onPointerDown += (() => manager.SpawnChip (chip));
+		button.AddListener(() => manager.SpawnChip (chip));
+
+		customButton.Add(button);
+	}
+
+	void UpdateChipButton (Chip chip) {
+		if (hideList.Contains (chip.chipName)) {
+			//Debug.Log("Hiding")
+			return;
+		}
+
+		CustomButton button = customButton.Find(g => g.name == "Create (" + chip.chipName + ")");
+		if (button != null) {
+			button.ClearEvents();
+			button.AddListener(() => manager.SpawnChip (chip));
+		}
 	}
 
 }

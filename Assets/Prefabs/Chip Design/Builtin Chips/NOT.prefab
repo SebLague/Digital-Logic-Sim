@@ -55,6 +55,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -79,6 +80,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &319214579187376044
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,16 +160,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pinType: 0
+  wireType: 0
   chip: {fileID: 1267900139923996690}
   pinName: IN
-  interactable: 1
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
   childPins: []
-  currentState: 0
-  sequentialState: 0
-  lastInputSimulationFrame: 0
 --- !u!58 &768468710238907868
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -207,6 +206,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -231,6 +231,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &2212649132965788341
 GameObject:
   m_ObjectHideFlags: 0
@@ -258,7 +259,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2212649132965788341}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.06935847, y: -0.41493428, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3234827502093921508}
@@ -283,6 +284,7 @@ MonoBehaviour:
   - {fileID: 177712572887147738}
   outputPins:
   - {fileID: 2075130120421150586}
+  canBeEdited: 0
   bounds: {fileID: 0}
   packageColour: {r: 0.54901963, g: 0.16862746, b: 0.14117648, a: 0}
 --- !u!114 &-7470250890380526709
@@ -338,7 +340,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2886115464730570707}
   - component: {fileID: 2886115464730570718}
-  - component: {fileID: 2886115464730570717}
   - component: {fileID: 2886115464730570716}
   m_Layer: 0
   m_Name: Chip Name
@@ -381,6 +382,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -405,14 +407,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!222 &2886115464730570717
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2886115464730570706}
-  m_CullTransparentMesh: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &2886115464730570716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,6 +423,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -501,6 +497,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 2886115464730570718}
   m_maskType: 0
+  _SortingLayer: 0
   _SortingLayerID: 0
   _SortingOrder: 0
 --- !u!1 &8884909147540553020
@@ -582,16 +579,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pinType: 1
+  wireType: 0
   chip: {fileID: 1267900139923996690}
   pinName: OUT
-  interactable: 1
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
   childPins: []
-  currentState: 0
-  sequentialState: 0
-  lastInputSimulationFrame: 0
 --- !u!58 &5042285142486190648
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -631,6 +625,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -655,3 +650,4 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}

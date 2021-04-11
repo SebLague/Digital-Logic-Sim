@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 // Provides input signal (0 or 1) to a chip.
 // When designing a chip, this input signal can be manually set to 0 or 1 by the player.
@@ -21,6 +22,12 @@ public class InputSignal : ChipSignal {
 		SetCol ();
 	}
 
+	public void SendOffSignal()
+	{
+		outputPins[0].ReceiveSignal(0);
+		SetCol();
+	}
+
 	public void SendSignal () {
 		outputPins[0].ReceiveSignal (currentState);
 	}
@@ -35,6 +42,8 @@ public class InputSignal : ChipSignal {
 	}
 
 	void OnMouseDown () {
-		ToggleActive ();
+		// Allow only to click on single wires, not on bus wires
+		if(outputPins.All(x => x.wireType == Pin.WireType.Simple))
+			ToggleActive ();
 	}
 }
