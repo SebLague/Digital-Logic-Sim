@@ -16,7 +16,17 @@ public static class ChipLoader {
 			using (StreamReader reader = new StreamReader(chipPaths[i]))
 			{
 				string chipSaveString = reader.ReadToEnd();
-				savedChips[i] = JsonUtility.FromJson<SavedChip>(chipSaveString);
+
+				// If the save does not contain wireType and contains outputPinNames then its a previous version save (v 0.25 expected)
+				if (!chipSaveString.Contains("wireType") || chipSaveString.Contains("outputPinNames") || !chipSaveString.Contains("outputPins")) {
+
+					// An update is made to the save string and returned
+					string updatedSave = SaveCompatibility.FixSaveCompatibility(chipSaveString);
+					savedChips[i] = JsonUtility.FromJson<SavedChip>(updatedSave);
+				} else {
+					savedChips[i] = JsonUtility.FromJson<SavedChip>(chipSaveString);
+				}
+				
 			}
 		}
 		return savedChips;
