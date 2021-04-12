@@ -82,6 +82,7 @@ public class ChipInterfaceEditor : InteractionHandler {
 
 		propertiesUI.gameObject.SetActive (false);
 		deleteButton.onClick.AddListener (DeleteSelected);
+		FindObjectOfType<CreateGroup> ().onGroupSizeSettingPressed += SetGroupSize;
 	}
 
 	public override void OrderedUpdate () {
@@ -90,6 +91,10 @@ public class ChipInterfaceEditor : InteractionHandler {
 			HandleInput ();
 		}
 		DrawSignalHandles ();
+	}
+
+	void SetGroupSize (int groupSize) {
+		currentGroupSize = groupSize;
 	}
 
 	public void LoadSignal (ChipSignal signal) {
