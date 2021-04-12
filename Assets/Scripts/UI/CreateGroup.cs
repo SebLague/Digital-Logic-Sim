@@ -15,6 +15,8 @@ public class CreateGroup : MonoBehaviour
 
     int groupSizeValue;
 
+    int groupSizeMax = 8;
+
     // Start is called before the first frame update
     void Start ()
     {
@@ -23,7 +25,8 @@ public class CreateGroup : MonoBehaviour
     }
 
     void SetCurrentText (string groupSize) {
-        groupSizeValue = int.Parse(groupSize);
+        int value = int.Parse(groupSize);
+        value > 8 ? groupSizeValue = groupSizeMax : groupSizeValue = value;
     }
 
     void CloseMenu () {
