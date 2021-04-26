@@ -9,8 +9,8 @@ public class DisplayScreen : BuiltinChip
 {
     public Renderer textureRender;
     public const int SIZE = 8;
+    private string editCoords;
     Texture2D texture;
-    string editCoords;
     int[] texCoords;
 
     public static Texture2D CreateSolidTexture2D(Color color, int width, int height = -1) {
@@ -43,11 +43,11 @@ public class DisplayScreen : BuiltinChip
     //update display here
 	protected override void ProcessOutput() {
         editCoords = "";
-        for (int i = 0; i < 6; i++) {
-			editCoords += inputPins[i].State.ToString();
-		}
+        for(int i = 6; i < 12; i++) {
+            editCoords += inputPins[i].State.ToString();
+        }
         texCoords = map2d(Convert.ToInt32(editCoords, 2), SIZE);
-        texture.SetPixel(texCoords[0], texCoords[1], new Color(inputPins[6].State, inputPins[6].State, inputPins[6].State));
+        texture.SetPixel(texCoords[0], texCoords[1], new Color(Convert.ToInt32(inputPins[0].State.ToString() + inputPins[1].State.ToString(), 2) / 2f, Convert.ToInt32(inputPins[2].State.ToString() + inputPins[3].State.ToString(), 2) / 2f, Convert.ToInt32(inputPins[4].State.ToString() + inputPins[5].State.ToString(), 2)) / 2f);
         texture.Apply();
     }
 }

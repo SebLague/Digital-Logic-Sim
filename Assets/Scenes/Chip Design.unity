@@ -5399,10 +5399,10 @@ Camera:
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.08956522
-    y: 0
-    width: 0.82086957
-    height: 1
+    x: 0
+    y: 0.018284589
+    width: 1
+    height: 0.9634308
   near clip plane: 0.3
   far clip plane: 1500
   field of view: 60
@@ -5416,7 +5416,7 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 1
+  m_HDR: 0
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
@@ -6909,7 +6909,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 23.179932, y: 1010.7}
+  m_AnchoredPosition: {x: 23.179932, y: 1010.7001}
   m_SizeDelta: {x: 51, y: 35.02}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1287204966
