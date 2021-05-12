@@ -45,24 +45,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebdca5816a0f64de49dfb5974430306c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sequentialTimeStart: 0
-  sequentialTimeEnd: 0
-  sequentialMat: {fileID: 2100000, guid: 1dd2bab02026a4b04b5bd16d6b132cda, type: 2}
   simpleMat: {fileID: 2100000, guid: 0e3c3d148264a480d9fd4a7a95df012d, type: 2}
   editCol: {r: 0, g: 0, b: 0, a: 0}
-  validCol: {r: 0.29236382, g: 0.8490566, b: 0.38828322, a: 0}
-  invalidCol: {r: 0.8113208, g: 0.2793699, b: 0.2793699, a: 0}
   palette: {fileID: 11400000, guid: bed15cc57ce1e4a35bde62f3a99891c7, type: 2}
   placedCol: {r: 0, g: 0, b: 0, a: 0}
   curveSize: 0.3
-  resolution: 30
+  resolution: 20
   thickness: 0.5
   selectedThickness: 0.85
-  wireConnected: 0
   startPin: {fileID: 0}
   endPin: {fileID: 0}
-  length: 0
-  displayState: 0
+  simActive: 0
 --- !u!120 &6549714788495146857
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -78,10 +71,11 @@ LineRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1dd2bab02026a4b04b5bd16d6b132cda, type: 2}
+  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -178,3 +172,7 @@ EdgeCollider2D:
   m_Points:
   - {x: -0.024999976, y: 0}
   - {x: 1.055, y: 0}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0

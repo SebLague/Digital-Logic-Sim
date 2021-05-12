@@ -9,7 +9,7 @@ public class SavedComponentChip {
 	public double posY;
 
 	public SavedInputPin[] inputPins;
-	public string[] outputPinNames;
+	public SavedOutputPin[] outputPins;
 
 	public SavedComponentChip (ChipSaveData chipSaveData, Chip chip) {
 		chipName = chip.chipName;
@@ -25,10 +25,10 @@ public class SavedComponentChip {
 			inputPins[i] = new SavedInputPin (chipSaveData, chip.inputPins[i]);
 		}
 
-		// Output pins (only need to store names, connections are stored on input pins only)
-		outputPinNames = new string[chip.outputPins.Length];
+		// Output pins
+		outputPins = new SavedOutputPin[chip.outputPins.Length];
 		for (int i = 0; i < chip.outputPins.Length; i++) {
-			outputPinNames[i] = chip.outputPins[i].pinName;
+			outputPins[i] = new SavedOutputPin(chipSaveData, chip.outputPins[i]);
 		}
 	}
 

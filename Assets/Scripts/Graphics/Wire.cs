@@ -18,8 +18,12 @@ public class Wire : MonoBehaviour {
 	bool selected;
 
 	bool wireConnected;
-	[HideInInspector] public Pin startPin;
-	[HideInInspector] public Pin endPin;
+	// [HideInInspector] 
+	public Pin startPin;
+	// [HideInInspector] 
+	public Pin endPin;
+
+	public bool simActive = false;
 	EdgeCollider2D wireCollider;
 	public List<Vector2> anchorPoints { get; private set; }
 	List<Vector2> drawPoints;
@@ -47,6 +51,16 @@ public class Wire : MonoBehaviour {
 		get {
 			return (startPin.pinType == Pin.PinType.ChipOutput) ? startPin : endPin;
 		}
+	}
+
+	public void tellWireSimIsOff()
+	{
+		simActive = false;
+	}
+
+	public void tellWireSimIsOn()
+	{
+		simActive = true;
 	}
 
 	public void SetAnchorPoints (Vector2[] newAnchorPoints) {
@@ -96,7 +110,7 @@ public class Wire : MonoBehaviour {
 		}
 	}
 
-	void SetWireCol () {
+	void SetWireCol() {
 		if (wireConnected) {
 			Color onCol = palette.onCol;
 			Color offCol = palette.offCol;
@@ -105,8 +119,15 @@ public class Wire : MonoBehaviour {
 			if (ChipOutputPin.State == -1) {
 				onCol = palette.highZCol;
 				offCol = palette.highZCol;
+			} if (simActive) {
+				if (startPin.wireType != Pin.WireType.Simple) {
+					mat.color = (ChipOutputPin.State == 0) ? offCol : palette.busColor;
+				} else {
+					mat.color = (ChipOutputPin.State == 0) ? offCol : onCol;
+				}
+			} else {
+				mat.color = offCol;
 			}
-			mat.color = (ChipOutputPin.State == 0) ? offCol : onCol;
 		} else {
 			mat.color = Color.black;
 		}

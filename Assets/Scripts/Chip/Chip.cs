@@ -7,6 +7,7 @@ public class Chip : MonoBehaviour {
 	public string chipName = "Untitled";
 	public Pin[] inputPins;
 	public Pin[] outputPins;
+	public bool canBeEdited = false;
 
 	// Number of input signals received (on current simulation step)
 	int numInputSignalsReceived;
@@ -22,7 +23,7 @@ public class Chip : MonoBehaviour {
 	}
 
 	protected virtual void Start () {
-		SetPinIndices ();
+		SetPinIndices();
 	}
 
 	public void InitSimulationFrame () {
