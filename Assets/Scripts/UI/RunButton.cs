@@ -13,7 +13,7 @@ public class RunButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 	public Color nonInteractableCol = Color.grey;
 	public Color highlightedCol = Color.white;
 	bool highlighted;
-	public Simulation sim;
+	//public Simulation sim;
 
 	void Start()
 	{
@@ -25,10 +25,10 @@ public class RunButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 		Color col = (highlighted) ? highlightedCol : normalCol;
 		buttonText.color = (button.interactable) ? col : nonInteractableCol;
 
-		if (sim.active && buttonText.text != "STOP") {
+		if (Simulation.active && buttonText.text != "STOP") {
 			buttonText.text = "STOP";
 		}
-		else if (!sim.active && buttonText.text != "RUN") {
+		else if (!Simulation.active && buttonText.text != "RUN") {
 			buttonText.text = "RUN";
 		}
 	}

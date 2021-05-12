@@ -23,7 +23,7 @@ public class Chip : MonoBehaviour {
 	}
 
 	protected virtual void Start () {
-		SetPinIndices ();
+		SetPinIndices();
 	}
 
 	public void InitSimulationFrame () {

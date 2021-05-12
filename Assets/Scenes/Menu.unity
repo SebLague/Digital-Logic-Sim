@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.3587269, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1205,7 +1205,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Version 0.34 - Unofficial <size=25><color=#505050> (11 Apr 2021)</color></size>
+  m_text: Version 0.35 - Unofficial <size=25><color=#505050> (3 May 2021)</color></size>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1317,8 +1317,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 438.46, y: 0.000005722046}
-  m_SizeDelta: {x: 830.33, y: 47.91}
+  m_AnchoredPosition: {x: 703.69, y: 0.000005722046}
+  m_SizeDelta: {x: 1360.79, y: 47.91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &594853820
 MonoBehaviour:
@@ -1355,7 +1355,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: Created by <color=#75ADFF><link="https://www.youtube.com/c/SebastianLague">Sebastian
-    Lague</link></color> .  Pull requests merged by <color=#75ADFF><link="https://github.com/AOx0">AOx0</link></color>
+    Lague</link></color>.  Pull requests merged by <color=#75ADFF><link="https://github.com/AOx0">AOx0</link></color>.
+    Miscellaneous additions by <color=#75ADFF><link="https://github.com/Turnip1234">Turnip1234</link></color>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3180,10 +3181,10 @@ Camera:
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0
-    y: 0.2891949
-    width: 1
-    height: 0.42161018
+    x: 0.028799713
+    y: 0
+    width: 0.9424006
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -4003,7 +4004,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -4021,7 +4022,7 @@ Canvas:
   m_RenderMode: 1
   m_Camera: {fileID: 1211495237}
   m_PlaneDistance: 10
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
@@ -5386,8 +5387,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 33.8, y: -11.900002}
-  m_SizeDelta: {x: 1595.2964, y: 390.04993}
+  m_AnchoredPosition: {x: 33.8, y: -63.915}
+  m_SizeDelta: {x: 1595.3, y: 695.88}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1763289326
 MonoBehaviour:
@@ -5409,59 +5410,66 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<size=header><color=header>Overview</color></size>
-
-    You begin with
-    two types of chips: AND and NOT. From these you can build anything you want.
-
-    See
-    <color=link><link="https://www.youtube.com/playlist?list=PLFt_AvWsXl0dPhqVsKt1Ni_46ARyiCGSq">this
-    video series</link></color> if you''d like to have something to follow along
-    with.
+  m_text: '<size=1.5rem><color=header>if you''d like to have something to follow
+    along with, check out </color><color=link><link="https://www.youtube.com/playlist?list=PLFt_AvWsXl0dPhqVsKt1Ni_46ARyiCGSq">this
+    video series</link></color></size>
 
 
-    <size=header><color=header>Inputs and Outputs</color></size>
 
-    Add
-    inputs to your chip by clicking on the bar on the left side of the screen.
+    <size=header><color=red>EEPROM</color></size>
 
-    Press
-    + or - while hovering over the bar to increase/decrease the number of inputs
-    in the current group.
-
-    Outputs can be added in the same way (using the bar
-    on the right).
+    <size=1.2rem><color=white>Hover
+    over it with your mouse and press numpad plus to select a file, it will read
+    binary from the file at the specified address. You can have as many EEPROM sticks
+    as you want.</color></size>
 
 
-    <size=header><color=header>Adding Chips</color></size>
+    <size=header><color=red>KEYBOARD</color></size>
 
-    From
-    the bar on the bottom you can drag in chips to use as components in your current
-    chip design (click multiple times to stack and place multiple chips at once).
-    Initially only the built-in AND and NOT chips will be available, but as you create
-    new chips they will appear here as well. You can delete chips by selecting them
-    (which is done either by clicking on a chip, or clicking and dragging to select
-    multiple chips) and then pressing backspace.
+    <size=1.2rem><color=white>The
+    keyboard returns a binary number from 0-15 depending on the key you press. Currently,
+    these are the keys and their corresponding codes:</size><size=0.7rem>
+
+    {"W",
+    "0001"},
+
+    {"A", "0010"},
+
+    {"S", "0011"},
+
+    {"D", "0100"},
+
+    {"Space",
+    "0101"},
+
+    {"Q", "0110"},
+
+    {"C", "0111"},
+
+    {"V", "1000"},
+
+    {"E",
+    "1001"},
+
+    {"F", "1010"},
+
+    {"G", "1011"},
+
+    {"H", "1100"},
+
+    {"J",
+    "1101"},
+
+    {"K", "1110"},
+
+    {"L", "1111"}</color></size>
 
 
-    <size=header><color=header>Adding
-    Wires</color></size>
+    <size=header><color=red>DISP8</color></size>
 
-    Connect chips together by clicking on a pin (the black
-    dots) to start creating a wire. Then click on another pin to complete the connection.
-    Clicking over empty space while drawing the wire will allow you to lay out its
-    path. You can also hold shift to make the wires straight. To delete a wire, hover
-    the mouse over it and press backspace. To see the name of a pin, hold Alt while
-    hovering over it.
-
-
-    <size=header><color=header>Finally...</color></size>
-
-    You
-    can click on the inputs you''ve added to toggle them ON and OFF. The signal will
-    propagate through the wires and chips, up to the outputs you added. Once the
-    chip is behaving how you want, click the Create button in the top left. Give
-    the chip a name, and then confirm. You can then move on to making a new chip.'
+    <size=1.2rem><color=white>DISP8
+    is an 8x8 display, you give it an address and a 6-bit RGB color code and it sets
+    the pixel to the color, pretty simple.</color></size>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5728,8 +5736,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 33.8, y: 89}
-  m_SizeDelta: {x: 1595.2964, y: 390.04993}
+  m_AnchoredPosition: {x: 33.8, y: -63.915}
+  m_SizeDelta: {x: 1595.3, y: 695.88}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1883004877
 MonoBehaviour:
@@ -5765,59 +5773,66 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<size=30><color=#DDDDDD>Overview</color></size>
-
-    You begin with two
-    types of chips: AND and NOT. From these you can build anything you want.
-
-    See
-    <color=#75ACFF><link="https://www.youtube.com/playlist?list=PLFt_AvWsXl0dPhqVsKt1Ni_46ARyiCGSq">this
-    video series</link></color> if you''d like to have something to follow along
-    with.
+  m_text: '<size=1.5rem><color=#DDDDDD>if you''d like to have something to follow
+    along with, check out </color><color=#75ACFF><link="https://www.youtube.com/playlist?list=PLFt_AvWsXl0dPhqVsKt1Ni_46ARyiCGSq">this
+    video series</link></color></size>
 
 
-    <size=30><color=#DDDDDD>Inputs and Outputs</color></size>
 
-    Add
-    inputs to your chip by clicking on the bar on the left side of the screen.
+    <size=30><color=red>EEPROM</color></size>
 
-    Press
-    + or - while hovering over the bar to increase/decrease the number of inputs
-    in the current group.
-
-    Outputs can be added in the same way (using the bar
-    on the right).
+    <size=1.2rem><color=white>Hover
+    over it with your mouse and press numpad plus to select a file, it will read
+    binary from the file at the specified address. You can have as many EEPROM sticks
+    as you want.</color></size>
 
 
-    <size=30><color=#DDDDDD>Adding Chips</color></size>
+    <size=30><color=red>KEYBOARD</color></size>
 
-    From
-    the bar on the bottom you can drag in chips to use as components in your current
-    chip design (click multiple times to stack and place multiple chips at once).
-    Initially only the built-in AND and NOT chips will be available, but as you create
-    new chips they will appear here as well. You can delete chips by selecting them
-    (which is done either by clicking on a chip, or clicking and dragging to select
-    multiple chips) and then pressing backspace.
+    <size=1.2rem><color=white>The
+    keyboard returns a binary number from 0-15 depending on the key you press. Currently,
+    these are the keys and their corresponding codes:</size><size=0.7rem>
+
+    {"W",
+    "0001"},
+
+    {"A", "0010"},
+
+    {"S", "0011"},
+
+    {"D", "0100"},
+
+    {"Space",
+    "0101"},
+
+    {"Q", "0110"},
+
+    {"C", "0111"},
+
+    {"V", "1000"},
+
+    {"E",
+    "1001"},
+
+    {"F", "1010"},
+
+    {"G", "1011"},
+
+    {"H", "1100"},
+
+    {"J",
+    "1101"},
+
+    {"K", "1110"},
+
+    {"L", "1111"}</color></size>
 
 
-    <size=30><color=#DDDDDD>Adding
-    Wires</color></size>
+    <size=30><color=red>DISP8</color></size>
 
-    Connect chips together by clicking on a pin (the black
-    dots) to start creating a wire. Then click on another pin to complete the connection.
-    Clicking over empty space while drawing the wire will allow you to lay out its
-    path. You can also hold shift to make the wires straight. To delete a wire, hover
-    the mouse over it and press backspace. To see the name of a pin, hold Alt while
-    hovering over it.
-
-
-    <size=30><color=#DDDDDD>Finally...</color></size>
-
-    You
-    can click on the inputs you''ve added to toggle them ON and OFF. The signal will
-    propagate through the wires and chips, up to the outputs you added. Once the
-    chip is behaving how you want, click the Create button in the top left. Give
-    the chip a name, and then confirm. You can then move on to making a new chip.'
+    <size=1.2rem><color=white>DISP8
+    is an 8x8 display, you give it an address and a 6-bit RGB color code and it sets
+    the pixel to the color, pretty simple.</color></size>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

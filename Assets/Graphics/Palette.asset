@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d5e11a72a4bd445797f29b9f3d9a6fa, type: 3}
   m_Name: Palette
   m_EditorClassIdentifier: 
-  onCol: {r: 0.9245283, g: 0.13519046, b: 0.21901982, a: 1}
+  onCol: {r: 0.9254902, g: 0.1870014, b: 0.13333331, a: 1}
   offCol: {r: 0.1254902, g: 0.14117648, b: 0.18039216, a: 1}
   highZCol: {r: 0, g: 0, b: 0, a: 0}
   busColor: {r: 0.39488173, g: 1, b: 0, a: 1}

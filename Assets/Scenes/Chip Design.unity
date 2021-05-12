@@ -4001,7 +4001,7 @@ Canvas:
   m_RenderMode: 1
   m_Camera: {fileID: 963194227}
   m_PlaneDistance: 100
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
@@ -5390,7 +5390,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.20754719, g: 0.20754719, b: 0.20754719, a: 0}
+  m_BackGroundColor: {r: 0.27450982, g: 0.27450982, b: 0.27450982, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -5400,9 +5400,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.018284589
+    y: 0.046184927
     width: 1
-    height: 0.9634308
+    height: 0.90763015
   near clip plane: 0.3
   far clip plane: 1500
   field of view: 60
@@ -5755,7 +5755,6 @@ MonoBehaviour:
   normalCol: {r: 1, g: 1, b: 1, a: 1}
   nonInteractableCol: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   highlightedCol: {r: 1, g: 1, b: 1, a: 1}
-  sim: {fileID: 1119697275}
 --- !u!114 &997254443
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6401,8 +6400,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30ccc252f57e34603a8c153170222a38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  active: 0
-  minStepTime: 0.075
+  minStepTime: 0.0075
 --- !u!4 &1119697276
 Transform:
   m_ObjectHideFlags: 0
@@ -10219,18 +10217,18 @@ MonoBehaviour:
   builtinChips:
   - {fileID: 8869523655109081479, guid: 2296358475ab14fa7a35e4117255096a, type: 3}
   - {fileID: 1267900139923996690, guid: b19a100a3d81b4c6e9a0c3c1362706c3, type: 3}
-  - {fileID: 2043041364998414551, guid: 299ea2b174160444f8a6a9065d0f0871, type: 3}
-  - {fileID: 325928065818453262, guid: d8a22eb19b4a35646b6bbaa7b66ef119, type: 3}
+  - {fileID: 286808261455957341, guid: 184fc6762f746804aa23328309645795, type: 3}
+  - {fileID: 115530211412355723, guid: 65fccb77ce2e8b141be2883a450bd104, type: 3}
+  - {fileID: 6967195645252809552, guid: 53f7c7ac85dd9cf4da411ce477429806, type: 3}
+  - {fileID: 6187450189791343255, guid: 3f8e0069ec5c58941b37c24580f57bd8, type: 3}
   - {fileID: 4370981688201696047, guid: fecc938b0c660450ba39ad175f13ffc0, type: 3}
   - {fileID: 894826051406503273, guid: 808e12d27921848a59bac447b93aec0f, type: 3}
-  - {fileID: 115530211412355723, guid: 65fccb77ce2e8b141be2883a450bd104, type: 3}
   - {fileID: 7051442128332312624, guid: 6cc2f15dbedacd24c91ce8f6e9208840, type: 3}
   - {fileID: 6632021948943085525, guid: 43f8221980e4d3d40b32a6a6e2454ab0, type: 3}
   - {fileID: 7051442128332312624, guid: 584a382f69ef0ca45a8606c5819b52cb, type: 3}
   - {fileID: 6632021948943085525, guid: d1a4d6dbed2e8cf42bbde6adfea7e79c, type: 3}
   - {fileID: 7051442128332312624, guid: 3cb180636ef96384982e75ebf81ca08c, type: 3}
   - {fileID: 6632021948943085525, guid: e7e9803706278f642855ed313fa69546, type: 3}
-  - {fileID: 286808261455957341, guid: 184fc6762f746804aa23328309645795, type: 3}
   spawnableChips: []
   UIManager: {fileID: 1579521357}
 --- !u!4 &1830893909
@@ -11848,6 +11846,10 @@ PrefabInstance:
     - target: {fileID: 256749247, guid: d48b4f02647794ac2aba95960c3d59ab, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -35.32335
+      objectReference: {fileID: 0}
+    - target: {fileID: 256749248, guid: d48b4f02647794ac2aba95960c3d59ab, type: 3}
+      propertyPath: m_IsOn
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 537848982593587216, guid: d48b4f02647794ac2aba95960c3d59ab,
         type: 3}
