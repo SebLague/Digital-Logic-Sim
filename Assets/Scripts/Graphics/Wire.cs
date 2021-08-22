@@ -5,11 +5,9 @@ using UnityEngine;
 public class Wire : MonoBehaviour {
 
 	public Material simpleMat;
-
 	LineRenderer lineRenderer;
 	public Color editCol;
 	public Palette palette;
-	//public Color
 	public Color placedCol;
 	public float curveSize = 0.5f;
 	public int resolution = 10;
@@ -97,6 +95,13 @@ public class Wire : MonoBehaviour {
 	}
 
 	void SetWireCol () {
+		//Fix color for bus wires
+		if(startPin.wireType != Pin.WireType.Simple)
+		{
+			mat.color = palette.busColor;
+			return;
+		}
+
 		if (wireConnected) {
 			Color onCol = palette.onCol;
 			Color offCol = palette.offCol;

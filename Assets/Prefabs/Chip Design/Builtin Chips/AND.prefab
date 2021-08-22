@@ -80,16 +80,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pinType: 1
+  wireType: 0
   chip: {fileID: 8869523655109081479}
   pinName: OUT
-  interactable: 1
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
   childPins: []
-  currentState: 0
-  sequentialState: 0
-  lastInputSimulationFrame: 0
 --- !u!58 &2166503985383415746
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -298,16 +295,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pinType: 0
+  wireType: 0
   chip: {fileID: 8869523655109081479}
   pinName: A
-  interactable: 1
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
   childPins: []
-  currentState: 0
-  sequentialState: 0
-  lastInputSimulationFrame: 0
 --- !u!58 &5855552812320782374
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -529,16 +523,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pinType: 0
+  wireType: 0
   chip: {fileID: 8869523655109081479}
   pinName: B
-  interactable: 1
   cyclic: 0
   index: 0
   parentPin: {fileID: 0}
   childPins: []
-  currentState: 0
-  sequentialState: 0
-  lastInputSimulationFrame: 0
 --- !u!58 &13942429112824819
 CircleCollider2D:
   m_ObjectHideFlags: 0
