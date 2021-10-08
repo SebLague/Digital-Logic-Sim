@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.3587269, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5400,9 +5400,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.28540462
+    y: 0.018284589
     width: 1
-    height: 0.42919075
+    height: 0.9634308
   near clip plane: 0.3
   far clip plane: 1500
   field of view: 60
@@ -5416,7 +5416,7 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 1
+  m_HDR: 0
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
@@ -6909,7 +6909,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 23.179932, y: 1010.7}
+  m_AnchoredPosition: {x: 23.179932, y: 1010.7001}
   m_SizeDelta: {x: 51, y: 35.02}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1287204966
@@ -10230,6 +10230,7 @@ MonoBehaviour:
   - {fileID: 6632021948943085525, guid: d1a4d6dbed2e8cf42bbde6adfea7e79c, type: 3}
   - {fileID: 7051442128332312624, guid: 3cb180636ef96384982e75ebf81ca08c, type: 3}
   - {fileID: 6632021948943085525, guid: e7e9803706278f642855ed313fa69546, type: 3}
+  - {fileID: 286808261455957341, guid: 184fc6762f746804aa23328309645795, type: 3}
   spawnableChips: []
   UIManager: {fileID: 1579521357}
 --- !u!4 &1830893909
