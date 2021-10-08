@@ -8,6 +8,9 @@ public class ChipPackage : MonoBehaviour {
 	public TMPro.TextMeshPro nameText;
 	public Transform container;
 	public Pin chipPinPrefab;
+	public bool override_width_and_height = false;
+	public float override_width = 1f;
+	public float override_height = 1f;
 
 	const string pinHolderName = "Pin Holder";
 
@@ -102,10 +105,15 @@ public class ChipPackage : MonoBehaviour {
 			if (chip.inputPins.Length > 1) {
 				percent = i / (numInputPinsToAutoPlace - 1f);
 			}
-			float posX = -containerWidth / 2f;
-
-			float posY = Mathf.Lerp (topPinY, bottomPinY, percent);
-			chip.inputPins[i].transform.localPosition = new Vector3 (posX, posY, z);
+			if(override_width_and_height) {
+				float posX = -override_width / 2f;
+				float posY = Mathf.Lerp (topPinY, bottomPinY, percent);
+				chip.inputPins[i].transform.localPosition = new Vector3 (posX, posY, z);
+			} else {
+				float posX = -containerWidth / 2f;
+				float posY = Mathf.Lerp (topPinY, bottomPinY, percent);
+				chip.inputPins[i].transform.localPosition = new Vector3 (posX, posY, z);
+			}
 		}
 
 		// Output pins
@@ -122,10 +130,13 @@ public class ChipPackage : MonoBehaviour {
 		}
 
 		// Set container size
-		container.transform.localScale = new Vector3 (containerWidth, containerHeight, 1);
-
-		GetComponent<BoxCollider2D> ().size = new Vector2 (containerWidth, containerHeight);
-
+		if(override_width_and_height) {
+			container.transform.localScale = new Vector3 (override_width, override_height, 1);
+			GetComponent<BoxCollider2D> ().size = new Vector2 (override_width, override_height);
+		} else {
+			container.transform.localScale = new Vector3 (containerWidth, containerHeight, 1);
+			GetComponent<BoxCollider2D> ().size = new Vector2 (containerWidth, containerHeight);
+		}
 	}
 
 	void SetColour (Color colour) {
