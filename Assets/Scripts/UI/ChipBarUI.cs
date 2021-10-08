@@ -14,6 +14,8 @@ public class ChipBarUI : MonoBehaviour {
 	public List<string> hideList;
 	public Scrollbar horizontalScroll;
 
+
+
 	public List<CustomButton> customButton = new List<CustomButton>();
 
 	void Awake () {
@@ -69,6 +71,14 @@ public class ChipBarUI : MonoBehaviour {
 		// Set button event
 		//button.onClick.AddListener (() => manager.SpawnChip (chip));
 		button.AddListener(() => manager.SpawnChip (chip));
+
+		Debug.Log(chip.chipName);
+
+		if (chip.chipName != "AND" && chip.chipName != "NOT") {
+			button.transform.gameObject.SetActive(MainMenu.advancedChipsEnabled);
+		}
+
+		
 
 		customButton.Add(button);
 	}
