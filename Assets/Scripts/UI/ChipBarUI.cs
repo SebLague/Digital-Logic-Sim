@@ -34,7 +34,14 @@ public class ChipBarUI : MonoBehaviour {
 		customButton.Clear();
 		for (int i = 0; i < manager.builtinChips.Length; i++)
 		{
-			AddChipButton(manager.builtinChips[i]);
+			
+			if (
+				manager.builtinChips[i].chipName == "AND" ||
+				manager.builtinChips[i].chipName == "NOT" ||
+				MainMenu.advancedChipsEnabled == 1) {
+					AddChipButton(manager.builtinChips[i]);
+			}
+			
 		}
 		Canvas.ForceUpdateCanvases();
 	}
@@ -70,15 +77,7 @@ public class ChipBarUI : MonoBehaviour {
 
 		// Set button event
 		//button.onClick.AddListener (() => manager.SpawnChip (chip));
-		button.AddListener(() => manager.SpawnChip (chip));
-
-		Debug.Log(chip.chipName);
-
-		if (chip.chipName != "AND" && chip.chipName != "NOT") {
-			button.transform.gameObject.SetActive(MainMenu.advancedChipsEnabled);
-		}
-
-		
+		button.AddListener(() => manager.SpawnChip (chip));		
 
 		customButton.Add(button);
 	}

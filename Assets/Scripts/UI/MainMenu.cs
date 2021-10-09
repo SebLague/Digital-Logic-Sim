@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class MainMenu : MonoBehaviour {
 
 	public TMP_InputField projectNameField;
@@ -12,12 +13,13 @@ public class MainMenu : MonoBehaviour {
 	public Toggle fullscreenToggle;
 	public Toggle advancedChips;
 
-	public static bool advancedChipsEnabled = true;
+	public static int advancedChipsEnabled;
 
 
 	void Awake () {
+		advancedChipsEnabled = PlayerPrefs.GetInt("AdvancedChips", 1);
 		fullscreenToggle.onValueChanged.AddListener (SetFullScreen);
-		advancedChips.SetIsOnWithoutNotify(advancedChipsEnabled);
+		advancedChips.SetIsOnWithoutNotify(advancedChipsEnabled == 1);
 	}
 
 	void LateUpdate () {
@@ -28,8 +30,9 @@ public class MainMenu : MonoBehaviour {
 	}
 
     public void SetAdvancedChips() {
-		advancedChipsEnabled = advancedChips.isOn;
-		advancedChips.SetIsOnWithoutNotify(advancedChipsEnabled);
+		PlayerPrefs.SetInt("AdvancedChips", advancedChips.isOn ? 1 : 0);
+		advancedChipsEnabled = PlayerPrefs.GetInt("AdvancedChips", 1);
+		advancedChips.SetIsOnWithoutNotify(advancedChipsEnabled == 1);
 	}
 
     public void StartNewProject () {
