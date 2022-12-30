@@ -1,0 +1,18 @@
+<color=#D1A2FF>void</color> <color=#68AFFD>ProcessClock</color>()
+{
+	<color=#666F95>// Calculate frequency mode from inputs. Possible values: 0, 1, 2, 3</color>
+	<color=#D1A2FF>int</color> frequencyMode = inputPins[<color=#EE815B>0</color>].<color=#FFFFFF>State</color>.<color=#68AFFD>ToInt</color>() << <color=#EE815B>1</color> | inputPins[<color=#EE815B>1</color>].<color=#FFFFFF>State</color>.<color=#68AFFD>ToInt</color>();
+	outputPins[<color=#EE815B>0</color>].<color=#FFFFFF>State</color> = <color=#68AFFD>ClockIsHigh</color>(frequencyMode) ? <color=#FF875A>HIGH</color> : <color=#FF875A>LOW</color>;
+
+	<color=#D1A2FF>bool</color> <color=#68AFFD>ClockIsHigh</color>(<color=#D1A2FF>int</color> frequencyMode)
+	{
+		<color=#D1A2FF>switch</color> (frequencyMode)
+		{
+			<color=#D1A2FF>case</color> <color=#EE815B>0</color>: <color=#FF668A>return</color> <color=#FFD051>Simulator</color>.Time <color=#C6EDFF>%</color> <color=#EE815B>1</color> >= <color=#EE815B>0.5f</color>; <color=#666F95>// One cycle per second</color>
+			<color=#D1A2FF>case</color> <color=#EE815B>1</color>: <color=#FF668A>return</color> <color=#FFD051>Simulator</color>.Time <color=#C6EDFF>%</color> <color=#EE815B>0.5f</color> >= <color=#EE815B>0.25f</color>; <color=#666F95>// One cycle per half second</color>
+			<color=#D1A2FF>case</color> <color=#EE815B>2</color>: <color=#FF668A>return</color> <color=#FFD051>Simulator</color>.FrameCount <color=#C6EDFF>%</color> <color=#EE815B>16</color> >= <color=#EE815B>8</color>; <color=#666F95>// One cycle per 16 frames</color>
+			<color=#D1A2FF>case</color> <color=#EE815B>3</color>: <color=#FF668A>return</color> <color=#FFD051>Simulator</color>.FrameCount <color=#C6EDFF>%</color> <color=#EE815B>4</color> >= <color=#EE815B>2</color>; <color=#666F95>// One cycle per 4 frames</color>
+			<color=#8C60B7>default</color>: <color=#FF668A>return</color> <color=#EE815B>false</color>;
+		}
+	}
+}

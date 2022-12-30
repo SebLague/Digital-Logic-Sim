@@ -5,7 +5,7 @@ EditorSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 11
   m_SerializationMode: 2
-  m_LineEndingsForNewScripts: 0
+  m_LineEndingsForNewScripts: 2
   m_DefaultBehaviorMode: 0
   m_PrefabRegularEnvironment: {fileID: 0}
   m_PrefabUIEnvironment: {fileID: 0}
@@ -16,7 +16,7 @@ EditorSettings:
   m_EtcTextureFastCompressor: 1
   m_EtcTextureNormalCompressor: 2
   m_EtcTextureBestCompressor: 4
-  m_ProjectGenerationIncludedExtensions: txt;xml;fnt;cd;asmdef;rsp;asmref
+  m_ProjectGenerationIncludedExtensions: txt;xml;fnt;cd;asmdef;asmref;rsp;java;cpp;c;mm;m;h
   m_ProjectGenerationRootNamespace: 
   m_EnableTextureStreamingInEditMode: 1
   m_EnableTextureStreamingInPlayMode: 1
@@ -29,8 +29,8 @@ EditorSettings:
   m_GameObjectNamingScheme: 0
   m_AssetNamingUsesSpace: 1
   m_UseLegacyProbeSampleCount: 0
-  m_SerializeInlineMappingsOnOneLine: 0
-  m_DisableCookiesInLightmapper: 1
+  m_SerializeInlineMappingsOnOneLine: 1
+  m_DisableCookiesInLightmapper: 0
   m_AssetPipelineMode: 1
   m_RefreshImportMode: 0
   m_CacheServerMode: 0
@@ -40,3 +40,5 @@ EditorSettings:
   m_CacheServerEnableUpload: 1
   m_CacheServerEnableAuth: 0
   m_CacheServerEnableTls: 0
+  m_CacheServerValidationMode: 2
+  m_CacheServerDownloadBatchSize: 128
