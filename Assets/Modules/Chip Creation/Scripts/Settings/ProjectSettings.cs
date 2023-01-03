@@ -45,10 +45,13 @@ namespace DLS.ChipCreation
 			Save();
 		}
 
-		public void UpdateProjectName(string newName)
+		public void UpdateProjectName(string newName, bool autosave = true)
 		{
 			ProjectName = newName;
-			Save();
+			if (autosave)
+			{
+				Save();
+			}
 		}
 
 		public void UpdateDisplayOptions(DisplayOptions displayOptions, bool autosave = true)
@@ -106,7 +109,7 @@ namespace DLS.ChipCreation
 			return StarredChips.Contains(chipName);
 		}
 
-		void Save()
+		public void Save()
 		{
 			ProjectSettingsLoader.SaveProjectSettings(this);
 		}

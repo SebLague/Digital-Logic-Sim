@@ -15,12 +15,15 @@ namespace DLS.Simulation
 			simDescriptionCreator = new SimChipDescriptionCreator(allChips);
 		}
 
+		public void UpdateChipsFromDescriptions(ChipDescription[] descriptions)
+		{
+			simDescriptionCreator.UpdateChipsFromDescriptions(descriptions);
+		}
+
 		public SimChip Load(ChipDescription description, int id)
 		{
 			SimChipDescription simDescription = simDescriptionCreator.GetDescription(description.Name);
 			SimChip loadedChip = CreateChip(simDescription, id);
-			// Connections are processed after chip and subchips have been loaded so that all pins have already been initialized
-			//ProcessConnections(loadedChip);
 			SetFloatingInputs(loadedChip);
 
 			return loadedChip;

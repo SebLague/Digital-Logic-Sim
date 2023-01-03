@@ -30,6 +30,15 @@ namespace DLS.Simulation
 			chip.description.CycleDataUpToDate = false;
 		}
 
+		public void UpdateChipFromDescription(ChipDescription desc)
+		{
+			UpdateChipsFromDescriptions(new ChipDescription[] { desc });
+		}
+
+		public void UpdateChipsFromDescriptions(ChipDescription[] desc)
+		{
+			simChipCreator.UpdateChipsFromDescriptions(desc);
+		}
 
 		public void Simulate(PinState[] inputStates, float time)
 		{

@@ -11,33 +11,35 @@ namespace DLS.Simulation
 
 		Dictionary<string, SimChipDescription> simChipDescriptionLookUp;
 		Dictionary<string, ChipDescription> chipDescriptionLookUp;
-		ChipDescription[] chipDescriptions;
 
 		public SimChipDescriptionCreator(IList<ChipDescription> chipDescriptions)
 		{
-			this.chipDescriptions = chipDescriptions.ToArray();
 			chipDescriptionLookUp = chipDescriptions.ToDictionary(description => description.Name, description => description);
 
-			SimChipDescription[] simChipDescriptions = CreateAllSimChipDescriptions();
+			SimChipDescription[] simChipDescriptions = chipDescriptions.Select(desc => CreateSimChipDescription(desc)).ToArray();
 			simChipDescriptionLookUp = simChipDescriptions.ToDictionary(description => description.Name, description => description);
+		}
+
+		public void UpdateChipsFromDescriptions(ChipDescription[] descriptions)
+		{
+
+			foreach (ChipDescription desc in descriptions)
+			{
+				if (chipDescriptionLookUp.ContainsKey(desc.Name))
+				{
+					simChipDescriptionLookUp[desc.Name] = CreateSimChipDescription(desc);
+				}
+				else
+				{
+					chipDescriptionLookUp.Add(desc.Name, desc);
+					simChipDescriptionLookUp.Add(desc.Name, CreateSimChipDescription(desc));
+				}
+			}
 		}
 
 		public SimChipDescription GetDescription(string chipName)
 		{
 			return simChipDescriptionLookUp[chipName];
-		}
-
-		// Create sim chip description for all chips
-		SimChipDescription[] CreateAllSimChipDescriptions()
-		{
-			SimChipDescription[] simChipDescriptions = new SimChipDescription[chipDescriptions.Length];
-
-			for (int i = 0; i < simChipDescriptions.Length; i++)
-			{
-				simChipDescriptions[i] = CreateSimChipDescription(chipDescriptions[i]);
-			}
-
-			return simChipDescriptions;
 		}
 
 		// Create sim chip description for specified chip

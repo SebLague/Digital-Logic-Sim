@@ -49,7 +49,7 @@ namespace DLS.ChipCreation.UI
 						activeContextMenu.AddButton("Delete", () => DeleteChip(chip));
 					}
 				}
-				else if (activeEditor.PinUnderMouse != null)
+				else if (activeEditor.PinUnderMouse != null && activeEditor.CanEdit)
 				{
 					Pin pin = activeEditor.PinUnderMouse;
 					activeContextMenu = CreateContextMenu();
@@ -64,7 +64,7 @@ namespace DLS.ChipCreation.UI
 						activeContextMenu.AddButton(col.name, () => pin.SetColourTheme(col));
 					}
 				}
-				else if (activeEditor.WireUnderMouse != null)
+				else if (activeEditor.WireUnderMouse != null && activeEditor.CanEdit)
 				{
 					Wire wire = activeEditor.WireUnderMouse;
 					activeContextMenu = CreateContextMenu();

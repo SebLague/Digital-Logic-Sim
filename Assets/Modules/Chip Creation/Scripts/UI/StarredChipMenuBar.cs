@@ -22,7 +22,7 @@ namespace DLS.ChipCreation.UI
 			allButtons = new();
 			chipDescriptions = new();
 			chipCreationManager.ViewedChipChanged += RefreshButtonInteractivity;
-			chipCreationManager.ChipSaved += RefreshButtons;
+			chipCreationManager.CurrentChipSaved += RefreshButtons;
 			chipCreationManager.SavedChipDeleted += RefreshButtons;
 			libraryMenu.ChipStarStatusUpdated += RefreshButtons;
 			RefreshButtons();

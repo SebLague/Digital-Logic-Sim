@@ -94,7 +94,9 @@ namespace DLS.ChipCreation
 
 			FileHelper.CopyDirectory(SavePaths.ProjectPath(originalName), newPath, true);
 			ProjectSettings newProjectSettings = LoadProjectSettings(copyName);
-			newProjectSettings.UpdateProjectName(copyName);
+			newProjectSettings.CreationTime = System.DateTime.Now;
+			newProjectSettings.UpdateProjectName(copyName, autosave: false);
+			newProjectSettings.Save();
 		}
 
 		public static void RenameProject(string originalName, string newName)
@@ -127,7 +129,4 @@ namespace DLS.ChipCreation
 		}
 
 	}
-
-
-
 }

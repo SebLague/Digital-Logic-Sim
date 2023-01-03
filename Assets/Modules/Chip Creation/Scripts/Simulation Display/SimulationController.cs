@@ -10,7 +10,6 @@ namespace DLS.ChipCreation
 	// (such as new connection being added, etc) to the simulation.
 	public class SimulationController : MonoBehaviour
 	{
-		public bool loadSimulation;
 		public bool runSimulation;
 		public bool runOnce;
 
@@ -33,36 +32,40 @@ namespace DLS.ChipCreation
 		long simulationEllapsedMs;
 		long simFrames;
 
-		public void SetUp(ChipEditor chipEditor, ChipDescription chipDescription)
+		public void Init(ChipDescription[] allChips)
 		{
-			if (loadSimulation)
+			simulator = new Simulator(allChips);
+		}
+
+		public void SetEditedChip(ChipEditor chipEditor)
+		{
+			// If new empty chip, make sure simulator has a 'blank' description it can load
+			if (string.IsNullOrEmpty(chipEditor.LastSavedDescription.Name))
 			{
-				var sw = System.Diagnostics.Stopwatch.StartNew();
-				List<ChipDescription> allChipDescriptions = new(ChipDescriptionLoader.AllChips);
-				// Chip won't have been loaded yet if it's a newly created chip, unsaved chip
-				if (!ChipDescriptionLoader.HasLoaded(chipDescription.Name))
-				{
-					allChipDescriptions.Add(chipDescription);
-				}
-				simulator = new Simulator(allChipDescriptions);
-				simulator.SetSimulationChip(chipDescription);
-				Debug.Log($"Loaded simulation for chip: {chipDescription.Name} in {sw.ElapsedMilliseconds} ms.");
-
-				this.chipEditor = chipEditor;
-
-				chipEditor.SubChipAdded += OnChipAdded;
-				chipEditor.SubChipDeleted += OnChipDeleted;
-
-				chipEditor.WireEditor.WireCreated += OnWireCreated;
-				chipEditor.WireEditor.WireDeleted += OnWireDeleted;
-
-				chipEditor.PinPlacer.PinCreated += OnPinAdded;
-				chipEditor.PinPlacer.PinDeleted += OnPinRemoved;
-
-				viewedChipEditor = chipEditor;
-				viewedChip = simulator.Chip;
-
+				simulator.UpdateChipsFromDescriptions(new ChipDescription[] { chipEditor.LastSavedDescription });
 			}
+			// Set the chip
+			simulator.SetSimulationChip(chipEditor.LastSavedDescription);
+
+			this.chipEditor = chipEditor;
+
+			chipEditor.SubChipAdded += OnChipAdded;
+			chipEditor.SubChipDeleted += OnChipDeleted;
+
+			chipEditor.WireEditor.WireCreated += OnWireCreated;
+			chipEditor.WireEditor.WireDeleted += OnWireDeleted;
+
+			chipEditor.PinPlacer.PinCreated += OnPinAdded;
+			chipEditor.PinPlacer.PinDeleted += OnPinRemoved;
+
+			viewedChipEditor = chipEditor;
+			viewedChip = simulator.Chip;
+		}
+
+
+		public void UpdateChipsFromDescriptions(ChipDescription[] desc)
+		{
+			simulator.UpdateChipsFromDescriptions(desc);
 		}
 
 
@@ -157,6 +160,7 @@ namespace DLS.ChipCreation
 			PinAddress pinAddress = chipEditor.GetPinAddress(removedPin.GetPin());
 			simulator.RemovePin(pinAddress);
 		}
+
 
 		bool IgnoreInSimulation(Wire wire)
 		{

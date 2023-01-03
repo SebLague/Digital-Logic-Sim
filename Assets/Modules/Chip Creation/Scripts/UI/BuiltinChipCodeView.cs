@@ -9,6 +9,7 @@ namespace DLS.ChipCreation.UI
 		[SerializeField] TextAsset codeFile_And;
 		[SerializeField] TextAsset codeFile_Not;
 		[SerializeField] TextAsset codeFile_Clock;
+		[SerializeField] TextAsset codeFile_TristateBuffer;
 		[SerializeField] TextAsset codeFile_SevenSegDisplay;
 
 		[SerializeField] float backgroundPadding;
@@ -44,6 +45,7 @@ namespace DLS.ChipCreation.UI
 					case BuiltinChipNames.NotChip: return codeFile_Not;
 					case BuiltinChipNames.ClockName: return codeFile_Clock;
 					case BuiltinChipNames.SevenSegmentDisplayName: return codeFile_SevenSegDisplay;
+					case BuiltinChipNames.TriStateBufferName: return codeFile_TristateBuffer;
 					default: return null;
 				}
 			}

@@ -456,8 +456,9 @@ namespace DLS.ChipCreation
 
 			Wire wire = StartCreatingWire(pinA);
 			Vector2[] points = connection.WirePoints.Select(w => new Vector2(w.X, w.Y)).ToArray();
-			//points[0] = pinA.transform.position;
-			//points[^1] = pinB.transform.position;
+			// Update start and end points in case positions of subchip pins have been edited since this chip was last saved
+			points[0] = pinA.transform.position;
+			points[^1] = pinB.transform.position;
 			wire.SetAnchorPoints(points, true);
 
 

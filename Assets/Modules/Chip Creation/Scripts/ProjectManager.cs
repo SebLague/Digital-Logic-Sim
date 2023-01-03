@@ -14,7 +14,7 @@ namespace DLS.ChipCreation
 
 		public event System.Action<ChipEditor> ViewedChipChanged;
 		public event System.Action<ChipEditor> EditedChipChanged;
-		public event System.Action ChipSaved;
+		public event System.Action CurrentChipSaved;
 		public event System.Action SavedChipDeleted;
 
 		// The chip editor that's currently being viewed
@@ -58,6 +58,7 @@ namespace DLS.ChipCreation
 
 			// Load all chip descriptions from disk
 			ChipDescriptionLoader.LoadChips(ProjectSettings.ProjectName);
+			simulationController.Init(ChipDescriptionLoader.AllChips.ToArray());
 
 			if (skippedMenu && debug_LoadChipOnStartup && ChipDescriptionLoader.TryGetChipDescription(debug_ChipEditName, out ChipDescription startChip))
 			{
@@ -80,11 +81,15 @@ namespace DLS.ChipCreation
 			editor.SetUp(settings, isViewOnly);
 
 			editor.LoadChip(chipDescription);//
+			if (editor.HasUnsavedChanges())
+			{
+				Debug.Log("Unsaved changes!");
+			}
 			return editor;
 		}
 
 
-
+		// For debug/dev purposes only
 		public void ResaveAll()
 		{
 			foreach (ChipDescription chip in ChipDescriptionLoader.CustomChips)
@@ -115,7 +120,7 @@ namespace DLS.ChipCreation
 			CloseAllEditors();
 			ActiveEditChipEditor = LoadChipEditor(chipDescription, ProjectSettings, false);
 			SetActiveView(ActiveEditChipEditor);
-			simulationController.SetUp(ActiveEditChipEditor, chipDescription);
+			simulationController.SetEditedChip(ActiveEditChipEditor);
 			ViewedChipChanged?.Invoke(ActiveViewChipEditor);
 			EditedChipChanged?.Invoke(ActiveEditChipEditor);
 		}
@@ -206,6 +211,9 @@ namespace DLS.ChipCreation
 
 		public void SaveChip(bool isFirstTimeSaving, bool isRenamingExistingChip, ChipDescription descriptionToSave)
 		{
+			// Create list of chip descriptions that need to be saved. Typically this is just the current chip,
+			// but if the current chip is already being used inside of other chips, then their descriptions may need updating as well.
+			List<ChipDescription> allDescriptionsToSave = new() { descriptionToSave };
 
 			// Saving a brand new chip
 			if (isFirstTimeSaving)
@@ -252,20 +260,22 @@ namespace DLS.ChipCreation
 					ChipDescriptionLoader.UpdateChipDescription(descriptionToSave);
 				}
 
-				// If parent chips were modified, then save them
+				// If parent chips are affected by the changes to the current chip, then save their updated descriptions
 				if (deletedPinIDs.Length > 0 || isRenamingExistingChip)
 				{
-					ChipSaver.SaveChips(parentDescriptions, ProjectSettings.ProjectName);
+					allDescriptionsToSave.AddRange(parentDescriptions);
 					// Update the previously loaded chip descriptions so they're in agreement with the newly saved versions
 					ChipDescriptionLoader.UpdateChipDescriptions(parentDescriptions);
 				}
 			}
 
 			// Save to disk
-			ChipSaver.SaveChip(descriptionToSave, ProjectSettings.ProjectName);
+			ChipSaver.SaveChips(allDescriptionsToSave.ToArray(), ProjectSettings.ProjectName);
 
 			ActiveEditChipEditor.UpdateLastSavedDescription(descriptionToSave);
-			ChipSaved?.Invoke();
+			CurrentChipSaved?.Invoke();
+			simulationController.UpdateChipsFromDescriptions(allDescriptionsToSave.ToArray());
+
 		}
 
 		// Handle deleting a saved chip from the project
@@ -280,11 +290,17 @@ namespace DLS.ChipCreation
 
 			// Remove all instances of deleted chip from other saved chips
 			ChipDescription[] parentChips = ChipDescriptionHelper.GetParentChipDescriptions(chipToDeleteName);
-			for (int i = 0; i < parentChips.Length; i++)
+			if (parentChips.Length > 0)
 			{
-				ChipDescriptionHelper.RemoveSubChip(ref parentChips[i], chipToDeleteName);
-				ChipSaver.SaveChip(parentChips[i], ProjectSettings.ProjectName);
+				for (int i = 0; i < parentChips.Length; i++)
+				{
+					ChipDescriptionHelper.RemoveSubChip(ref parentChips[i], chipToDeleteName);
+				}
+
+				ChipSaver.SaveChips(parentChips, ProjectSettings.ProjectName);
+				simulationController.UpdateChipsFromDescriptions(parentChips.ToArray());
 			}
+
 			// Update the previously loaded chip descriptions so they're in agreement with the newly saved versions
 			ChipDescriptionLoader.UpdateChipDescriptions(parentChips);
 

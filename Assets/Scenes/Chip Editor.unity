@@ -1781,6 +1781,7 @@ MonoBehaviour:
   codeFile_And: {fileID: 4900000, guid: d38ca835a84925c46b80592357b3568f, type: 3}
   codeFile_Not: {fileID: 4900000, guid: e902ba9fd23517049a6bff79d0936d9a, type: 3}
   codeFile_Clock: {fileID: 4900000, guid: 0074a746744625e43a830252fe6a0de1, type: 3}
+  codeFile_TristateBuffer: {fileID: 4900000, guid: 2752a235bd60dad44aa44e715d2f2c10, type: 3}
   codeFile_SevenSegDisplay: {fileID: 4900000, guid: e4c9b139cec28ad4fbbca44c6786308a, type: 3}
   backgroundPadding: 50
   outlinePadding: 20
@@ -2434,7 +2435,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2219172830080593010, guid: d6a30931c0933874eab80af77148ad44, type: 3}
       propertyPath: m_text
-      value: Crtl+S
+      value: Ctrl+S
       objectReference: {fileID: 0}
     - target: {fileID: 2219172830080593010, guid: d6a30931c0933874eab80af77148ad44, type: 3}
       propertyPath: m_fontColor.b
@@ -3342,7 +3343,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2219172830080593010, guid: d6a30931c0933874eab80af77148ad44, type: 3}
       propertyPath: m_text
-      value: Crtl+Q
+      value: Ctrl+Q
       objectReference: {fileID: 0}
     - target: {fileID: 2219172830080593010, guid: d6a30931c0933874eab80af77148ad44, type: 3}
       propertyPath: m_fontColor.b
@@ -4081,7 +4082,7 @@ GameObject:
   - component: {fileID: 743879271}
   m_Layer: 0
   m_Name: Letterboxer
-  m_TagString: MainCamera
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5201,7 +5202,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2219172830080593010, guid: d6a30931c0933874eab80af77148ad44, type: 3}
       propertyPath: m_text
-      value: Crtl+O
+      value: Ctrl+O
       objectReference: {fileID: 0}
     - target: {fileID: 2219172830080593010, guid: d6a30931c0933874eab80af77148ad44, type: 3}
       propertyPath: m_fontColor.b
@@ -6012,7 +6013,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a730ebd19cc9804dbcb56ef6e170542, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadSimulation: 1
   runSimulation: 1
   runOnce: 0
   logSimulateTimer: 0
@@ -7501,7 +7501,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2219172830080593010, guid: d6a30931c0933874eab80af77148ad44, type: 3}
       propertyPath: m_text
-      value: Crtl+N
+      value: Ctrl+N
       objectReference: {fileID: 0}
     - target: {fileID: 2219172830080593010, guid: d6a30931c0933874eab80af77148ad44, type: 3}
       propertyPath: m_fontColor.b
@@ -8600,7 +8600,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug_LoadChipOnStartup: 1
   debug_StartupProjectName: Zebra
-  debug_ChipEditName: tritest
+  debug_ChipEditName: DABBLE
   builtinCodeViewUI: {fileID: 205438025}
   chipEditorPrefab: {fileID: 7802364574630515595, guid: adec35aed18e49b41b621300f139e56c, type: 3}
   disableThisOne: {fileID: 104444417}
@@ -11328,9 +11328,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.00014203787
+    y: 0.04986298
     width: 1
-    height: 0.9997159
+    height: 0.90027404
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -12285,7 +12285,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2219172830080593010, guid: d6a30931c0933874eab80af77148ad44, type: 3}
       propertyPath: m_text
-      value: Crtl+L
+      value: Ctrl+L
       objectReference: {fileID: 0}
     - target: {fileID: 2219172830080593010, guid: d6a30931c0933874eab80af77148ad44, type: 3}
       propertyPath: m_fontColor.b

@@ -1002,10 +1002,10 @@ Camera:
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.0000936687
-    y: 0
-    width: 0.99981266
-    height: 1
+    x: 0
+    y: 0.04986298
+    width: 1
+    height: 0.90027404
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -8477,7 +8477,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Last Updated: 27/Dec/22'
+  m_text: 'Last Updated: 3/Jan/23'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c33e17f8c4155864fb769490cf5635af, type: 2}
   m_sharedMaterial: {fileID: -5702233291332414176, guid: c33e17f8c4155864fb769490cf5635af, type: 2}
@@ -8733,7 +8733,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Version: 1.0 (alpha)'
+  m_text: 'Version: 1.01 (alpha)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c33e17f8c4155864fb769490cf5635af, type: 2}
   m_sharedMaterial: {fileID: -5702233291332414176, guid: c33e17f8c4155864fb769490cf5635af, type: 2}
