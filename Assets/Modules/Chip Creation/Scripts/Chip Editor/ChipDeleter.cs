@@ -22,7 +22,7 @@ namespace DLS.ChipCreation
 
 		void HandleInput()
 		{
-			if (Keyboard.current.backspaceKey.wasPressedThisFrame)
+			if (Keyboard.current.backspaceKey.wasPressedThisFrame || keyboard.deleteKey.wasPressedThisFrame)
 			{
 				DeleteSelectedChips();
 			}
