@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DLS.ChipData;
+using System.Linq;
 
 namespace DLS.ChipCreation
 {
@@ -148,25 +149,38 @@ namespace DLS.ChipCreation
 
 		string FormatName(string name)
 		{
-			string formattedName = "";
-			int numCharsInLine = 0;
+			name = System.Text.RegularExpressions.Regex.Replace(name, @"\s+", " ");
+			string[] words = name.Split(' ');
+			int maxWordLength = words.Max(w => w.Length);
 
-			foreach (char c in name)
+			List<string> lines = new();
+			string currLine = "";
+
+			for (int i = 0; i < words.Length; i++)
 			{
-				if (c == ' ' && numCharsInLine >= 4)
+				if (currLine.Length + words[i].Length > maxWordLength)
 				{
-					formattedName += '\n';
-					numCharsInLine = 0;
+					lines.Add(currLine);
+					currLine = "";
 				}
-				else
+
+				if (!string.IsNullOrEmpty(currLine))
 				{
-					formattedName += c;
-					numCharsInLine++;
+					currLine += " ";
 				}
+				currLine += words[i];
 			}
+
+			lines.Add(currLine);
+
+			string formattedName = lines[0];
+			for (int i = 1; i < lines.Count; i++)
+			{
+				formattedName += '\n' + lines[i];
+			}
+
 
 			return formattedName;
 		}
-
 	}
 }

@@ -35,6 +35,7 @@ namespace DLS.ChipCreation
 		public void Init(ChipDescription[] allChips)
 		{
 			simulator = new Simulator(allChips);
+			display.Init();
 		}
 
 		public void SetEditedChip(ChipEditor chipEditor)
@@ -121,7 +122,7 @@ namespace DLS.ChipCreation
 
 		void OnWireCreated(Wire wire)
 		{
-			if (!IgnoreInSimulation(wire))
+			if (!wire.IsBusWire)
 			{
 				PinAddress sourceAddress = chipEditor.GetPinAddress(wire.SourcePin);
 				PinAddress targetAddress = chipEditor.GetPinAddress(wire.TargetPin);
@@ -131,7 +132,7 @@ namespace DLS.ChipCreation
 
 		void OnWireDeleted(Wire wire)
 		{
-			if (!IgnoreInSimulation(wire))
+			if (!wire.IsBusWire)
 			{
 				PinAddress sourceAddress = chipEditor.GetPinAddress(wire.SourcePin);
 				PinAddress targetAddress = chipEditor.GetPinAddress(wire.TargetPin);
@@ -159,14 +160,6 @@ namespace DLS.ChipCreation
 		{
 			PinAddress pinAddress = chipEditor.GetPinAddress(removedPin.GetPin());
 			simulator.RemovePin(pinAddress);
-		}
-
-
-		bool IgnoreInSimulation(Wire wire)
-		{
-			return false;
-			//bool ignore = wire.SourcePin.Chip is SharedWireDisplay && wire.TargetPin.Chip is SharedWireDisplay;
-			//return ignore;
 		}
 
 	}

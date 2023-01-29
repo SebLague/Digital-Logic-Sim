@@ -10,10 +10,8 @@ namespace DLS.VideoTools
 	public class VidHelper : MonoBehaviour
 	{
 		public bool expandWorkArea;
-		public bool showMouseGuide;
 		public bool showGrid;
 		[Header("References")]
-		public RectTransform mouseGuide;
 		public RectTransform grid;
 
 		ChipEditor editor;
@@ -29,9 +27,6 @@ namespace DLS.VideoTools
 
 		void Update()
 		{
-			mouseGuide.gameObject.SetActive(showMouseGuide);
-			mouseGuide.position = MouseHelper.GetMouseScreenPosition();
-
 			grid.gameObject.SetActive(showGrid);
 		}
 

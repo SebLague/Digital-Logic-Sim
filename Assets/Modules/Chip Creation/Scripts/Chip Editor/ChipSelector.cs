@@ -108,6 +108,10 @@ namespace DLS.ChipCreation
 
 				foreach (ChipBase chip in chipEditor.AllSubChips)
 				{
+					if (chip is BusDisplay)
+					{
+						continue;
+					}
 					Vector2 chipBoundsMin = (Vector2)chip.transform.position - chip.Size / 2;
 					Vector2 chipBoundsMax = (Vector2)chip.transform.position + chip.Size / 2;
 
@@ -115,6 +119,7 @@ namespace DLS.ChipCreation
 					{
 						AddToSelection(chip);
 					}
+
 				}
 			}
 			CancelBoxSelection();
@@ -160,7 +165,7 @@ namespace DLS.ChipCreation
 			if (!loadingFromFile)
 			{
 				DeselectAll();
-				AddToSelection(chip);
+				AddToSelection(chipEditor.ChipPlacer.AllChipsInPlacementMode);
 			}
 			chip.ChipDeleted += OnChipDeleted;
 		}
@@ -189,6 +194,14 @@ namespace DLS.ChipCreation
 			DeselectAll();
 			AddToSelection(chip);
 			chipSelectedThisFrame = true;
+		}
+
+		void AddToSelection(ChipBase[] chips)
+		{
+			foreach (ChipBase chip in chips)
+			{
+				AddToSelection(chip);
+			}
 		}
 
 

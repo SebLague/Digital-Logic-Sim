@@ -8,15 +8,16 @@ namespace DLS.ChipCreation
 	[CreateAssetMenu(menuName = "DLS/Overrides")]
 	public class ChipOverrides : ScriptableObject
 	{
-		[SerializeField] bool includeChipOverrides;
-		[SerializeField] bool includeVideoOverrides;
+		[SerializeField] bool useChipOverrides;
+		[SerializeField] bool useVideoChipOverrides;
+		[SerializeField] bool useVideoChipsInBuild;
 		[SerializeField] ChipOverride[] chipOverrides;
 		[SerializeField] ChipOverride[] videoChipOverrides;
 
 		public Dictionary<string, ChipBase> CreateLookup()
 		{
 			var lookup = new Dictionary<string, ChipBase>(System.StringComparer.OrdinalIgnoreCase);
-			if (chipOverrides != null && includeChipOverrides)
+			if (chipOverrides != null && useChipOverrides)
 			{
 				foreach (var entry in chipOverrides.Where(x => x.prefab != null))
 				{
@@ -24,7 +25,7 @@ namespace DLS.ChipCreation
 				}
 			}
 
-			if (videoChipOverrides != null && includeVideoOverrides)
+			if (videoChipOverrides != null && useVideoChipOverrides && (useVideoChipsInBuild || Application.isEditor))
 			{
 				foreach (var entry in videoChipOverrides.Where(x => x.prefab != null))
 				{

@@ -22,8 +22,9 @@ namespace DLS.ChipCreation
 		public const float EditablePin = ChipPin + layerAbove;
 		public const float EditablePinHigh = EditablePin + layerAbove;
 		public const float EditablePinPreview = EditablePinHigh + layerAbove;
+		public const float busConnectionDot = EditablePinPreview + layerAbove;
 
-		public const float ChipMoving = EditablePinPreview + layerAbove;
+		public const float ChipMoving = busConnectionDot + layerAbove;
 
 		// Step size
 		public const float layerAbove = -0.01f;

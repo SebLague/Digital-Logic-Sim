@@ -17,20 +17,25 @@ MonoBehaviour:
   - name: Red
     High: {r: 0.9150943, g: 0.19424175, b: 0.27101883, a: 1}
     Low: {r: 0.2, g: 0.09411765, b: 0.09803922, a: 1}
+    Tristate: {r: 0, g: 0, b: 0, a: 1}
     displayPriority: 0
   - name: Yellow
     High: {r: 1, g: 0.6094189, b: 0, a: 1}
     Low: {r: 0.3207547, g: 0.20740923, b: 0.04387683, a: 1}
+    Tristate: {r: 0, g: 0, b: 0, a: 0}
     displayPriority: 1
   - name: Green
     High: {r: 0.12019401, g: 0.6886792, b: 0.22727415, a: 1}
     Low: {r: 0.029191881, g: 0.1509434, b: 0.072163016, a: 1}
+    Tristate: {r: 0, g: 0, b: 0, a: 0}
     displayPriority: 2
   - name: Blue
     High: {r: 0.08018869, g: 0.49900103, b: 1, a: 1}
     Low: {r: 0, g: 0.09753053, b: 0.3490566, a: 1}
+    Tristate: {r: 0, g: 0, b: 0, a: 0}
     displayPriority: -1
   - name: Indigo
     High: {r: 0.5475029, g: 0.28773582, b: 1, a: 1}
     Low: {r: 0.18098077, g: 0.09825561, b: 0.3018868, a: 1}
+    Tristate: {r: 0, g: 0, b: 0, a: 0}
     displayPriority: 4

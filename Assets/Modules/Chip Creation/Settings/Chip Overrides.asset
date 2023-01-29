@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5de0b75bc59dda7428f6df90af08c447, type: 3}
   m_Name: Chip Overrides
   m_EditorClassIdentifier: 
-  includeChipOverrides: 1
-  includeVideoOverrides: 0
+  useChipOverrides: 1
+  useVideoChipOverrides: 1
+  useVideoChipsInBuild: 0
   chipOverrides:
   - chipName: 7-SEGMENT DISPLAY
     prefab: {fileID: 7447267253726798738, guid: 16d339669b6f70a449ce59388dba251b, type: 3}
@@ -24,3 +25,5 @@ MonoBehaviour:
     prefab: {fileID: 7447267253726798738, guid: edc4063f306380444a47f5020e200746, type: 3}
   - chipName: DIGIT DISPLAY
     prefab: {fileID: 7447267253726798738, guid: 4af3f5eb3237acb4786fa42c9461336f, type: 3}
+  - chipName: TWO-DIGIT DISPLAY
+    prefab: {fileID: 7447267253726798738, guid: 60076494c41b891428c938fb41204e30, type: 3}

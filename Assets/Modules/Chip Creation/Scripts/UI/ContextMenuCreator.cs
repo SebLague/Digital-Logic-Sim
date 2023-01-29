@@ -17,8 +17,6 @@ namespace DLS.ChipCreation.UI
 		bool hasOpenContexMenu;
 		Vector2 openMenuClickWorldPos;
 
-
-
 		void Update()
 		{
 			ChipEditor activeEditor = controller.ActiveViewChipEditor;
@@ -37,47 +35,73 @@ namespace DLS.ChipCreation.UI
 				// Context menu for mouse over chip
 				if (activeEditor.ChipUnderMouse != null)
 				{
-					ChipBase chip = activeEditor.ChipUnderMouse;
+					CreateChipContextMenu(activeEditor.ChipUnderMouse);
 
-					activeContextMenu = CreateContextMenu();
-
-					activeContextMenu.SetTitle(chip.Name);
-					activeContextMenu.AddButton("View", () => ViewChip(chip));
-
-					if (controller.ActiveViewChipEditor.CanEdit)
-					{
-						activeContextMenu.AddButton("Delete", () => DeleteChip(chip));
-					}
 				}
 				else if (activeEditor.PinUnderMouse != null && activeEditor.CanEdit)
 				{
-					Pin pin = activeEditor.PinUnderMouse;
-					activeContextMenu = CreateContextMenu();
-					string title = "Pin";
-					if (!string.IsNullOrWhiteSpace(pin.name) && !string.Equals(pin.PinName, "Pin", System.StringComparison.OrdinalIgnoreCase))
-					{
-						title += $" ({pin.PinName})";
-					}
-					activeContextMenu.SetTitle(title);
-					foreach (var col in palette.Colours)
-					{
-						activeContextMenu.AddButton(col.name, () => pin.SetColourTheme(col));
-					}
+					CreatePinContextMenu(activeEditor.PinUnderMouse);
 				}
 				else if (activeEditor.WireUnderMouse != null && activeEditor.CanEdit)
 				{
-					Wire wire = activeEditor.WireUnderMouse;
-					activeContextMenu = CreateContextMenu();
-					activeContextMenu.SetTitle("Wire");
-					activeContextMenu.AddButton("Delete", () => wire.DeleteWire());
-					activeContextMenu.AddDivider();
-					foreach (var col in palette.Colours)
-					{
-						activeContextMenu.AddButton(col.name, () => wire.SetColourTheme(col));
-					}
+					CreateWireContextMenu(activeEditor.WireUnderMouse);
 				}
 				else if (activeEditor.WorkArea.WorkAreaMouseInteraction.MouseIsOver)
 				{
+				}
+			}
+		}
+
+		void CreateChipContextMenu(ChipBase chip)
+		{
+			activeContextMenu = CreateContextMenu();
+
+			activeContextMenu.SetTitle(chip.Name);
+			activeContextMenu.AddButton("View", () => ViewChip(chip));
+
+			if (controller.ActiveViewChipEditor.CanEdit)
+			{
+				activeContextMenu.AddButton("Delete", () => DeleteChip(chip));
+			}
+		}
+
+		void CreatePinContextMenu(Pin pin)
+		{
+			if (!pin.IsBusPin)
+			{
+				activeContextMenu = CreateContextMenu();
+				string title = "Pin";
+				if (!string.IsNullOrWhiteSpace(pin.name) && !string.Equals(pin.PinName, "Pin", System.StringComparison.OrdinalIgnoreCase))
+				{
+					title += $" ({pin.PinName})";
+				}
+				activeContextMenu.SetTitle(title);
+				foreach (var col in palette.Colours)
+				{
+					activeContextMenu.AddButton(col.name, () => pin.SetColourTheme(col));
+				}
+			}
+		}
+
+		void CreateWireContextMenu(Wire wire)
+		{
+			activeContextMenu = CreateContextMenu();
+			string title = wire.IsBusWire ? "Bus Line" : "Wire";
+			if (!wire.IsBusWire && wire.SourcePin.IsBusPin)
+			{
+				title = "Wire (from bus)";
+			}
+			activeContextMenu.SetTitle(title);
+			activeContextMenu.AddButton("Delete", () => wire.DeleteWire());
+			// Bus inherits colour from inputs, so don't show colour menu
+			bool hasColourOptions = !wire.IsBusWire && !wire.SourcePin.IsBusPin;
+			// Create wire colour options
+			if (hasColourOptions)
+			{
+				activeContextMenu.AddDivider();
+				foreach (var col in palette.Colours)
+				{
+					activeContextMenu.AddButton(col.name, () => wire.SetColourTheme(col));
 				}
 			}
 		}

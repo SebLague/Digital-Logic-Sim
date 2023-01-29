@@ -29,7 +29,7 @@ namespace DLS.ChipCreation
 		// Mouse collision info
 		public ChipBase ChipUnderMouse { get; private set; }
 		public Pin PinUnderMouse { get; private set; }
-		public Wire WireUnderMouse { get; private set; }
+		public Wire WireUnderMouse => WireEditor.WireUnderMouse;
 
 		// Misc data
 		public ChipDescription LastSavedDescription { get; private set; }
@@ -76,7 +76,6 @@ namespace DLS.ChipCreation
 			ChipPlacer.FinishedPlacingOrLoadingChip += OnChipPlaced;
 			PinPlacer.PinCreated += OnInputOrOutputPinCreated;
 			PinPlacer.PinDeleted += OnMainPinDeleted;
-			WireEditor.WireCreated += OnWireCreated;
 
 			workArea.SetUp();
 
@@ -182,7 +181,7 @@ namespace DLS.ChipCreation
 
 		public void UpdatePinDisplaySettings()
 		{
-			foreach (ChipDisplay subchip in AllSubChips)
+			foreach (ChipBase subchip in AllSubChips)
 			{
 				foreach (Pin pin in subchip.AllPins)
 				{
@@ -222,7 +221,7 @@ namespace DLS.ChipCreation
 			if (Settings.DisplayOptions.SubChipPinNameDisplayMode is DisplayOptions.PinNameDisplayMode.Toggle)
 			{
 				subChipPinNamesVisible = !subChipPinNamesVisible;
-				foreach (ChipDisplay subchip in AllSubChips)
+				foreach (ChipBase subchip in AllSubChips)
 				{
 					foreach (Pin pin in subchip.AllPins)
 					{
@@ -307,12 +306,6 @@ namespace DLS.ChipCreation
 			{
 				ChipUnderMouse = null;
 			}
-		}
-
-		void OnWireCreated(Wire wire)
-		{
-			wire.MouseInteraction.MouseEntered += (wire) => WireUnderMouse = wire;
-			wire.MouseInteraction.MouseExitted += (wire) => WireUnderMouse = (WireUnderMouse == wire) ? null : WireUnderMouse;
 		}
 
 		void OnDisable()

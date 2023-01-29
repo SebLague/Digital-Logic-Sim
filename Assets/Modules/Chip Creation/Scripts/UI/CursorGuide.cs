@@ -25,7 +25,18 @@ namespace DLS.ChipCreation.UI
 			}
 		}
 
-		void Update()
+		public void SetActive(bool isActive)
+		{
+			gameObject.SetActive(isActive);
+			UpdatePosition();
+		}
+
+		void LateUpdate()
+		{
+			UpdatePosition();
+		}
+
+		void UpdatePosition()
 		{
 			transform.position = MouseHelper.GetMouseWorldPosition(transform.position.z);
 		}

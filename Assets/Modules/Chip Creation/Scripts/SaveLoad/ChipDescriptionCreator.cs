@@ -54,7 +54,9 @@ namespace DLS.ChipCreation
 
 		static ConnectionDescription[] CreateConnectionDescriptions(ChipEditor chipEditor)
 		{
-			return chipEditor.WireEditor.AllWires.Select(wire => GetConnectionFromWire(wire)).ToArray();
+			// Don't save bus wires, these are handled inside the bus 'chip'
+			var wiresToSave = chipEditor.WireEditor.AllWires.Where(w => !w.IsBusWire);
+			return wiresToSave.Select(wire => GetConnectionFromWire(wire)).ToArray();
 
 			ConnectionDescription GetConnectionFromWire(Wire wire)
 			{

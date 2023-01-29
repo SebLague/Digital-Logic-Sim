@@ -1003,9 +1003,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.04986298
+    y: 0.00021374226
     width: 1
-    height: 0.90027404
+    height: 0.9995725
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
@@ -3574,7 +3574,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Note: exitting without applying will revert your changes.'
+  m_text: 'Note: exiting without applying will revert your changes.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8477,7 +8477,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Last Updated: 3/Jan/23'
+  m_text: 'Last Updated: 29/Jan/23'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c33e17f8c4155864fb769490cf5635af, type: 2}
   m_sharedMaterial: {fileID: -5702233291332414176, guid: c33e17f8c4155864fb769490cf5635af, type: 2}

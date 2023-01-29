@@ -37,6 +37,7 @@ namespace DLS.Simulation
 		{
 			SimChip c = address.BelongsToSubChip ? GetSubChip(address.SubChipID) : this;
 			SimPin[] pins = address.IsInputPin ? c.inputPins : c.outputPins;
+
 			var x = pins.FirstOrDefault(p => p.ID == address.PinID);
 			return x;
 		}

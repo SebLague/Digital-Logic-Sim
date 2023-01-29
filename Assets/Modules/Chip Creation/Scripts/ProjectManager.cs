@@ -37,7 +37,7 @@ namespace DLS.ChipCreation
 		public Transform viewChainMenu;
 		public TMPro.TMP_Text viewChainTextDisplay;
 		public UnityEngine.UI.Button viewChainBackButton;
-		public GameObject cursorGuide;
+		public CursorGuide cursorGuide;
 
 		List<View> viewChain;
 

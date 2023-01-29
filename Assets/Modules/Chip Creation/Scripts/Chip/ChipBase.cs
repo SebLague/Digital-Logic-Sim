@@ -91,6 +91,16 @@ namespace DLS.ChipCreation
 			}
 		}
 
+		protected Point ToPoint(Vector2 p)
+		{
+			return new Point(p.x, p.y);
+		}
+
+		protected Vector2 ToVector(Point p)
+		{
+			return new Vector2(p.X, p.Y);
+		}
+
 		void Init(ChipDescription description, int id)
 		{
 			Description = description;

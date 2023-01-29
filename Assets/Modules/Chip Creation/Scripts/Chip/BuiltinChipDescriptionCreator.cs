@@ -17,8 +17,8 @@ namespace DLS.ChipCreation
 				CreateBuiltinNOT(),
 				CreateClockDescription(),
 				CreateBuiltinTriStateBuffer(),
-				CreateBuiltinSevenSegmentDisplay()
-				//CreateBusDescription(),
+				CreateBuiltinSevenSegmentDisplay(),
+				CreateBusDescription()
 				
 			};
 		}

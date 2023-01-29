@@ -20,9 +20,9 @@ namespace DLS.ChipCreation
 		public ReadOnlyCollection<Wire> AllWires => new(allConnectedWires);
 		public bool IsCreatingWire => wireUnderConstruction != null;
 		public override bool IsBusy() => IsCreatingWire;
+		public Wire WireUnderMouse => wireUnderMouse;
 
 		// ===== Inspector fields =====
-		[SerializeField] bool allowMultipleInputsPerPin;
 		[SerializeField] Wire wirePrefab;
 		[SerializeField] Transform wireHolder;
 
@@ -46,6 +46,7 @@ namespace DLS.ChipCreation
 			allConnectedWires = new List<Wire>();
 			InitValidConnectionLookup();
 
+			editor.ChipPlacer.FinishedPlacingOrLoadingChip += OnChipPlaced;
 			editor.ChipSelector.ChipSelected += (chip) => CancelWire();
 			editor.PinInteractions.LeftMouseDown += OnMousePressPin;
 			editor.PinInteractions.MouseEntered += OnMouseOverPin;
@@ -83,14 +84,21 @@ namespace DLS.ChipCreation
 
 		void OnWireConnected(Wire wire)
 		{
-			allConnectedWires.Add(wire);
+			RegisterWire(wire);
+			WireCreated?.Invoke(wire);
+		}
 
+		void RegisterWire(Wire wire)
+		{
+			allConnectedWires.Add(wire);
 			wire.MouseInteraction.MouseEntered += OnMouseOverWire;
 			wire.MouseInteraction.MouseExitted += OnMouseExitWire;
 			wire.MouseInteraction.LeftMouseDown += OnWirePressed;
 			wire.MouseInteraction.LeftMouseReleased += OnMouseUpOverWire;
 
-			WireCreated?.Invoke(wire);
+			// Deleted event may not have been subscibed to already (for example if loading the wire, instead of creating it)
+			wire.WireDeleted -= OnWireDeleted;
+			wire.WireDeleted += OnWireDeleted;
 		}
 
 		Wire StartCreatingWire(Wire wireToStartFrom, Vector2 point)
@@ -148,7 +156,7 @@ namespace DLS.ChipCreation
 
 		void OnMousePressPin(Pin pin)
 		{
-			if (chipEditor.CanEdit)
+			if (chipEditor.CanEdit && !pin.IsBusPin)
 			{
 				if (IsCreatingWire)
 				{
@@ -176,7 +184,7 @@ namespace DLS.ChipCreation
 				var state = IsCreatingValidConnection(pin) ? Pin.HighlightState.Highlighted : Pin.HighlightState.HighlightedInvalid;
 				pin.SetHighlightState(state);
 			}
-			else if (!chipEditor.ChipMover.IsBusy())
+			else if (!chipEditor.ChipMover.IsBusy() && !chipEditor.ChipPlacer.IsBusy())
 			{
 				pin.SetHighlightState(Pin.HighlightState.Highlighted);
 			}
@@ -198,9 +206,12 @@ namespace DLS.ChipCreation
 
 		void OnMouseOverWire(Wire wire)
 		{
-			if (TryGetValidConnection(wire).success || !IsCreatingWire)
+			if (!chipEditor.ChipMover.IsBusy() && !chipEditor.ChipPlacer.IsBusy())
 			{
-				wire.SetHighlightState(true);
+				if (TryGetValidConnection(wire).success || !IsCreatingWire)
+				{
+					wire.SetHighlightState(true);
+				}
 			}
 			wireUnderMouse = wire;
 		}
@@ -262,14 +273,22 @@ namespace DLS.ChipCreation
 			}
 		}
 
-		bool TryMakeConnection(Wire wire)
+		// Try connect the current wire to another wire
+		bool TryMakeConnection(Wire connectingWire)
 		{
-			(bool success, Pin pinA, Pin pinB) = TryGetValidConnection(wire);
+			(bool success, Pin pinA, Pin pinB) = TryGetValidConnection(connectingWire);
 			if (success)
 			{
-				JoinToWire(MouseHelper.GetMouseWorldPosition(), wire, pinB);
+				if (connectingWire.IsBusWire)
+				{
+					wireUnderConstruction.AddAnchorPoint(connectingWire.ClosestPoint(wireUnderConstruction.CurrentDrawToPoint));
+				}
+				else
+				{
+					JoinToWire(MouseHelper.GetMouseWorldPosition(), connectingWire, pinB);
+				}
 
-				if (creatingWireFromWire)
+				if (creatingWireFromWire && !wireStartWire.IsBusWire)
 				{
 					JoinFromWire(wireStartWire, pinA);
 				}
@@ -279,12 +298,13 @@ namespace DLS.ChipCreation
 
 		}
 
+		// Try connect the current wire to a pin
 		void TryMakeConnection(Pin endPin)
 		{
 			(bool success, Pin pinA, Pin pinB) = TryGetValidConnection(endPin);
 			if (success)
 			{
-				if (creatingWireFromWire)
+				if (creatingWireFromWire && !wireStartWire.IsBusWire)
 				{
 					JoinFromWire(wireStartWire, pinA);
 				}
@@ -303,11 +323,10 @@ namespace DLS.ChipCreation
 
 		void MakeConnection(Pin startPin, Pin endPin)
 		{
-			if (!allowMultipleInputsPerPin)
+			if (!endPin.IsBusPin)
 			{
-				DestroyInvalidatedWire(startPin, endPin);
+				wireUnderConstruction.AddAnchorPoint(endPin.transform.position);
 			}
-			wireUnderConstruction.AddAnchorPoint(endPin.transform.position);
 			wireUnderConstruction.ConnectWireToPins(startPin, endPin);
 
 			Wire connectedWire = wireUnderConstruction;
@@ -411,6 +430,15 @@ namespace DLS.ChipCreation
 			wireUnderConstruction.SetAnchorPoints(newWirePoints, true);
 		}
 
+		void OnChipPlaced(ChipBase chip, bool wasLoaded)
+		{
+			if (chip is BusDisplay bus)
+			{
+				OnWireConnected(bus.Wire);
+				//RegisterWire(bus.Wire);
+			}
+		}
+
 		bool IsCreatingValidConnection(Pin endPin)
 		{
 			if (creatingWireFromPin)
@@ -429,57 +457,37 @@ namespace DLS.ChipCreation
 			return validConnectionsLookup.Contains((pinA.GetPinType(), pinB.GetPinType()));
 		}
 
-		// A new wire is being added between pinA and pinB -- destroy any wire that is invalidated by the new wire.
-		// Rules (note, these rules can be broken so long as inputs are tri-stated, but this is the default behaviour):
-		// 1) input pin of a childChip cannot have multiple wires connected to it.
-		// 2) output pin of parentChip cannot have multiple wires connected to it.
-		void DestroyInvalidatedWire(Pin pinA, Pin pinB)
-		{
-			for (int i = 0; i < allConnectedWires.Count; i++)
-			{
-				Wire wire = allConnectedWires[i];
-				bool invalidA = (pinA.GetPinType() is PinType.SubChipInputPin or PinType.ChipOutputPin) && (pinA == wire.SourcePin || pinA == wire.TargetPin);
-				bool invalidB = (pinB.GetPinType() is PinType.SubChipInputPin or PinType.ChipOutputPin) && (pinB == wire.SourcePin || pinB == wire.TargetPin);
-				if (invalidA || invalidB)
-				{
-					wire.DeleteWire();
-					return;
-				}
-			}
-		}
-
 		// Load a saved connection
 		public void Load(ConnectionDescription connection)
 		{
 			Pin pinA = chipEditor.GetPin(connection.Source);
 			Pin pinB = chipEditor.GetPin(connection.Target);
 
-			Wire wire = StartCreatingWire(pinA);
+			Wire wire = Instantiate(wirePrefab, wireHolder);
+
 			Vector2[] points = connection.WirePoints.Select(w => new Vector2(w.X, w.Y)).ToArray();
 			// Update start and end points in case positions of subchip pins have been edited since this chip was last saved
-			points[0] = pinA.transform.position;
-			points[^1] = pinB.transform.position;
+			if (!pinA.IsBusPin)
+			{
+				points[0] = pinA.transform.position;
+			}
+			if (!pinB.IsBusPin)
+			{
+				points[^1] = pinB.transform.position;
+			}
 			wire.SetAnchorPoints(points, true);
 
+			wire.ConnectWireToPins(pinA, pinB);
+			OnWireConnected(wire);
 
-			TryMakeConnection(pinA, pinB);
 			wire.SetColourTheme(chipEditor.ColourThemes.GetTheme(connection.ColourThemeName));
-
-			//wire.ChangeColourTheme(chipEditor.ColourThemes.GetTheme(connection.ColourThemeName));
 		}
 
 
 		Vector2 CalculateSnappedMousePosition()
 		{
-			Vector2 snappedMousePos = MouseHelper.GetMouseWorldPosition();
-			if (Keyboard.current.leftShiftKey.isPressed)
-			{
-				Vector2 prevWirePoint = wireUnderConstruction.AnchorPoints[^1];
-				Vector2 delta = snappedMousePos - prevWirePoint;
-				bool snapHorizontal = Mathf.Abs(delta.x) > Mathf.Abs(delta.y);
-				snappedMousePos = new Vector2(snapHorizontal ? snappedMousePos.x : prevWirePoint.x, snapHorizontal ? prevWirePoint.y : snappedMousePos.y);
-			}
-			return snappedMousePos;
+			bool snap = Keyboard.current.leftShiftKey.isPressed;
+			return MouseHelper.CalculateAxisSnappedMousePosition(wireUnderConstruction.AnchorPoints[^1], snap);
 		}
 
 		void InitValidConnectionLookup()

@@ -43,7 +43,24 @@ namespace DLS.ChipCreation
 
 		public static Vector2 GetMouseScreenPosition()
 		{
+			if (Application.isEditor)
+			{
+				return SebInput.Internal.MouseEventSystem.GetMousePos();
+			}
 			return Mouse.current.position.ReadValue();
+		}
+
+		public static Vector2 CalculateAxisSnappedMousePosition(Vector2 origin, bool snap = true)
+		{
+			Vector2 snappedMousePos = GetMouseWorldPosition();
+			if (snap)
+			{
+				Vector2 delta = snappedMousePos - origin;
+				bool snapHorizontal = Mathf.Abs(delta.x) > Mathf.Abs(delta.y);
+				snappedMousePos = new Vector2(snapHorizontal ? snappedMousePos.x : origin.x, snapHorizontal ? origin.y : snappedMousePos.y);
+			}
+			return snappedMousePos;
+
 		}
 
 		static Camera Cam

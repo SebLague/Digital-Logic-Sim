@@ -9,6 +9,7 @@ namespace DLS.VideoTools
 		public enum Mode { Off, Recording, Playback }
 		public TextAsset recordingFile;
 		public string savePath;
+		public float mouseSmoothT;
 		Mode mode = Mode.Off;
 
 		InputEventTrace trace;
@@ -17,12 +18,14 @@ namespace DLS.VideoTools
 		Mouse playbackMouse;
 		VidActions vidActions;
 		static InputRecorder instance;
+		SebInput.Internal.MouseEventSystem mouseEventSystem;
 
 		public static bool IsInPlayback => instance.mode == Mode.Playback;
 
 		void Awake()
 		{
 			instance = this;
+			mouseEventSystem = FindObjectOfType<SebInput.Internal.MouseEventSystem>();
 		}
 
 		void Start()
@@ -35,6 +38,7 @@ namespace DLS.VideoTools
 		{
 			if (mode == Mode.Playback)
 			{
+				mouseEventSystem.SetVidMouseSmoothing(mouseSmoothT);
 				Playback();
 			}
 			HandleInput();
@@ -163,8 +167,8 @@ namespace DLS.VideoTools
 
 		void Playback()
 		{
-			Vector2 targetPos = playbackMouse.position.ReadValue();
-			softwareMouse.position = targetPos;
+			//Vector2 targetPos = playbackMouse.position.ReadValue();
+			softwareMouse.position = SebInput.Internal.MouseEventSystem.GetMousePos();
 			if (replayController.finished)
 			{
 				StopPlayback();

@@ -57,31 +57,13 @@ namespace DLS.Simulation
 			simDescription.AllConnections = new List<SimPinConnection>();
 			foreach (var connection in description.Connections)
 			{
-				if (ShouldSimulateConnection(connection, description))
-				{
-					SimPinConnection c = new SimPinConnection() { Source = connection.Source, Target = connection.Target };
-					simDescription.AllConnections.Add(c);
-				}
+				SimPinConnection c = new SimPinConnection() { Source = connection.Source, Target = connection.Target };
+				simDescription.AllConnections.Add(c);
 			}
 
 			CycleDetector.MarkCycles(simDescription);
 
 			return simDescription;
-		}
-
-		// Some connections are just 'convenience' wires which don't actually contribute to the simulation.
-		bool ShouldSimulateConnection(ConnectionDescription connection, ChipDescription description)
-		{
-			if (connection.Source.SubChipID == connection.Target.SubChipID && connection.Source.BelongsToSubChip)
-			{
-				string subChipName = description.SubChips.First(s => s.ID == connection.Source.SubChipID).Name;
-				if (BuiltinChipNames.Compare(subChipName, BuiltinChipNames.BusName))
-				{
-					return false;
-				}
-			}
-
-			return true;
 		}
 	}
 }

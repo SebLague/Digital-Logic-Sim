@@ -22,6 +22,7 @@ namespace SebInput.Internal
 
 		[SerializeField] Camera cam;
 
+
 		List<MouseInteractionListener> listenersWithMouseOver;
 		List<MouseInteractionListener> listenersWithoutMouseOver;
 		HashSet<MouseInteractionListener> listenersWithLeftMouseDown;
@@ -32,6 +33,10 @@ namespace SebInput.Internal
 
 		public static void AddInteractionListener(MouseInteractionListener listener) => GetOrCreateInstance().RegisterListener(listener);
 		public static void RemoveInteractionListener(MouseInteractionListener listener) => instance?.DeregisterListener(listener);
+
+		float vid_mouseSmoothT;
+		Vector2 vid_mouseSmoothV;
+		Vector2 vid_mouseSmoothPos;
 
 		void Awake()
 		{
@@ -61,6 +66,10 @@ namespace SebInput.Internal
 
 		void Update()
 		{
+			if (Application.isEditor)
+			{
+				vid_mouseSmoothPos = Vector2.SmoothDamp(vid_mouseSmoothPos, Mouse.current.position.ReadValue(), ref vid_mouseSmoothV, vid_mouseSmoothT);
+			}
 			Transform hitObject = GetObjectUnderMouse();
 
 			if (hitObject != lastHit)
@@ -216,7 +225,7 @@ namespace SebInput.Internal
 
 			if (uiInputModule is null)
 			{
-				Vector2 mouseScreenPoint = mouse.position.ReadValue();
+				Vector2 mouseScreenPoint = vid_mouseSmoothPos;
 				Vector2 mouseWorldPoint = cam.ScreenToWorldPoint(mouseScreenPoint);
 				return Physics2D.OverlapPoint(mouseWorldPoint)?.transform;
 			}
@@ -225,6 +234,16 @@ namespace SebInput.Internal
 				RaycastResult lastRaycastResult = uiInputModule.GetLastRaycastResult(mouse.deviceId);
 				return lastRaycastResult.gameObject?.transform;
 			}
+		}
+
+		public void SetVidMouseSmoothing(float t)
+		{
+			vid_mouseSmoothT = t;
+		}
+
+		public static Vector2 GetMousePos()
+		{
+			return instance.vid_mouseSmoothPos;
 		}
 
 		void OnDestroy()

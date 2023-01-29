@@ -34,9 +34,12 @@ namespace DLS.Simulation
 
 			for (int i = 0; i < simChipDescription.NumSubChips; i++)
 			{
-				HashSet<int> chipsOnPath = new HashSet<int>();
-				int id = simChipDescription.SubChipIDs[i];
-				MarkChipInputCycles(id, id, connectionsOutByChipID, chipsOnPath);
+				if (simChipDescription.SubChipNames[i] != BuiltinChipNames.BusName)
+				{
+					HashSet<int> chipsOnPath = new HashSet<int>();
+					int id = simChipDescription.SubChipIDs[i];
+					MarkChipInputCycles(id, id, connectionsOutByChipID, chipsOnPath);
+				}
 			}
 
 			simChipDescription.CycleDataUpToDate = true;

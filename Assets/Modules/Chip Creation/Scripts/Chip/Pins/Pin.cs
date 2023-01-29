@@ -22,6 +22,7 @@ namespace DLS.ChipCreation
 		public bool IsSourcePin => pinType is PinType.ChipInputPin or PinType.SubChipOutputPin;
 		public bool IsTargetPin => !IsSourcePin;
 		public bool IsHighlighted => activeHighlightState != HighlightState.None;
+		public bool IsBusPin { get; set; }
 		public DLS.Simulation.PinState State;
 		public Palette.VoltageColour ColourTheme { get; private set; }
 
@@ -113,8 +114,6 @@ namespace DLS.ChipCreation
 
 			bool ShouldShowPinName()
 			{
-
-
 				switch (pinNameDisplayMode)
 				{
 					case DisplayOptions.PinNameDisplayMode.Always: return true;

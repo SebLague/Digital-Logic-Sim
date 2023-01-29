@@ -40,6 +40,7 @@ namespace DLS.ChipCreation
 			public string name;
 			public Color High;
 			public Color Low;
+			public Color Tristate;
 			public int displayPriority;
 
 			public Color GetColour(PinState state, bool useTriStateCol = true)
@@ -48,7 +49,7 @@ namespace DLS.ChipCreation
 				{
 					case PinState.HIGH: return High;
 					case PinState.LOW: return Low;
-					default: return useTriStateCol ? Color.black : Low;
+					default: return useTriStateCol ? Tristate : Low;
 				}
 			}
 		}

@@ -15,14 +15,15 @@ namespace DLS.ChipCreation
 		public ReadOnlyCollection<Vector2> AnchorPoints => new(anchorPoints);
 		public MouseInteraction<Wire> MouseInteraction { get; private set; }
 		public bool IsBusWire { get; private set; }
+		public Vector2 CurrentDrawToPoint { get; private set; }
 
 		[SerializeField] WireRenderer wireRenderer;
 		[SerializeField] EdgeCollider2D edgeCollider;
 		[SerializeField] float wireThickness;
-		[SerializeField] float busWireThickness;
 		[SerializeField] float selectedThicknessPadding;
 		[SerializeField] float wireCurveAmount;
 		[SerializeField] int wireCurveResolution;
+		[SerializeField] MeshRenderer busConnectionDot;
 
 		List<Vector2> anchorPoints;
 		Vector3[] drawPoints;
@@ -47,6 +48,7 @@ namespace DLS.ChipCreation
 		{
 			SourcePin = (pinA.IsSourcePin) ? pinA : pinB;
 			TargetPin = (pinA.IsTargetPin) ? pinA : pinB;
+			IsBusWire = pinA.IsBusPin && pinB.IsBusPin;
 			IsConnected = true;
 
 			if (SourcePin != pinA)
@@ -70,6 +72,16 @@ namespace DLS.ChipCreation
 
 			SourcePin.ColourThemeChanged += SetColourTheme;
 			TargetPin.ColourThemeChanged += SetColourTheme;
+
+			// If connecting to a bus line, then display a small dot at the connection point
+			if ((SourcePin.IsBusPin || TargetPin.IsBusPin) && !IsBusWire)
+			{
+				busConnectionDot.sharedMaterial = new Material(busConnectionDot.sharedMaterial);
+				Vector2 busConnectionPoint = SourcePin.IsBusPin ? anchorPoints[0] : anchorPoints[^1];
+				busConnectionDot.gameObject.SetActive(true);
+				busConnectionDot.transform.position = busConnectionPoint.WithZ(RenderOrder.busConnectionDot);
+				busConnectionDot.transform.localScale = Vector3.one * DisplaySettings.PinSize * 0.6f;
+			}
 		}
 
 		public void DeleteWire()
@@ -94,14 +106,13 @@ namespace DLS.ChipCreation
 		{
 			var col = ColourTheme.GetColour(SourcePin.State);
 			float z;
+
+			z = (SourcePin.State == Simulation.PinState.HIGH) ? RenderOrder.WireHigh : RenderOrder.WireLow;
 			if (IsBusWire)
 			{
 				z = (SourcePin.State == Simulation.PinState.HIGH) ? RenderOrder.BusWireHigh : RenderOrder.BusWireLow;
 			}
-			else
-			{
-				z = (SourcePin.State == Simulation.PinState.HIGH) ? RenderOrder.WireHigh : RenderOrder.WireLow;
-			}
+
 			z += RenderOrder.layerAbove / 10f * ColourTheme.displayPriority;
 			transform.position = new Vector3(0, 0, z);
 			SetColour(col);
@@ -112,6 +123,7 @@ namespace DLS.ChipCreation
 			// Only draw wire to target point if an anchor point exists, and target point is not on top of last anchor point
 			if (anchorPoints.Count > 0 && (anchorPoints[^1] - targetPoint).sqrMagnitude > 0.001f)
 			{
+				CurrentDrawToPoint = targetPoint;
 				List<Vector2> points = new List<Vector2>(anchorPoints);
 				points.Add(targetPoint);
 				UpdateLineRenderer(points.ToArray());
@@ -137,6 +149,12 @@ namespace DLS.ChipCreation
 			}
 		}
 
+		public void UpdateAnchorPoint(int i, Vector2 point)
+		{
+			anchorPoints[i] = point;
+			UpdateLineRenderer();
+		}
+
 		public void RemoveLastAnchorPoint()
 		{
 			if (anchorPoints.Count > 1)
@@ -159,8 +177,8 @@ namespace DLS.ChipCreation
 		{
 			Vector2 deltaA = (Vector2)SourcePin.transform.position - anchorPoints[0];
 			Vector2 deltaB = (Vector2)TargetPin.transform.position - anchorPoints[^1];
-			bool moveA = deltaA.magnitude > 0.01f;
-			bool moveB = deltaB.magnitude > 0.01f;
+			bool moveA = deltaA.magnitude > 0.001f && !SourcePin.IsBusPin;
+			bool moveB = deltaB.magnitude > 0.001f && !TargetPin.IsBusPin;
 
 			if (moveA && moveB)
 			{
@@ -178,8 +196,11 @@ namespace DLS.ChipCreation
 				anchorPoints[^1] += deltaB;
 			}
 
-			UpdateLineRenderer();
-			UpdateCollider();
+			if (moveA || moveB)
+			{
+				UpdateLineRenderer();
+				UpdateCollider();
+			}
 		}
 
 		public void SetColourTheme(Palette.VoltageColour colours)
@@ -190,6 +211,7 @@ namespace DLS.ChipCreation
 
 		void SetColour(Color col, float fadeDuration = 0)
 		{
+			busConnectionDot.sharedMaterial.color = col;
 			wireRenderer.SetColour(col, fadeDuration);
 		}
 
@@ -219,9 +241,7 @@ namespace DLS.ChipCreation
 
 		float GetThickness(bool isSelected)
 		{
-			float thickness = (IsBusWire) ? busWireThickness : wireThickness;
-			thickness += (isSelected) ? selectedThicknessPadding : 0;
-			return thickness;
+			return wireThickness + (isSelected ? selectedThicknessPadding : 0);
 		}
 
 		void OnDestroy()

@@ -11,7 +11,7 @@ namespace DLS.ChipCreation.UI
 
 		[SerializeField] Button menuButton;
 		[SerializeField] RectTransform menuPopup;
-		[SerializeField] ProjectManager chipCreationManager;
+		[SerializeField] ProjectManager projectManager;
 		[SerializeField] CustomButton newButton;
 		[SerializeField] CustomButton saveButton;
 		[SerializeField] CustomButton libraryButton;
@@ -63,7 +63,7 @@ namespace DLS.ChipCreation.UI
 		{
 			Keyboard keyboard = Keyboard.current;
 
-			if (chipCreationManager.ActiveViewChipEditor.CanEdit)
+			if (projectManager.ActiveViewChipEditor.CanEdit)
 			{
 				if (keyboard.ctrlKey.isPressed)
 				{
@@ -88,6 +88,11 @@ namespace DLS.ChipCreation.UI
 					{
 						Quit();
 					}
+
+					if (keyboard.spaceKey.wasPressedThisFrame)
+					{
+						ToggleMouseGuide();
+					}
 				}
 			}
 
@@ -98,11 +103,18 @@ namespace DLS.ChipCreation.UI
 			}
 		}
 
+		void ToggleMouseGuide()
+		{
+			var options = projectManager.ProjectSettings.DisplayOptions;
+			options.ShowCursorGuide = options.ShowCursorGuide is DisplayOptions.ToggleState.On ? DisplayOptions.ToggleState.Off : DisplayOptions.ToggleState.On;
+			projectManager.UpdateDisplayOptions(options);
+		}
+
 		void CreateNewChip()
 		{
 			CloseAll();
 
-			ChipEditor chipEditor = chipCreationManager.ActiveEditChipEditor;
+			ChipEditor chipEditor = projectManager.ActiveEditChipEditor;
 
 			if (chipEditor.HasUnsavedChanges())
 			{
@@ -118,13 +130,13 @@ namespace DLS.ChipCreation.UI
 
 		void ConfirmCreateNewChip()
 		{
-			chipCreationManager.OpenNewChipEditor();
+			projectManager.OpenNewChipEditor();
 		}
 
 		void OpenSaveMenu()
 		{
 			Close();
-			saveMenu.Open(chipCreationManager.ActiveEditChipEditor);
+			saveMenu.Open(projectManager.ActiveEditChipEditor);
 		}
 
 		void OpenLibrary()
@@ -168,7 +180,7 @@ namespace DLS.ChipCreation.UI
 		{
 			CloseAll();
 
-			ChipEditor chipEditor = chipCreationManager.ActiveEditChipEditor;
+			ChipEditor chipEditor = projectManager.ActiveEditChipEditor;
 
 			if (chipEditor.HasUnsavedChanges())
 			{
@@ -190,7 +202,7 @@ namespace DLS.ChipCreation.UI
 		{
 			menuPopup.gameObject.SetActive(true);
 
-			bool inEditMode = chipCreationManager.ActiveEditChipEditor == chipCreationManager.ActiveViewChipEditor;
+			bool inEditMode = projectManager.ActiveEditChipEditor == projectManager.ActiveViewChipEditor;
 			saveButton.SetInteractable(inEditMode);
 			libraryButton.SetInteractable(inEditMode);
 			newButton.SetInteractable(inEditMode);
