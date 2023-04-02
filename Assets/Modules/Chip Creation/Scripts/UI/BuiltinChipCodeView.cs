@@ -11,8 +11,9 @@ namespace DLS.ChipCreation.UI
 		[SerializeField] TextAsset codeFile_Clock;
 		[SerializeField] TextAsset codeFile_TristateBuffer;
 		[SerializeField] TextAsset codeFile_SevenSegDisplay;
+        [SerializeField] TextAsset codeFile_TickDelay;
 
-		[SerializeField] float backgroundPadding;
+        [SerializeField] float backgroundPadding;
 		[SerializeField] float outlinePadding;
 		[SerializeField] GameObject holder;
 		[SerializeField] TextAsset codeFile;
@@ -25,7 +26,6 @@ namespace DLS.ChipCreation.UI
 		void Start()
 		{
 			holder.SetActive(false);
-
 		}
 
 		public void OnViewChanged(string chipName)
@@ -46,6 +46,7 @@ namespace DLS.ChipCreation.UI
 					case BuiltinChipNames.ClockName: return codeFile_Clock;
 					case BuiltinChipNames.SevenSegmentDisplayName: return codeFile_SevenSegDisplay;
 					case BuiltinChipNames.TriStateBufferName: return codeFile_TristateBuffer;
+					case BuiltinChipNames.TickDelayName: return codeFile_TickDelay;
 					default: return null;
 				}
 			}

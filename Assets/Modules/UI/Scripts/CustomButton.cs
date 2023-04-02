@@ -21,7 +21,7 @@ namespace DLS.ChipCreation
 		[SerializeField] Color disabledTextCol = Color.white;
 
 		[Header("References")]
-		[SerializeField] TMPro.TMP_Text textDisplay;
+		public TMPro.TMP_Text textDisplay;
 
 		RectTransform rectTransform;
 		Button _button;

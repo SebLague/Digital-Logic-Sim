@@ -1,0 +1,33 @@
+Lang Code	EN	ID
+^about	ABOUT	TENTANG
+^apply	APPLY	TERAPKAN
+^back	BACK	KEMBALI
+^cancel	CANCEL	BATAL
+^copy	COPY	SALIN
+^create	CREATE	BUAT
+^create_project	CREATE PROJECT	BUAT PROYEK
+^delete	DELETE	HAPUS
+^full_screen	Full Screen	Layar Penuh
+^language	Language	Bahasa
+^load_project	LOAD PROJECT	MUAT PROYEK
+^name	Name	Nama
+^new_project	NEW PROJECT	PROYEK BARU
+^open	OPEN	BUKA
+^quit	QUIT	KELUAR
+^rename	RENAME	GANTI NAMA
+^resolution	Resolution	Resolusi
+^settings	SETTINGS	PENGATURAN
+^settings_warning	Note: exiting without applying will revert your changes.	Catatan: Keluar tanpa menerapkan akan mengembalikan perubahan Anda.
+^vsync	VSync	VSync
+^vsync_desc	Turn off to reduce input latency (at the cost of increased GPU usage and potential 'screen tearing' artifacts).	Matikan untuk mengurangi latensi masukan (dengan biaya peningkatan penggunaan GPU dan potensi artefak 'screen tearing').
+^delete_warning	Are you sure you want to delete this project? This action cannot be undone.	Apakah Anda yakin ingin menghapus proyek ini? Tindakan ini tidak dapat dibatalkan.
+^create_copy	CREATE COPY	BUAT SALINAN
+^version	Version	Versi
+^last_update	Last Updated	Terakhir Diperbarui
+^created_by	Created by	Dibuat oleh
+^enter_name	Please enter a name for your project.	Silakan masukkan nama untuk proyek Anda.
+^name_exists	A project with this name already exists.	Proyek dengan nama ini sudah ada.
+^name_reserved	This name is reserved.	Nama ini sudah dipesan.
+# Language Names		
+^lang_EN	English	Inggris
+^lang_ID	Indonesia	Indonesia

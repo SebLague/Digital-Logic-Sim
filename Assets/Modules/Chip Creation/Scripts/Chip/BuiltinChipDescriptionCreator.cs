@@ -18,8 +18,8 @@ namespace DLS.ChipCreation
 				CreateClockDescription(),
 				CreateBuiltinTriStateBuffer(),
 				CreateBuiltinSevenSegmentDisplay(),
-				CreateBusDescription()
-				
+				CreateBusDescription(),
+				CreateTickDelayDescription(),
 			};
 		}
 
@@ -66,15 +66,24 @@ namespace DLS.ChipCreation
 			string[] outputNames = new string[] { "B" };
 			Color col = new Color(0, 0, 0);
 			return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
-		}
+        }
 
-		static ChipDescription CreateClockDescription()
-		{
-			string name = BuiltinChipNames.ClockName;
-			string[] inputNames = new string[] { "Freq 1", "Freq 0" };
-			string[] outputNames = new string[] { "Out" };
-			Color col = new Color(0, 0, 0);
-			return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
-		}
-	}
+        static ChipDescription CreateClockDescription()
+        {
+            string name = BuiltinChipNames.ClockName;
+            string[] inputNames = new string[] { "Freq 1", "Freq 0" };
+            string[] outputNames = new string[] { "Out" };
+            Color col = new Color(0, 0, 0);
+            return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
+        }
+
+        static ChipDescription CreateTickDelayDescription()
+        {
+            string name = BuiltinChipNames.TickDelayName;
+            string[] inputNames = new string[] { "In" };
+            string[] outputNames = new string[] { "Out" };
+            Color col = new Color(0, 0, 0);
+            return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
+        }
+    }
 }

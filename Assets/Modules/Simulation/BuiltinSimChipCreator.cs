@@ -18,6 +18,7 @@ namespace DLS.Simulation
 				case BuiltinChipNames.SevenSegmentDisplayName: return new BuiltingSevenSegmentDisplay(inputPins, outputPins);
 				case BuiltinChipNames.BusName: return new BuiltinBus(inputPins, outputPins);
 				case BuiltinChipNames.ClockName: return new BuiltinClock(inputPins, outputPins);
+				case BuiltinChipNames.TickDelayName: return new BuiltinTickDelay(inputPins, outputPins);
 				default:
 					Debug.LogError("Invalid builtin chip: " + name);
 					return default;

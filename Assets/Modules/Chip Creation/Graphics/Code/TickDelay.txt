@@ -1,0 +1,5 @@
+<color=#D1A2FF>void</color> <color=#68AFFD>TickDelay</color>()
+{
+	outputPins[<color=#EE815B>0</color>].<color=#FFFFFF>State</color> = state;
+	state = inputPins[<color=#EE815B>0</color>].<color=#FFFFFF>State</color>
+}
