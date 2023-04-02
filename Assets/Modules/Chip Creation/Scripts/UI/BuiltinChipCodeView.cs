@@ -8,8 +8,13 @@ namespace DLS.ChipCreation.UI
 	{
 		[SerializeField] TextAsset codeFile_And;
 		[SerializeField] TextAsset codeFile_Not;
+		[SerializeField] TextAsset codeFile_Or;
+		[SerializeField] TextAsset codeFile_Xor;
+		[SerializeField] TextAsset codeFile_Nand;
+		[SerializeField] TextAsset codeFile_Nor;
+		[SerializeField] TextAsset codeFile_Xnor;
 		[SerializeField] TextAsset codeFile_Clock;
-		[SerializeField] TextAsset codeFile_TristateBuffer;
+        [SerializeField] TextAsset codeFile_TristateBuffer;
 		[SerializeField] TextAsset codeFile_SevenSegDisplay;
         [SerializeField] TextAsset codeFile_TickDelay;
 
@@ -43,6 +48,11 @@ namespace DLS.ChipCreation.UI
 				{
 					case BuiltinChipNames.AndChip: return codeFile_And;
 					case BuiltinChipNames.NotChip: return codeFile_Not;
+					case BuiltinChipNames.OrChip: return codeFile_Or;
+					case BuiltinChipNames.XorChip: return codeFile_Xor;
+					case BuiltinChipNames.NandChip: return codeFile_Nand;
+					case BuiltinChipNames.NorChip: return codeFile_Nor;
+					case BuiltinChipNames.XnorChip: return codeFile_Xnor;
 					case BuiltinChipNames.ClockName: return codeFile_Clock;
 					case BuiltinChipNames.SevenSegmentDisplayName: return codeFile_SevenSegDisplay;
 					case BuiltinChipNames.TriStateBufferName: return codeFile_TristateBuffer;

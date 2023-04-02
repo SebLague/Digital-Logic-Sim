@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65f5745bd1e04e54781d47b039eb1c25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: Press Me
+  text: ^new
   textNormalCol: {r: 1, g: 1, b: 1, a: 1}
   textHighlightCol: {r: 0, g: 0, b: 0, a: 1}
   disabledTextCol: {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 1}
@@ -221,7 +221,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press Me
+  m_text: ^new
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c33e17f8c4155864fb769490cf5635af, type: 2}
   m_sharedMaterial: {fileID: -5702233291332414176, guid: c33e17f8c4155864fb769490cf5635af, type: 2}
