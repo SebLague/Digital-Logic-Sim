@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DLS.ChipData;
+using Honeti;
 
 namespace DLS.ChipCreation
 {
@@ -92,15 +93,15 @@ namespace DLS.ChipCreation
 			int numUses = chipsUsingCurrentChip.Length;
 			if (numUses == 1)
 			{
-				return $"This chip is currently used in {FormatChipName(0)}.";
+				return I18N.instance.getValue("^used_by_1", new string[] { FormatChipName(0) });
 			}
 			else if (numUses == 2)
 			{
-				return $"This chip is currently used in {FormatChipName(0)} and {FormatChipName(1)}.";
+				return I18N.instance.getValue("^used_by_2", new string[] { FormatChipName(0), FormatChipName(1) });
 			}
 			else if (numUses > 2)
 			{
-				return $"This chip is currently used in {FormatChipName(0)} and {numUses - 1} others.";
+				return I18N.instance.getValue("^used_by_many", new string[] { FormatChipName(0), (numUses - 1).ToString() });
 			}
 			return "";
 

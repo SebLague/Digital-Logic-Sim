@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using Honeti;
 
 namespace DLS.ChipCreation.UI
 {
@@ -118,8 +119,8 @@ namespace DLS.ChipCreation.UI
 
 			if (chipEditor.HasUnsavedChanges())
 			{
-				string message = "Are you sure you want to create a new chip? The current chip has unsaved changes which will be lost.";
-				confirmationPopup.Open(message, "CANCEL", "CREATE NEW", null, ConfirmCreateNewChip);
+				string message = I18N.instance.getValue("^create_new_warning");
+				confirmationPopup.Open(message, I18N.instance.getValue("^cancel"), I18N.instance.getValue("^create_new"), null, ConfirmCreateNewChip);
 			}
 			else
 			{
@@ -184,8 +185,8 @@ namespace DLS.ChipCreation.UI
 
 			if (chipEditor.HasUnsavedChanges())
 			{
-				string quitMessage = "Are you sure you want to quit? The current chip has unsaved changes which will be lost.";
-				confirmationPopup.Open(quitMessage, "CANCEL", "QUIT", null, ConfirmQuit);
+				string quitMessage = I18N.instance.getValue("^quit_warning");
+				confirmationPopup.Open(quitMessage, I18N.instance.getValue("^cancel"), I18N.instance.getValue("^quit"), null, ConfirmQuit);
 			}
 			else
 			{

@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "com.unity.ide.visualstudio": "2.0.16",
+    "com.unity.ide.visualstudio": "2.0.17",
     "com.unity.ide.vscode": "1.2.5",
-    "com.unity.inputsystem": "1.4.3",
+    "com.unity.inputsystem": "1.4.4",
     "com.unity.recorder": "3.0.3",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.ugui": "1.0.0",

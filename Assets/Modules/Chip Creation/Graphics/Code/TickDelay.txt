@@ -1,0 +1,7 @@
+state = <color=#FFFFFF>State</color>.<color=#FFFFFF>LOW</color>
+
+<color=#D1A2FF>void</color> <color=#68AFFD>ProcessTickDelay</color>()
+{
+	outputPins[<color=#EE815B>0</color>].<color=#FFFFFF>State</color> = state;
+	state = inputPins[<color=#EE815B>0</color>].<color=#FFFFFF>State</color>
+}

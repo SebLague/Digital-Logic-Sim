@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DLS.ChipCreation;
+using Honeti;
 
 namespace DLS.MainMenu
 {
@@ -30,7 +31,7 @@ namespace DLS.MainMenu
 				menus[i].BackButton?.onClick.AddListener(OpenStartupMenu);
 			}
 
-			versionText.text = $"Version: {Application.version} (alpha)";
+			versionText.text = $"{I18N.instance.getValue("^version")}: {Application.version} (alpha)";
 			OpenStartupMenu();
 		}
 

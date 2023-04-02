@@ -8,10 +8,13 @@ namespace DLS.ChipCreation.UI
 	public class EditorOptionsMenu : MonoBehaviour
 	{
 		[SerializeField] ProjectManager chipCreationManager;
-		[SerializeField] ValueWheel mainPinDisplayOptions;
-		[SerializeField] ValueWheel subPinDisplayOptions;
-		[SerializeField] ValueWheel cursorGuideDisplayOptions;
-		[SerializeField] CustomButton doneButton;
+        //[SerializeField] ValueWheel mainPinDisplayOptions;
+        //[SerializeField] ValueWheel subPinDisplayOptions;
+        //[SerializeField] ValueWheel cursorGuideDisplayOptions;
+        [SerializeField] I18NValueWheel mainPinDisplayOptions;
+        [SerializeField] I18NValueWheel subPinDisplayOptions;
+        [SerializeField] I18NValueWheel cursorGuideDisplayOptions;
+        [SerializeField] CustomButton doneButton;
 
 		void Awake()
 		{

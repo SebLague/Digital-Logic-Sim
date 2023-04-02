@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DLS.ChipCreation;
 using System.Linq;
+using Honeti;
 
 namespace DLS.MainMenu
 {
@@ -41,15 +42,15 @@ namespace DLS.MainMenu
 			errorMessage.gameObject.SetActive(!validName);
 			if (emptyName)
 			{
-				errorMessage.text = "Please enter a name for your project.";
+				errorMessage.text = I18N.instance.getValue("^enter_name");
 			}
 			else if (duplicateName)
 			{
-				errorMessage.text = "A project with this name already exists.";
+				errorMessage.text = I18N.instance.getValue("^name_exists");
 			}
 			else if (unsupportedFileName)
 			{
-				errorMessage.text = "This name is reserved.";
+				errorMessage.text = I18N.instance.getValue("^name_reserved");
 			}
 
 			ProjectNameChanged?.Invoke(validName, projectName);

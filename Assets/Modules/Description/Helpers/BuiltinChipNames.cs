@@ -8,20 +8,32 @@ namespace DLS.ChipData
 	{
 		public const string AndChip = "AND";
 		public const string NotChip = "NOT";
+		public const string OrChip = "OR";
+		public const string XorChip = "XOR";
+		public const string NandChip = "NAND";
+		public const string NorChip = "NOR";
+		public const string XnorChip = "XNOR";
 		public const string TriStateBufferName = "TRI-STATE BUFFER";
 		public const string SevenSegmentDisplayName = "7-SEGMENT DISPLAY";
 		public const string BusName = "BUS";
 		public const string ClockName = "CLOCK";
+		public const string TickDelayName = "TICK DELAY";
 
 		static readonly string[] allNames = new string[]
 		{
 			AndChip,
 			NotChip,
-			TriStateBufferName,
+            OrChip,
+            XorChip,
+            NandChip,
+            NorChip,
+            XnorChip,
+            TriStateBufferName,
 			SevenSegmentDisplayName,
 			BusName,
-			ClockName
-		};
+			ClockName,
+            TickDelayName,
+        };
 
 		public static bool IsBuiltinName(string chipName, bool ignoreCase = true)
 		{

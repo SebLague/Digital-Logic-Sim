@@ -1,0 +1,5 @@
+<color=#D1A2FF>void</color> <color=#68AFFD>ProcessOR</color>()
+{
+	<color=#D1A2FF>bool</color> outputIsHigh = inputPins[<color=#EE815B>0</color>].<color=#FFFFFF>State</color> is <color=#FF875A>HIGH</color> || inputPins[<color=#EE815B>1</color>].<color=#FFFFFF>State</color> is <color=#FF875A>HIGH</color>;
+	outputPins[<color=#EE815B>0</color>].<color=#FFFFFF>State</color> = outputIsHigh ? <color=#FF875A>HIGH</color> : <color=#FF875A>LOW</color>;
+}

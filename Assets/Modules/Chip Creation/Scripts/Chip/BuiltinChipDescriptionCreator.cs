@@ -15,11 +15,16 @@ namespace DLS.ChipCreation
 			{
 				CreateBuiltinAND(),
 				CreateBuiltinNOT(),
+				CreateBuiltinOR(),
+				CreateBuiltinXOR(),
+				CreateBuiltinNAND(),
+				CreateBuiltinNOR(),
+				CreateBuiltinXNOR(),
 				CreateClockDescription(),
-				CreateBuiltinTriStateBuffer(),
+                CreateBuiltinTriStateBuffer(),
 				CreateBuiltinSevenSegmentDisplay(),
-				CreateBusDescription()
-				
+				CreateBusDescription(),
+				CreateTickDelayDescription(),
 			};
 		}
 
@@ -41,7 +46,52 @@ namespace DLS.ChipCreation
 			return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
 		}
 
-		static ChipDescription CreateBuiltinTriStateBuffer()
+        static ChipDescription CreateBuiltinOR()
+        {
+            string name = BuiltinChipNames.OrChip;
+            string[] inputNames = new string[] { "In A", "In B" };
+            string[] outputNames = new string[] { "Out" };
+            Color col = new Color(0.14f, 0.70f, 0.32f);
+            return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
+        }
+
+        static ChipDescription CreateBuiltinXOR()
+        {
+            string name = BuiltinChipNames.XorChip;
+            string[] inputNames = new string[] { "In A", "In B" };
+            string[] outputNames = new string[] { "Out" };
+            Color col = new Color(0.70f, 0.20f, 0.15f);
+            return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
+        }
+
+        static ChipDescription CreateBuiltinNAND()
+        {
+            string name = BuiltinChipNames.NandChip;
+            string[] inputNames = new string[] { "In A", "In B" };
+            string[] outputNames = new string[] { "Out" };
+            Color col = new Color(0.85f, 0.52f, 0.30f);
+            return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
+        }
+
+        static ChipDescription CreateBuiltinNOR()
+        {
+            string name = BuiltinChipNames.NorChip;
+            string[] inputNames = new string[] { "In A", "In B" };
+            string[] outputNames = new string[] { "Out" };
+            Color col = new Color(0.85f, 0.30f, 0.63f);
+            return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
+        }
+
+        static ChipDescription CreateBuiltinXNOR()
+        {
+            string name = BuiltinChipNames.XnorChip;
+            string[] inputNames = new string[] { "In A", "In B" };
+            string[] outputNames = new string[] { "Out" };
+            Color col = new Color(0.30f, 0.81f, 0.85f);
+            return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
+        }
+
+        static ChipDescription CreateBuiltinTriStateBuffer()
 		{
 			string name = BuiltinChipNames.TriStateBufferName;
 			string[] inputNames = new string[] { "Enable", "Data" };
@@ -66,15 +116,24 @@ namespace DLS.ChipCreation
 			string[] outputNames = new string[] { "B" };
 			Color col = new Color(0, 0, 0);
 			return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
-		}
+        }
 
-		static ChipDescription CreateClockDescription()
-		{
-			string name = BuiltinChipNames.ClockName;
-			string[] inputNames = new string[] { "Freq 1", "Freq 0" };
-			string[] outputNames = new string[] { "Out" };
-			Color col = new Color(0, 0, 0);
-			return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
-		}
-	}
+        static ChipDescription CreateClockDescription()
+        {
+            string name = BuiltinChipNames.ClockName;
+            string[] inputNames = new string[] { "Freq 1", "Freq 0" };
+            string[] outputNames = new string[] { "Out" };
+            Color col = new Color(0, 0, 0);
+            return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
+        }
+
+        static ChipDescription CreateTickDelayDescription()
+        {
+            string name = BuiltinChipNames.TickDelayName;
+            string[] inputNames = new string[] { "In" };
+            string[] outputNames = new string[] { "Out" };
+            Color col = new Color(0, 0, 0);
+            return EmptyChipDescriptionCreator.CreateEmptyChipDescription(name, inputNames, outputNames, col);
+        }
+    }
 }

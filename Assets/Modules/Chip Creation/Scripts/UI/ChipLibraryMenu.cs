@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DLS.ChipData;
+using Honeti;
 
 namespace DLS.ChipCreation.UI
 {
@@ -46,13 +47,13 @@ namespace DLS.ChipCreation.UI
 				gameObject.SetActive(true);
 				ResetUI();
 
-				AddHeading("BUILT-IN");
+				AddHeading(I18N.instance.getValue("^builtin"));
 				foreach (var chip in ChipDescriptionLoader.BuiltinChips)
 				{
 					AddButton(chip);
 				}
 
-				AddHeading("CUSTOM");
+				AddHeading(I18N.instance.getValue("^custom"));
 				var allCustomChipNames = projectManager.ProjectSettings.GetAllCreatedChipNames();
 				foreach (var chipName in allCustomChipNames)
 				{
@@ -73,10 +74,8 @@ namespace DLS.ChipCreation.UI
 		{
 			if (projectManager.ActiveEditChipEditor.HasUnsavedChanges())
 			{
-				string message = "The current chip has unsaved changes, which will be lost if you open another chip for editing. ";
-				message += "Are you sure you want to proceed?";
-
-				confirmationPopup.Open(message, "CANCEL", "CONFIRM", null, OnEditConfirmed);
+				string message = I18N.instance.getValue("^edit_warning");
+				confirmationPopup.Open(message, I18N.instance.getValue("^cancel"), I18N.instance.getValue("^confirm"), null, OnEditConfirmed);
 			}
 			else
 			{
@@ -120,16 +119,16 @@ namespace DLS.ChipCreation.UI
 		{
 
 			string[] parentNames = ChipDescriptionHelper.GetParentChipNames(selectedChipDescription.Name);
-			string message = $"Are you sure you want to delete <b>\"{selectedChipDescription.Name}\"</b>? ";
+			string message = I18N.instance.getValue("^delete_confirm", new string[]{$"\"{selectedChipDescription.Name}\""});
 			if (parentNames.Length == 0)
 			{
-				message += "It is not used by any chips.";
+				message += I18N.instance.getValue("^not_used");
 			}
 			else
 			{
 				message += SaveMenu.CreateChipInUseWarningMessage(parentNames);
 			}
-			confirmationPopup.Open(message, "CANCEL", "DELETE", null, OnDeleteConfirmed);
+			confirmationPopup.Open(message, I18N.instance.getValue("^cancel"), I18N.instance.getValue("^delete"), null, OnDeleteConfirmed);
 		}
 
 
@@ -148,7 +147,7 @@ namespace DLS.ChipCreation.UI
 			bool isBuiltin = BuiltinChipNames.IsBuiltinName(selectedChipDescription.Name);
 			string currentChipName = projectManager.ActiveEditChipEditor.LastSavedDescription.Name;
 			bool hasSelectedCurrentlyEditedChip = hasSelectedChip && selectedChipDescription.Name == currentChipName;
-			starButton.SetButtonText(projectManager.ProjectSettings.IsStarred(selectedChipDescription.Name) ? "UN-STAR" : "STAR");
+			starButton.SetButtonText(I18N.instance.getValue(projectManager.ProjectSettings.IsStarred(selectedChipDescription.Name) ? "^unstar" : "^star"));
 
 			addButton.SetInteractable(hasSelectedChip && !hasSelectedCurrentlyEditedChip);
 			starButton.SetInteractable(hasSelectedChip);
