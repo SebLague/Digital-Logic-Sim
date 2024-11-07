@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useChipOverrides: 1
   useVideoChipOverrides: 1
-  useVideoChipsInBuild: 0
+  useVideoChipsInBuild: 1
   chipOverrides:
   - chipName: 7-SEGMENT DISPLAY
     prefab: {fileID: 7447267253726798738, guid: 16d339669b6f70a449ce59388dba251b, type: 3}
