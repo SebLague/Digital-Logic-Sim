@@ -224,6 +224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 769003d0bc6ba7146977eb892b3efc10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flipShader: {fileID: 4800000, guid: e1c56ebc666d34246b16d11ac2603f23, type: 3}
 --- !u!1 &1140840878
 GameObject:
   m_ObjectHideFlags: 0
