@@ -1,7 +1,0 @@
-<color=#D1A2FF>void</color> <color=#68AFFD>ProcessTriStateBuffer</color>()
-{
-	<color=#D0A7F8>var</color> enable = <color=#FFFFFF>inputPins</color>[<color=#EE815B>0</color>].<color=#FFFFFF>State</color>;
-	<color=#D0A7F8>var</color> data = <color=#FFFFFF>inputPins</color>[<color=#EE815B>1</color>].<color=#FFFFFF>State</color>;
-	<color=#D0A7F8>var</color> output = enable is <color=#FF875A>HIGH</color> ? data : <color=#FF875A>FLOATING</color>;
-	outputPins[<color=#EE815B>0</color>].<color=#FFFFFF>State</color> = output;
-}

@@ -1,2 +1,0 @@
-Note to self... Before building:
-* Disable "Video Helpers" object

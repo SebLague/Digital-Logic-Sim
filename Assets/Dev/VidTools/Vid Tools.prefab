@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5282518579391824763
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1698464660378330515}
+  - component: {fileID: 3075635362998256356}
+  - component: {fileID: 3527473494002199236}
+  - component: {fileID: 5204265700819750101}
+  - component: {fileID: 5668847587213001859}
+  m_Layer: 0
+  m_Name: Vid Tools
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1698464660378330515
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5282518579391824763}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3075635362998256356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5282518579391824763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11417cadf6873f4478f886fa00f792df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camOverrideAtStartupOnly: 1
+  camOrthoOverride: 1
+  camOrtho: 4.038024
+  camPosOverride: 1
+  camPos: {x: -0.4461973, y: 0.7253042}
+  printCamView: 0
+--- !u!114 &3527473494002199236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5282518579391824763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f1ca85d340ba6d4a8ada875ece3c93a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mode: 1
+  recorder: {fileID: 5204265700819750101}
+  playback: {fileID: 5668847587213001859}
+--- !u!114 &5204265700819750101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5282518579391824763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b34419ad57796c04880d8d0590df89ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveFileName: ram-sync
+--- !u!114 &5668847587213001859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5282518579391824763}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78d97c765fe40974d95f6b36ed8447d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileToLoad: {fileID: 4900000, guid: 7597de89531d53b418ab57986a2985e8, type: 3}
+  pause: 0
+  playbackTimeScale: 1
+  scale: 150
+  offsetT: {x: 0.4, y: -0.4}
+  mat: {fileID: 2100000, guid: 8258a784592d3ad44b0f47654b7ac7e6, type: 2}
+  mouseSmoothTimeMax: 0.12
+  mouseSmoothClickTimeFade: 0.25
+  currMouseSmoothTime: 0
+  mouseUnormTweak: {x: 0, y: 0}

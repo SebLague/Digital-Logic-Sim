@@ -1,7 +1,0 @@
-<color=#D1A2FF>void</color> <color=#68AFFD>UpdateSevenSegmentDisplay</color>()
-{
-	<color=#D1A2FF>for</color> (<color=#D1A2FF>int</color> i = <color=#EE815B>0</color>; i < <color=#FFFFFF>inputPins</color>.Length; i<color=#C6EDFF>++</color>)
-	{
-		segments[i].<color=#68AFFD>SetColour</color>(<color=#FFFFFF>inputPins</color>[i].<color=#FFFFFF>State</color>);
-	}
-}
