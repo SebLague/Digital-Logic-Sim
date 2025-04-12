@@ -64,7 +64,7 @@ namespace DLS.Graphics
 						OpenChip(chipName);
 						return;
 					}
-					// Use first useable chip on enter
+					// Use first usable chip on enter
 
 					if (Project.ActiveProject.ViewedChip.CanAddSubchip(chipName))
 					{
@@ -101,7 +101,7 @@ namespace DLS.Graphics
 
 
 				bool isStarred = Project.ActiveProject.description.IsStarred(chipName, false);
-				int buttonIndex = MenuHelper.DrawButtonTriplet("USE", "OPEN", isStarred ? "UN-STAR" : "STAR", buttonsTopLeft, buttonsWidth, false, canPlaceChip, canOpenChip, isDraggingScrollbar);
+				int buttonIndex = MenuHelper.DrawButtonTriplet("USE", "OPEN", isStarred ? "UN-STAR" : "STAR", buttonsTopLeft, buttonsWidth, false, canPlaceChip, canOpenChip, true);
 
 
 				if (buttonIndex == 0) UseChip(chipName);
