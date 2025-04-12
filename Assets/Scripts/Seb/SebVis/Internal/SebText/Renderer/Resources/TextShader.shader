@@ -15,7 +15,6 @@ Shader "Seb.Vis.Text/TextShader"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #include "UnityCG.cginc"
 
             struct InstanceData
             {
@@ -71,6 +70,21 @@ Shader "Seb.Vis.Text/TextShader"
                 return worldUnitsPerPixel;
             }
 
+            float4 WorldToClipPos(float2 pos, bool useScreenSpace, float2 screenSize)
+            {
+                if (useScreenSpace)
+                {
+                    float2 uv = pos.xy / screenSize;
+                    return float4(uv * 2 - 1, 0, 1);
+                }
+                float4 clipPos = mul(WorldToClipSpace, float4(pos, 0, 1.0));
+                clipPos.y = clipPos.y * _ProjectionParams.x;
+                #if UNITY_UV_STARTS_AT_TOP
+                clipPos.y = -clipPos.y;
+                #endif
+                return clipPos;
+            }
+
             v2f vert(appdata v, uint instanceID : SV_InstanceID)
             {
                 InstanceData instance = PerInstanceData[instanceID];
@@ -83,13 +97,7 @@ Shader "Seb.Vis.Text/TextShader"
                 float2 offset = instance.pos + group.offset;
                 float2 worldVertPos = v.vertex * quadSize * instance.fontSize + offset;
 
-                if (group.useScreenSpace)
-                {
-                    float2 uv = worldVertPos.xy / ScreenSize;
-                    uv.y = 1 - uv.y;
-                    o.vertex = float4(uv * 2 - 1, 0, 1);
-                }
-                else o.vertex = mul(WorldToClipSpace, float4(worldVertPos, 0, 1.0));
+                o.vertex = WorldToClipPos(worldVertPos, group.useScreenSpace, ScreenSize);
 
                 o.pos = -quadSize / 2 + quadSize * v.uv;
                 o.worldPos = worldVertPos;

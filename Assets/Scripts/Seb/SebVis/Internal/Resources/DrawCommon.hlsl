@@ -7,10 +7,14 @@ float4 WorldToClipPos(float3 worldPos)
     if (useScreenSpace)
     {
         float2 uv = worldPos.xy / ScreenSize;
-        uv.y = 1 - uv.y;
         return float4(uv * 2 - 1, 0, 1);
     }
-    return mul(WorldToClipSpace, float4(worldPos, 1.0));
+    float4 clipPos = mul(WorldToClipSpace, float4(worldPos, 1.0));
+    clipPos.y = clipPos.y * _ProjectionParams.x;
+    #if UNITY_UV_STARTS_AT_TOP
+    clipPos.y = -clipPos.y;
+    #endif
+    return clipPos;
 }
 
 float boxSdf(float2 p, float2 centre, float2 size)
