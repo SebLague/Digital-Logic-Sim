@@ -511,6 +511,7 @@ namespace DLS.Graphics
 			static void ChipActionButtons(string selectedChipName, ref Vector2 topLeft, float width)
 			{
 				bool isBuiltin = project.chipLibrary.IsBuiltinChip(selectedChipName);
+				interactable_chipActionButtons[0] =  project.ViewedChip.CanAddSubchip(selectedChipName);
 				interactable_chipActionButtons[1] = !isBuiltin;
 				interactable_chipActionButtons[2] = !isBuiltin;
 				int chipActionIndex = DrawHorizontalButtonGroup(buttonNames_chipAction, interactable_chipActionButtons, ref topLeft, width);
