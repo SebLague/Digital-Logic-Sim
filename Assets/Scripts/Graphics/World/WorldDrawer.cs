@@ -23,7 +23,7 @@ namespace DLS.Graphics
 
 		public static void DrawGridIfActive(Color col)
 		{
-			bool isSnapping = KeyboardShortcuts.SnapModeHeld && Project.ActiveProject.controller.IsPlacingOrMovingElementOrCreatingWire();
+			bool isSnapping = KeyboardShortcuts.SnapModeHeld && Project.ActiveProject.controller.IsPlacingOrMovingElementOrCreatingWire;
 
 			if (Project.ActiveProject.showGrid || isSnapping)
 			{

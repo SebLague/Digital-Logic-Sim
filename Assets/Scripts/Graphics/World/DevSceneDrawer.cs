@@ -108,7 +108,7 @@ namespace DLS.Graphics
 			}
 
 			// -- Draw name of pin under mouse (when mode is set to hover) --
-			if (InteractionState.ElementUnderMouse is PinInstance highlightedPin && controller.CanInteractWithPin())
+			if (InteractionState.ElementUnderMouse is PinInstance highlightedPin && controller.CanInteractWithPin)
 			{
 				bool drawHighlightedPinName = false;
 				drawHighlightedPinName |= highlightedPin.parent is SubChipInstance && Project.ActiveProject.description.Prefs_ChipPinNamesDisplayMode == PreferencesMenu.DisplayMode_OnHover;
@@ -577,7 +577,7 @@ namespace DLS.Graphics
 			// ---- State indicator circle ----
 			// Toggle state on mouse down
 			bool mouseOverStateIndicator = devPin.PointIsInStateIndicatorBounds(InputHelper.MousePosWorld);
-			bool interactingWithStateDisplay = mouseOverStateIndicator && devPin.IsInputPin && controller.CanInteractWithPinStateDisplay();
+			bool interactingWithStateDisplay = mouseOverStateIndicator && devPin.IsInputPin && controller.CanInteractWithPinStateDisplay;
 			Color stateCol = devPin.Pin.GetStateCol(0, interactingWithStateDisplay);
 
 			// Highlight on hover and toggle on mouse down
@@ -617,7 +617,7 @@ namespace DLS.Graphics
 			int currBitIndex = (int)devPin.BitCount - 1;
 
 			bool mouseOverStateGrid = InputHelper.MouseInsideBounds_World(centre, inputGridSize);
-			bool isInteractable = controller.CanInteractWithPinStateDisplay() && devPin.IsInputPin;
+			bool isInteractable = controller.CanInteractWithPinStateDisplay && devPin.IsInputPin;
 
 			// If mouse over state grid, register it so that player can't draw selection box here (annoying when trying to toggle states)
 			// (individual toggles are tested for mouse input below, but this is a catch-all for when mouse is in gap in between)
@@ -659,7 +659,7 @@ namespace DLS.Graphics
 		{
 			// ---- Movement handle ----
 			bool mouseOverHandle = InputHelper.MouseInsideBounds_World(pos, size);
-			bool isInteracting = mouseOverHandle && (controller.CanInteractWithPinHandle() || InteractionState.ElementUnderMousePrevFrame == item);
+			bool isInteracting = mouseOverHandle && (controller.CanInteractWithPinHandle || InteractionState.ElementUnderMousePrevFrame == item);
 			Color handleCol = isInteracting ? ActiveTheme.DevPinHandleHighlighted : ActiveTheme.DevPinHandle;
 			Draw.Quad(pos, size, handleCol);
 
@@ -827,7 +827,7 @@ namespace DLS.Graphics
 			bool mouseOverPin = !InteractionState.MouseIsOverUI && InputHelper.MouseInsidePoint_World(pinSelectionBoundsPos, pinSelectionBoundsRadius);
 
 			if (mouseOverPin) InteractionState.NotifyElementUnderMouse(pin);
-			bool canInteract = controller.CanInteractWithPin();
+			bool canInteract = controller.CanInteractWithPin;
 
 			Color pinCol = mouseOverPin && canInteract ? ActiveTheme.PinHighlightCol : ActiveTheme.PinCol;
 			// If hovering over pin while creating a wire, colour should indicate whether it is a valid connection
@@ -850,7 +850,7 @@ namespace DLS.Graphics
 			bool mouseOverPin = !InteractionState.MouseIsOverUI && InputHelper.MouseInsideBounds_World(pinSelectionBoundsPos, pinSize);
 
 			if (mouseOverPin) InteractionState.NotifyElementUnderMouse(pin);
-			bool canInteract = controller.CanInteractWithPin();
+			bool canInteract = controller.CanInteractWithPin;
 
 			Color pinCol = mouseOverPin && canInteract ? ActiveTheme.PinHighlightCol : ActiveTheme.PinCol;
 			// If hovering over pin while creating a wire, colour should indicate whether it is a valid connection

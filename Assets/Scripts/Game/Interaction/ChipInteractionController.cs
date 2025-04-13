@@ -22,6 +22,7 @@ namespace DLS.Game
 		IMoveable[] Obstacles; // Obstacles are the non-selected items when a group of elements is being moved
 		public Vector2 SelectionBoxStartPos;
 		StraightLineMoveState straightLineMoveState;
+		bool hasExittedMultiModeSincePlacementStart;
 
 		// ---- Wire edit state ----
 		public WireInstance wireToEdit;
@@ -31,24 +32,29 @@ namespace DLS.Game
 		public int wireEditPointSelectedIndex;
 		public bool isMovingWireEditPoint;
 
+		public DevChipInstance ActiveDevChip => project.ViewedChip;
+		public bool IsMovingSelection { get; private set; }
+		public bool IsCreatingSelectionBox { get; private set; }
+		public Vector2 SelectionBoxCentre => (SelectionBoxStartPos + InputHelper.MousePosWorld) / 2;
+		public Vector2 SelectionBoxSize => Maths.Abs(SelectionBoxStartPos - InputHelper.MousePosWorld);
+
+		public bool HasControl => !UIDrawer.InInputBlockingMenu() && project.CanEditViewedChip;
+
+		// Cannot interact with elements when other elements are being moved, in a menu, or drawing a selection box
+		bool CanInteract => !IsMovingSelection && !UIDrawer.InInputBlockingMenu() && !IsCreatingSelectionBox;
+		public bool IsCreatingWire => WireToPlace != null;
+		public bool IsPlacingElements => isPlacingNewElements;
+		public bool IsPlacingElementOrCreatingWire => isPlacingNewElements || IsCreatingWire;
+		public bool IsPlacingOrMovingElementOrCreatingWire => isPlacingNewElements || IsMovingSelection || IsCreatingWire || isMovingWireEditPoint;
+		public bool CanInteractWithPin => CanInteract;
+		public bool CanInteractWithPinStateDisplay => CanInteract && !IsCreatingWire && Project.ActiveProject.CanEditViewedChip;
+		public bool CanInteractWithPinHandle => CanInteractWithPinStateDisplay;
+
 
 		public ChipInteractionController(Project project)
 		{
 			this.project = project;
 		}
-
-		public DevChipInstance ActiveDevChip => project.ViewedChip;
-		public bool IsMovingSelection { get; private set; }
-		public bool IsCreatingSelectionBox { get; private set; }
-
-		public Vector2 SelectionBoxCentre => (SelectionBoxStartPos + InputHelper.MousePosWorld) / 2;
-		public Vector2 SelectionBoxSize => Maths.Abs(SelectionBoxStartPos - InputHelper.MousePosWorld);
-
-
-		public bool HasControl => !UIDrawer.InInputBlockingMenu() && project.CanEditViewedChip;
-
-		public bool IsCreatingWire => WireToPlace != null;
-		bool hasExittedMultimodeSincePlacementStart;
 
 		public void Update()
 		{
@@ -64,17 +70,8 @@ namespace DLS.Game
 			if (clearSelection) SelectedElements.Clear();
 		}
 
-		public bool CanInteractWithPin() => CanInteract();
-
 		// Don't allow interaction with wire that's currently being placed (this would allow it to try to connect to itself for example...)
-		public bool CanInteractWithWire(WireInstance wire) => CanInteract() && wire != WireToPlace; // && !IsCreatingWire;
-
-		public bool CanInteractWithPinStateDisplay() => CanInteract() && !IsCreatingWire && Project.ActiveProject.CanEditViewedChip;
-
-		public bool CanInteractWithPinHandle() => CanInteractWithPinStateDisplay();
-
-		// Cannot interact with elements when other elements are being moved, in a menu, or drawing a selection box
-		bool CanInteract() => !IsMovingSelection && !UIDrawer.InInputBlockingMenu() && !IsCreatingSelectionBox;
+		public bool CanInteractWithWire(WireInstance wire) => CanInteract && wire != WireToPlace;
 
 		public bool CanCompleteWireConnection(PinInstance endPin, WireInstance wireToConnectTo = null)
 		{
@@ -200,7 +197,7 @@ namespace DLS.Game
 
 			if (KeyboardShortcuts.DuplicateShortcutTriggered)
 			{
-				if (SelectedElements.Count > 0 && !IsPlacingOrMovingElementOrCreatingWire())
+				if (SelectedElements.Count > 0 && !IsPlacingOrMovingElementOrCreatingWire)
 				{
 					DuplicateSelectedElements();
 				}
@@ -336,7 +333,7 @@ namespace DLS.Game
 		void HandleRightMouseDown()
 		{
 			// Cancel placement by right-clicking
-			if (IsPlacingOrMovingElementOrCreatingWire())
+			if (IsPlacingOrMovingElementOrCreatingWire)
 			{
 				CancelEverything();
 				InputHelper.ConsumeMouseButtonDownEvent(MouseButton.Right);
@@ -354,7 +351,7 @@ namespace DLS.Game
 			if (InteractionState.MouseIsOverUI) return;
 
 			// Confirm placement of new item
-			if (IsPlacingElementOrCreatingWire())
+			if (IsPlacingElementOrCreatingWire)
 			{
 				// Place wire
 				if (IsCreatingWire) //
@@ -410,7 +407,7 @@ namespace DLS.Game
 					StartMovingSelectedItems();
 				}
 				// Mouse down over nothing: clear selection
-				else if (InteractionState.ElementUnderMouse == null && !IsPlacingElementOrCreatingWire())
+				else if (InteractionState.ElementUnderMouse == null && !IsPlacingElementOrCreatingWire)
 				{
 					if (!KeyboardShortcuts.MultiModeHeld) ClearSelection(); // don't clear if in 'multi-mode' (to allow box selecting multiple times)
 					IsCreatingSelectionBox = true;
@@ -571,7 +568,7 @@ namespace DLS.Game
 		void HandleLeftMouseUp()
 		{
 			// Place items that are being moved
-			if (!IsPlacingElementOrCreatingWire())
+			if (!IsPlacingElementOrCreatingWire)
 			{
 				if (IsMovingSelection)
 				{
@@ -656,9 +653,9 @@ namespace DLS.Game
 					}
 
 					// When using shift to duplicate new element, don't use straight line mode unless pressed again
-					if (isPlacingNewElements && !KeyboardShortcuts.MultiModeHeld) hasExittedMultimodeSincePlacementStart = true;
+					if (isPlacingNewElements && !KeyboardShortcuts.MultiModeHeld) hasExittedMultiModeSincePlacementStart = true;
 
-					if (KeyboardShortcuts.StraightLineModeHeld && element.HasReferencePointForStraightLineMovement && (!isPlacingNewElements || hasExittedMultimodeSincePlacementStart))
+					if (KeyboardShortcuts.StraightLineModeHeld && element.HasReferencePointForStraightLineMovement && (!isPlacingNewElements || hasExittedMultiModeSincePlacementStart))
 					{
 						Vector2 offset = targetPos - element.StraightLineReferencePoint;
 						float ox = Mathf.Abs(offset.x);
@@ -775,12 +772,6 @@ namespace DLS.Game
 			return false;
 		}
 
-		public bool IsPlacingElements() => isPlacingNewElements;
-
-		public bool IsPlacingElementOrCreatingWire() => isPlacingNewElements || IsCreatingWire;
-
-		public bool IsPlacingOrMovingElementOrCreatingWire() => isPlacingNewElements || IsMovingSelection || IsCreatingWire || isMovingWireEditPoint;
-
 		public void StartPlacing(string name)
 		{
 			StartPlacing(project.chipLibrary.GetChipDescription(name));
@@ -802,7 +793,7 @@ namespace DLS.Game
 			{
 				CancelEverything();
 				isPlacingNewElements = true;
-				hasExittedMultimodeSincePlacementStart = false;
+				hasExittedMultiModeSincePlacementStart = false;
 				StartMovingSelectedItems();
 			}
 

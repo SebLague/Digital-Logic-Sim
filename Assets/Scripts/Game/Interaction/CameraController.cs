@@ -158,7 +158,7 @@ namespace DLS.Game
 		}
 
 		// shift scroll reserved for adjusting spacing when placing multiple elements
-		static bool CanMiddleMouseZoom() => !(InputHelper.ShiftIsHeld && Project.ActiveProject.controller.IsPlacingElements()) && InputHelper.IsMouseInGameWindow();
+		static bool CanMiddleMouseZoom() => !(InputHelper.ShiftIsHeld && Project.ActiveProject.controller.IsPlacingElements) && InputHelper.IsMouseInGameWindow();
 
 		static void MovePosition(Vector2 delta)
 		{
