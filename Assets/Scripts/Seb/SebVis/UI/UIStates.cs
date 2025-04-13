@@ -208,6 +208,32 @@ namespace Seb.Vis.UI
 			else SetCursorIndex(cursorBeforeCharIndex - 1, select);
 		}
 
+		public int NextWordEndIndex()
+		{
+			bool hasEncounteredNonSpaceChar = false;
+
+			for (int i = cursorBeforeCharIndex; i < text.Length; i++)
+			{
+				if (char.IsWhiteSpace(text[i]) && hasEncounteredNonSpaceChar) return i;
+				if (!char.IsWhiteSpace(text[i])) hasEncounteredNonSpaceChar = true;
+			}
+
+			return text.Length;
+		}
+
+		public int PrevWordIndex()
+		{
+			bool hasEncounteredNonSpaceChar = false;
+
+			for (int i = cursorBeforeCharIndex - 1; i >= 0; i--)
+			{
+				if (char.IsWhiteSpace(text[i]) && hasEncounteredNonSpaceChar) return i + 1;
+				if (!char.IsWhiteSpace(text[i])) hasEncounteredNonSpaceChar = true;
+			}
+
+			return 0;
+		}
+
 		public struct TriggerState
 		{
 			public float lastManualTime;

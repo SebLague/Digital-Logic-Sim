@@ -420,16 +420,19 @@ namespace Seb.Vis.UI
 
 						// Arrow keys
 						bool select = InputHelper.ShiftIsHeld;
-						bool jumpToStart = InputHelper.IsKeyDownThisFrame(KeyCode.UpArrow) || (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.LeftArrow));
-						bool jumpToEnd = InputHelper.IsKeyDownThisFrame(KeyCode.DownArrow) || (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.RightArrow));
+						bool leftArrow = CanTrigger(ref state.arrowKeyTrigger, KeyCode.LeftArrow);
+						bool rightArrow = CanTrigger(ref state.arrowKeyTrigger, KeyCode.RightArrow);
+						bool jumpToPrevWordStart = InputHelper.CtrlIsHeld && leftArrow;
+						bool jumpToNextWordEnd = InputHelper.CtrlIsHeld && rightArrow;
+						bool jumpToStart = InputHelper.IsKeyDownThisFrame(KeyCode.UpArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.PageUp) || InputHelper.IsKeyDownThisFrame(KeyCode.Home) || (jumpToPrevWordStart && InputHelper.AltIsHeld);
+						bool jumpToEnd = InputHelper.IsKeyDownThisFrame(KeyCode.DownArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.PageDown) || InputHelper.IsKeyDownThisFrame(KeyCode.End) || (jumpToNextWordEnd && InputHelper.AltIsHeld);
 
 						if (jumpToStart) state.SetCursorIndex(0, select);
 						else if (jumpToEnd) state.SetCursorIndex(state.text.Length, select);
-						else
-						{
-							if (CanTrigger(ref state.arrowKeyTrigger, KeyCode.LeftArrow)) state.DecrementCursor(select);
-							if (CanTrigger(ref state.arrowKeyTrigger, KeyCode.RightArrow)) state.IncrementCursor(select);
-						}
+						else if (jumpToNextWordEnd) state.SetCursorIndex(state.NextWordEndIndex(), select);
+						else if (jumpToPrevWordStart) state.SetCursorIndex(state.PrevWordIndex(), select);
+						else if (leftArrow) state.DecrementCursor(select);
+						else if (rightArrow) state.IncrementCursor(select);
 
 						bool copyTriggered = InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.C);
 						bool cutTriggered = InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.X);
