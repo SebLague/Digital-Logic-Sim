@@ -104,7 +104,7 @@ namespace DLS.Game
 		{
 			if (chipViewStack.Count > 1)
 			{
-				DevChipInstance dev = chipViewStack.Pop();
+				chipViewStack.Pop();
 				controller.CancelEverything();
 				UpdateViewedChipsString();
 			}
@@ -113,7 +113,7 @@ namespace DLS.Game
 		void UpdateViewedChipsString()
 		{
 			string[] viewedChipNames = chipViewStack.Select(c => c.ChipName).SkipLast(1).Reverse().ToArray();
-			viewedChipsString = string.Join(" > ", viewedChipNames);
+			viewedChipsString = "Viewing: " + string.Join(" > ", viewedChipNames);
 		}
 
 

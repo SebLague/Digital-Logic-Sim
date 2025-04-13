@@ -17,18 +17,16 @@ namespace DLS.Graphics
 
 			UI.DrawPanel(topLeft, new Vector2(UI.Width, InfoBarHeight), ActiveUITheme.InfoBarCol, Anchor.TopLeft);
 
-			string text = "Viewing: " + project.viewedChipsString;
-			float fontSize = ActiveUITheme.ButtonTheme.fontSize;
 
-			float y = topLeft.y - InfoBarHeight / 2;
-			Vector2 pos = new(pad, y);
-			UI.DrawText(text, ActiveUITheme.FontBold, fontSize, pos, Anchor.TextCentreLeft, Color.white);
+			Vector2 pos = new(pad, topLeft.y - InfoBarHeight / 2);
+			UI.DrawText(project.viewedChipsString, ActiveUITheme.FontBold, ActiveUITheme.ButtonTheme.fontSize, pos, Anchor.TextCentreLeft, Color.white);
 
 			// Back button
 			Vector2 buttonSize = new(8, InfoBarHeight - pad);
-			Vector2 buttonCentreRight = new(UI.Width - pad, y);
+			Vector2 buttonCentreRight = new(UI.Width - pad, pos.y);
+			bool backButtonPressed = UI.Button("Back", ActiveUITheme.ChipButton, buttonCentreRight, buttonSize, true, false, false, Anchor.CentreRight);
 
-			if (UI.Button("Back", ActiveUITheme.ChipButton, buttonCentreRight, buttonSize, true, false, false, Anchor.CentreRight))
+			if (backButtonPressed || KeyboardShortcuts.CancelShortcutTriggered)
 			{
 				project.ReturnToPreviousViewedChip();
 			}
