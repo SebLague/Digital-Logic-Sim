@@ -384,13 +384,13 @@ namespace DLS.Game
 			return false;
 		}
 
-		public void NotifyConnectedWiresPointsInserted(WireInstance wire, int numPoints)
+		public void NotifyConnectedWiresPointsInserted(WireInstance wire, int insertIndex, float insertPointT, int numPoints)
 		{
 			foreach (WireInstance other in Wires)
 			{
 				if (other.ConnectedWire == wire)
 				{
-					other.NotifyParentWirePointsInserted(numPoints);
+					other.NotifyParentWirePointsInserted(insertIndex, insertPointT, numPoints);
 				}
 			}
 		}

@@ -73,7 +73,7 @@ namespace DLS.Graphics
 			}
 		}
 
-		public static (Vector2 bestPoint, int bestSegmentIndex) GetClosestPointOnWire(WireInstance wire, Vector2 desiredPos)
+		public static (Vector2 point, int segmentIndex) GetClosestPointOnWire(WireInstance wire, Vector2 desiredPos)
 		{
 			int bestSegmentIndex = 0;
 			float bestSqrDst = float.MaxValue;

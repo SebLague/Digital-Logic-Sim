@@ -12,24 +12,25 @@ namespace DLS.Game
 	{
 		public readonly Project project;
 
+		// ---- Selection and placement state ----
 		public readonly List<IMoveable> SelectedElements = new();
-		public bool isMovingWireEditPoint;
+		public WireInstance WireToPlace;
 		bool isPlacingNewElements;
 		float itemPlacementCurrVerticalSpacing;
-		Vector2 moveElementMouseStartPos;
 		bool newElementsAreDuplicatedElements;
-
-		// Obstacles are the non-selected items when a group of elements is being moved
-		IMoveable[] Obstacles;
+		Vector2 moveElementMouseStartPos;
+		IMoveable[] Obstacles; // Obstacles are the non-selected items when a group of elements is being moved
 		public Vector2 SelectionBoxStartPos;
-
 		StraightLineMoveState straightLineMoveState;
+
+		// ---- Wire edit state ----
+		public WireInstance wireToEdit;
 		public int wireEditPointIndex = -1;
+		public bool wireEditCanInsertPoint;
 		Vector2 wireEditPointOld;
 		public int wireEditPointSelectedIndex;
+		public bool isMovingWireEditPoint;
 
-		public WireInstance wireToEdit;
-		public WireInstance WireToPlace;
 
 		public ChipInteractionController(Project project)
 		{
@@ -119,6 +120,7 @@ namespace DLS.Game
 
 		void DeleteSelected()
 		{
+			// Delete selected subchips/pins
 			if (SelectedElements.Count > 0)
 			{
 				foreach (IMoveable selectedElement in SelectedElements)
@@ -128,27 +130,29 @@ namespace DLS.Game
 
 				SelectedElements.Clear();
 			}
-			else
+			// Delete wire under mouse
+			else if (InteractionState.ElementUnderMouse is WireInstance wire)
 			{
-				if (InteractionState.ElementUnderMouse is WireInstance wire)
+				DeleteWire(wire);
+			}
+			// Delete wire point under mouse (in wire edit mode)
+			else if (wireToEdit != null && wireEditPointIndex != -1)
+			{
+				bool isWireToWireConnectionPoint = wireEditPointIndex == 0 || wireEditPointIndex == wireToEdit.WirePointCount - 1;
+				// Can't delete the point connecting a wire to another wire
+				if (!isWireToWireConnectionPoint)
 				{
-					DeleteWire(wire);
-				}
-				else if (wireToEdit != null && wireEditPointIndex != -1)
-				{
-					bool isWireToWireConnectionPoint = wireEditPointIndex == 0 || wireEditPointIndex == wireToEdit.WirePointCount - 1;
-					if (!isWireToWireConnectionPoint)
+					foreach (WireInstance other in ActiveDevChip.Wires)
 					{
-						foreach (WireInstance other in ActiveDevChip.Wires)
+						if (other.ConnectedWire == wireToEdit)
 						{
-							if (other.ConnectedWire == wireToEdit)
-							{
-								other.NotifyParentWirePointWillBeDeleted(wireEditPointIndex);
-							}
+							other.NotifyParentWirePointWillBeDeleted(wireEditPointIndex);
 						}
-
-						wireToEdit.DeleteWirePoint(wireEditPointIndex);
 					}
+
+					wireToEdit.DeleteWirePoint(wireEditPointIndex);
+					wireEditPointIndex = -1;
+					isMovingWireEditPoint = false;
 				}
 			}
 		}
@@ -378,11 +382,25 @@ namespace DLS.Game
 					WireInstance.ConnectionInfo connectionInfo = new() { pin = pin };
 					StartPlacingWire(connectionInfo);
 				}
-				// Mouse down on wire: start placing a wire at this point
+				// Mouse down on wire
 				else if (InteractionState.ElementUnderMouse is WireInstance wire && HasControl)
 				{
-					WireInstance.ConnectionInfo connectionInfo = CreateWireToWireConnectionInfo(wire, wire.SourcePin);
-					StartPlacingWire(connectionInfo);
+					// Insert a point on the currently edited wire
+					if (wire == wireToEdit)
+					{
+						if (wireEditCanInsertPoint)
+						{
+							(Vector2 point, int segmentIndex) = WireLayoutHelper.GetClosestPointOnWire(wireToEdit, InputHelper.MousePosWorld);
+							wireToEdit.InsertPoint(point, segmentIndex);
+							wireEditPointIndex = segmentIndex + 1;
+						}
+					}
+					// Start placing a new wire from this point on the selected wire
+					else
+					{
+						WireInstance.ConnectionInfo connectionInfo = CreateWireToWireConnectionInfo(wire, wire.SourcePin);
+						StartPlacingWire(connectionInfo);
+					}
 				}
 				// Mouse down on selectable element: select it and prepare to start moving current selection
 				else if (InteractionState.ElementUnderMouse is IMoveable element)

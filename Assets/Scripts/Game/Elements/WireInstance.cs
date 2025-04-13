@@ -231,6 +231,13 @@ namespace DLS.Game
 			WirePoints.RemoveAt(i);
 		}
 
+		public void InsertPoint(Vector2 p, int segmentIndex)
+		{
+			float insertionT = PointOnSegmentT(GetWirePoint(segmentIndex), GetWirePoint(segmentIndex + 1), p);
+			Project.ActiveProject.ViewedChip.NotifyConnectedWiresPointsInserted(this, segmentIndex, insertionT, 1);
+			WirePoints.Insert(segmentIndex + 1, p);
+		}
+
 		public bool RemoveLastPoint()
 		{
 			if (WirePoints.Count > 2)
@@ -249,10 +256,26 @@ namespace DLS.Game
 			return ref SourceConnectionInfo.IsConnectedAtWire ? ref SourceConnectionInfo : ref TargetConnectionInfo;
 		}
 
-		public void NotifyParentWirePointsInserted(int num)
+		public void NotifyParentWirePointsInserted(int insertIndex, float insertPointT, int num)
 		{
 			ref ConnectionInfo connectionInfo = ref GetWireConnectionInfo();
+			if (connectionInfo.wireConnectionSegmentIndex < insertIndex) return; // connected point is before insertion point, so is unaffected
+
+			if (connectionInfo.wireConnectionSegmentIndex == insertIndex)
+			{
+				Vector2 connectionSegA = ConnectedWire.GetWirePoint(connectionInfo.wireConnectionSegmentIndex);
+				Vector2 connectionSegB = ConnectedWire.GetWirePoint(connectionInfo.wireConnectionSegmentIndex + 1);
+				Vector2 p = GetAttachmentPoint(connectionInfo);
+				float selfT = PointOnSegmentT(connectionSegA, connectionSegB, p);
+				if (selfT < insertPointT) return; // connected point is on same segment as inserted point, but is before it, and so is unaffected
+			}
+
 			connectionInfo.wireConnectionSegmentIndex += num;
+		}
+
+		static float PointOnSegmentT(Vector2 a, Vector2 b, Vector2 p)
+		{
+			return (p - a).magnitude / (b - a).magnitude;
 		}
 
 		public void NotifyParentWirePointWillBeDeleted(int deletedPointIndex)
@@ -282,7 +305,7 @@ namespace DLS.Game
 				WirePoints.InsertRange(0, pointsToCopy);
 
 				// if some other wire connects to this wire, it needs to know how many points have been inserted here so that it can still connect in the correct place
-				Project.ActiveProject.ViewedChip.NotifyConnectedWiresPointsInserted(this, pointsToCopy.Count);
+				Project.ActiveProject.ViewedChip.NotifyConnectedWiresPointsInserted(this, -1, 0, pointsToCopy.Count);
 				originalWireConnectionPoint = dependency.originalWireConnectionPoint;
 				SourceConnectionInfo = dependency.SourceConnectionInfo;
 			}

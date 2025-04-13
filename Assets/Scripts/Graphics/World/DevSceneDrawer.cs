@@ -30,6 +30,7 @@ namespace DLS.Graphics
 			controller = Project.ActiveProject.controller;
 
 			DrawWires();
+			DrawWireEditPoints(controller.wireToEdit);
 
 			// Draw dev pins and subchips (non-selected only)
 			DrawMoveableElements(false);
@@ -680,9 +681,11 @@ namespace DLS.Graphics
 			}
 		}
 
-		// Wire should be highlighted if mouse is over it
+		// Wire should be highlighted if mouse is over it or if in edit mode
 		static bool ShouldHighlightWire(WireInstance wire)
 		{
+			if (wire == controller.wireToEdit) return true;
+
 			if (InteractionState.ElementUnderMousePrevFrame is WireInstance wireUnderMouse)
 			{
 				return wire == wireUnderMouse;
@@ -730,8 +733,6 @@ namespace DLS.Graphics
 			{
 				InteractionState.NotifyElementUnderMouse(wire);
 			}
-
-			DrawWireEditPoints(wire, canInteract);
 		}
 
 		static void DrawMultiBitWire(WireInstance wire)
@@ -753,29 +754,31 @@ namespace DLS.Graphics
 				float sqrInteractDst = WireDrawer.DrawWireStraight(bitWire.Points, thickness, col, mousePos);
 				if (canInteract && sqrInteractDst < sqrDstThreshold) InteractionState.NotifyElementUnderMouse(wire);
 			}
-
-			DrawWireEditPoints(wire, canInteract);
 		}
 
-		static void DrawWireEditPoints(WireInstance wire, bool canInteract)
+		static void DrawWireEditPoints(WireInstance wire)
 		{
 			// Wire edit points
-			if (wire != controller.wireToEdit || !canInteract) return;
+			if (wire == null) return;
 			if (!controller.isMovingWireEditPoint) controller.wireEditPointIndex = -1;
+			controller.wireEditCanInsertPoint = false;
+			bool canInteract = controller.CanInteractWithWire(wire);
 
 			// Can't edit first and last point in wire (unless that point connects to another wire instead of a pin)
 			int startIndex = wire.SourceConnectionInfo.IsConnectedAtWire ? 0 : 1;
 			int endIndex = wire.TargetConnectionInfo.IsConnectedAtWire ? wire.WirePointCount - 1 : wire.WirePointCount - 2;
+			
+			const float r = 0.07f;
+			const float rBG = r + 0.02f;
 
 			for (int i = startIndex; i <= endIndex; i++)
 			{
 				Vector2 p = wire.GetWirePoint(i);
-				const float r = 0.07f;
-				const float rBG = r + 0.02f;
 				// Mouse over (but ignore if already moving another point)
 				bool highlighted = (InputHelper.MousePosWorld - p).sqrMagnitude < rBG * rBG && !controller.isMovingWireEditPoint;
 				// Currently moving this point (mouse may not be over due to snapping, etc)
 				highlighted |= controller.wireToEdit != null && controller.wireEditPointIndex == i;
+				highlighted &= canInteract;
 
 				Color editPointCol = highlighted ? wire.SourcePin.GetColHigh() : wire.SourcePin.GetColLow();
 
@@ -786,6 +789,19 @@ namespace DLS.Graphics
 				{
 					InteractionState.NotifyUnspecifiedElementUnderMouse();
 					controller.wireEditPointIndex = i;
+				}
+			}
+
+			// If no highlighted point, and mouse over wire, then draw insertion point
+			if (controller.wireEditPointIndex == -1 && InteractionState.ElementUnderMouse == wire && canInteract)
+			{
+				const float insertionPointDisplayRadius = 0.04f;
+				(Vector2 insertionPoint, int segmentIndex) = WireLayoutHelper.GetClosestPointOnWire(wire, InputHelper.MousePosWorld);
+				float dstFromExistingPoint = Mathf.Min((insertionPoint - wire.GetWirePoint(segmentIndex)).magnitude, (insertionPoint - wire.GetWirePoint(segmentIndex + 1)).magnitude);
+				if (dstFromExistingPoint > rBG)
+				{
+					controller.wireEditCanInsertPoint = true;
+					Draw.Point(insertionPoint, insertionPointDisplayRadius, Color.white);
 				}
 			}
 		}
@@ -905,7 +921,7 @@ namespace DLS.Graphics
 			bool wireIsHigh = wire.bitCount == PinBitCount.Bit1 && wire.SourcePin.State.FirstBitHigh();
 			int drawPriority_signalHigh = wireIsHigh ? 1000 : 0;
 
-			// Draw multibit wires above single bit wires
+			// Draw multi-bit wires above single bit wires
 			int drawPriority_bitCount = (int)wire.bitCount * 1000;
 
 			// If a wire is connected to another wire, it should be drawn beneath it

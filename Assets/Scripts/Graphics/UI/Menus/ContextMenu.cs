@@ -376,7 +376,7 @@ namespace DLS.Graphics
 
 		static bool CanEditCurrentChip() => Project.ActiveProject.CanEditViewedChip;
 
-		static bool CanEditWire() => CanEditCurrentChip() && ((WireInstance)interactionContext).WirePointCount > 2;
+		static bool CanEditWire() => CanEditCurrentChip();
 
 		static void OpenPinEditMenu()
 		{
