@@ -317,6 +317,7 @@ namespace DLS.Graphics
 
 						if (buttonIndexEditCollection == 0) // Rename collection
 						{
+							UI.GetInputFieldState(ID_NameInput).ClearText();
 							renamingCollection = true;
 						}
 						else if (buttonIndexEditCollection == 1) // Delete collection
@@ -511,7 +512,7 @@ namespace DLS.Graphics
 			static void ChipActionButtons(string selectedChipName, ref Vector2 topLeft, float width)
 			{
 				bool isBuiltin = project.chipLibrary.IsBuiltinChip(selectedChipName);
-				interactable_chipActionButtons[0] =  project.ViewedChip.CanAddSubchip(selectedChipName);
+				interactable_chipActionButtons[0] = project.ViewedChip.CanAddSubchip(selectedChipName);
 				interactable_chipActionButtons[1] = !isBuiltin;
 				interactable_chipActionButtons[2] = !isBuiltin;
 				int chipActionIndex = DrawHorizontalButtonGroup(buttonNames_chipAction, interactable_chipActionButtons, ref topLeft, width);
@@ -639,18 +640,20 @@ namespace DLS.Graphics
 
 		static bool ValidateCollectionNameInput(string name)
 		{
-			if (string.IsNullOrWhiteSpace(name)) return false;
-			if (name.Length > 24) return false;
-
-			return true;
+			return name.Length <= 24;
 		}
 
 		static bool IsValidCollectionName(string name)
 		{
 			if (!ValidateCollectionNameInput(name)) return false;
 
-			foreach (ChipCollection collection in collections)
+			if (string.IsNullOrWhiteSpace(name)) return false;
+
+			for (int i = 0; i < collections.Count; i++)
 			{
+				ChipCollection collection = collections[i];
+				if (i == selectedCollectionIndex) continue;
+
 				if (ChipDescription.NameMatch(collection.Name, name)) return false;
 			}
 
