@@ -31,7 +31,7 @@ namespace DLS.Game
 
 		// For wires that connect to/from another wire, this is the original connection point (plus move offsets)
 		// This allows the wire to keep its connection as close to this original point as possible when things are moved around.
-		Vector2 originalWireConnectionPoint;
+		public Vector2 originalWireConnectionPoint;
 
 		public ConnectionInfo SourceConnectionInfo;
 		public ConnectionInfo TargetConnectionInfo;
@@ -190,6 +190,17 @@ namespace DLS.Game
 
 		public void SetWirePoint(Vector2 p, int i)
 		{
+			bool isConnectedToWireAtThisPoint = (i == 0 && SourceConnectionInfo.IsConnectedAtWire) || (i == WirePointCount - 1 && TargetConnectionInfo.IsConnectedAtWire);
+			if (isConnectedToWireAtThisPoint)
+			{
+				(Vector2 bestPoint, int bestSegmentIndex) = WireLayoutHelper.GetClosestPointOnWire(ConnectedWire, p);
+
+				ref ConnectionInfo connectionInfo = ref GetWireConnectionInfo();
+				connectionInfo.wireConnectionSegmentIndex = bestSegmentIndex;
+				connectionInfo.connectionPoint = bestPoint;
+				originalWireConnectionPoint = bestPoint;
+			}
+
 			WirePoints[i] = p;
 		}
 
@@ -205,7 +216,7 @@ namespace DLS.Game
 				p = GridHelper.ForceStraightLine(straightLineRefPoint, p);
 			}
 
-			WirePoints[i] = p;
+			SetWirePoint(p, i);
 		}
 
 		public void SetLastWirePoint(Vector2 p)
@@ -231,12 +242,13 @@ namespace DLS.Game
 			return false;
 		}
 
-		ref ConnectionInfo GetWireConnectionInfo()
+		// Connection info for the end of this wire that connects to another wire
+		public ref ConnectionInfo GetWireConnectionInfo()
 		{
 			Debug.Assert(ConnectedWire != null, "No connected wire?");
 			return ref SourceConnectionInfo.IsConnectedAtWire ? ref SourceConnectionInfo : ref TargetConnectionInfo;
 		}
-		
+
 		public void NotifyParentWirePointsInserted(int num)
 		{
 			ref ConnectionInfo connectionInfo = ref GetWireConnectionInfo();
@@ -246,7 +258,7 @@ namespace DLS.Game
 		public void NotifyParentWirePointWillBeDeleted(int deletedPointIndex)
 		{
 			ref ConnectionInfo connectionInfo = ref GetWireConnectionInfo();
-			
+
 			if (connectionInfo.wireConnectionSegmentIndex >= deletedPointIndex) connectionInfo.wireConnectionSegmentIndex -= 1;
 		}
 

@@ -683,8 +683,6 @@ namespace DLS.Graphics
 		// Wire should be highlighted if mouse is over it
 		static bool ShouldHighlightWire(WireInstance wire)
 		{
-			if (Application.isEditor && InputHelper.ShiftIsHeld) return false; // For vid
-
 			if (InteractionState.ElementUnderMousePrevFrame is WireInstance wireUnderMouse)
 			{
 				return wire == wireUnderMouse;
@@ -762,26 +760,32 @@ namespace DLS.Graphics
 		static void DrawWireEditPoints(WireInstance wire, bool canInteract)
 		{
 			// Wire edit points
-			if (wire == controller.wireToEdit && canInteract)
+			if (wire != controller.wireToEdit || !canInteract) return;
+			if (!controller.isMovingWireEditPoint) controller.wireEditPointIndex = -1;
+
+			// Can't edit first and last point in wire (unless that point connects to another wire instead of a pin)
+			int startIndex = wire.SourceConnectionInfo.IsConnectedAtWire ? 0 : 1;
+			int endIndex = wire.TargetConnectionInfo.IsConnectedAtWire ? wire.WirePointCount - 1 : wire.WirePointCount - 2;
+
+			for (int i = startIndex; i <= endIndex; i++)
 			{
-				controller.wireEditPointIndex = -1;
+				Vector2 p = wire.GetWirePoint(i);
+				const float r = 0.07f;
+				const float rBG = r + 0.02f;
+				// Mouse over (but ignore if already moving another point)
+				bool highlighted = (InputHelper.MousePosWorld - p).sqrMagnitude < rBG * rBG && !controller.isMovingWireEditPoint;
+				// Currently moving this point (mouse may not be over due to snapping, etc)
+				highlighted |= controller.wireToEdit != null && controller.wireEditPointIndex == i;
 
-				for (int i = 1; i < wire.WirePointCount - 1; i++)
+				Color editPointCol = highlighted ? wire.SourcePin.GetColHigh() : wire.SourcePin.GetColLow();
+
+				Draw.Point(p, rBG, Color.white);
+				Draw.Point(p, r, editPointCol);
+
+				if (highlighted)
 				{
-					Vector2 p = wire.GetWirePoint(i);
-					const float r = 0.07f;
-					float rBG = r + 0.02f;
-					bool mouseOver = (InputHelper.MousePosWorld - p).sqrMagnitude < rBG * rBG;
-					Color editPointCol = mouseOver ? wire.SourcePin.GetColHigh() : wire.SourcePin.GetColLow();
-
-					Draw.Point(p, rBG, Color.white);
-					Draw.Point(p, r, editPointCol);
-
-					if (mouseOver)
-					{
-						InteractionState.NotifyUnspecifiedElementUnderMouse();
-						controller.wireEditPointIndex = i;
-					}
+					InteractionState.NotifyUnspecifiedElementUnderMouse();
+					controller.wireEditPointIndex = i;
 				}
 			}
 		}

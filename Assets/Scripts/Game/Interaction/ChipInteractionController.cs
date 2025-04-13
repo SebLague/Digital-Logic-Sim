@@ -4,7 +4,6 @@ using DLS.Description;
 using DLS.Graphics;
 using DLS.SaveSystem;
 using Seb.Helpers;
-using Seb.Types;
 using UnityEngine;
 
 namespace DLS.Game
@@ -14,7 +13,7 @@ namespace DLS.Game
 		public readonly Project project;
 
 		public readonly List<IMoveable> SelectedElements = new();
-		bool isMovingWireEditPoint;
+		public bool isMovingWireEditPoint;
 		bool isPlacingNewElements;
 		float itemPlacementCurrVerticalSpacing;
 		Vector2 moveElementMouseStartPos;
@@ -25,7 +24,7 @@ namespace DLS.Game
 		public Vector2 SelectionBoxStartPos;
 
 		StraightLineMoveState straightLineMoveState;
-		public int wireEditPointIndex;
+		public int wireEditPointIndex = -1;
 		Vector2 wireEditPointOld;
 		public int wireEditPointSelectedIndex;
 
@@ -58,12 +57,10 @@ namespace DLS.Game
 
 		public void Delete(IMoveable element, bool clearSelection = true)
 		{
-			if (HasControl)
-			{
-				if (element is SubChipInstance subChip) ActiveDevChip.DeleteSubChip(subChip);
-				if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
-				if (clearSelection) SelectedElements.Clear();
-			}
+			if (!HasControl) return;
+			if (element is SubChipInstance subChip) ActiveDevChip.DeleteSubChip(subChip);
+			if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
+			if (clearSelection) SelectedElements.Clear();
 		}
 
 		public bool CanInteractWithPin() => CanInteract();
@@ -92,7 +89,7 @@ namespace DLS.Game
 
 			// (Maybe temporary restriction?): Don't allow sourcePin-to-wire connections (unless the wire is a bus wire).
 			// This is because if the two source pins have different states, then the wire would need to be coloured differently
-			// from the connection point onwards (depending on which of the conflicing states is chosen)
+			// from the connection point onwards (depending on which of the conflicting states is chosen)
 			if (connectingFromWire || connectingToWire)
 			{
 				PinInstance pinConnection = connectingToWire ? startPin : endPin;
@@ -139,14 +136,19 @@ namespace DLS.Game
 				}
 				else if (wireToEdit != null && wireEditPointIndex != -1)
 				{
-					foreach (WireInstance other in ActiveDevChip.Wires)
+					bool isWireToWireConnectionPoint = wireEditPointIndex == 0 || wireEditPointIndex == wireToEdit.WirePointCount - 1;
+					if (!isWireToWireConnectionPoint)
 					{
-						if (other.ConnectedWire == wireToEdit)
+						foreach (WireInstance other in ActiveDevChip.Wires)
 						{
-							other.NotifyParentWirePointWillBeDeleted(wireEditPointIndex);
+							if (other.ConnectedWire == wireToEdit)
+							{
+								other.NotifyParentWirePointWillBeDeleted(wireEditPointIndex);
+							}
 						}
+
+						wireToEdit.DeleteWirePoint(wireEditPointIndex);
 					}
-					wireToEdit.DeleteWirePoint(wireEditPointIndex);
 				}
 			}
 		}
@@ -329,7 +331,7 @@ namespace DLS.Game
 
 		void HandleRightMouseDown()
 		{
-			// Cancel placement by right clicking
+			// Cancel placement by right-clicking
 			if (IsPlacingOrMovingElementOrCreatingWire() || isMovingWireEditPoint)
 			{
 				CancelEverything();
@@ -362,7 +364,7 @@ namespace DLS.Game
 						WireToPlace.AddWirePoint(InputHelper.MousePosWorld);
 					}
 				}
-				// Place subchip / devipin
+				// Place subchip / devpin
 				else
 				{
 					FinishPlacingNewElements();
@@ -387,7 +389,6 @@ namespace DLS.Game
 				{
 					bool addToSelection = KeyboardShortcuts.MultiModeHeld;
 					Select(element, addToSelection);
-
 					StartMovingSelectedItems();
 				}
 				// Mouse down over nothing: clear selection
@@ -414,26 +415,8 @@ namespace DLS.Game
 			// If connecting a new wire to an existing wire, the target connection point is end pos of new wire (this is mouse pos but with snapping options applied)
 			// Otherwise if creating a new wire from an existing wire, connection point is at mouse pos.
 			Vector2 targetPoint = WireToPlace?.GetWirePoint(WireToPlace.WirePointCount - 1) ?? mousePos;
-
 			// Find where target connection point is closest to the target wire.
-			int bestSegmentIndex = 0;
-			float bestSqrDst = float.MaxValue;
-			Vector2 bestPoint = Vector2.zero;
-
-			for (int i = 0; i < wireToConnectTo.WirePointCount - 1; i++)
-			{
-				Vector2 segStartPoint = wireToConnectTo.GetWirePoint(i);
-				Vector2 segEndPoint = wireToConnectTo.GetWirePoint(i + 1);
-				Vector2 pointOnSegment = Maths.ClosestPointOnLineSegment(targetPoint, segStartPoint, segEndPoint);
-
-				float sqrDst = (pointOnSegment - targetPoint).sqrMagnitude;
-				if (sqrDst < bestSqrDst)
-				{
-					bestPoint = pointOnSegment;
-					bestSqrDst = sqrDst;
-					bestSegmentIndex = i;
-				}
-			}
+			(Vector2 bestPoint, int bestSegmentIndex) = WireLayoutHelper.GetClosestPointOnWire(wireToConnectTo, targetPoint);
 
 			return new WireInstance.ConnectionInfo
 			{
@@ -794,7 +777,7 @@ namespace DLS.Game
 		{
 			newElementsAreDuplicatedElements = isDuplicating;
 
-			// Input/output dev pins are reprenseted as chips for convenience
+			// Input/output dev pins are represented as chips for convenience
 			(bool isInput, bool isOutput, PinBitCount numBits) ioPinInfo = ChipTypeHelper.IsInputOrOutputPin(chipDescription.ChipType);
 
 			if (!isPlacingNewElements)

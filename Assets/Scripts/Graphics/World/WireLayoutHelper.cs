@@ -73,6 +73,31 @@ namespace DLS.Graphics
 			}
 		}
 
+		public static (Vector2 bestPoint, int bestSegmentIndex) GetClosestPointOnWire(WireInstance wire, Vector2 desiredPos)
+		{
+			int bestSegmentIndex = 0;
+			float bestSqrDst = float.MaxValue;
+			Vector2 bestPoint = Vector2.zero;
+
+			for (int i = 0; i < wire.WirePointCount - 1; i++)
+			{
+				Vector2 segStartPoint = wire.GetWirePoint(i);
+				Vector2 segEndPoint = wire.GetWirePoint(i + 1);
+				Vector2 pointOnSegment = Maths.ClosestPointOnLineSegment(desiredPos, segStartPoint, segEndPoint);
+
+				float sqrDst = (pointOnSegment - desiredPos).sqrMagnitude;
+				if (sqrDst < bestSqrDst)
+				{
+					bestPoint = pointOnSegment;
+					bestSqrDst = sqrDst;
+					bestSegmentIndex = i;
+				}
+			}
+
+			return (bestPoint, bestSegmentIndex);
+		}
+
+
 		static float Flip(Vector2 dirA, Vector2 dirB)
 		{
 			// How far back to allow wire to be angled before switching sign
