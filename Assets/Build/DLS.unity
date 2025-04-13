@@ -241,7 +241,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   openSaveDirectory: 0
-  openInMainMenu: 1
+  openInMainMenu: 0
   testProjectName: MainTest
   openA: 1
   chipToOpenA: dt

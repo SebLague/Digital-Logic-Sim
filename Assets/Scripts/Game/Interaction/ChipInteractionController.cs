@@ -117,21 +117,26 @@ namespace DLS.Game
 			return true;
 		}
 
-		public bool IsSelected(IMoveable element) => element.IsSelected;
+		public static bool IsSelected(IMoveable element) => element.IsSelected;
 
 
 		void DeleteSelected()
 		{
-			foreach (IMoveable selectedElement in SelectedElements)
+			if (SelectedElements.Count > 0)
 			{
-				Delete(selectedElement, false);
+				foreach (IMoveable selectedElement in SelectedElements)
+				{
+					Delete(selectedElement, false);
+				}
+
+				SelectedElements.Clear();
 			}
-
-			SelectedElements.Clear();
-
-			if (InteractionState.ElementUnderMouse is WireInstance wire)
+			else
 			{
-				DeleteWire(wire);
+				if (InteractionState.ElementUnderMouse is WireInstance wire)
+				{
+					DeleteWire(wire);
+				}
 			}
 		}
 
@@ -139,7 +144,7 @@ namespace DLS.Game
 		{
 			if (HasControl)
 			{
-				ActiveDevChip.TryDeleteWire(wire);
+				ActiveDevChip.DeleteWire(wire);
 			}
 		}
 
@@ -245,7 +250,7 @@ namespace DLS.Game
 			Vector2 mousePos = InputHelper.MousePosWorld;
 			Vector2 closestElementPos = Vector2.zero;
 			float closestDst = float.MaxValue;
-			
+
 			foreach (IMoveable element in elementsToDuplicate)
 			{
 				Vector2 pos = element is DevPinInstance pin ? pin.HandlePosition : element.Position;

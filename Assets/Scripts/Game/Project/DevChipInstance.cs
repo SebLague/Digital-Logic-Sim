@@ -208,25 +208,12 @@ namespace DLS.Game
 			Simulator.RemovePin(SimChip, devPin.ID);
 		}
 
-		public void TryDeleteWire(WireInstance wireToDelete)
+		public void DeleteWire(WireInstance wireToDelete)
 		{
-			if (Wires.Contains(wireToDelete)) DeleteWire(wireToDelete);
-		}
+			bool success = Wires.Remove(wireToDelete);
+			if (!success) return; // Wire already deleted
 
-		void DeleteWire(WireInstance wireToDelete)
-		{
-			if (!wireToDelete.IsBusWire)
-			{
-				foreach (WireInstance other in Wires)
-				{
-					if (other.ConnectedWire == wireToDelete)
-					{
-						other.RemoveConnectionDependency();
-					}
-				}
-			}
-
-			Wires.Remove(wireToDelete);
+			// Remove from simulation
 			Simulator.RemoveConnection(SimChip, wireToDelete.SourcePin.Address, wireToDelete.TargetPin.Address);
 
 			// If deleting bus line, automatically delete all other connecting wires
@@ -235,6 +222,17 @@ namespace DLS.Game
 				SubChipInstance busSource = (SubChipInstance)wireToDelete.SourcePin.parent;
 				DeleteWiresAttachedToPin(busSource.InputPins[0]);
 				DeleteWiresAttachedToPin(busSource.OutputPins[0]);
+			}
+			// Otherwise connecting wires should connect directly to the pin where the deleted wire used to connect
+			else
+			{
+				foreach (WireInstance other in Wires)
+				{
+					if (other.ConnectedWire == wireToDelete)
+					{
+						other.RemoveConnectionDependency();
+					}
+				}
 			}
 		}
 
