@@ -391,7 +391,8 @@ namespace Seb.Vis.UI
 					Draw.QuadOutline(ss.centre, ss.size, outlineWidth * scale, theme.focusBorderCol);
 					foreach (char c in InputHelper.InputStringThisFrame)
 					{
-						if (char.IsControl(c)) continue;
+						bool invalidChar = char.IsControl(c) || char.IsSurrogate(c) || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.Format;
+						if (invalidChar) continue;
 						state.TryInsertText(c + "", validation);
 					}
 
@@ -421,7 +422,7 @@ namespace Seb.Vis.UI
 						bool select = InputHelper.ShiftIsHeld;
 						bool jumpToStart = InputHelper.IsKeyDownThisFrame(KeyCode.UpArrow) || (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.LeftArrow));
 						bool jumpToEnd = InputHelper.IsKeyDownThisFrame(KeyCode.DownArrow) || (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.RightArrow));
-						
+
 						if (jumpToStart) state.SetCursorIndex(0, select);
 						else if (jumpToEnd) state.SetCursorIndex(state.text.Length, select);
 						else
