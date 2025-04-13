@@ -23,10 +23,8 @@ namespace DLS.Game
 
 		// If this wire connects to a wire, which connects to another wire, then its recursion depth is 2. (this is used for ordering when drawing)
 		public int ConnectedWireRecursionDepth;
-
 		public int descriptionCreator_wireIndex;
 		public int drawOrder;
-		public int insertedPointCount;
 
 		// An offset to be applied to all wire points (this is used when a wire is being moved, but the move has not yet been confirmed)
 		public Vector2 MoveOffset;
@@ -150,8 +148,8 @@ namespace DLS.Game
 		{
 			if (connection.IsConnectedAtWire)
 			{
-				Vector2 posA = connection.connectedWire.GetWirePoint(connection.wireConnectionSegmentIndex + connection.connectedWire.insertedPointCount);
-				Vector2 posB = connection.connectedWire.GetWirePoint(connection.wireConnectionSegmentIndex + 1 + connection.connectedWire.insertedPointCount);
+				Vector2 posA = connection.connectedWire.GetWirePoint(connection.wireConnectionSegmentIndex);
+				Vector2 posB = connection.connectedWire.GetWirePoint(connection.wireConnectionSegmentIndex + 1);
 				Vector2 connectPos = ClosestPointOnLineSegment(originalWireConnectionPoint + MoveOffset, posA, posB);
 				return connectPos;
 			}
@@ -215,8 +213,12 @@ namespace DLS.Game
 			SetWirePointWithSnapping(p, WirePoints.Count - 1, GetWirePoint(WirePoints.Count - 2));
 		}
 
-
 		public void AddWirePoint(Vector2 p) => WirePoints.Add(p);
+
+		public void DeleteWirePoint(int i)
+		{
+			WirePoints.RemoveAt(i);
+		}
 
 		public bool RemoveLastPoint()
 		{
@@ -229,6 +231,25 @@ namespace DLS.Game
 			return false;
 		}
 
+		ref ConnectionInfo GetWireConnectionInfo()
+		{
+			Debug.Assert(ConnectedWire != null, "No connected wire?");
+			return ref SourceConnectionInfo.IsConnectedAtWire ? ref SourceConnectionInfo : ref TargetConnectionInfo;
+		}
+		
+		public void NotifyParentWirePointsInserted(int num)
+		{
+			ref ConnectionInfo connectionInfo = ref GetWireConnectionInfo();
+			connectionInfo.wireConnectionSegmentIndex += num;
+		}
+
+		public void NotifyParentWirePointWillBeDeleted(int deletedPointIndex)
+		{
+			ref ConnectionInfo connectionInfo = ref GetWireConnectionInfo();
+			
+			if (connectionInfo.wireConnectionSegmentIndex >= deletedPointIndex) connectionInfo.wireConnectionSegmentIndex -= 1;
+		}
+
 		// If this wire connects to another wire that is about to be deleted, we want to remove that dependency by 
 		// copying over the deleted wire's points and connection info to this wire so it can continue to exist without the deleted wire.
 		public void RemoveConnectionDependency()
@@ -239,7 +260,7 @@ namespace DLS.Game
 			if (connectToSource)
 			{
 				List<Vector2> pointsToCopy = new();
-				for (int i = 0; i <= SourceConnectionInfo.wireConnectionSegmentIndex + dependency.insertedPointCount; i++)
+				for (int i = 0; i <= SourceConnectionInfo.wireConnectionSegmentIndex; i++)
 				{
 					Vector2 copyPoint = dependency.GetWirePoint(i);
 					pointsToCopy.Add(copyPoint);
@@ -249,14 +270,14 @@ namespace DLS.Game
 				WirePoints.InsertRange(0, pointsToCopy);
 
 				// if some other wire connects to this wire, it needs to know how many points have been inserted here so that it can still connect in the correct place
-				insertedPointCount += pointsToCopy.Count;
+				Project.ActiveProject.ViewedChip.NotifyConnectedWiresPointsInserted(this, pointsToCopy.Count);
 				originalWireConnectionPoint = dependency.originalWireConnectionPoint;
 				SourceConnectionInfo = dependency.SourceConnectionInfo;
 			}
 			else
 			{
 				// Connecting to target pin via another wire, it is only allowed if that other wire is a bus wire.
-				// If the bus wire is being deleted, we don't need to bother removing the dependcy because all connected wires will be deleted along with it.
+				// If the bus wire is being deleted, we don't need to bother removing the dependency because all connected wires will be deleted along with it.
 				if (!ConnectedWire.IsBusWire) throw new Exception("Connected to target pin via non-bus wire??");
 			}
 		}

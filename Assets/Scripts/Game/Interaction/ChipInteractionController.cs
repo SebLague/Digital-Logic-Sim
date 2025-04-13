@@ -137,6 +137,17 @@ namespace DLS.Game
 				{
 					DeleteWire(wire);
 				}
+				else if (wireToEdit != null && wireEditPointIndex != -1)
+				{
+					foreach (WireInstance other in ActiveDevChip.Wires)
+					{
+						if (other.ConnectedWire == wireToEdit)
+						{
+							other.NotifyParentWirePointWillBeDeleted(wireEditPointIndex);
+						}
+					}
+					wireToEdit.DeleteWirePoint(wireEditPointIndex);
+				}
 			}
 		}
 
@@ -428,7 +439,7 @@ namespace DLS.Game
 			{
 				pin = pin,
 				connectedWire = wireToConnectTo,
-				wireConnectionSegmentIndex = bestSegmentIndex - wireToConnectTo.insertedPointCount,
+				wireConnectionSegmentIndex = bestSegmentIndex,
 				connectionPoint = bestPoint
 			};
 		}

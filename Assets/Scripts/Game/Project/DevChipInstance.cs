@@ -384,6 +384,17 @@ namespace DLS.Game
 			return false;
 		}
 
+		public void NotifyConnectedWiresPointsInserted(WireInstance wire, int numPoints)
+		{
+			foreach (WireInstance other in Wires)
+			{
+				if (other.ConnectedWire == wire)
+				{
+					other.NotifyParentWirePointsInserted(numPoints);
+				}
+			}
+		}
+
 		public IEnumerable<SubChipInstance> GetSubchips() => Elements.OfType<SubChipInstance>();
 
 		public IEnumerable<DevPinInstance> GetOutputPins()

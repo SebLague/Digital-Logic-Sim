@@ -1,5 +1,3 @@
-using Seb.Helpers;
-
 namespace DLS.Game
 {
 	// Note: updated when drawing world
@@ -13,11 +11,8 @@ namespace DLS.Game
 		// Note: set to null prior to drawing each frame, and set during the drawing process
 		public static IInteractable ElementUnderMouse { get; private set; }
 		public static IInteractable ElementUnderMousePrevFrame { get; private set; }
-
-
+		
 		public static PinInstance PinUnderMouse => ElementUnderMouse as PinInstance;
-		public static SubChipInstance SubChipUnderMouse => ElementUnderMouse as SubChipInstance;
-		public static DevPinInstance DevPinUnderMouse => ElementUnderMouse as DevPinInstance;
 
 		public static void NotifyElementUnderMouse(IInteractable element)
 		{
@@ -27,10 +22,7 @@ namespace DLS.Game
 		// Notify that something is under the mouse, without specifying what it is.
 		// Useful for interactions with sub-elements (such as the status display on an input pin) which don't have their own associated object and are handled specially
 		public static void NotifyUnspecifiedElementUnderMouse() => NotifyElementUnderMouse(unspecifiedElement);
-
-		public static bool IsInteractingWithDevPinHandle() => ElementUnderMouse is DevPinInstance devPin && devPin.PointIsInHandleBounds(InputHelper.MousePosWorld);
-
-		public static bool IsInteractingWithDevPinStateIndicator() => ElementUnderMouse is DevPinInstance devPin && devPin.PointIsInStateIndicatorBounds(InputHelper.MousePosWorld);
+		
 
 		public static void ClearFrame()
 		{

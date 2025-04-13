@@ -114,12 +114,12 @@ namespace DLS.SaveSystem
 				if (wire.SourceConnectionInfo.IsConnectedAtWire)
 				{
 					connectionType = WireConnectionType.ToWireSource;
-					connectedWireSegmentIndex = wire.SourceConnectionInfo.wireConnectionSegmentIndex + wire.ConnectedWire.insertedPointCount;
+					connectedWireSegmentIndex = wire.SourceConnectionInfo.wireConnectionSegmentIndex;
 				}
 				else if (wire.TargetConnectionInfo.IsConnectedAtWire)
 				{
 					connectionType = WireConnectionType.ToWireTarget;
-					connectedWireSegmentIndex = wire.TargetConnectionInfo.wireConnectionSegmentIndex + wire.ConnectedWire.insertedPointCount;
+					connectedWireSegmentIndex = wire.TargetConnectionInfo.wireConnectionSegmentIndex;
 				}
 
 				connectedWireIndex = wire.ConnectedWire.descriptionCreator_wireIndex;
