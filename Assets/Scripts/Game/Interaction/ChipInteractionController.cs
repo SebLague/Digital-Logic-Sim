@@ -336,7 +336,7 @@ namespace DLS.Game
 		void HandleRightMouseDown()
 		{
 			// Cancel placement by right-clicking
-			if (IsPlacingOrMovingElementOrCreatingWire() || isMovingWireEditPoint)
+			if (IsPlacingOrMovingElementOrCreatingWire())
 			{
 				CancelEverything();
 				InputHelper.ConsumeMouseButtonDownEvent(MouseButton.Right);
@@ -779,7 +779,7 @@ namespace DLS.Game
 
 		public bool IsPlacingElementOrCreatingWire() => isPlacingNewElements || IsCreatingWire;
 
-		public bool IsPlacingOrMovingElementOrCreatingWire() => isPlacingNewElements || IsMovingSelection || IsCreatingWire;
+		public bool IsPlacingOrMovingElementOrCreatingWire() => isPlacingNewElements || IsMovingSelection || IsCreatingWire || isMovingWireEditPoint;
 
 		public void StartPlacing(string name)
 		{
