@@ -419,10 +419,16 @@ namespace Seb.Vis.UI
 
 						// Arrow keys
 						bool select = InputHelper.ShiftIsHeld;
-						if (CanTrigger(ref state.arrowKeyTrigger, KeyCode.LeftArrow)) state.DecrementCursor(select);
-						if (CanTrigger(ref state.arrowKeyTrigger, KeyCode.RightArrow)) state.IncrementCursor(select);
-						if (CanTrigger(ref state.arrowKeyTrigger, KeyCode.UpArrow)) state.SetCursorIndex(0, select); // jump to start with up key
-						if (CanTrigger(ref state.arrowKeyTrigger, KeyCode.DownArrow)) state.SetCursorIndex(state.text.Length, select); // jump to end with down key
+						bool jumpToStart = InputHelper.IsKeyDownThisFrame(KeyCode.UpArrow) || (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.LeftArrow));
+						bool jumpToEnd = InputHelper.IsKeyDownThisFrame(KeyCode.DownArrow) || (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.RightArrow));
+						
+						if (jumpToStart) state.SetCursorIndex(0, select);
+						else if (jumpToEnd) state.SetCursorIndex(state.text.Length, select);
+						else
+						{
+							if (CanTrigger(ref state.arrowKeyTrigger, KeyCode.LeftArrow)) state.DecrementCursor(select);
+							if (CanTrigger(ref state.arrowKeyTrigger, KeyCode.RightArrow)) state.IncrementCursor(select);
+						}
 
 						bool copyTriggered = InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.C);
 						bool cutTriggered = InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.X);
