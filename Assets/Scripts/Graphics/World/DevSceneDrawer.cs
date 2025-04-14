@@ -301,6 +301,17 @@ namespace DLS.Graphics
 				Anchor textAnchor = nameCentre ? Anchor.TextCentre : Anchor.CentreTop;
 				Vector2 textPos = nameCentre ? pos : pos + Vector2.up * (subchip.Size.y / 2 - GridSize / 2);
 
+				// --- MODDED : Fan Edit --- //
+
+				if(desc.NameAlignment != NameAlignment.Centre)
+                {
+					int mult = desc.NameAlignment == NameAlignment.Right ? 1 : -1;
+					TextRenderer.BoundingBox textBounds = Draw.CalculateTextBounds(displayName, FontBold, FontSizeChipName, textPos, textAnchor);
+					textPos.x += (pos.x + desc.Size.x / 2 - textBounds.BoundsMax.x) * mult;
+                }
+
+				// ------------------------- //
+
 				// Draw background band behind text if placed at top (so it doesn't look out of place..)
 				if (desc.NameLocation == NameDisplayLocation.Top)
 				{
@@ -409,6 +420,15 @@ namespace DLS.Graphics
 			{
 				bounds = DrawDisplay_Dot(posWorld, scaleWorld, sim);
 			}
+
+			// --- MODDED : Fan Edit --- //
+			else if (display.DisplayType == ChipType.Diode)
+			{
+				bool simActive = sim != null;
+				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
+				bounds = DrawDisplay_Diode(posWorld, scaleWorld, isOn);
+			}
+			// ------------------------- //
 
 			display.LastDrawBounds = bounds;
 			return bounds;
@@ -556,6 +576,24 @@ namespace DLS.Graphics
 
 			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
 		}
+
+		// --- MODDED : Fan Edit --- //
+		public static Bounds2D DrawDisplay_Diode(Vector2 centre, float scale, bool isOn)
+		{
+			const float pixelSizeT = 0.975f;
+			// Draw background
+			Draw.Quad(centre, Vector2.one * scale, Color.black);
+			float size = scale;
+
+			float pixelSize = size;
+			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
+
+			Color col = isOn ? ActiveTheme.DiodeColors[1] : ActiveTheme.DiodeColors[0];
+
+			Draw.Quad(centre, pixelDrawSize, col);
+			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+		}
+		// ------------------------- //
 
 		public static void DrawDevPin(DevPinInstance devPin)
 		{

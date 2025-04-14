@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 
+//FanEdit
+using System.ComponentModel;
+
 namespace DLS.Description
 {
 	public class ChipDescription
@@ -26,6 +29,15 @@ namespace DLS.Description
 		public bool HasDisplay() => Displays != null && Displays.Length > 0;
 		public bool NameMatch(string otherName) => NameMatch(Name, otherName);
 		public static bool NameMatch(string a, string b) => string.Equals(a, b, NameComparison);
+
+		// --- MODDED : Fan Edit --- //
+
+		// -- Data -- //
+		[DefaultValue(NameAlignment.Centre)]
+		public NameAlignment NameAlignment;
+
+
+		// ------------------------- //
 	}
 
 	public enum NameDisplayLocation
@@ -34,4 +46,13 @@ namespace DLS.Description
 		Top,
 		Hidden
 	}
+
+	// --- MODDED : Fan Edit --- //
+	public enum NameAlignment
+	{
+		Centre,
+		Right,
+		Left
+	}
+	// ------------------------- //
 }

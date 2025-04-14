@@ -47,7 +47,10 @@ namespace DLS.Game
 				CreateBus(PinBitCount.Bit4),
 				CreateBusTerminus(PinBitCount.Bit4),
 				CreateBus(PinBitCount.Bit8),
-				CreateBusTerminus(PinBitCount.Bit8)
+				CreateBusTerminus(PinBitCount.Bit8),
+
+				// ---- Modded - Fan Edit ---- //
+				CreateDiode()
 			};
 		}
 
@@ -328,6 +331,38 @@ namespace DLS.Game
 
 			return CreateBuiltinChipDesciption(type, BusChipSize(bitCount), busOrigin.Colour, inputs, hideName: true);
 		}
+
+		// --- Modded : Fan Edit --- //
+
+		static ChipDescription CreateDiode()
+		{
+			PinDescription[] inputPins =
+			{
+				CreatePinDescription("IN", 0)
+			};
+
+			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			float width = height;
+			float displayWidth = height - GridSize * 0.5f;
+
+			Color col = new(0.1f, 0.1f, 0.1f);
+			Vector2 size = new(width, height);
+
+
+			DisplayDescription[] displays =
+			{
+				new()
+				{
+					Position = Vector2.right * PinRadius / 3 * 0,
+					Scale = displayWidth,
+					SubChipID = -1
+				}
+			};
+
+			return CreateBuiltinChipDesciption(ChipType.Diode, size, col, inputPins, null, displays, true);
+		}
+		//---------------------------//
+
 
 		static ChipDescription CreateBuiltinChipDesciption(ChipType type, Vector2 size, Color col, PinDescription[] inputs = null, PinDescription[] outputs = null, DisplayDescription[] displays = null, bool hideName = false)
 		{

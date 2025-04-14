@@ -24,12 +24,23 @@ namespace DLS.Graphics
 			"Name: Hidden"
 		};
 
+		// --- MODDED : Fan Edit --- //
+		static readonly string[] nameAlignmentOptions =
+		{
+			"Center Aligned",
+			"Right Aligned",
+			"Left Aligned"
+		};
+		// ------------------------- //
+
+
 		static SubChipInstance[] subChipsWithDisplays;
 		static string displayLabelString;
 
 		static readonly UIHandle ID_DisplaysScrollView = new("CustomizeMenu_DisplaysScroll");
 		static readonly UIHandle ID_ColourPicker = new("CustomizeMenu_ChipCol");
 		static readonly UIHandle ID_NameDisplayOptions = new("CustomizeMenu_NameDisplayOptions");
+		static readonly UIHandle ID_NameAlignmentOptions = new("CustomizeMenu_NameAlignmentOptions");
 		static readonly UI.ScrollViewDrawElementFunc drawDisplayScrollEntry = DrawDisplayScroll;
 
 		public static void OnMenuOpened()
@@ -65,6 +76,12 @@ namespace DLS.Graphics
 			int nameDisplayMode = UI.WheelSelector(ID_NameDisplayOptions, nameDisplayOptions, NextPos(), new Vector2(pw, 3), theme.OptionsWheel, Anchor.TopLeft);
 			ChipSaveMenu.ActiveCustomizeDescription.NameLocation = (NameDisplayLocation)nameDisplayMode;
 
+			// --- MODDED : Fan Edit --- //
+
+			int nameAlignmentMode = UI.WheelSelector(ID_NameAlignmentOptions, nameAlignmentOptions, NextPos(), new Vector2(pw, 3), theme.OptionsWheel, Anchor.TopLeft);
+			ChipSaveMenu.ActiveCustomizeDescription.NameAlignment = (NameAlignment)nameAlignmentMode;
+
+			// ------------------------- //
 			Color newCol = UI.DrawColourPicker(ID_ColourPicker, NextPos(), pw, Anchor.TopLeft);
 			ChipSaveMenu.ActiveCustomizeDescription.Colour = newCol;
 

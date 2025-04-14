@@ -52,6 +52,11 @@ namespace DLS.Game
 				),
 				CreateChipCollection("MEMORY",
 					ChipType.Rom_256x16
+				),
+
+				// MODDED //
+				CreateChipCollection("FAN-EDIT",
+					ChipType.Diode
 				)
 			};
 		}
