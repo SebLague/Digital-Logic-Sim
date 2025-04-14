@@ -1,6 +1,5 @@
 using System;
 using DLS.Description;
-using UnityEngine;
 
 namespace DLS.Simulation
 {
@@ -34,7 +33,7 @@ namespace DLS.Simulation
 			latestSourceParentChipID = -1;
 
 			State = new PinState((int)bitCount);
-			if (!isInput) State.SetAllDisconnected();
+			State.SetAllDisconnected();
 		}
 
 		public bool FirstBitHigh => State.GetBit(0) == PinState.LogicHigh;
@@ -95,7 +94,7 @@ namespace DLS.Simulation
 
 			numInputsReceivedThisFrame++;
 
-			// If this is a sub-chip input pin, and it has received all of its connections, notify the sub-chip that the input is ready
+			// If this is a sub-chip input pin, and has received all of its connections, notify the sub-chip that the input is ready
 			if (isInput && numInputsReceivedThisFrame == numInputConnections)
 			{
 				parentChip.numInputsReady++;

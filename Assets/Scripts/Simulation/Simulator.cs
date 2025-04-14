@@ -73,13 +73,6 @@ namespace DLS.Simulation
 				}
 			}
 
-			// Initialize output pins to disconnected state (in case wire to the output has been deleted)
-			foreach (SimPin simPin in rootSimChip.OutputPins)
-			{
-				simPin.latestSourceID = -1;
-				simPin.State.SetAllDisconnected();
-			}
-
 			// Process
 			if (needsOrderPass)
 			{
@@ -449,10 +442,7 @@ namespace DLS.Simulation
 					{
 						SimPin inputPin = chip.InputPins[0];
 					
-						if (chip.InputPins[0].numInputConnections == 0)
-						{
-							inputPin.State.SetAllDisconnected(); // todo: this should be handled elsewhere
-						}
+						
 						chip.OutputPins[0].State.SetFromSource(inputPin.State);
 					}
 
