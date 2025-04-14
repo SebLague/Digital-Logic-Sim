@@ -110,7 +110,7 @@ namespace DLS.Game
 							// (this should always be the case, but a bug in a previous version could cause save files to contain bad connection data)
 							bool addressMismatch = false;
 							addressMismatch |= connectionType is WireConnectionType.ToWireSource && !PinAddress.Equals(wireConnectTarget.SourcePin.Address, wireDescription.SourcePinAddress);
-							addressMismatch |= connectionType is WireConnectionType.ToWireTarget && !PinAddress.Equals(wireConnectTarget.TargetPin.Address, wireDescription.TargetPinAddress);
+							addressMismatch |= connectionType is WireConnectionType.ToWireTarget && !PinAddress.Equals(wireConnectTarget.TargetPin_BusCorrected.Address, wireDescription.TargetPinAddress);
 							wireConnectTargetFailedToLoad = addressMismatch;
 						}
 

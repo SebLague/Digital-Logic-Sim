@@ -245,7 +245,7 @@ MonoBehaviour:
   testProjectName: MainTest
   openA: 0
   chipToOpenA: wip2
-  chipToOpenB: ram-sync
+  chipToOpenB: test
   testVecA: {x: 0.1, y: 24}
   testVecB: {x: 0, y: 3}
   testVecC: {x: 0.35, y: 0.37}

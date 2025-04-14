@@ -189,6 +189,7 @@ namespace DLS.Game
 				if (anyElementFailedToLoad)
 				{
 					ChipDescription descNew = DescriptionCreator.CreateChipDescription(devChip);
+					SetNewActiveDevChip(devChip); // needs to be set before saving
 					SaveFromDescription(descNew);
 				}
 
