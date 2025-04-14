@@ -50,7 +50,7 @@ namespace DLS.Game
 
 		// String representation of the viewed chips stack for display purposes
 		public string viewedChipsString = string.Empty;
-		
+
 		public SimChip rootSimChip => editModeChip.SimChip;
 		SimChip ViewedSimChip => ViewedChip.SimChip;
 
@@ -67,7 +67,7 @@ namespace DLS.Game
 		public string ActiveDevChipName => ViewedChip.ChipName;
 
 		public bool ChipHasBeenSavedBefore => ViewedChip.LastSavedDescription != null;
-		
+
 		public Project(ProjectDescription description, ChipLibrary chipLibrary)
 		{
 			ActiveProject = this;
@@ -93,7 +93,9 @@ namespace DLS.Game
 			{
 				SimChip simChipToView = ViewedChip.SimChip.GetSubChipFromID(subchip.ID);
 
-				DevChipInstance viewChip = new(description, chipLibrary, simChipToView);
+				DevChipInstance viewChip = DevChipInstance.LoadFromDescriptionTest(description, chipLibrary).devChip;
+				viewChip.SetSimChip(simChipToView);
+
 				controller.CancelEverything();
 				chipViewStack.Push(viewChip);
 				UpdateViewedChipsString();
@@ -119,6 +121,12 @@ namespace DLS.Game
 
 		public void SaveFromDescription(ChipDescription saveChipDescription, SaveMode saveMode = SaveMode.Normal)
 		{
+			// If this chip hasn't been saved before, it can't have been used anyway so no need to update anything
+			if (ViewedChip.LastSavedDescription != null)
+			{
+				UpdateAndSaveAffectedChips(ViewedChip.LastSavedDescription, saveChipDescription, false);
+			}
+
 			if (saveMode is SaveMode.Rename)
 			{
 				string nameOld = ViewedChip.LastSavedDescription.Name;
@@ -128,14 +136,6 @@ namespace DLS.Game
 				RenameStarred(saveChipDescription.Name, nameOld, false, false);
 				EnsureChipRenamedInCollections(nameOld, saveChipDescription.Name);
 				UpdateAndSaveProjectDescription();
-
-				// Change name in all affected chips (chips which use the renamed chip)
-				ChipDescription[] affectedChips = chipLibrary.GetDirectParentChips(nameOld);
-				for (int i = 0; i < affectedChips.Length; i++)
-				{
-					RenameSubChipInChipDescription(affectedChips[i], nameOld, saveChipDescription.Name);
-					Saver.SaveChip(affectedChips[i], description.ProjectName);
-				}
 			}
 			else
 			{
@@ -158,43 +158,6 @@ namespace DLS.Game
 			CameraController.NotifyChipNameChanged(saveChipDescription.Name);
 		}
 
-		static void RenameSubChipInChipDescription(ChipDescription desc, string nameOld, string nameNew)
-		{
-			for (int i = desc.SubChips.Length - 1; i >= 0; i--)
-			{
-				if (ChipDescription.NameMatch(desc.SubChips[i].Name, nameOld))
-				{
-					desc.SubChips[i].Name = nameNew;
-				}
-			}
-		}
-
-		// Remove all instances of a particular subchip (and any connecting wires) from this chip's description
-		static void RemoveSubchipFromDescription(ChipDescription desc, string removeName)
-		{
-			HashSet<int> removedSubchipIDs = new();
-
-			// Get IDs of all subchips to be removed
-			for (int i = desc.SubChips.Length - 1; i >= 0; i--)
-			{
-				if (ChipDescription.NameMatch(desc.SubChips[i].Name, removeName))
-				{
-					removedSubchipIDs.Add(desc.SubChips[i].ID);
-				}
-			}
-
-			// Create arrays with the subchips and any connected wires removed
-			SubChipDescription[] newSubchips = desc.SubChips.Where(c => !removedSubchipIDs.Contains(c.ID)).ToArray();
-			WireDescription[] newWires = desc.Wires.Where(w => !(removedSubchipIDs.Contains(w.SourcePinAddress.PinOwnerID) || removedSubchipIDs.Contains(w.TargetPinAddress.PinOwnerID))).ToArray();
-
-			// Copy the new data into the existing arrays
-			Array.Resize(ref desc.SubChips, newSubchips.Length);
-
-			Array.Copy(newSubchips, desc.SubChips, newSubchips.Length);
-			Array.Resize(ref desc.Wires, newWires.Length);
-			Array.Copy(newWires, desc.Wires, newWires.Length);
-		}
-
 		public bool ActiveChipHasUnsavedChanges()
 		{
 			// If chip has no last saved description, then has unsaved changes if any elements have been placed inside it
@@ -209,7 +172,9 @@ namespace DLS.Game
 		public void CreateBlankDevChip()
 		{
 			controller = new ChipInteractionController(this);
-			SetNewActiveDevChip(new DevChipInstance());
+			DevChipInstance devChip = new();
+			devChip.SetSimChip(new SimChip());
+			SetNewActiveDevChip(devChip);
 		}
 
 		public void LoadDevChipOrCreateNewIfDoesntExist(string chipName)
@@ -217,8 +182,19 @@ namespace DLS.Game
 			if (chipLibrary.TryGetChipDescription(chipName, out ChipDescription description))
 			{
 				controller = new ChipInteractionController(this);
-				SimChip simChip = Simulator.BuildSimChip(description, chipLibrary);
-				SetNewActiveDevChip(new DevChipInstance(description, chipLibrary, simChip));
+
+				(DevChipInstance devChip, bool anyElementFailedToLoad) = DevChipInstance.LoadFromDescriptionTest(description, chipLibrary);
+
+				// If any element (subchip, wire) failed to load, then save the updated description right away so that we have the correct version
+				if (anyElementFailedToLoad)
+				{
+					ChipDescription descNew = DescriptionCreator.CreateChipDescription(devChip);
+					SaveFromDescription(descNew);
+				}
+
+				SimChip simChip = Simulator.BuildSimChip(devChip.LastSavedDescription, chipLibrary);
+				devChip.SetSimChip(simChip);
+				SetNewActiveDevChip(devChip);
 			}
 			else
 			{
@@ -256,6 +232,15 @@ namespace DLS.Game
 
 		public void DeleteChip(string chipToDeleteName)
 		{
+			// If the current chip only contains the deleted chip directly as a subchip, it will be removed from the sim and everything is fine.
+			// However, if it is contained indirectly somewhere within one of the chip's subchips (or their subchips, etc), then it's a bit tricky (and
+			// potentially expensive for large chips) to hunt down all references within the simulation and remove them. So, for now at least, simply
+			// restart the simulation in this case (this is not ideal though, since state of latches etc will be lost)
+			bool simReloadRequired = ChipContainsSubchipIndirectly(ViewedChip, chipToDeleteName);
+
+
+			UpdateAndSaveAffectedChips(chipLibrary.GetChipDescription(chipToDeleteName), null, true);
+
 			// Delete chip save file, remove from library, and update project description
 			Saver.DeleteChip(chipToDeleteName, description.ProjectName);
 			chipLibrary.RemoveChip(chipToDeleteName);
@@ -263,21 +248,134 @@ namespace DLS.Game
 			EnsureChipRemovedFromCollections(chipToDeleteName);
 			UpdateAndSaveProjectDescription();
 
-			// Remove any instances of the deleted chip from the active chip
-			ViewedChip.RemoveSubchipsByName(chipToDeleteName);
-
-			// Remove all instances of deleted chip from saved chips (and resave them)
-			ChipDescription[] affectedChips = chipLibrary.GetDirectParentChips(chipToDeleteName);
-			foreach (ChipDescription chipDesc in affectedChips)
-			{
-				RemoveSubchipFromDescription(chipDesc, chipToDeleteName);
-				Saver.SaveChip(chipDesc, description.ProjectName);
-			}
 
 			// If has deleted the chip that's currently being edited, then open a blank chip
 			if (ChipDescription.NameMatch(ViewedChip.ChipName, chipToDeleteName))
 			{
 				CreateBlankDevChip();
+			}
+			else
+			{
+				// Remove any instances of the deleted chip from the active chip
+				ViewedChip.DeleteSubchipsByName(chipToDeleteName);
+				if (simReloadRequired)
+				{
+					ViewedChip.RebuildSimulation();
+				}
+			}
+		}
+
+		// Test if chip's subchips (or any of their subchips, etc...) contain the target subchip
+		bool ChipContainsSubchipIndirectly(DevChipInstance devChip, string targetSubchip)
+		{
+			HashSet<string> visited = new(ChipDescription.NameComparer);
+
+			foreach (IMoveable element in devChip.Elements)
+			{
+				if (element is SubChipInstance subchip && visited.Add(subchip.Description.Name))
+				{
+					if (ChipContainsSubchipDirectlyOrIndirectly(chipLibrary.GetChipDescription(subchip.Description.Name), targetSubchip))
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		// Test if chip (or any of its subchips, or the subchips' subchips, etc...) contain the target subchip
+		bool ChipContainsSubchipDirectlyOrIndirectly(ChipDescription descRoot, string targetSubchip)
+		{
+			HashSet<string> visited = new(ChipDescription.NameComparer);
+			bool found = false;
+			SearchRecursive(descRoot);
+			return found;
+
+			void SearchRecursive(ChipDescription desc)
+			{
+				foreach (SubChipDescription sub in desc.SubChips)
+				{
+					if (found || ChipDescription.NameMatch(sub.Name, targetSubchip))
+					{
+						found = true;
+						return;
+					}
+
+					ChipDescription subDescFull = chipLibrary.GetChipDescription(sub.Name);
+					if (visited.Add(subDescFull.Name)) // Hasn't visited before
+					{
+						SearchRecursive(subDescFull);
+					}
+				}
+			}
+		}
+
+		// Must be called prior to library being updated with the change
+		// If deleting, new description can be left null
+		void UpdateAndSaveAffectedChips(ChipDescription root_desc, ChipDescription root_descNew, bool willDelete)
+		{
+			// There a few ways in which chips other than the one currently being edited can be affected, and require resaving:
+			// -- A chip is deleted from the library -> all chips that contain the deleted chip must be resaved with that chip and its connections removed
+			// -- A chip is renamed -> all chips containing the renamed chip must be resaved with the new name applied
+			// -- A chip is saved after removing an input/output pin -> all chips contained the edited chip must be resaved with affected connections removed
+
+
+			ChipDescription[] affectedChips = chipLibrary.GetDirectParentChips(root_desc.Name);
+			bool willRename = !willDelete && !ChipDescription.NameMatch(root_desc.Name, root_descNew.Name);
+
+			HashSet<int> newDesc_AllDevPinIDs = new();
+			if (!willDelete)
+			{
+				foreach (PinDescription p in root_descNew.InputPins) newDesc_AllDevPinIDs.Add(p.ID);
+				foreach (PinDescription p in root_descNew.OutputPins) newDesc_AllDevPinIDs.Add(p.ID);
+			}
+
+			foreach (ChipDescription desc in affectedChips)
+			{
+				bool anyChanges = willDelete | willRename;
+
+
+				(DevChipInstance devChip, bool anyElementFailedToLoad) = DevChipInstance.LoadFromDescriptionTest(desc, chipLibrary);
+
+				anyChanges |= anyElementFailedToLoad;
+
+				if (willDelete)
+				{
+					devChip.DeleteSubchipsByName(root_desc.Name);
+				}
+				else
+				{
+					// Detect deleted dev pins, and remove any connections to the corresponding subchip pins in the affected chip
+					foreach (PinDescription p in root_desc.InputPins)
+					{
+						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToSubChip(p.ID);
+					}
+
+					foreach (PinDescription p in root_desc.OutputPins)
+					{
+						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToSubChip(p.ID);
+					}
+				}
+
+				if (anyChanges)
+				{
+					ChipDescription updatedDesc = DescriptionCreator.CreateChipDescription(devChip);
+
+					if (willRename)
+					{
+						for (int i = 0; i < updatedDesc.SubChips.Length; i++)
+						{
+							if (ChipDescription.NameMatch(updatedDesc.SubChips[i].Name, root_desc.Name))
+							{
+								updatedDesc.SubChips[i].Name = root_descNew.Name;
+							}
+						}
+					}
+
+					Saver.SaveChip(updatedDesc, this.description.ProjectName);
+					chipLibrary.NotifyChipSaved(updatedDesc);
+				}
 			}
 		}
 

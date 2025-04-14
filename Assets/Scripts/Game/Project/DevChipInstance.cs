@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DLS.Description;
+using DLS.SaveSystem;
 using DLS.Simulation;
 using UnityEngine;
 
@@ -12,24 +13,25 @@ namespace DLS.Game
 		// Names of all the chips which contain this chip (either directly, or inside some other subchip)
 		public readonly HashSet<string> AllParentChipNames = new(ChipDescription.NameComparer);
 		public readonly List<IMoveable> Elements = new();
-		public readonly SimChip SimChip;
+		public SimChip SimChip;
+		bool hasSimChip;
 		public readonly List<WireInstance> Wires = new();
 
 		bool elementsModifiedSinceLastArrayUpdate;
 		DevPinInstance[] inputPins_cached = Array.Empty<DevPinInstance>();
 		public ChipDescription LastSavedDescription;
 
-		public DevChipInstance(ChipDescription description, ChipLibrary chipLibrary, SimChip simChip)
+		public void SetSimChip(SimChip simChip)
 		{
+			hasSimChip = true;
 			SimChip = simChip;
-
-			LoadFromDescription(description, chipLibrary);
-			RegenerateParentChipNamesHash();
 		}
 
-		public DevChipInstance()
+		public void RebuildSimulation()
 		{
-			SimChip = new SimChip();
+			ChipDescription desc = DescriptionCreator.CreateChipDescription(this);
+			SimChip simChip = Simulator.BuildSimChip(desc, Project.ActiveProject.chipLibrary);
+			SetSimChip(simChip);
 		}
 
 		public string ChipName => LastSavedDescription == null ? string.Empty : LastSavedDescription.Name;
@@ -45,9 +47,10 @@ namespace DLS.Game
 			return inputPins_cached;
 		}
 
-		void LoadFromDescription(ChipDescription description, ChipLibrary library)
+		public static (DevChipInstance devChip, bool anyElementFailedToLoad) LoadFromDescriptionTest(ChipDescription description, ChipLibrary library)
 		{
-			LastSavedDescription = description;
+			DevChipInstance instance = new();
+			instance.LastSavedDescription = description;
 
 			// Set any null arrays to empty so don't have to check
 			description.SubChips ??= Array.Empty<SubChipDescription>();
@@ -55,49 +58,69 @@ namespace DLS.Game
 			description.OutputPins ??= Array.Empty<PinDescription>();
 			description.Wires ??= Array.Empty<WireDescription>();
 
+			bool anyElementFailedToLoad = false;
+
 			// Load subchips
 			foreach (SubChipDescription subChipDescription in description.SubChips)
 			{
 				if (library.TryGetChipDescription(subChipDescription.Name, out ChipDescription fullDescriptionOfSubchip))
 				{
 					SubChipInstance subChip = new(fullDescriptionOfSubchip, subChipDescription);
-					AddNewSubChip(subChip, true);
+					instance.AddNewSubChip(subChip, true);
 				}
+				else anyElementFailedToLoad = true;
 			}
 
 			// Load dev pins
 			for (int i = 0; i < description.InputPins.Length; i++)
 			{
 				PinDescription pinDescription = description.InputPins[i];
-				AddNewDevPin(new DevPinInstance(pinDescription, true), true);
+				instance.AddNewDevPin(new DevPinInstance(pinDescription, true), true);
 			}
 
 			for (int i = 0; i < description.OutputPins.Length; i++)
 			{
 				PinDescription pinDescription = description.OutputPins[i];
-				AddNewDevPin(new DevPinInstance(pinDescription, false), true);
+				instance.AddNewDevPin(new DevPinInstance(pinDescription, false), true);
 			}
 
 			// ---- Load wires ----
 			// Wires can fail to load if associated pin was deleted from subchip. This means that wire indices stored in the save data might not line up with our loaded wires list.
 			// So, keep track here of the wires with correct indices (with failed entries just being left as null)
 			WireInstance[] loadedWiresWithOriginalIndices = new WireInstance[description.Wires.Length];
-			int wireIndex = 0;
 
 			for (int i = 0; i < description.Wires.Length; i++)
 			{
 				WireDescription wireDescription = description.Wires[i];
-				TryFindPin(wireDescription.SourcePinAddress, out PinInstance sourcePin);
-				TryFindPin(wireDescription.TargetPinAddress, out PinInstance targetPin);
+				instance.TryFindPin(wireDescription.SourcePinAddress, out PinInstance sourcePin);
+				instance.TryFindPin(wireDescription.TargetPinAddress, out PinInstance targetPin);
 
 				if (sourcePin != null && targetPin != null)
 				{
 					WireConnectionType connectionType = wireDescription.ConnectionType;
 
-					// If wire is connected to another wire, but the other wire failed to load (pin could be deleted from a subchip), then fallback to pin connection type
-					if (connectionType is WireConnectionType.ToWireSource or WireConnectionType.ToWireTarget && loadedWiresWithOriginalIndices[wireDescription.ConnectedWireIndex] == null)
+					if (connectionType is WireConnectionType.ToWireSource or WireConnectionType.ToWireTarget)
 					{
-						connectionType = WireConnectionType.ToPins;
+						WireInstance wireConnectTarget = loadedWiresWithOriginalIndices[wireDescription.ConnectedWireIndex];
+						bool wireConnectTargetFailedToLoad = wireConnectTarget == null;
+
+						if (!wireConnectTargetFailedToLoad)
+						{
+							// If wire connection target did load, double check that it connects to the same pin that this wire is expecting
+							// (this should always be the case, but a bug in a previous version could cause save files to contain bad connection data)
+							bool addressMismatch = false;
+							addressMismatch |= connectionType is WireConnectionType.ToWireSource && !PinAddress.Equals(wireConnectTarget.SourcePin.Address, wireDescription.SourcePinAddress);
+							addressMismatch |= connectionType is WireConnectionType.ToWireTarget && !PinAddress.Equals(wireConnectTarget.TargetPin.Address, wireDescription.TargetPinAddress);
+							wireConnectTargetFailedToLoad = addressMismatch;
+						}
+
+						// If wire is connected to another wire, but the other wire failed to load, then fallback to pin connection type 
+						// (Load failure could be due to a pin could being deleted from a subchip, or the whole subchip being deleted from the library for example)
+						if (wireConnectTargetFailedToLoad)
+						{
+							anyElementFailedToLoad = true;
+							connectionType = WireConnectionType.ToPins;
+						}
 					}
 
 					WireInstance.ConnectionInfo sourceConnection = new()
@@ -115,12 +138,18 @@ namespace DLS.Game
 					};
 
 					WireInstance loadedWire = new(sourceConnection, targetConnection, wireDescription.Points, i);
-					AddWire(loadedWire, true);
-					loadedWiresWithOriginalIndices[wireIndex] = loadedWire;
+					instance.AddWire(loadedWire, true);
+					loadedWiresWithOriginalIndices[i] = loadedWire;
 				}
-
-				wireIndex++;
+				else
+				{
+					anyElementFailedToLoad = true;
+				}
 			}
+
+			instance.RegenerateParentChipNamesHash();
+
+			return (instance, anyElementFailedToLoad);
 		}
 
 		// Check if subchip can be added
@@ -133,7 +162,7 @@ namespace DLS.Game
 			return !AllParentChipNames.Contains(subchipName);
 		}
 
-		public void RemoveSubchipsByName(string removeName)
+		public void DeleteSubchipsByName(string removeName)
 		{
 			List<SubChipInstance> subchipsToDelete = new();
 
@@ -214,7 +243,10 @@ namespace DLS.Game
 			if (!success) return; // Wire already deleted
 
 			// Remove from simulation
-			Simulator.RemoveConnection(SimChip, wireToDelete.SourcePin.Address, wireToDelete.TargetPin.Address);
+			if (hasSimChip)
+			{
+				Simulator.RemoveConnection(SimChip, wireToDelete.SourcePin.Address, wireToDelete.TargetPin.Address);
+			}
 
 			// If deleting bus line, automatically delete all other connecting wires
 			if (wireToDelete.IsBusWire)
@@ -258,6 +290,26 @@ namespace DLS.Game
 			}
 		}
 
+		public bool DeleteWiresAttachedToSubChip(int id)
+		{
+			bool anyDeleted = false;
+
+			for (int i = Wires.Count - 1; i >= 0; i--)
+			{
+				WireInstance wire = Wires[i];
+				bool sourceMatch = wire.SourcePin.parent is SubChipInstance && wire.SourcePin.Address.PinID == id;
+				bool targetMatch = wire.TargetPin.parent is SubChipInstance && wire.TargetPin.Address.PinID == id;
+
+				if (sourceMatch || targetMatch)
+				{
+					DeleteWire(wire);
+					anyDeleted = true;
+				}
+			}
+
+			return anyDeleted;
+		}
+
 
 		public void DeleteSubChip(SubChipInstance subChip)
 		{
@@ -267,7 +319,8 @@ namespace DLS.Game
 
 			DeleteWiresAttachedToPins(subChip.AllPins);
 			RemoveElement(subChip);
-			Simulator.RemoveSubChip(SimChip, subChip.ID);
+
+			if (hasSimChip) Simulator.RemoveSubChip(SimChip, subChip.ID);
 
 			// If deleting bus origin/terminus, delete the corresponding terminus/origin
 			if (subChip.IsBus)
