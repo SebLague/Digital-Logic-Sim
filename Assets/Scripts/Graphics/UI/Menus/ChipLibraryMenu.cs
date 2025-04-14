@@ -463,7 +463,7 @@ namespace DLS.Graphics
 						{
 							ResetPopupState();
 						}
-						else if (button_cancelConfirm == 1) // confirm delete
+						else if (button_cancelConfirm == 1 || KeyboardShortcuts.ConfirmShortcutTriggered) // confirm delete
 						{
 							if (isConfirmingChipDeletion)
 							{
@@ -604,7 +604,7 @@ namespace DLS.Graphics
 					defaultCollection.Chips.Add(chip.Name);
 				}
 			}
-
+			
 			// Reset state
 			ResetPopupState();
 

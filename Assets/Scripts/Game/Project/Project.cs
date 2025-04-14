@@ -50,16 +50,7 @@ namespace DLS.Game
 
 		// String representation of the viewed chips stack for display purposes
 		public string viewedChipsString = string.Empty;
-
-
-		public Project(ProjectDescription description, ChipLibrary chipLibrary)
-		{
-			ActiveProject = this;
-			this.description = description;
-			this.chipLibrary = chipLibrary;
-			SearchPopup.ClearRecentChips();
-		}
-
+		
 		public SimChip rootSimChip => editModeChip.SimChip;
 		SimChip ViewedSimChip => ViewedChip.SimChip;
 
@@ -76,6 +67,15 @@ namespace DLS.Game
 		public string ActiveDevChipName => ViewedChip.ChipName;
 
 		public bool ChipHasBeenSavedBefore => ViewedChip.LastSavedDescription != null;
+		
+		public Project(ProjectDescription description, ChipLibrary chipLibrary)
+		{
+			ActiveProject = this;
+			this.description = description;
+			this.chipLibrary = chipLibrary;
+			SearchPopup.ClearRecentChips();
+		}
+
 
 		public void StartSimulation()
 		{

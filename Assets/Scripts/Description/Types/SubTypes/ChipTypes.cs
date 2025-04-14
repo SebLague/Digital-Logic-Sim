@@ -10,7 +10,7 @@ namespace DLS.Description
 		Clock,
 
 		// ---- Memory ----
-		Ram_8Bit,
+		dev_Ram_8Bit,
 		Rom_256x16,
 
 		// ---- Displays ----

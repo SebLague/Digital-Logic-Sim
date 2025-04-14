@@ -243,9 +243,9 @@ MonoBehaviour:
   openSaveDirectory: 0
   openInMainMenu: 0
   testProjectName: MainTest
-  openA: 1
-  chipToOpenA: wt
-  chipToOpenB: ram-sync-v2
+  openA: 0
+  chipToOpenA: wip2
+  chipToOpenB: ram-sync
   testVecA: {x: 0.1, y: 24}
   testVecB: {x: 0, y: 3}
   testVecC: {x: 0.35, y: 0.37}

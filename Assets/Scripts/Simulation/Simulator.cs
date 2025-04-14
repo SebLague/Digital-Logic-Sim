@@ -399,7 +399,7 @@ namespace DLS.Simulation
 
 					break;
 				}
-				case ChipType.Ram_8Bit:
+				case ChipType.dev_Ram_8Bit:
 				{
 					PinState addressPin = chip.InputPins[0].State;
 					PinState dataPin = chip.InputPins[1].State;

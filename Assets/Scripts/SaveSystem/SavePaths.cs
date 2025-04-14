@@ -5,11 +5,11 @@ namespace DLS.SaveSystem
 {
 	public static class SavePaths
 	{
-		const bool UseBuildPathInEditor = true;
+		const bool UseBuildPathInEditor = false;
 
 		public const string ProjectFileName = "ProjectDescription.json";
 		public static readonly string dataPath_Build = Application.persistentDataPath;
-		static readonly string dataPath_Editor = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "Testing");
+		static readonly string dataPath_Editor = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "TestData");
 		public static readonly string AllData = Application.isEditor && !UseBuildPathInEditor ? dataPath_Editor : dataPath_Build;
 
 		// Path to save folder for all projects
