@@ -38,6 +38,7 @@ namespace DLS.SaveSystem
 			if (!File.Exists(path)) throw new Exception("No project description found at " + path);
 
 			ProjectDescription desc = Serializer.DeserializeProjectDescription(File.ReadAllText(path));
+			desc.ProjectName = projectName; // Enforce name = directory name (in case player modifies manually -- operations like deleting projects rely on this)
 
 			for (int i = 0; i < desc.StarredList.Count; i++)
 			{
@@ -61,17 +62,18 @@ namespace DLS.SaveSystem
 
 			foreach (string dir in Directory.EnumerateDirectories(SavePaths.ProjectsPath))
 			{
-				string filePath = Path.Combine(dir, SavePaths.ProjectFileName);
-				if (File.Exists(filePath))
+				try
 				{
-					ProjectDescription desc = Serializer.DeserializeProjectDescription(File.ReadAllText(filePath));
-					desc.ProjectName = new DirectoryInfo(dir).Name; // Enforce name = directory name (in case player modifies manually -- operations like deleting projects rely on this)
-					projectDescriptions.Add(desc);
+					string projectName = Path.GetFileName(dir);
+					projectDescriptions.Add(LoadProjectDescription(projectName));
+				}
+				catch (Exception)
+				{
+					// Ignore invalid project directory
 				}
 			}
 
 			projectDescriptions.Sort((a, b) => b.LastSaveTime.CompareTo(a.LastSaveTime));
-
 			return projectDescriptions.ToArray();
 		}
 
