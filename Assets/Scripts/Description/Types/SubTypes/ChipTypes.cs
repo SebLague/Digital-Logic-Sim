@@ -42,6 +42,11 @@ namespace DLS.Description
 		Bus_4Bit,
 		BusTerminus_4Bit,
 		Bus_8Bit,
-		BusTerminus_8Bit
+		BusTerminus_8Bit,
+
+		In_16Bit,
+		Out_16Bit,
+		In_32Bit,
+		Out_32Bit,
 	}
 }

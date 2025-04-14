@@ -21,6 +21,12 @@ namespace DLS.Game
 				CreateInputOrOutputPin(ChipType.Out_4Bit),
 				CreateInputOrOutputPin(ChipType.In_8Bit),
 				CreateInputOrOutputPin(ChipType.Out_8Bit),
+				CreateInputOrOutputPin(ChipType.In_16Bit),
+				CreateInputOrOutputPin(ChipType.Out_16Bit),
+				CreateInputOrOutputPin(ChipType.In_32Bit),
+				CreateInputOrOutputPin(ChipType.Out_32Bit),
+				
+
 				CreateInputKeyChip(),
 				// ---- Basic Chips ----
 				CreateNand(),
