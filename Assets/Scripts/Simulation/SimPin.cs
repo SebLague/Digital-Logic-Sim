@@ -14,6 +14,7 @@ namespace DLS.Simulation
 		// Simulation frame index on which pin last received an input
 		public int lastUpdatedFrameIndex;
 
+		// Address of pin from where this pin last received its input
 		public int latestSourceID;
 		public int latestSourceParentChipID;
 
@@ -26,6 +27,8 @@ namespace DLS.Simulation
 		{
 			this.parentChip = parentChip;
 			ID = id;
+			latestSourceID = -1;
+			latestSourceParentChipID = -1;
 
 			State = new PinState((int)bitCount);
 			if (!isInput) State.SetAllDisconnected();
