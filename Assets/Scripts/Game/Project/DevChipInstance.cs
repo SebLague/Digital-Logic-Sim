@@ -293,7 +293,7 @@ namespace DLS.Game
 		// Optionally don't set input pins since player controls these (at least when editing a chip, rather than viewing it)
 		public void UpdateStateFromSim(SimChip simChip, bool updateInputPins)
 		{
-			try // Updating from sim thread so it's possible for some stuff to be out of sync if player is actively editing -- just ignore
+			try
 			{
 				foreach (IMoveable element in Elements)
 				{
@@ -304,8 +304,9 @@ namespace DLS.Game
 						SimPin simPin = simChip.GetSimPinFromAddress(devPin.Pin.Address);
 						devPin.Pin.State.SetFromSource(simPin.State);
 
-						// Output pins get colour from colour of source pin
 						if (devPin.IsInputPin || simPin.latestSourceID == -1) continue;
+
+						// Output pins get colour from whichever pin they last received a signal
 						PinInstance colSource = TryFindPinFromSimPinSource(simChip, simPin);
 						devPin.Pin.Colour = colSource.Colour;
 					}
@@ -322,6 +323,7 @@ namespace DLS.Game
 							if (ChipTypeHelper.IsBusOriginType(subChip.ChipType))
 							{
 								SimPin simInputPin = simChip.GetSimPinFromAddress(subChip.InputPins[0].Address);
+								if (simInputPin.latestSourceID == -1) continue;
 								PinInstance colSource = TryFindPinFromSimPinSource(simChip, simInputPin);
 								subChipOutputPin.Colour = colSource.Colour;
 							}
@@ -331,6 +333,7 @@ namespace DLS.Game
 			}
 			catch (Exception e)
 			{
+				// Updating from sim thread so it's possible for some stuff to be out of sync if player is actively editing -- just ignore
 				if (Application.isEditor)
 				{
 					Debug.Log("Ignoring exception when updating display from sim state: " + e.Message + "\nStack Trace: " + e.StackTrace);

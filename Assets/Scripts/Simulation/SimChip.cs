@@ -14,7 +14,6 @@ namespace DLS.Simulation
 		public readonly uint[] InternalState = Array.Empty<uint>();
 		public readonly bool IsBuiltin;
 		public SimPin[] InputPins = Array.Empty<SimPin>();
-		public int lastReceivedInputFrame;
 		public int numConnectedInputs;
 
 		public int numInputsReady;
