@@ -38,8 +38,8 @@ namespace DLS.Game
 			ID = subChipDesc.ID;
 			Label = subChipDesc.Label;
 			IsBus = ChipTypeHelper.IsBusType(ChipType);
-			MultiLineName = CreateMultiLineName(description.Name);
-			MinSize = CalculateMinChipSize(description.InputPins, description.OutputPins, description.Name);
+			MultiLineName = CreateMultiLineName(description.Name, description.NameAlignment);
+			MinSize = CalculateMinChipSize(description.InputPins, description.OutputPins, description.Name, description.NameAlignment);
 
 			InputPins = CreatePinInstances(description.InputPins, true);
 			OutputPins = CreatePinInstances(description.OutputPins, false);
@@ -281,10 +281,10 @@ namespace DLS.Game
 			return Bounds2D.CreateFromCentreAndSize(Position + Vector2.right * offsetX, Size + padFinal);
 		}
 
-		public static Vector2 CalculateMinChipSize(PinDescription[] inputPins, PinDescription[] outputPins, string unformattedName)
+		public static Vector2 CalculateMinChipSize(PinDescription[] inputPins, PinDescription[] outputPins, string unformattedName, NameAlignment alignment)
 		{
 			float minHeightForPins = MinChipHeightForPins(inputPins, outputPins);
-			string multiLineName = CreateMultiLineName(unformattedName);
+			string multiLineName = CreateMultiLineName(unformattedName, alignment);
 			bool hasMultiLineName = multiLineName != unformattedName;
 			float minNameHeight = DrawSettings.GridSize * (hasMultiLineName ? 4 : 3);
 
@@ -309,7 +309,7 @@ namespace DLS.Game
 		}
 
 		// Split chip name into two lines (if contains a space character)
-		static string CreateMultiLineName(string name)
+		static string CreateMultiLineName(string name, NameAlignment alignment)
 		{
 			// If name is short, or contains no spaces, then just keep on single line
 			if (name.Length <= 6 || !name.Contains(' ')) return name;
@@ -333,7 +333,11 @@ namespace DLS.Game
 				}
 			}
 
+			return PadName(lines, alignment) ;
+		}
 
+		static string PadName(string[] lines, NameAlignment alignment)
+		{
 			// Pad lines with spaces to centre justify
 			string formatted = "";
 			int longestLine = lines.Max(l => l.Length);
@@ -342,7 +346,8 @@ namespace DLS.Game
 			{
 				string line = lines[i];
 				int numPadChars = longestLine - line.Length;
-				int numPadLeft = numPadChars / 2;
+				int numPadLeft = (alignment == NameAlignment.Centre) ? numPadChars / 2 :
+					(alignment == NameAlignment.Right) ? numPadChars : 0;
 				int numPadRight = numPadChars - numPadLeft;
 				line = line.PadLeft(line.Length + numPadLeft, ' ');
 				line = line.PadRight(line.Length + numPadRight, ' ');
@@ -359,6 +364,11 @@ namespace DLS.Game
 
 			return formatted;
 		}
+
+		public string GetUpdatedMultilineName()
+        {
+			return CreateMultiLineName(Description.Name, Description.NameAlignment);
+        }
 
 		public void FlipBus()
 		{
