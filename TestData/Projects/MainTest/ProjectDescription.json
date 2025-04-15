@@ -3,7 +3,7 @@
   "DLSVersion_LastSaved": "2.1.0",
   "DLSVersion_EarliestCompatible": "2.0.0",
   "CreationTime": "2025-03-14T20:23:30.404+03:00",
-  "LastSaveTime": "2025-04-15T17:31:09.136+03:00",
+  "LastSaveTime": "2025-04-15T21:29:36.135+03:00",
   "Prefs_MainPinNamesDisplayMode": 0,
   "Prefs_ChipPinNamesDisplayMode": 1,
   "Prefs_SimPaused": false,
@@ -56,7 +56,8 @@
     "EQUALS-8",
     "DECODER-2",
     "RAM-256×8 (async)",
-    "RAM-sync"
+    "RAM-sync",
+    "test"
   ],
   "StarredList":[
     {
@@ -74,6 +75,14 @@
     {
       "Name":"RAM-sync",
       "IsCollection":false
+    },
+    {
+      "Name":"OTHER",
+      "IsCollection":true
+    },
+    {
+      "Name":"test",
+      "IsCollection":false
     }
   ],
   "ChipCollections":[
@@ -83,7 +92,7 @@
       "Name":"BASICS"
     },
     {
-      "Chips":["IN-1","IN-4","IN-8","OUT-1","OUT-4","OUT-8", "IN-16","OUT-16","IN-32","OUT-32"],
+      "Chips":["IN-1","IN-4","IN-8","OUT-1","OUT-4","OUT-8","IN-16","OUT-16","IN-32","OUT-32"],
       "IsToggledOpen":false,
       "Name":"IN/OUT"
     },
@@ -118,8 +127,8 @@
       "Name":"TEST"
     },
     {
-      "Chips":[],
-      "IsToggledOpen":true,
+      "Chips":["16-8BIT","16-4BIT","16-1BIT","8-16BIT","4-16BIT","1-16BIT","32-1BIT","32-4BIT","32-8BIT","32-16BIT","1-32BIT","4-32BIT","8-32BIT","16-32BIT","BUS-16","BUS-32"],
+      "IsToggledOpen":false,
       "Name":"OTHER"
     }
   ]

@@ -267,6 +267,109 @@ namespace DLS.Simulation
 					}
 
 					break;
+				case ChipType.Merge_1To16Bit:
+					for (int i = 0; i < 16; i++)
+					{
+						chip.OutputPins[0].State.SetBit(i, chip.InputPins[15 - i].State.GetBit(0));
+					}
+
+					break;
+				case ChipType.Merge_4To16Bit:
+					SimPin in4Aa = chip.InputPins[0];
+					SimPin in4Ba = chip.InputPins[1];
+					SimPin in4Ca = chip.InputPins[2];
+					SimPin in4Da = chip.InputPins[3];
+					SimPin out16 = chip.OutputPins[0];
+					out16.State.Set16BitFrom4BitSources(in4Ca.State, in4Da.State,in4Ba.State, in4Aa.State);
+					break;
+				case ChipType.Merge_8To16Bit:
+					SimPin in8a = chip.InputPins[0];
+					SimPin in8b = chip.InputPins[1];
+					SimPin out16a = chip.OutputPins[0];
+					out16a.State.Set8BitFrom16BitSource(in8a.State, false);
+					out16a.State.Set8BitFrom16BitSource(in8b.State, true);
+					break;
+
+				case ChipType.Merge_1To32Bit:
+					for (int i = 0; i < 32; i++)
+					{
+						chip.OutputPins[0].State.SetBit(i, chip.InputPins[31 - i].State.GetBit(0));
+					}
+					break;
+				case ChipType.Merge_4To32Bit:
+					SimPin in4Aaa = chip.InputPins[0];
+					SimPin in4Baa = chip.InputPins[1];
+					SimPin in4Caa = chip.InputPins[2];
+					SimPin in4Daa = chip.InputPins[3];
+					SimPin in4Eaa = chip.InputPins[4];
+					SimPin in4Faa = chip.InputPins[5];
+					SimPin in4Gaa = chip.InputPins[6];
+					SimPin in4Haa = chip.InputPins[7];
+
+					SimPin out32 = chip.OutputPins[0];
+					out32.State.Set32BitFrom4BitSources(in4Haa.State, in4Gaa.State, in4Faa.State, in4Eaa.State,
+						in4Daa.State, in4Caa.State, in4Baa.State, in4Aaa.State);
+					break;
+				case ChipType.Merge_8To32Bit:
+					SimPin in8aa = chip.InputPins[0];
+					SimPin in8bb = chip.InputPins[1];
+					SimPin in8cc = chip.InputPins[2];
+					SimPin in8dd = chip.InputPins[3];
+					SimPin out32a = chip.OutputPins[0];
+					out32a.State.Set32BitFrom8BitSources(in8dd.State,in8cc.State,in8bb.State, in8aa.State);
+					break;
+				case ChipType.Split_16To1Bit:
+					for (int i = 0; i < 16; i++)
+					{
+						chip.OutputPins[i].State.SetBit(0, chip.InputPins[0].State.GetBit(15 - i));
+					}
+					break;
+				case ChipType.Split_32To1Bit:
+					for (int i = 0; i < 32; i++)
+					{
+						chip.OutputPins[i].State.SetBit(0, chip.InputPins[0].State.GetBit(31 - i));
+					}
+					break;
+				case ChipType.Split_32To4Bit:
+					SimPin in32 = chip.InputPins[0];
+					for (int i = 0; i < 8; i++)
+					{
+						chip.OutputPins[i].State.Set4BitFrom32BitSource(in32.State, (byte)i);
+					}
+					break;
+				case ChipType.Split_32To8Bit:
+					SimPin in32a = chip.InputPins[0];
+					for (int i = 0; i < 4; i++)
+					{
+						chip.OutputPins[i].State.Set8BitFrom32BitSource(in32a.State,(byte)i);
+					}
+					break;
+				case ChipType.Split_32To16Bit:
+					SimPin in32b = chip.InputPins[0];
+					SimPin out16aa = chip.OutputPins[0];
+					SimPin out16b = chip.OutputPins[1];
+					out16aa.State.Set16BitFrom32BitSource(in32b.State, false);
+					out16b.State.Set16BitFrom32BitSource(in32b.State, true);
+					break;
+				case ChipType.Merge_16To32Bit:
+					SimPin in32ba = chip.InputPins[0];
+					SimPin in32bb = chip.InputPins[1];
+					SimPin out16ab = chip.OutputPins[0];
+					out16ab.State.Set32BitFrom16BitSources(in32ba.State, in32bb.State);
+					break;
+				case ChipType.Split_16To4Bit:
+					for (int i = 0; i < 4; i++)
+					{
+						chip.OutputPins[i].State.Set4BitFrom16BitSource(chip.InputPins[0].State, (byte)i);
+					}
+					break;
+				case ChipType.Split_16To8Bit:
+					for (int i = 0; i < 2; i++)
+					{
+						chip.OutputPins[i].State.Set8BitFrom16BitSource(chip.InputPins[0].State, i == 1);
+					}
+					break;
+				
 				case ChipType.TriStateBuffer:
 				{
 					SimPin dataPin = chip.InputPins[0];

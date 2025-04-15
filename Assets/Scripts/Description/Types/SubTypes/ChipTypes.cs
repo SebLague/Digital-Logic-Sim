@@ -48,5 +48,23 @@ namespace DLS.Description
 		Out_16Bit,
 		In_32Bit,
 		Out_32Bit,
-	}
+				Bus_16Bit,
+   		BusTerminus_16Bit,
+				Bus_32Bit,
+   		BusTerminus_32Bit,
+        Split_32To16Bit,
+        Merge_1To32Bit,
+        Merge_4To32Bit,
+        Merge_8To32Bit,
+        Merge_16To32Bit,
+        Merge_1To16Bit,
+        Merge_4To16Bit,
+        Merge_8To16Bit,
+        Split_16To1Bit,
+        Split_16To4Bit,
+        Split_16To8Bit,
+        Split_32To1Bit,
+        Split_32To4Bit,
+        Split_32To8Bit
+    }
 }

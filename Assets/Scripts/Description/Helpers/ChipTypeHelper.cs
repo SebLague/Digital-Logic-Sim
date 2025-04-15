@@ -24,6 +24,21 @@ namespace DLS.Description
 			{ ChipType.Merge_1To8Bit, "1-8BIT" },
 			{ ChipType.Merge_1To4Bit, "1-4BIT" },
 
+
+			{ ChipType.Merge_1To32Bit, "1-32BIT" },
+			{ ChipType.Merge_4To32Bit, "4-32BIT" },
+			{ ChipType.Merge_8To32Bit, "8-32BIT" },
+			{ ChipType.Merge_16To32Bit, "16-32BIT" },
+			{ ChipType.Split_32To1Bit, "32-1BIT" },
+			{ ChipType.Split_32To4Bit, "32-4BIT" },
+			{ ChipType.Split_32To8Bit, "32-8BIT" },
+			{ ChipType.Split_32To16Bit, "32-16BIT" },
+			{ ChipType.Merge_1To16Bit, "1-16BIT" },
+			{ ChipType.Merge_4To16Bit, "4-16BIT" },
+			{ ChipType.Merge_8To16Bit, "8-16BIT" },
+			{ ChipType.Split_16To1Bit, "16-1BIT" },
+			{ ChipType.Split_16To4Bit, "16-4BIT" },
+			{ ChipType.Split_16To8Bit, "16-8BIT" },
 			// ---- Displays -----
 			{ ChipType.DisplayRGB, "RGB DISPLAY" },
 			{ ChipType.DisplayDot, "DOT DISPLAY" },
@@ -46,6 +61,10 @@ namespace DLS.Description
 			{ ChipType.BusTerminus_1Bit, "BUS-TERMINUS-1" },
 			{ ChipType.BusTerminus_4Bit, "BUS-TERMINUS-4" },
 			{ ChipType.BusTerminus_8Bit, "BUS-TERMINUS-8" },
+			{ ChipType.Bus_16Bit, "BUS-16" },
+			{ ChipType.BusTerminus_16Bit, "BUS-TERMINUS-16" },
+			{ ChipType.Bus_32Bit, "BUS-32" },
+			{ ChipType.BusTerminus_32Bit, "BUS-TERMINUS-32" },
 			{ ChipType.In_16Bit, "IN-16" },
 			{ ChipType.In_32Bit, "IN-32" },
 			{ ChipType.Out_16Bit, "OUT-16" },
@@ -56,9 +75,9 @@ namespace DLS.Description
 
 		public static bool IsBusType(ChipType type) => IsBusOriginType(type) || IsBusTerminusType(type);
 
-		public static bool IsBusOriginType(ChipType type) => type is ChipType.Bus_1Bit or ChipType.Bus_4Bit or ChipType.Bus_8Bit;
+		public static bool IsBusOriginType(ChipType type) => type is ChipType.Bus_1Bit or ChipType.Bus_4Bit or ChipType.Bus_8Bit or ChipType.Bus_16Bit or ChipType.Bus_32Bit;
 
-		public static bool IsBusTerminusType(ChipType type) => type is ChipType.BusTerminus_1Bit or ChipType.BusTerminus_4Bit or ChipType.BusTerminus_8Bit;
+		public static bool IsBusTerminusType(ChipType type) => type is ChipType.BusTerminus_1Bit or ChipType.BusTerminus_4Bit or ChipType.BusTerminus_8Bit or ChipType.BusTerminus_16Bit or ChipType.BusTerminus_32Bit;
 
 		public static bool IsRomType(ChipType type) => type == ChipType.Rom_256x16;
 
@@ -69,6 +88,8 @@ namespace DLS.Description
 				ChipType.Bus_1Bit => ChipType.BusTerminus_1Bit,
 				ChipType.Bus_4Bit => ChipType.BusTerminus_4Bit,
 				ChipType.Bus_8Bit => ChipType.BusTerminus_8Bit,
+				ChipType.Bus_16Bit => ChipType.BusTerminus_16Bit,
+				ChipType.Bus_32Bit => ChipType.BusTerminus_32Bit,
 				_ => throw new Exception("No corresponding bus terminus found for type: " + type)
 			};
 		}
