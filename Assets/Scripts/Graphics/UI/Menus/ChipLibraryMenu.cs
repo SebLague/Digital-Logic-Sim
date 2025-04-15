@@ -705,12 +705,19 @@ namespace DLS.Graphics
 			}
 
 			string message = "Are you sure you want to delete this chip? ";
+			bool warn = parentNames.Count > 0;
+
+			if (Project.ActiveProject.ViewedChip.LastSavedDescription?.NameMatch(chipName) == true)
+			{
+				message = "Are you sure you want to delete the chip that you are CURRENTLY EDITING? ";
+				warn = true;
+			}
 
 			if (parentNames.Count == 0) message += "It is not used anywhere.";
 			else message += CreateChipInUseWarningMessage(parentNames);
 
 			string formattedMessage = UI.LineBreakByCharCount(message, deleteMessageMaxCharsPerLine);
-			return (formattedMessage, parentNames.Count > 0);
+			return (formattedMessage, warn);
 
 			string CreateChipInUseWarningMessage(List<string> chipsUsingCurrentChip)
 			{
