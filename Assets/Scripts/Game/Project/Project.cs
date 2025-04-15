@@ -8,8 +8,6 @@ using DLS.Graphics;
 using DLS.SaveSystem;
 using DLS.Simulation;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
-using ThreadPriority = System.Threading.ThreadPriority;
 
 namespace DLS.Game
 {
@@ -82,7 +80,7 @@ namespace DLS.Game
 			simThreadActive = true;
 			Thread simThread = new(SimThread)
 			{
-				Priority = ThreadPriority.Highest,
+				Priority = System.Threading.ThreadPriority.Highest,
 				Name = "DLS_SimThread",
 				IsBackground = true
 			};
@@ -428,7 +426,7 @@ namespace DLS.Game
 					{
 						double elapsedMs = stopwatchTotal.ElapsedTicks * (1000.0 / Stopwatch.Frequency);
 						int frame = Simulator.simulationFrame;
-						if (frame > 0) Debug.Log($"Avg sim step time: {elapsedMs / frame} ms NumSteps: {frame} secs: {elapsedMs / 1000.0:0.00}");
+						if (frame > 0) UnityEngine.Debug.Log($"Avg sim step time: {elapsedMs / frame} ms NumSteps: {frame} secs: {elapsedMs / 1000.0:0.00}");
 					}
 				}
 
