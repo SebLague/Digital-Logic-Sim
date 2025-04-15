@@ -17,6 +17,7 @@ namespace DLS.Description
 		SevenSegmentDisplay,
 		DisplayRGB,
 		DisplayDot,
+		Diode,
 
 		// ---- Merge / Split ----
 		Merge_1To4Bit,
@@ -42,12 +43,7 @@ namespace DLS.Description
 		Bus_4Bit,
 		BusTerminus_4Bit,
 		Bus_8Bit,
-		BusTerminus_8Bit,
-
-		// ---- MODDED, DLS FAN EDIT ----
-		
-		// ----   Fan Edit Displays   ----
-		Diode
+		BusTerminus_8Bit
 
 	}
 }

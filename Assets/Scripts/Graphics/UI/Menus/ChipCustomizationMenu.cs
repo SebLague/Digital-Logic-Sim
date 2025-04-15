@@ -24,14 +24,12 @@ namespace DLS.Graphics
 			"Name: Hidden"
 		};
 
-		// --- MODDED : Fan Edit --- //
 		static readonly string[] nameAlignmentOptions =
 		{
 			"Center Aligned",
 			"Right Aligned",
 			"Left Aligned"
 		};
-		// ------------------------- //
 
 
 		static SubChipInstance[] subChipsWithDisplays;
@@ -76,12 +74,9 @@ namespace DLS.Graphics
 			int nameDisplayMode = UI.WheelSelector(ID_NameDisplayOptions, nameDisplayOptions, NextPos(), new Vector2(pw, 3), theme.OptionsWheel, Anchor.TopLeft);
 			ChipSaveMenu.ActiveCustomizeDescription.NameLocation = (NameDisplayLocation)nameDisplayMode;
 
-			// --- MODDED : Fan Edit --- //
-
 			int nameAlignmentMode = UI.WheelSelector(ID_NameAlignmentOptions, nameAlignmentOptions, NextPos(), new Vector2(pw, 3), theme.OptionsWheel, Anchor.TopLeft);
 			ChipSaveMenu.ActiveCustomizeDescription.NameAlignment = (NameAlignment)nameAlignmentMode;
 
-			// ------------------------- //
 			Color newCol = UI.DrawColourPicker(ID_ColourPicker, NextPos(), pw, Anchor.TopLeft);
 			ChipSaveMenu.ActiveCustomizeDescription.Colour = newCol;
 

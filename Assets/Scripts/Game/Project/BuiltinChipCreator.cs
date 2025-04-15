@@ -41,16 +41,14 @@ namespace DLS.Game
 				CreateDisplay7Seg(),
 				CreateDisplayRGB(),
 				CreateDisplayDot(),
+				CreateDiode(),
 				// ---- Bus ----
 				CreateBus(PinBitCount.Bit1),
 				CreateBusTerminus(PinBitCount.Bit1),
 				CreateBus(PinBitCount.Bit4),
 				CreateBusTerminus(PinBitCount.Bit4),
 				CreateBus(PinBitCount.Bit8),
-				CreateBusTerminus(PinBitCount.Bit8),
-
-				// ---- Modded - Fan Edit ---- //
-				CreateDiode()
+				CreateBusTerminus(PinBitCount.Bit8)
 			};
 		}
 
@@ -332,8 +330,6 @@ namespace DLS.Game
 			return CreateBuiltinChipDesciption(type, BusChipSize(bitCount), busOrigin.Colour, inputs, hideName: true);
 		}
 
-		// --- Modded : Fan Edit --- //
-
 		static ChipDescription CreateDiode()
 		{
 			PinDescription[] inputPins =
@@ -361,8 +357,6 @@ namespace DLS.Game
 
 			return CreateBuiltinChipDesciption(ChipType.Diode, size, col, inputPins, null, displays, true);
 		}
-		//---------------------------//
-
 
 		static ChipDescription CreateBuiltinChipDesciption(ChipType type, Vector2 size, Color col, PinDescription[] inputs = null, PinDescription[] outputs = null, DisplayDescription[] displays = null, bool hideName = false)
 		{

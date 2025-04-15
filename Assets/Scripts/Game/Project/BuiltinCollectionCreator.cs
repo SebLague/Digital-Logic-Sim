@@ -48,15 +48,11 @@ namespace DLS.Game
 				CreateChipCollection("DISPLAY",
 					ChipType.SevenSegmentDisplay,
 					ChipType.DisplayDot,
-					ChipType.DisplayRGB
+					ChipType.DisplayRGB,
+					ChipType.Diode
 				),
 				CreateChipCollection("MEMORY",
 					ChipType.Rom_256x16
-				),
-
-				// MODDED //
-				CreateChipCollection("FAN-EDIT",
-					ChipType.Diode
 				)
 			};
 		}

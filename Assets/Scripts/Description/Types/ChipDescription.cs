@@ -1,7 +1,5 @@
 using System;
 using UnityEngine;
-
-//FanEdit
 using System.ComponentModel;
 
 namespace DLS.Description
@@ -20,6 +18,8 @@ namespace DLS.Description
 		// ---- Data ----
 		public string Name;
 		public NameDisplayLocation NameLocation;
+		[DefaultValue(NameAlignment.Centre)]
+		public NameAlignment NameAlignment;
 		public PinDescription[] OutputPins;
 		public Vector2 Size;
 		public SubChipDescription[] SubChips;
@@ -30,14 +30,7 @@ namespace DLS.Description
 		public bool NameMatch(string otherName) => NameMatch(Name, otherName);
 		public static bool NameMatch(string a, string b) => string.Equals(a, b, NameComparison);
 
-		// --- MODDED : Fan Edit --- //
-
-		// -- Data -- //
-		[DefaultValue(NameAlignment.Centre)]
-		public NameAlignment NameAlignment;
-
-
-		// ------------------------- //
+		
 	}
 
 	public enum NameDisplayLocation
@@ -47,12 +40,10 @@ namespace DLS.Description
 		Hidden
 	}
 
-	// --- MODDED : Fan Edit --- //
 	public enum NameAlignment
 	{
 		Centre,
 		Right,
 		Left
 	}
-	// ------------------------- //
 }

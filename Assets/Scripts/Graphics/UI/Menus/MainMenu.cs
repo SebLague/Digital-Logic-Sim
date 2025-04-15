@@ -38,7 +38,7 @@ namespace DLS.Graphics
 			FormatButtonString("Open Project"),
 			FormatButtonString("Settings"),
 			FormatButtonString("About"),
-			FormatButtonString("Quit"),
+			FormatButtonString("Quit")
 		};
 
 		static readonly string[] openProjectButtonNames =
