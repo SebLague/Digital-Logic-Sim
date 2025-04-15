@@ -391,7 +391,7 @@ namespace Seb.Vis.UI
 					Draw.QuadOutline(ss.centre, ss.size, outlineWidth * scale, theme.focusBorderCol);
 					foreach (char c in InputHelper.InputStringThisFrame)
 					{
-						bool invalidChar = char.IsControl(c) || char.IsSurrogate(c) || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.Format;
+						bool invalidChar = char.IsControl(c) || char.IsSurrogate(c) || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.Format || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.PrivateUse;
 						if (invalidChar) continue;
 						state.TryInsertText(c + "", validation);
 					}
