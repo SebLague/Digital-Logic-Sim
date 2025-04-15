@@ -420,8 +420,9 @@ namespace DLS.Graphics
 			else if (display.DisplayType == ChipType.Diode)
 			{
 				bool simActive = sim != null;
+				bool isDisconnected = (!simActive) || (sim.numConnectedInputs == 0) || (sim.InputPins[0].State.GetBit(0) == PinState.LogicDisconnected);
 				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
-				bounds = DrawDisplay_Diode(posWorld, scaleWorld, isOn);
+				bounds = DrawDisplay_Diode(posWorld, scaleWorld, isDisconnected, isOn);
 			}
 
 			display.LastDrawBounds = bounds;
@@ -571,7 +572,7 @@ namespace DLS.Graphics
 			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
 		}
 
-		public static Bounds2D DrawDisplay_Diode(Vector2 centre, float scale, bool isOn)
+		public static Bounds2D DrawDisplay_Diode(Vector2 centre, float scale, bool isDisconnected, bool isOn)
 		{
 			const float pixelSizeT = 0.975f;
 			// Draw background
@@ -581,7 +582,7 @@ namespace DLS.Graphics
 			float pixelSize = size;
 			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
 
-			Color col = isOn ? ActiveTheme.DiodeColors[1] : ActiveTheme.DiodeColors[0];
+			Color col = isDisconnected ? ActiveTheme.DiodeCols[0] : (isOn ? ActiveTheme.DiodeCols[2] : ActiveTheme.DiodeCols[1]);
 
 			Draw.Quad(centre, pixelDrawSize, col);
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);

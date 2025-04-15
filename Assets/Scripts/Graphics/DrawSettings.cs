@@ -104,9 +104,9 @@ namespace DLS.Graphics
                 BackgroundCol = MakeCol255(66, 66, 69),
                 GridCol = MakeCol255(49, 49, 51),
 
-				DiodeColors = new Color []
+				DiodeCols = new Color []
                 {
-					new(0f, 0f, 0f), new(1, 0.32f, 0.28f)
+					Color.black, new(0.2f, 0.1f, 0.1f), new(1, 0.32f, 0.28f) // Disconnected, OFF, ON
 				}
             };
         }
@@ -242,7 +242,7 @@ namespace DLS.Graphics
 			public Color[] StateHoverCol;
 			public Color[] StateLowCol;
 
-			public Color[] DiodeColors; // Off, On
+			public Color[] DiodeCols; // Disconnected, Off, On
 		}
 
 		public class UIThemeDLS
