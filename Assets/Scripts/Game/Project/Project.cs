@@ -80,10 +80,12 @@ namespace DLS.Game
 		public void StartSimulation()
 		{
 			simThreadActive = true;
-			Thread simThread = new(SimThread);
-			simThread.Priority = ThreadPriority.Highest;
-			simThread.Name = "DLS_SimThread";
-			simThread.IsBackground = true;
+			Thread simThread = new(SimThread)
+			{
+				Priority = ThreadPriority.Highest,
+				Name = "DLS_SimThread",
+				IsBackground = true
+			};
 			simThread.Start();
 		}
 
@@ -452,7 +454,9 @@ namespace DLS.Game
 
 				// ---- Run sim ----
 				Simulator.stepsPerClockTransition = stepsPerClockTransition;
-				Simulator.RunSimulationStep(rootSimChip, inputPins);
+				SimChip simChip = rootSimChip;
+				if (simChip == null) continue; // Could potentially be null for a frame when switching between chips
+				Simulator.RunSimulationStep(simChip, inputPins);
 
 				// ---- Wait some amount of time (if needed) to try to hit the target ticks per second ----
 				while (true)
