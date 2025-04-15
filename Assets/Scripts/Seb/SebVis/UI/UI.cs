@@ -1018,7 +1018,12 @@ namespace Seb.Vis.UI
 			return (boundsSize - spacing * (numElements - 1)) / numElements;
 		}
 
+		public static string CreateColouredText(string text, Color color)
+		{
+			return $"<color=#{ColorUtility.ToHtmlStringRGBA(color)}>{text}</color>";
+		}
 
+		// TODO: Handle rich text tags
 		public static string LineBreakByCharCount(ReadOnlySpan<char> text, int maxCharsPerLine)
 		{
 			maxCharsPerLine = Mathf.Max(1, maxCharsPerLine);
@@ -1041,6 +1046,7 @@ namespace Seb.Vis.UI
 			return sb.ToString();
 		}
 
+
 		static ReadOnlySpan<char> GetNextLine(ref ReadOnlySpan<char> text, int maxLineLength)
 		{
 			string word = string.Empty;
@@ -1049,6 +1055,7 @@ namespace Seb.Vis.UI
 			for (int i = 0; i < text.Length; i++)
 			{
 				char c = text[i];
+
 				// End of word
 				if (c is ' ' or '\n' || i == text.Length - 1)
 				{
