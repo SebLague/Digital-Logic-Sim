@@ -8,19 +8,18 @@ namespace DLS.Description
 		// ---- Name Comparion ----
 		public const StringComparison NameComparison = StringComparison.OrdinalIgnoreCase;
 		public static readonly StringComparer NameComparer = StringComparer.OrdinalIgnoreCase;
-		public ChipType ChipType;
-		public Color Colour;
-		public DisplayDescription[] Displays;
-
-		public PinDescription[] InputPins;
 
 		// ---- Data ----
 		public string Name;
 		public NameDisplayLocation NameLocation;
-		public PinDescription[] OutputPins;
+		public ChipType ChipType;
 		public Vector2 Size;
+		public Color Colour;
+		public PinDescription[] InputPins;
+		public PinDescription[] OutputPins;
 		public SubChipDescription[] SubChips;
 		public WireDescription[] Wires;
+		public DisplayDescription[] Displays;
 
 		// ---- Convenience Functions ----
 		public bool HasDisplay() => Displays != null && Displays.Length > 0;
