@@ -10,13 +10,14 @@ namespace DLS.Description
 		Clock,
 
 		// ---- Memory ----
-		Ram_8Bit,
+		dev_Ram_8Bit,
 		Rom_256x16,
 
 		// ---- Displays ----
 		SevenSegmentDisplay,
 		DisplayRGB,
 		DisplayDot,
+		DisplayLED,
 
 		// ---- Merge / Split ----
 		Merge_1To4Bit,
@@ -42,12 +43,7 @@ namespace DLS.Description
 		Bus_4Bit,
 		BusTerminus_4Bit,
 		Bus_8Bit,
-		BusTerminus_8Bit,
-
-		// ---- MODDED, DLS FAN EDIT ----
-		
-		// ----   Fan Edit Displays   ----
-		Diode
+		BusTerminus_8Bit
 
 	}
 }

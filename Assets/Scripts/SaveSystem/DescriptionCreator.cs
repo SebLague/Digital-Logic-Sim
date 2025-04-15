@@ -64,7 +64,8 @@ namespace DLS.SaveSystem
 				subChip.ID,
 				subChip.Label,
 				subChip.Position,
-				subChip.OutputPins.Select(p => new OutputPinColourInfo(p.Colour, p.Address.PinID)).ToArray(),
+				// Don't save colour info for bus since it changes based on received input, so would just trigger unecessary 'unsaved changes' warnings
+				subChip.IsBus ? null : subChip.OutputPins.Select(p => new OutputPinColourInfo(p.Colour, p.Address.PinID)).ToArray(),
 				subChip.InternalData
 			);
 		}
@@ -143,7 +144,8 @@ namespace DLS.SaveSystem
 				devPin.ID,
 				devPin.Position,
 				devPin.Pin.bitCount,
-				devPin.Pin.Colour,
+				// Don't save colour info for output pin since it changes based on received input, so would just trigger unecessary 'unsaved changes' warnings
+				devPin.IsInputPin ? devPin.Pin.Colour : default,
 				devPin.pinValueDisplayMode
 			);
 

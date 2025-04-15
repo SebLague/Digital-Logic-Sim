@@ -145,31 +145,29 @@ namespace Seb.Vis.Text.Rendering
 
 			for (int i = 0; i < text.Length; i++)
 			{
-				LayoutHelper.Info info = LayoutHelper.CalculateNextAdvance(text, i, fontData, settings, advanceEm);
+				TextLayoutHelper.Info info = TextLayoutHelper.CalculateNextAdvance(text, i, fontData, settings, advanceEm);
 				// Handle rich text chunks
-				if (info.type is LayoutHelper.ChunkType.ColorBlockStart)
+				if (info.type is TextLayoutHelper.ChunkType.RichTextTag)
 				{
-					i += info.richTextIndexJump;
-					currCol = info.richTextCol;
-					continue;
-				}
+					TextLayoutHelper.RichTextInfo richTextInfo = info.richTextInfo;
+					i += richTextInfo.indexJump;
 
-				if (info.type is LayoutHelper.ChunkType.ColorBlockEnd)
-				{
-					i += info.richTextIndexJump;
-					currCol = textCol;
-					continue;
-				}
-
-				if (info.type is LayoutHelper.ChunkType.HalfSpace)
-				{
-					i += info.richTextIndexJump;
+					if (richTextInfo.tagType is TextLayoutHelper.RichTextTagType.ColorBlockStart)
+					{
+						currCol = richTextInfo.richTextCol;
+						continue;
+					}
+					else if (richTextInfo.tagType is TextLayoutHelper.RichTextTagType.ColorBlockEnd)
+					{
+						currCol = textCol;
+						continue;
+					}
 				}
 
 				Vector2 nextAdvanceEm = info.advance;
 				boundsMaxX = Mathf.Max(boundsMaxX, nextAdvanceEm.x * settings.FontSize);
 
-				if (info.type is LayoutHelper.ChunkType.Glyph)
+				if (info.type is TextLayoutHelper.ChunkType.Glyph)
 				{
 					Vector2 centre = (advanceEm + info.glyph.Centre) * settings.FontSize;
 					Vector2 size = info.glyph.Size * settings.FontSize;

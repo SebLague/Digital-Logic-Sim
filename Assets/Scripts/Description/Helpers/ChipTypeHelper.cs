@@ -14,7 +14,7 @@ namespace DLS.Description
 			{ ChipType.Clock, "CLOCK" },
 			{ ChipType.TriStateBuffer, "3-STATE BUFFER" },
 			// ---- Memory ----
-			{ ChipType.Ram_8Bit, "RAM-8" },
+			{ ChipType.dev_Ram_8Bit, "dev.RAM-8" },
 			{ ChipType.Rom_256x16, $"ROM 256{mulSymbol}16" },
 			// ---- Split / Merge ----
 			{ ChipType.Split_4To1Bit, "4-1BIT" },
@@ -28,6 +28,7 @@ namespace DLS.Description
 			{ ChipType.DisplayRGB, "RGB DISPLAY" },
 			{ ChipType.DisplayDot, "DOT DISPLAY" },
 			{ ChipType.SevenSegmentDisplay, "7-SEGMENT" },
+			{ ChipType.DisplayLED, "LED" },
 
 			// ---- Not really chips (but convenient to treat them as such anyway) ----
 
@@ -45,10 +46,7 @@ namespace DLS.Description
 			{ ChipType.Bus_8Bit, "BUS-8" },
 			{ ChipType.BusTerminus_1Bit, "BUS-TERMINUS-1" },
 			{ ChipType.BusTerminus_4Bit, "BUS-TERMINUS-4" },
-			{ ChipType.BusTerminus_8Bit, "BUS-TERMINUS-8" },
-
-			// ---- MODDED - FAN EDIT ---- //
-			{ ChipType.Diode, "DIODE"}
+			{ ChipType.BusTerminus_8Bit, "BUS-TERMINUS-8" }
 		};
 
 		public static string GetName(ChipType type) => Names[type];

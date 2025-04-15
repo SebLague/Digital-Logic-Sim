@@ -301,16 +301,12 @@ namespace DLS.Graphics
 				Anchor textAnchor = nameCentre ? Anchor.TextCentre : Anchor.CentreTop;
 				Vector2 textPos = nameCentre ? pos : pos + Vector2.up * (subchip.Size.y / 2 - GridSize / 2);
 
-				// --- MODDED : Fan Edit --- //
-
 				if(desc.NameAlignment != NameAlignment.Centre)
                 {
 					int mult = desc.NameAlignment == NameAlignment.Right ? 1 : -1;
 					TextRenderer.BoundingBox textBounds = Draw.CalculateTextBounds(displayName, FontBold, FontSizeChipName, textPos, textAnchor);
 					textPos.x += (pos.x + desc.Size.x / 2 - textBounds.BoundsMax.x) * mult;
                 }
-
-				// ------------------------- //
 
 				// Draw background band behind text if placed at top (so it doesn't look out of place..)
 				if (desc.NameLocation == NameDisplayLocation.Top)
@@ -421,14 +417,13 @@ namespace DLS.Graphics
 				bounds = DrawDisplay_Dot(posWorld, scaleWorld, sim);
 			}
 
-			// --- MODDED : Fan Edit --- //
-			else if (display.DisplayType == ChipType.Diode)
+			else if (display.DisplayType == ChipType.DisplayLED)
 			{
 				bool simActive = sim != null;
+				bool isDisconnected = (!simActive) || (sim.numConnectedInputs == 0) || (sim.InputPins[0].State.GetBit(0) == PinState.LogicDisconnected);
 				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
-				bounds = DrawDisplay_Diode(posWorld, scaleWorld, isOn);
+				bounds = DrawDisplay_DisplayLED(posWorld, scaleWorld, isDisconnected, isOn);
 			}
-			// ------------------------- //
 
 			display.LastDrawBounds = bounds;
 			return bounds;
@@ -577,8 +572,7 @@ namespace DLS.Graphics
 			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
 		}
 
-		// --- MODDED : Fan Edit --- //
-		public static Bounds2D DrawDisplay_Diode(Vector2 centre, float scale, bool isOn)
+		public static Bounds2D DrawDisplay_DisplayLED(Vector2 centre, float scale, bool isDisconnected, bool isOn)
 		{
 			const float pixelSizeT = 0.975f;
 			// Draw background
@@ -588,12 +582,11 @@ namespace DLS.Graphics
 			float pixelSize = size;
 			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
 
-			Color col = isOn ? ActiveTheme.DiodeColors[1] : ActiveTheme.DiodeColors[0];
+			Color col = isDisconnected ? ActiveTheme.DisplayLEDCols[0] : (isOn ? ActiveTheme.DisplayLEDCols[2] : ActiveTheme.DisplayLEDCols[1]);
 
 			Draw.Quad(centre, pixelDrawSize, col);
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
-		// ------------------------- //
 
 		public static void DrawDevPin(DevPinInstance devPin)
 		{

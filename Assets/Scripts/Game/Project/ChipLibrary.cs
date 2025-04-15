@@ -23,7 +23,7 @@ namespace DLS.Game
 			foreach (ChipDescription chip in builtinChips)
 			{
 				// Bus terminus chip should not be shown to the user (it is created automatically upon placement of a bus start point)
-				bool hidden = ChipTypeHelper.IsBusTerminusType(chip.ChipType);
+				bool hidden = ChipTypeHelper.IsBusTerminusType(chip.ChipType) || chip.ChipType == ChipType.dev_Ram_8Bit;
 
 				AddChipToLibrary(chip, hidden);
 				builtinChipNames.Add(chip.Name);
@@ -133,21 +133,6 @@ namespace DLS.Game
 			}
 
 			return parents.ToArray();
-		}
-
-
-		public ChipDescription GetMatchingDevPinDescription(bool isInput, PinBitCount bitCount)
-		{
-			// I don't want to modify save data right now, so just search for matching description...
-			foreach (ChipDescription desc in builtinChips)
-			{
-				(bool isInput, bool isOutput, PinBitCount numBits) result = ChipTypeHelper.IsInputOrOutputPin(desc.ChipType);
-				if (!result.isInput && !result.isOutput) continue;
-
-				if (isInput == result.isInput && bitCount == result.numBits) return desc;
-			}
-
-			throw new Exception("Failed to find matching description");
 		}
 
 		void AddChipToLibrary(ChipDescription description, bool hidden = false)

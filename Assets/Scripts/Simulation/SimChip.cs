@@ -14,7 +14,6 @@ namespace DLS.Simulation
 		public readonly uint[] InternalState = Array.Empty<uint>();
 		public readonly bool IsBuiltin;
 		public SimPin[] InputPins = Array.Empty<SimPin>();
-		public int lastReceivedInputFrame;
 		public int numConnectedInputs;
 
 		public int numInputsReady;
@@ -66,7 +65,7 @@ namespace DLS.Simulation
 				// first 256 bits = display buffer, next 256 bits = back buffer, last bit = clock state (to allow edge-trigger behaviour)
 				InternalState = new uint[addressSize_8Bit * 2 + 1];
 			}
-			else if (ChipType is ChipType.Ram_8Bit)
+			else if (ChipType is ChipType.dev_Ram_8Bit)
 			{
 				InternalState = new uint[addressSize_8Bit + 1]; // +1 for clock state (to allow edge-trigger behaviour)
 
@@ -275,6 +274,8 @@ namespace DLS.Simulation
 					if (removeTargetPin.numInputConnections == 0)
 					{
 						removeTargetPin.State.SetAllDisconnected();
+						removeTargetPin.latestSourceID = -1;
+						removeTargetPin.latestSourceParentChipID = -1;
 						if (targetChip != null) removeTargetPin.parentChip.numConnectedInputs--;
 					}
 

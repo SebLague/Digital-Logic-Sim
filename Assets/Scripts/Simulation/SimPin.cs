@@ -8,12 +8,14 @@ namespace DLS.Simulation
 		public readonly int ID;
 		public readonly SimChip parentChip;
 		public readonly PinState State;
+		public readonly bool isInput;
 
 		public SimPin[] ConnectedTargetPins = Array.Empty<SimPin>();
 
 		// Simulation frame index on which pin last received an input
 		public int lastUpdatedFrameIndex;
 
+		// Address of pin from where this pin last received its input
 		public int latestSourceID;
 		public int latestSourceParentChipID;
 
@@ -25,10 +27,13 @@ namespace DLS.Simulation
 		public SimPin(int id, PinBitCount bitCount, bool isInput, SimChip parentChip)
 		{
 			this.parentChip = parentChip;
+			this.isInput = isInput;
 			ID = id;
+			latestSourceID = -1;
+			latestSourceParentChipID = -1;
 
 			State = new PinState((int)bitCount);
-			if (!isInput) State.SetAllDisconnected();
+			State.SetAllDisconnected();
 		}
 
 		public bool FirstBitHigh => State.GetBit(0) == PinState.LogicHigh;
@@ -42,6 +47,7 @@ namespace DLS.Simulation
 			}
 		}
 
+		// Called on sub-chip input pins, or chip dev-pins
 		void ReceiveInput(SimPin source)
 		{
 			// If this is the first input of the frame, reset the received inputs counter to zero
@@ -88,14 +94,9 @@ namespace DLS.Simulation
 
 			numInputsReceivedThisFrame++;
 
-			if (numInputsReceivedThisFrame == numInputConnections)
+			// If this is a sub-chip input pin, and has received all of its connections, notify the sub-chip that the input is ready
+			if (isInput && numInputsReceivedThisFrame == numInputConnections)
 			{
-				if (Simulator.simulationFrame > parentChip.lastReceivedInputFrame)
-				{
-					parentChip.numInputsReady = 0;
-					parentChip.lastReceivedInputFrame = Simulator.simulationFrame;
-				}
-
 				parentChip.numInputsReady++;
 			}
 		}

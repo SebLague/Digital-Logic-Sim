@@ -27,7 +27,7 @@ namespace DLS.Game
 				CreateTristateBuffer(),
 				CreateClock(),
 				// ---- Memory ----
-				//CreateRAM_8(),
+				dev_CreateRAM_8(),
 				CreateROM_8(),
 				// ---- Merge / Split ----
 				CreateBitConversionChip(ChipType.Split_4To1Bit, PinBitCount.Bit4, PinBitCount.Bit1, 1, 4),
@@ -41,16 +41,14 @@ namespace DLS.Game
 				CreateDisplay7Seg(),
 				CreateDisplayRGB(),
 				CreateDisplayDot(),
+				CreateDisplayLED(),
 				// ---- Bus ----
 				CreateBus(PinBitCount.Bit1),
 				CreateBusTerminus(PinBitCount.Bit1),
 				CreateBus(PinBitCount.Bit4),
 				CreateBusTerminus(PinBitCount.Bit4),
 				CreateBus(PinBitCount.Bit8),
-				CreateBusTerminus(PinBitCount.Bit8),
-
-				// ---- Modded - Fan Edit ---- //
-				CreateDiode()
+				CreateBusTerminus(PinBitCount.Bit8)
 			};
 		}
 
@@ -65,7 +63,7 @@ namespace DLS.Game
 			return CreateBuiltinChipDesciption(ChipType.Nand, size, col, inputPins, outputPins);
 		}
 
-		static ChipDescription CreateRAM_8()
+		static ChipDescription dev_CreateRAM_8()
 		{
 			Color col = new(0.85f, 0.45f, 0.3f);
 
@@ -80,7 +78,7 @@ namespace DLS.Game
 			PinDescription[] outputPins = { CreatePinDescription("OUT", 5, PinBitCount.Bit8) };
 			Vector2 size = new(GridSize * 10, SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
 
-			return CreateBuiltinChipDesciption(ChipType.Ram_8Bit, size, col, inputPins, outputPins);
+			return CreateBuiltinChipDesciption(ChipType.dev_Ram_8Bit, size, col, inputPins, outputPins);
 		}
 
 		static ChipDescription CreateROM_8()
@@ -316,25 +314,7 @@ namespace DLS.Game
 			return CreateBuiltinChipDesciption(type, BusChipSize(bitCount), col, inputs, outputs, hideName: true);
 		}
 
-		static ChipDescription CreateBusTerminus(PinBitCount bitCount)
-		{
-			ChipType type = bitCount switch
-			{
-				PinBitCount.Bit1 => ChipType.BusTerminus_1Bit,
-				PinBitCount.Bit4 => ChipType.BusTerminus_4Bit,
-				PinBitCount.Bit8 => ChipType.BusTerminus_8Bit,
-				_ => throw new Exception("Bus bit count not implemented")
-			};
-
-			ChipDescription busOrigin = CreateBus(bitCount);
-			PinDescription[] inputs = { CreatePinDescription(busOrigin.Name, 0, bitCount) };
-
-			return CreateBuiltinChipDesciption(type, BusChipSize(bitCount), busOrigin.Colour, inputs, hideName: true);
-		}
-
-		// --- Modded : Fan Edit --- //
-
-		static ChipDescription CreateDiode()
+		static ChipDescription CreateDisplayLED()
 		{
 			PinDescription[] inputPins =
 			{
@@ -359,11 +339,27 @@ namespace DLS.Game
 				}
 			};
 
-			return CreateBuiltinChipDesciption(ChipType.Diode, size, col, inputPins, null, displays, true);
+			return CreateBuiltinChipDesciption(ChipType.DisplayLED, size, col, inputPins, null, displays, true);
 		}
-		//---------------------------//
 
 
+		static ChipDescription CreateBusTerminus(PinBitCount bitCount)
+		{
+			ChipType type = bitCount switch
+			{
+				PinBitCount.Bit1 => ChipType.BusTerminus_1Bit,
+				PinBitCount.Bit4 => ChipType.BusTerminus_4Bit,
+				PinBitCount.Bit8 => ChipType.BusTerminus_8Bit,
+				_ => throw new Exception("Bus bit count not implemented")
+			};
+
+			ChipDescription busOrigin = CreateBus(bitCount);
+			PinDescription[] inputs = { CreatePinDescription(busOrigin.Name, 0, bitCount) };
+
+			return CreateBuiltinChipDesciption(type, BusChipSize(bitCount), busOrigin.Colour, inputs, hideName: true);
+		}
+
+		
 		static ChipDescription CreateBuiltinChipDesciption(ChipType type, Vector2 size, Color col, PinDescription[] inputs = null, PinDescription[] outputs = null, DisplayDescription[] displays = null, bool hideName = false)
 		{
 			string name = ChipTypeHelper.GetName(type);
