@@ -274,6 +274,8 @@ namespace DLS.Simulation
 					if (removeTargetPin.numInputConnections == 0)
 					{
 						removeTargetPin.State.SetAllDisconnected();
+						removeTargetPin.latestSourceID = -1;
+						removeTargetPin.latestSourceParentChipID = -1;
 						if (targetChip != null) removeTargetPin.parentChip.numConnectedInputs--;
 					}
 
