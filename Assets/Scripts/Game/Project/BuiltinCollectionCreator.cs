@@ -49,7 +49,7 @@ namespace DLS.Game
 					ChipType.SevenSegmentDisplay,
 					ChipType.DisplayDot,
 					ChipType.DisplayRGB,
-					ChipType.Diode
+					ChipType.DisplayLED
 				),
 				CreateChipCollection("MEMORY",
 					ChipType.Rom_256x16

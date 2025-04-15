@@ -41,7 +41,7 @@ namespace DLS.Game
 				CreateDisplay7Seg(),
 				CreateDisplayRGB(),
 				CreateDisplayDot(),
-				CreateDiode(),
+				CreateDisplayLED(),
 				// ---- Bus ----
 				CreateBus(PinBitCount.Bit1),
 				CreateBusTerminus(PinBitCount.Bit1),
@@ -314,23 +314,7 @@ namespace DLS.Game
 			return CreateBuiltinChipDesciption(type, BusChipSize(bitCount), col, inputs, outputs, hideName: true);
 		}
 
-		static ChipDescription CreateBusTerminus(PinBitCount bitCount)
-		{
-			ChipType type = bitCount switch
-			{
-				PinBitCount.Bit1 => ChipType.BusTerminus_1Bit,
-				PinBitCount.Bit4 => ChipType.BusTerminus_4Bit,
-				PinBitCount.Bit8 => ChipType.BusTerminus_8Bit,
-				_ => throw new Exception("Bus bit count not implemented")
-			};
-
-			ChipDescription busOrigin = CreateBus(bitCount);
-			PinDescription[] inputs = { CreatePinDescription(busOrigin.Name, 0, bitCount) };
-
-			return CreateBuiltinChipDesciption(type, BusChipSize(bitCount), busOrigin.Colour, inputs, hideName: true);
-		}
-
-		static ChipDescription CreateDiode()
+		static ChipDescription CreateDisplayLED()
 		{
 			PinDescription[] inputPins =
 			{
@@ -355,9 +339,27 @@ namespace DLS.Game
 				}
 			};
 
-			return CreateBuiltinChipDesciption(ChipType.Diode, size, col, inputPins, null, displays, true);
+			return CreateBuiltinChipDesciption(ChipType.DisplayLED, size, col, inputPins, null, displays, true);
 		}
 
+
+		static ChipDescription CreateBusTerminus(PinBitCount bitCount)
+		{
+			ChipType type = bitCount switch
+			{
+				PinBitCount.Bit1 => ChipType.BusTerminus_1Bit,
+				PinBitCount.Bit4 => ChipType.BusTerminus_4Bit,
+				PinBitCount.Bit8 => ChipType.BusTerminus_8Bit,
+				_ => throw new Exception("Bus bit count not implemented")
+			};
+
+			ChipDescription busOrigin = CreateBus(bitCount);
+			PinDescription[] inputs = { CreatePinDescription(busOrigin.Name, 0, bitCount) };
+
+			return CreateBuiltinChipDesciption(type, BusChipSize(bitCount), busOrigin.Colour, inputs, hideName: true);
+		}
+
+		
 		static ChipDescription CreateBuiltinChipDesciption(ChipType type, Vector2 size, Color col, PinDescription[] inputs = null, PinDescription[] outputs = null, DisplayDescription[] displays = null, bool hideName = false)
 		{
 			string name = ChipTypeHelper.GetName(type);

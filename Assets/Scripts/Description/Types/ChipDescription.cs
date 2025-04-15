@@ -15,7 +15,6 @@ namespace DLS.Description
 		public NameDisplayLocation NameLocation;
 		[DefaultValue(NameAlignment.Centre)]
 		public NameAlignment NameAlignment;
-		public PinDescription[] OutputPins;
 		public ChipType ChipType;
 		public Vector2 Size;
 		public Color Colour;

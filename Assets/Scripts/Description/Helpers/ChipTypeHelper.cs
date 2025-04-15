@@ -28,7 +28,7 @@ namespace DLS.Description
 			{ ChipType.DisplayRGB, "RGB DISPLAY" },
 			{ ChipType.DisplayDot, "DOT DISPLAY" },
 			{ ChipType.SevenSegmentDisplay, "7-SEGMENT" },
-			{ ChipType.Diode, "DIODE" },
+			{ ChipType.DisplayLED, "LED" },
 
 			// ---- Not really chips (but convenient to treat them as such anyway) ----
 
