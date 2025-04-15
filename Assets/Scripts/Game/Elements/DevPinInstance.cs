@@ -41,6 +41,10 @@ namespace DLS.Game
 				PinBitCount.Bit1 => new Vector2Int(1, 1),
 				PinBitCount.Bit4 => new Vector2Int(2, 2),
 				PinBitCount.Bit8 => new Vector2Int(4, 2),
+				PinBitCount.Bit16 => new Vector2Int(4, 4),
+				PinBitCount.Bit32 => new Vector2Int(8,4),
+
+				
 				_ => throw new Exception("Bit count not implemented")
 			};
 			StateGridSize = BitCount switch
@@ -57,7 +61,15 @@ namespace DLS.Game
 		{
 			get
 			{
-				int gridDst = BitCount is PinBitCount.Bit1 or PinBitCount.Bit4 ? 6 : 9;
+				int gridDst = BitCount switch
+				{
+					PinBitCount.Bit1 => 6,
+					PinBitCount.Bit4 => 6,
+					PinBitCount.Bit8 => 9,
+					PinBitCount.Bit16 => 9,
+					PinBitCount.Bit32 => 17,
+					_ => 9//throw new Exception("Bit count not implemented")
+				};
 				return HandlePosition + faceDir * (GridSize * gridDst);
 			}
 		}
