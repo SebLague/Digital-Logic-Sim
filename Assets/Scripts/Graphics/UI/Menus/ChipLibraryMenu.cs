@@ -49,9 +49,13 @@ namespace DLS.Graphics
 		static bool isConfirmingCollectionDeletion;
 
 		static string deleteConfirmMessage;
+		static Color deleteConfirmMessageCol;
 		static bool isScrolling;
 		static string chipToOpenName;
 		static bool wasOpenedThisFrame;
+
+		static readonly Color deleteColWarningHigh = new(0.95f, 0.35f, 0.35f);
+		static readonly Color deleteColWarningMedium = new(1f, 0.75f, 0.2f);
 
 		// if chip is moved to another collection, it will be auto-opened. Keep track so it can be auto-closed if chip is then moved out of that collection ('just passing through')
 		static ChipCollection lastAutoOpenedCollection;
@@ -327,6 +331,7 @@ namespace DLS.Graphics
 							{
 								deleteConfirmMessage = $"Are you sure you want to delete this collection? The chips inside of it will be moved to \"{defaultOtherChipsCollectionName}\".";
 								deleteConfirmMessage = UI.LineBreakByCharCount(deleteConfirmMessage, deleteMessageMaxCharsPerLine);
+								deleteConfirmMessageCol = deleteColWarningMedium;
 								isConfirmingCollectionDeletion = true;
 							}
 						}
@@ -455,7 +460,7 @@ namespace DLS.Graphics
 					using (UI.BeginDisabledScope(false))
 					{
 						panelID = UI.ReservePanel();
-						UI.DrawText(deleteConfirmMessage, ActiveUITheme.FontRegular, ActiveUITheme.FontSizeRegular, topLeft, Anchor.TopLeft, new Color(0.91f, 0.4f, 0.4f));
+						UI.DrawText(deleteConfirmMessage, ActiveUITheme.FontRegular, ActiveUITheme.FontSizeRegular, topLeft, Anchor.TopLeft, deleteConfirmMessageCol);
 						topLeft += Vector2.down * (UI.PrevBounds.Height + DefaultButtonSpacing * 3f);
 						int button_cancelConfirm = MenuHelper.DrawButtonPair("CANCEL", "DELETE", topLeft, panelContentBounds.Width, false);
 
@@ -463,7 +468,7 @@ namespace DLS.Graphics
 						{
 							ResetPopupState();
 						}
-						else if (button_cancelConfirm == 1) // confirm delete
+						else if (button_cancelConfirm == 1 || KeyboardShortcuts.ConfirmShortcutTriggered) // confirm delete
 						{
 							if (isConfirmingChipDeletion)
 							{
@@ -537,7 +542,9 @@ namespace DLS.Graphics
 				else if (chipActionIndex == 2) // delete
 				{
 					isConfirmingChipDeletion = true;
-					deleteConfirmMessage = CreateDeleteConfirmationMessage(selectedChipName);
+					(string msg, bool warn) = CreateDeleteConfirmationMessage(selectedChipName);
+					deleteConfirmMessage = msg;
+					deleteConfirmMessageCol = warn ? deleteColWarningHigh : deleteColWarningMedium;
 				}
 			}
 
@@ -686,18 +693,35 @@ namespace DLS.Graphics
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 		}
 
-		static string CreateDeleteConfirmationMessage(string chipName)
+		static (string msg, bool warn) CreateDeleteConfirmationMessage(string chipName)
 		{
-			string[] parentNames = project.chipLibrary.GetDirectParentChips(chipName).Select(c => c.Name).ToArray();
+			List<string> parentNames = project.chipLibrary.GetDirectParentChips(chipName).Select(c => c.Name).ToList();
+			bool usedInCurrentChip = Project.ActiveProject.ViewedChip.GetSubchips().Any(s => s.Description.NameMatch(chipName));
+
+			if (usedInCurrentChip)
+			{
+				parentNames.Remove(Project.ActiveProject.ViewedChip.ChipName);
+				parentNames.Insert(0, "the CURRENT CHIP");
+			}
+
 			string message = "Are you sure you want to delete this chip? ";
-			if (parentNames.Length == 0) message += "It is not used anywhere.";
+			bool warn = parentNames.Count > 0;
+
+			if (Project.ActiveProject.ViewedChip.LastSavedDescription?.NameMatch(chipName) == true)
+			{
+				message = "Are you sure you want to delete the chip that you are CURRENTLY EDITING? ";
+				warn = true;
+			}
+
+			if (parentNames.Count == 0) message += "It is not used anywhere.";
 			else message += CreateChipInUseWarningMessage(parentNames);
 
-			return UI.LineBreakByCharCount(message, deleteMessageMaxCharsPerLine);
+			string formattedMessage = UI.LineBreakByCharCount(message, deleteMessageMaxCharsPerLine);
+			return (formattedMessage, warn);
 
-			static string CreateChipInUseWarningMessage(string[] chipsUsingCurrentChip)
+			string CreateChipInUseWarningMessage(List<string> chipsUsingCurrentChip)
 			{
-				int numUses = chipsUsingCurrentChip.Length;
+				int numUses = chipsUsingCurrentChip.Count;
 				string usage = "It is used by";
 				if (numUses == 1) return $"{usage} {FormatChipName(0)}.";
 				if (numUses == 2) return $"{usage} {FormatChipName(0)} and {FormatChipName(1)}.";
@@ -706,7 +730,9 @@ namespace DLS.Graphics
 
 				string FormatChipName(int index)
 				{
-					return $"\"{chipsUsingCurrentChip[index]}\"";
+					bool useQuotes = !(index == 0 && usedInCurrentChip);
+					string formatted = useQuotes ? $"\"{chipsUsingCurrentChip[index]}\"" : chipsUsingCurrentChip[index];
+					return formatted;
 				}
 			}
 		}

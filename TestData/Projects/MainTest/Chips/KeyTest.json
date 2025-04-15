@@ -1,0 +1,32 @@
+{
+  "Name": "KeyTest",
+  "NameLocation": 0,
+  "Size": {
+    "x": 1.44,
+    "y": 0.5675
+  },
+  "Colour": {
+    "r": 0.185919926,
+    "g": 0.454911739,
+    "b": 0.384076327,
+    "a": 1
+  },
+  "InputPins":[],
+  "OutputPins":[],
+  "SubChips":[
+    {
+      "Name":"KEY",
+      "ID":1584306565,
+      "Label":null,
+      "Position":{
+        "x":-1.06366,
+        "y":-0.62112
+      },
+      "OutputPinColourInfo":null,
+      "InternalData":[69]
+    }
+  ],
+  "Wires":[],
+  "Displays": null,
+  "ChipType": 0
+}

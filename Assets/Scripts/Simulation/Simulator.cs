@@ -73,13 +73,6 @@ namespace DLS.Simulation
 				}
 			}
 
-			// Initialize output pins to disconnected state (in case wire to the output has been deleted)
-			foreach (SimPin simPin in rootSimChip.OutputPins)
-			{
-				simPin.latestSourceID = -1;
-				simPin.State.SetAllDisconnected();
-			}
-
 			// Process
 			if (needsOrderPass)
 			{
@@ -95,6 +88,7 @@ namespace DLS.Simulation
 		// Recursively propagate signals through this chip and its subchips
 		static void StepChip(SimChip chip)
 		{
+			// Propagate signal from all input dev-pins to all their connected pins
 			chip.Sim_PropagateInputs();
 
 			// NOTE: subchips are assumed to have been sorted in reverse order of desired visitation
@@ -398,7 +392,7 @@ namespace DLS.Simulation
 
 					break;
 				}
-				case ChipType.Ram_8Bit:
+				case ChipType.dev_Ram_8Bit:
 				{
 					PinState addressPin = chip.InputPins[0].State;
 					PinState dataPin = chip.InputPins[1].State;
@@ -447,11 +441,8 @@ namespace DLS.Simulation
 					if (ChipTypeHelper.IsBusOriginType(chip.ChipType))
 					{
 						SimPin inputPin = chip.InputPins[0];
-						if (chip.InputPins[0].numInputConnections == 0)
-						{
-							inputPin.State.SetAllDisconnected(); // todo: this should be handled elsewhere
-						}
-
+					
+						
 						chip.OutputPins[0].State.SetFromSource(inputPin.State);
 					}
 

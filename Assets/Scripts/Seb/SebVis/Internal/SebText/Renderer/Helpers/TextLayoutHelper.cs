@@ -5,12 +5,18 @@ using UnityEngine;
 
 namespace Seb.Vis.Text.Rendering
 {
-	public static class LayoutHelper
+	public static class TextLayoutHelper
 	{
 		public enum ChunkType
 		{
 			Empty,
 			Glyph,
+			RichTextTag
+		}
+
+		public enum RichTextTagType
+		{
+			None,
 			ColorBlockStart,
 			ColorBlockEnd,
 			HalfSpace
@@ -23,11 +29,56 @@ namespace Seb.Vis.Text.Rendering
 
 		public static Info CalculateNextAdvance(ReadOnlySpan<char> text, int index, FontData fontData, TextRenderer.LayoutSettings settings, Vector2 advance)
 		{
-			Info info = new();
-			info.type = ChunkType.Empty;
+			Info info = new()
+			{
+				type = ChunkType.Empty,
+				advance = advance
+			};
 
-			info.advance = advance;
 			char c = text[index];
+
+			info.richTextInfo = RichTextTagParse(text, index);
+
+			if (info.richTextInfo.tagType == RichTextTagType.None)
+			{
+				if (c == ' ')
+				{
+					info.advance.x += SpaceSize(fontData) * settings.WordSpacing;
+				}
+				else if (c == '\t')
+				{
+					info.advance.x += SpaceSize(fontData) * 4 * settings.WordSpacing; // TODO: proper tab implementation
+				}
+				else if (c == '\n')
+				{
+					info.advance.y -= LineHeightEM * settings.LineSpacing;
+					info.advance.x = 0;
+				}
+				else if (!char.IsControl(c))
+				{
+					info.type = ChunkType.Glyph;
+					fontData.TryGetGlyph(c, out info.glyph);
+					info.advance.x += info.glyph.AdvanceWidth * settings.LetterSpacing;
+				}
+			}
+			else
+			{
+				info.type = ChunkType.RichTextTag;
+				
+				if (info.richTextInfo.tagType == RichTextTagType.HalfSpace)
+				{
+					info.advance.x += SpaceSize(fontData) * settings.WordSpacing * 0.5f;
+				}
+			}
+
+
+			return info;
+		}
+
+		public static RichTextInfo RichTextTagParse(ReadOnlySpan<char> text, int index)
+		{
+			char c = text[index];
+			RichTextInfo info = new();
 
 			// rich text search
 			if (c == '<')
@@ -50,8 +101,8 @@ namespace Seb.Vis.Text.Rendering
 							if (ColHelper.TryParseHexCode(colCode, out Color col))
 							{
 								info.richTextCol = col;
-								info.richTextIndexJump = endBracketIndex - index;
-								info.type = ChunkType.ColorBlockStart;
+								info.indexJump = endBracketIndex - index;
+								info.tagType = RichTextTagType.ColorBlockStart;
 								return info;
 							}
 						}
@@ -66,8 +117,8 @@ namespace Seb.Vis.Text.Rendering
 					// Matches color pattern
 					if (slice.SequenceEqual(colBlockEndString))
 					{
-						info.type = ChunkType.ColorBlockEnd;
-						info.richTextIndexJump = colBlockEndString.Length - 1;
+						info.tagType = RichTextTagType.ColorBlockEnd;
+						info.indexJump = colBlockEndString.Length - 1;
 						return info;
 					}
 				}
@@ -80,34 +131,12 @@ namespace Seb.Vis.Text.Rendering
 					// Matches pattern
 					if (slice.SequenceEqual(halfSpaceString))
 					{
-						info.type = ChunkType.HalfSpace;
-						info.richTextIndexJump = halfSpaceString.Length - 1;
-						info.advance.x += SpaceSize(fontData) * settings.WordSpacing * 0.5f;
+						info.tagType = RichTextTagType.HalfSpace;
+						info.indexJump = halfSpaceString.Length - 1;
 						return info;
 					}
 				}
 			}
-
-			if (c == ' ')
-			{
-				info.advance.x += SpaceSize(fontData) * settings.WordSpacing;
-			}
-			else if (c == '\t')
-			{
-				info.advance.x += SpaceSize(fontData) * 4 * settings.WordSpacing; // TODO: proper tab implementation
-			}
-			else if (c == '\n')
-			{
-				info.advance.y -= LineHeightEM * settings.LineSpacing;
-				info.advance.x = 0;
-			}
-			else if (!char.IsControl(c))
-			{
-				info.type = ChunkType.Glyph;
-				fontData.TryGetGlyph(c, out info.glyph);
-				info.advance.x += info.glyph.AdvanceWidth * settings.LetterSpacing;
-			}
-
 
 			return info;
 		}
@@ -117,7 +146,13 @@ namespace Seb.Vis.Text.Rendering
 			public Vector2 advance;
 			public Glyph glyph;
 			public ChunkType type;
-			public int richTextIndexJump;
+			public RichTextInfo richTextInfo;
+		}
+
+		public struct RichTextInfo
+		{
+			public RichTextTagType tagType;
+			public int indexJump;
 			public Color richTextCol;
 		}
 	}
