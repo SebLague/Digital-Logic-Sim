@@ -301,6 +301,14 @@ namespace DLS.Graphics
 				Anchor textAnchor = nameCentre ? Anchor.TextCentre : Anchor.CentreTop;
 				Vector2 textPos = nameCentre ? pos : pos + Vector2.up * (subchip.Size.y / 2 - GridSize / 2);
 
+				if (desc.NameAlignment != NameAlignment.Centre)
+				{
+					int mult = desc.NameAlignment == NameAlignment.Right ? 1 : -1;
+					TextRenderer.BoundingBox textBounds = Draw.CalculateTextBounds(displayName, FontBold, FontSizeChipName, textPos, textAnchor);
+					textPos.x += (pos.x + desc.Size.x / 2 - textBounds.BoundsMax.x) * mult;
+				}
+
+
 				// Draw background band behind text if placed at top (so it doesn't look out of place..)
 				if (desc.NameLocation == NameDisplayLocation.Top)
 				{
