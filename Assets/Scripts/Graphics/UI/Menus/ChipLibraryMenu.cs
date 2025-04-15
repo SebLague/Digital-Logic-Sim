@@ -695,18 +695,26 @@ namespace DLS.Graphics
 
 		static (string msg, bool warn) CreateDeleteConfirmationMessage(string chipName)
 		{
-			string[] parentNames = project.chipLibrary.GetDirectParentChips(chipName).Select(c => c.Name).ToArray();
+			List<string> parentNames = project.chipLibrary.GetDirectParentChips(chipName).Select(c => c.Name).ToList();
+			bool usedInCurrentChip = Project.ActiveProject.ViewedChip.GetSubchips().Any(s => s.Description.NameMatch(chipName));
+
+			if (usedInCurrentChip)
+			{
+				parentNames.Remove(Project.ActiveProject.ViewedChip.ChipName);
+				parentNames.Insert(0, "the CURRENT CHIP");
+			}
+
 			string message = "Are you sure you want to delete this chip? ";
 
-			if (parentNames.Length == 0) message += "It is not used anywhere.";
+			if (parentNames.Count == 0) message += "It is not used anywhere.";
 			else message += CreateChipInUseWarningMessage(parentNames);
 
 			string formattedMessage = UI.LineBreakByCharCount(message, deleteMessageMaxCharsPerLine);
-			return (formattedMessage, parentNames.Length > 0);
+			return (formattedMessage, parentNames.Count > 0);
 
-			static string CreateChipInUseWarningMessage(string[] chipsUsingCurrentChip)
+			string CreateChipInUseWarningMessage(List<string> chipsUsingCurrentChip)
 			{
-				int numUses = chipsUsingCurrentChip.Length;
+				int numUses = chipsUsingCurrentChip.Count;
 				string usage = "It is used by";
 				if (numUses == 1) return $"{usage} {FormatChipName(0)}.";
 				if (numUses == 2) return $"{usage} {FormatChipName(0)} and {FormatChipName(1)}.";
@@ -715,7 +723,9 @@ namespace DLS.Graphics
 
 				string FormatChipName(int index)
 				{
-					return $"\"{chipsUsingCurrentChip[index]}\"";
+					bool useQuotes = !(index == 0 && usedInCurrentChip);
+					string formatted = useQuotes ? $"\"{chipsUsingCurrentChip[index]}\"" : chipsUsingCurrentChip[index];
+					return formatted;
 				}
 			}
 		}
