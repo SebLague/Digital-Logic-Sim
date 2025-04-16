@@ -41,7 +41,7 @@ namespace DLS.Game
 		DevPinInstance[] inputPins = Array.Empty<DevPinInstance>();
 		int mainThreadFrameCount;
 
-		public bool showGrid;
+		public bool ShowGrid => description.Prefs_GridDisplayMode == 1;
 		public int simPausedSingleStepCounter;
 
 		bool simThreadActive;
@@ -394,6 +394,11 @@ namespace DLS.Game
 
 			inputPins = editModeChip.GetInputPins();
 			mainThreadFrameCount++;
+		}
+
+		public void ToggleGridDisplay()
+		{
+			description.Prefs_GridDisplayMode = 1 - description.Prefs_GridDisplayMode;
 		}
 
 		public void NotifyExit()

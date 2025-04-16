@@ -69,7 +69,7 @@ namespace DLS.Graphics
 		{
 			if (KeyboardShortcuts.ToggleGridShortcutTriggered)
 			{
-				Project.ActiveProject.showGrid = !Project.ActiveProject.showGrid;
+				Project.ActiveProject.ToggleGridDisplay();
 			}
 		}
 
