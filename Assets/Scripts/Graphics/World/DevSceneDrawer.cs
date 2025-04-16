@@ -215,8 +215,22 @@ namespace DLS.Graphics
 		public static void DrawPinDecValue(DevPinInstance pin)
 		{
 			if (pin.pinValueDisplayMode == PinValueDisplayMode.Off) return;
+			
+			int charCount;
 
-			int charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+ 			if (pin.pinValueDisplayMode != PinValueDisplayMode.HEX)
+ 			{
+ 				charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+ 			} 
+			
+			else
+ 			{
+ 				char[] chars = pin.GetStateHexadecimalDisplayValue().ToCharArray();
+ 				for (int i = 0; i < chars.Length; i++)
+ 					pin.decimalDisplayCharBuffer[i] = chars[i];
+
+ 				charCount = chars.Length;
+ 			}
 
 			FontType font = FontBold;
 			Bounds2D parentBounds = pin.BoundingBox;

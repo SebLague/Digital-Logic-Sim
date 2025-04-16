@@ -98,6 +98,14 @@ namespace DLS.Game
 			return displayValue;
 		}
 
+		public string GetStateHexadecimalDisplayValue()
+ 		{
+ 			uint rawValue = Pin.State.GetRawBits();
+ 			string displayValue = rawValue.ToString($"X");
+
+ 			return displayValue;
+ 		}
+
 
 		Bounds2D CreateBoundingBox(float pad)
 		{
