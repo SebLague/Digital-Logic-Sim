@@ -64,6 +64,8 @@ namespace DLS.Game
 				CreateDisplay7Seg(),
 				CreateDisplayRGB(),
 				CreateDisplayDot(),
+				CreateDisplayLED(),
+				// a
 				// ---- Bus ----
 				CreateBus(		  PinBitCount.Bit1),
 				CreateBusTerminus(PinBitCount.Bit1),
