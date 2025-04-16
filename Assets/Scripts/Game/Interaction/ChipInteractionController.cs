@@ -184,7 +184,7 @@ namespace DLS.Game
 
 			if (KeyboardShortcuts.ToggleGridShortcutTriggered)
 			{
-				project.showGrid = !project.showGrid;
+				project.ToggleGridDisplay();
 			}
 
 			if (!KeyboardShortcuts.StraightLineModeHeld) straightLineMoveState = StraightLineMoveState.None;

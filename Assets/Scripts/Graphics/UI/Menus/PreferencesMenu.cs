@@ -25,6 +25,12 @@ namespace DLS.Graphics
 			"Never"
 		};
 
+		static readonly string[] GridDisplayOptions =
+		{
+			"Off",
+			"On"
+		};
+
 		static readonly string[] SimulationStatusOptions =
 		{
 			"Active",
@@ -37,6 +43,7 @@ namespace DLS.Graphics
 		// ---- State ----
 		static readonly UIHandle ID_MainPinNames = new("PREFS_MainPinNames");
 		static readonly UIHandle ID_ChipPinNames = new("PREFS_ChipPinNames");
+		static readonly UIHandle ID_GridDisplay = new("PREFS_GridDisplay");
 		static readonly UIHandle ID_SimStatus = new("PREFS_SimStatus");
 		static readonly UIHandle ID_SimFrequencyField = new("PREFS_SimTickTarget");
 		static readonly UIHandle ID_ClockSpeedInput = new("PREFS_ClockSpeed");
@@ -72,6 +79,8 @@ namespace DLS.Graphics
 				AddSpacing();
 				int chipPinNamesMode = MenuHelper.LabeledOptionsWheel("Show chip pin names", labelCol, labelPosCurr, entrySize, ID_ChipPinNames, PinDisplayOptions, settingFieldSize.x, true);
 				AddSpacing();
+				int gridDisplayMode = MenuHelper.LabeledOptionsWheel("Show grid", labelCol, labelPosCurr, entrySize, ID_GridDisplay, GridDisplayOptions, settingFieldSize.x, true);
+				AddSpacing();
 
 				DrawHeader("SIMULATION:");
 				bool pauseSim = MenuHelper.LabeledOptionsWheel("Status", labelCol, labelPosCurr, entrySize, ID_SimStatus, SimulationStatusOptions, settingFieldSize.x, true) == 1;
@@ -104,6 +113,7 @@ namespace DLS.Graphics
 				// Assign changes immediately so can see them take effect in background
 				project.description.Prefs_MainPinNamesDisplayMode = mainPinNamesMode;
 				project.description.Prefs_ChipPinNamesDisplayMode = chipPinNamesMode;
+				project.description.Prefs_GridDisplayMode = gridDisplayMode;
 				project.description.Prefs_SimTargetStepsPerSecond = targetSimTicksPerSecond;
 				project.description.Prefs_SimStepsPerClockTick = clockSpeed;
 				project.description.Prefs_SimPaused = pauseSim;
@@ -149,9 +159,12 @@ namespace DLS.Graphics
 			originalProjectDesc = projDesc;
 
 			// Init ui from description
+			// -- Wheels
 			UI.GetWheelSelectorState(ID_MainPinNames).index = projDesc.Prefs_MainPinNamesDisplayMode;
 			UI.GetWheelSelectorState(ID_ChipPinNames).index = projDesc.Prefs_ChipPinNamesDisplayMode;
+			UI.GetWheelSelectorState(ID_GridDisplay).index = projDesc.Prefs_GridDisplayMode;
 			UI.GetWheelSelectorState(ID_SimStatus).index = projDesc.Prefs_SimPaused ? 1 : 0;
+			// -- Input fields
 			UI.GetInputFieldState(ID_SimFrequencyField).SetText(projDesc.Prefs_SimTargetStepsPerSecond + "", false);
 			UI.GetInputFieldState(ID_ClockSpeedInput).SetText(projDesc.Prefs_SimStepsPerClockTick + "", false);
 
