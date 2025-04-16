@@ -79,8 +79,8 @@ namespace DLS.Simulation
 		}
 		public void Set16BitFrom4BitSources(PinState a, PinState b, PinState c, PinState d)
 		{
-			bitStates = a.bitStates | (b.bitStates << 4) | (c.bitStates << 12) | (d.bitStates << 8);
-			tristateFlags = a.tristateFlags | (b.tristateFlags << 4) | (c.tristateFlags << 8) | (d.tristateFlags << 12);
+			bitStates = (a.bitStates << 4) | (b.bitStates) | (c.bitStates << 8) | (d.bitStates << 12);
+			tristateFlags = (a.tristateFlags << 4) | (b.tristateFlags) | (c.tristateFlags << 8) | (d.tristateFlags << 12);
 		}
 		public void Set16BitFrom8BitSources(PinState a, PinState b)
 		{
@@ -249,13 +249,13 @@ namespace DLS.Simulation
 		}
 		public void Set16BitFrom32BitSource(PinState source32bit, bool firstByte)
 		{
-			if (!firstByte)
+			if (firstByte)
 			{
 				const uint mask = 0b1111111111111111;
 				bitStates = source32bit.bitStates & mask;
 				tristateFlags = source32bit.tristateFlags & mask;
 			}
-			else if (firstByte)
+			else
 			{
 				const uint mask = 0b11111111111111110000000000000000;
 				bitStates = (source32bit.bitStates & mask) >> 16;

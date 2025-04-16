@@ -346,10 +346,10 @@ namespace DLS.Simulation
 					break;
 				case ChipType.Split_32To16Bit:
 					SimPin in32b = chip.InputPins[0];
+					SimPin in32bc = chip.InputPins[1];
 					SimPin out16aa = chip.OutputPins[0];
-					SimPin out16b = chip.OutputPins[1];
+					out16aa.State.Set16BitFrom32BitSource(in32bc.State,  true);
 					out16aa.State.Set16BitFrom32BitSource(in32b.State, false);
-					out16b.State.Set16BitFrom32BitSource(in32b.State, true);
 					break;
 				case ChipType.Merge_16To32Bit:
 					SimPin in32ba = chip.InputPins[0];
