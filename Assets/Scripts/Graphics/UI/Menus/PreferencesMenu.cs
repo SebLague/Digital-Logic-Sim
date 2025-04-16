@@ -38,6 +38,13 @@ namespace DLS.Graphics
 			"Always"
 		};
 
+		static readonly string[] StraightWireOptions =
+		{
+			"Hold Shift",
+			"If Grid Shown",
+			"Always"
+		};
+
 		static readonly string[] SimulationStatusOptions =
 		{
 			"Active",
@@ -52,10 +59,12 @@ namespace DLS.Graphics
 		static readonly UIHandle ID_ChipPinNames = new("PREFS_ChipPinNames");
 		static readonly UIHandle ID_GridDisplay = new("PREFS_GridDisplay");
 		static readonly UIHandle ID_Snapping = new("PREFS_Snapping");
+		static readonly UIHandle ID_StraightWires = new("PREFS_StraightWires");
 		static readonly UIHandle ID_SimStatus = new("PREFS_SimStatus");
 		static readonly UIHandle ID_SimFrequencyField = new("PREFS_SimTickTarget");
 		static readonly UIHandle ID_ClockSpeedInput = new("PREFS_ClockSpeed");
-		static readonly string showGridLabel = "Show grid" + UI.CreateColouredText(" (Ctrl+G)", new Color(1, 1, 1, 0.35f));
+
+		static readonly string showGridLabel = "Show grid" + UI.CreateColouredText(" (ctrl+G)", new Color(1, 1, 1, 0.35f));
 		static readonly Func<string, bool> integerInputValidator;
 
 		static double simAvgTicksPerSec_delayedRefreshForUI;
@@ -91,6 +100,7 @@ namespace DLS.Graphics
 				int gridDisplayMode = DrawNextWheel(showGridLabel, GridDisplayOptions, ID_GridDisplay);
 				DrawHeader("EDITING:");
 				int snappingMode = DrawNextWheel("Snap to grid", SnappingOptions, ID_Snapping);
+				int straightWireMode = DrawNextWheel("Straight wires", StraightWireOptions, ID_StraightWires);
 
 				DrawHeader("SIMULATION:");
 				bool pauseSim = MenuHelper.LabeledOptionsWheel("Status", labelCol, labelPosCurr, entrySize, ID_SimStatus, SimulationStatusOptions, settingFieldSize.x, true) == 1;
@@ -125,6 +135,7 @@ namespace DLS.Graphics
 				project.description.Prefs_ChipPinNamesDisplayMode = chipPinNamesMode;
 				project.description.Prefs_GridDisplayMode = gridDisplayMode;
 				project.description.Prefs_Snapping = snappingMode;
+				project.description.Prefs_StraightWires = straightWireMode;
 				project.description.Prefs_SimTargetStepsPerSecond = targetSimTicksPerSecond;
 				project.description.Prefs_SimStepsPerClockTick = clockSpeed;
 				project.description.Prefs_SimPaused = pauseSim;
@@ -182,6 +193,7 @@ namespace DLS.Graphics
 			UI.GetWheelSelectorState(ID_ChipPinNames).index = projDesc.Prefs_ChipPinNamesDisplayMode;
 			UI.GetWheelSelectorState(ID_GridDisplay).index = projDesc.Prefs_GridDisplayMode;
 			UI.GetWheelSelectorState(ID_Snapping).index = projDesc.Prefs_Snapping;
+			UI.GetWheelSelectorState(ID_StraightWires).index = projDesc.Prefs_StraightWires;
 			UI.GetWheelSelectorState(ID_SimStatus).index = projDesc.Prefs_SimPaused ? 1 : 0;
 			// -- Input fields
 			UI.GetInputFieldState(ID_SimFrequencyField).SetText(projDesc.Prefs_SimTargetStepsPerSecond + "", false);

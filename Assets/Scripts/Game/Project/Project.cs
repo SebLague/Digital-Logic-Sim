@@ -402,6 +402,7 @@ namespace DLS.Game
 		}
 
 		public bool ShouldSnapToGrid => KeyboardShortcuts.SnapModeHeld || (description.Prefs_Snapping == 1 && ShowGrid) || description.Prefs_Snapping == 2;
+		public bool ForceStraightWires => KeyboardShortcuts.StraightLineModeHeld || (description.Prefs_StraightWires == 1 && ShowGrid) || description.Prefs_StraightWires == 2;
 
 		public void NotifyExit()
 		{
