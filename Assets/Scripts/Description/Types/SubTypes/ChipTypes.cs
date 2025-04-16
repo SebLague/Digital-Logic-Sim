@@ -17,6 +17,7 @@ namespace DLS.Description
 		SevenSegmentDisplay,
 		DisplayRGB,
 		DisplayDot,
+		DisplayLED,	
 
 		// ---- Merge / Split ----
 		Merge_1To4Bit,

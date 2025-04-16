@@ -344,6 +344,36 @@ namespace DLS.Game
 			return CreateBuiltinChipDesciption(type, BusChipSize(bitCount), col, inputs, outputs, hideName: true);
 		}
 
+		static ChipDescription CreateDisplayLED()
+		{
+			PinDescription[] inputPins =
+			{
+				CreatePinDescription("IN", 0)
+			};
+
+			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			float width = height;
+			float displayWidth = height - GridSize * 0.5f;
+
+			Color col = new(0.1f, 0.1f, 0.1f);
+			Vector2 size = new(width, height);
+
+
+			DisplayDescription[] displays =
+			{
+				new()
+				{
+					Position = Vector2.right * PinRadius / 3 * 0,
+					Scale = displayWidth,
+					SubChipID = -1
+				}
+			};
+
+			return CreateBuiltinChipDesciption(ChipType.DisplayLED, size, col, inputPins, null, displays, true);
+		}
+
+
+
 		static ChipDescription CreateBusTerminus(PinBitCount bitCount)
 		{
 			ChipType type = bitCount switch
