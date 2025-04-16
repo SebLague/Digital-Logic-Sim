@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using DLS.Description;
 using DLS.Game;
 using UnityEngine;
@@ -23,7 +23,7 @@ namespace DLS.Simulation
 		static SimChip prevRootSimChip;
 
 		// Modifications to the sim are made from the main thread, but only applied on the sim thread to avoid conflicts
-		static readonly Queue<SimModifyCommand> modificationQueue = new();
+		static readonly ConcurrentQueue<SimModifyCommand> modificationQueue = new();
 
 		public static void UpdateKeyboardInputFromMainThread()
 		{
@@ -441,8 +441,6 @@ namespace DLS.Simulation
 					if (ChipTypeHelper.IsBusOriginType(chip.ChipType))
 					{
 						SimPin inputPin = chip.InputPins[0];
-					
-						
 						chip.OutputPins[0].State.SetFromSource(inputPin.State);
 					}
 
