@@ -401,6 +401,8 @@ namespace DLS.Game
 			description.Prefs_GridDisplayMode = 1 - description.Prefs_GridDisplayMode;
 		}
 
+		public bool ShouldSnapToGrid => KeyboardShortcuts.SnapModeHeld || (description.Prefs_Snapping == 1 && ShowGrid) || description.Prefs_Snapping == 2;
+
 		public void NotifyExit()
 		{
 			simThreadActive = false;

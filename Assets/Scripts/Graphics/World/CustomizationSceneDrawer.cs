@@ -101,7 +101,7 @@ namespace DLS.Graphics
 			deltaScale *= Vector2.Dot((InputHelper.MousePosWorld - mouseDownPos).normalized, (displayPosInitial - mouseDownPos).normalized);
 			float targetScale = Mathf.Max(DrawSettings.GridSize, displayScaleInitial - deltaScale);
 
-			if (!KeyboardShortcuts.SnapModeHeld)
+			if (!Project.ActiveProject.ShouldSnapToGrid)
 			{
 				SelectedDisplay.Desc.Scale = targetScale;
 			}
@@ -110,7 +110,7 @@ namespace DLS.Graphics
 			Bounds2D bounds = DevSceneDrawer.DrawDisplayWithBackground(SelectedDisplay, Vector2.zero, ChipSaveMenu.ActiveCustomizeChip);
 			DrawDisplayBoundsIndicators(bounds, scaleCol);
 
-			if (KeyboardShortcuts.SnapModeHeld)
+			if (Project.ActiveProject.ShouldSnapToGrid)
 			{
 				float unscaledWidth = bounds.Width / SelectedDisplay.Desc.Scale;
 				float scaledWidth = unscaledWidth * targetScale;
@@ -150,7 +150,7 @@ namespace DLS.Graphics
 			Draw.StartLayer(Vector2.zero, 1, false);
 			Vector2 targetPos = InputHelper.MousePosWorld + displayMoveMouseOffset;
 
-			if (!KeyboardShortcuts.SnapModeHeld)
+			if (!Project.ActiveProject.ShouldSnapToGrid)
 			{
 				SelectedDisplay.Desc.Position = targetPos;
 			}
@@ -158,7 +158,7 @@ namespace DLS.Graphics
 			Bounds2D bounds = DevSceneDrawer.DrawDisplayWithBackground(SelectedDisplay, Vector2.zero, ChipSaveMenu.ActiveCustomizeChip);
 			DrawDisplayBoundsIndicators(bounds, Color.white);
 
-			if (KeyboardShortcuts.SnapModeHeld)
+			if (Project.ActiveProject.ShouldSnapToGrid)
 			{
 				Vector2 snapPointOffset = bounds.TopLeft - bounds.Centre;
 				Vector2 snap = GridHelper.SnapMovingElementToGrid(targetPos, snapPointOffset, true, true);
@@ -338,7 +338,7 @@ namespace DLS.Graphics
 					float deltaY = GridHelper.SnapToGrid(desiredSize.y - chip.MinSize.y);
 					desiredSize.y = chip.MinSize.y + deltaY;
 					// Snap chip width to grid lines if in snap mode
-					if (KeyboardShortcuts.SnapModeHeld && dir.x != 0) desiredSize.x = GridHelper.SnapToGridForceEven(desiredSize.x) - DrawSettings.ChipOutlineWidth;
+					if (Project.ActiveProject.ShouldSnapToGrid && dir.x != 0) desiredSize.x = GridHelper.SnapToGridForceEven(desiredSize.x) - DrawSettings.ChipOutlineWidth;
 
 					Vector2 sizeNew = Vector2.Max(desiredSize, chip.MinSize);
 

@@ -427,7 +427,7 @@ namespace DLS.Game
 		WireInstance.ConnectionInfo CreateWireToWireConnectionInfo(WireInstance wireToConnectTo, PinInstance pin)
 		{
 			Vector2 mousePos = InputHelper.MousePosWorld;
-			if (KeyboardShortcuts.SnapModeHeld) mousePos = GridHelper.SnapToGrid(mousePos, true, true);
+			if (project.ShouldSnapToGrid) mousePos = GridHelper.SnapToGrid(mousePos, true, true);
 
 			// If connecting a new wire to an existing wire, the target connection point is end pos of new wire (this is mouse pos but with snapping options applied)
 			// Otherwise if creating a new wire from an existing wire, connection point is at mouse pos.
@@ -617,7 +617,7 @@ namespace DLS.Game
 		void UpdatePositionsToMouse()
 		{
 			Vector2 mousePos = InputHelper.MousePosWorld;
-			bool snapToGrid = KeyboardShortcuts.SnapModeHeld;
+			bool snapToGrid = project.ShouldSnapToGrid;
 
 			if (IsCreatingWire)
 			{

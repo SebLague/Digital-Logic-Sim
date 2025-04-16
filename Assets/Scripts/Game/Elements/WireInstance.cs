@@ -206,7 +206,7 @@ namespace DLS.Game
 
 		public void SetWirePointWithSnapping(Vector2 p, int i, Vector2 straightLineRefPoint)
 		{
-			bool snapToGrid = KeyboardShortcuts.SnapModeHeld;
+			bool snapToGrid = Project.ActiveProject.ShouldSnapToGrid;
 			bool forceStraightLine = KeyboardShortcuts.StraightLineModeHeld;
 
 			if (snapToGrid) p = GridHelper.SnapToGrid(p, true, true);
