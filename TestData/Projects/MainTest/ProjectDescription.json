@@ -1,9 +1,9 @@
 {
   "ProjectName": "MainTest",
-  "DLSVersion_LastSaved": "2.0.4",
+  "DLSVersion_LastSaved": "2.1.0",
   "DLSVersion_EarliestCompatible": "2.0.0",
   "CreationTime": "2025-03-14T18:23:30.404+01:00",
-  "LastSaveTime": "2025-04-15T00:40:26.898+02:00",
+  "LastSaveTime": "2025-04-15T20:53:03.947+02:00",
   "Prefs_MainPinNamesDisplayMode": 0,
   "Prefs_ChipPinNamesDisplayMode": 1,
   "Prefs_SimPaused": false,
@@ -118,7 +118,7 @@
       "Name":"TEST"
     },
     {
-      "Chips":[],
+      "Chips":["LED"],
       "IsToggledOpen":true,
       "Name":"OTHER"
     }
