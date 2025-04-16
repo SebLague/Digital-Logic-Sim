@@ -410,6 +410,14 @@ namespace DLS.Graphics
 				bounds = DrawDisplay_Dot(posWorld, scaleWorld, sim);
 			}
 
+			else if (display.DisplayType == ChipType.DisplayLED)
+			{
+				bool simActive = sim != null;
+				bool isDisconnected = (!simActive) || (sim.numConnectedInputs == 0) || (sim.InputPins[0].State.GetBit(0) == PinState.LogicDisconnected);
+				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
+				bounds = DrawDisplay_DisplayLED(posWorld, scaleWorld, isDisconnected, isOn);
+			}
+
 			display.LastDrawBounds = bounds;
 			return bounds;
 		}
@@ -555,6 +563,22 @@ namespace DLS.Graphics
 			Draw.Diamond(centre + offsetX - offsetY, segmentSizeVertical, cols[C]); // right bottom
 
 			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
+		}
+
+		public static Bounds2D DrawDisplay_DisplayLED(Vector2 centre, float scale, bool isDisconnected, bool isOn)
+		{
+			const float pixelSizeT = 0.975f;
+			// Draw background
+			Draw.Quad(centre, Vector2.one * scale, Color.black);
+			float size = scale;
+
+			float pixelSize = size;
+			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
+
+			Color col = isDisconnected ? ActiveTheme.DisplayLEDCols[0] : (isOn ? ActiveTheme.DisplayLEDCols[2] : ActiveTheme.DisplayLEDCols[1]);
+
+			Draw.Quad(centre, pixelDrawSize, col);
+			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
 
 		public static void DrawDevPin(DevPinInstance devPin)

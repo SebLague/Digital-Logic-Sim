@@ -41,6 +41,7 @@ namespace DLS.Game
 				CreateDisplay7Seg(),
 				CreateDisplayRGB(),
 				CreateDisplayDot(),
+				CreateDisplayLED(),
 				// ---- Bus ----
 				CreateBus(PinBitCount.Bit1),
 				CreateBusTerminus(PinBitCount.Bit1),
@@ -313,6 +314,35 @@ namespace DLS.Game
 			return CreateBuiltinChipDesciption(type, BusChipSize(bitCount), col, inputs, outputs, hideName: true);
 		}
 
+		static ChipDescription CreateDisplayLED()
+		{
+			PinDescription[] inputPins =
+			{
+				CreatePinDescription("IN", 0)
+			};
+
+			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			float width = height;
+			float displayWidth = height - GridSize * 0.5f;
+
+			Color col = new(0.1f, 0.1f, 0.1f);
+			Vector2 size = new(width, height);
+
+
+			DisplayDescription[] displays =
+			{
+				new()
+				{
+					Position = Vector2.right * PinRadius / 3 * 0,
+					Scale = displayWidth,
+					SubChipID = -1
+				}
+			};
+
+			return CreateBuiltinChipDesciption(ChipType.DisplayLED, size, col, inputPins, null, displays, true);
+		}
+
+
 		static ChipDescription CreateBusTerminus(PinBitCount bitCount)
 		{
 			ChipType type = bitCount switch
@@ -329,6 +359,7 @@ namespace DLS.Game
 			return CreateBuiltinChipDesciption(type, BusChipSize(bitCount), busOrigin.Colour, inputs, hideName: true);
 		}
 
+		
 		static ChipDescription CreateBuiltinChipDesciption(ChipType type, Vector2 size, Color col, PinDescription[] inputs = null, PinDescription[] outputs = null, DisplayDescription[] displays = null, bool hideName = false)
 		{
 			string name = ChipTypeHelper.GetName(type);

@@ -25,6 +25,8 @@ namespace DLS.Description
 		public bool HasDisplay() => Displays != null && Displays.Length > 0;
 		public bool NameMatch(string otherName) => NameMatch(Name, otherName);
 		public static bool NameMatch(string a, string b) => string.Equals(a, b, NameComparison);
+
+		
 	}
 
 	public enum NameDisplayLocation
