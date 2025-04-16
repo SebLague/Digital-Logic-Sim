@@ -405,9 +405,11 @@ namespace DLS.Game
 			throw new Exception($"Failed to find colour source: pinID: {srcAddress.PinID}  pinOwnerID: {srcAddress.PinOwnerID}");
 		}
 
-		public bool TryFindPin(PinAddress address, out PinInstance pinInstance)
+		public bool TryFindPin(PinAddress address, out PinInstance pinInstance) => TryFindPin(Elements, address, out pinInstance);
+		
+		public static bool TryFindPin(List<IMoveable> elements, PinAddress address, out PinInstance pinInstance)
 		{
-			foreach (IMoveable element in Elements)
+			foreach (IMoveable element in elements)
 			{
 				if (element.ID == address.PinOwnerID)
 				{
@@ -434,8 +436,7 @@ namespace DLS.Game
 					break;
 				}
 			}
-
-
+			
 			pinInstance = null;
 			return false;
 		}
