@@ -42,7 +42,7 @@ namespace DLS.Game
 		public bool HasControl => !UIDrawer.InInputBlockingMenu() && project.CanEditViewedChip;
 
 		// Cannot interact with elements when other elements are being moved, in a menu, or drawing a selection box
-		bool CanInteract => !IsMovingSelection && !UIDrawer.InInputBlockingMenu() && !IsCreatingSelectionBox;
+		bool CanInteract => !IsMovingSelection && !UIDrawer.InInputBlockingMenu() && !IsCreatingSelectionBox && !InteractionState.MouseIsOverUI;
 		public bool IsCreatingWire => WireToPlace != null;
 		public bool IsPlacingElements => isPlacingNewElements;
 		public bool IsPlacingElementOrCreatingWire => isPlacingNewElements || IsCreatingWire;
@@ -73,6 +73,13 @@ namespace DLS.Game
 
 		// Don't allow interaction with wire that's currently being placed (this would allow it to try to connect to itself for example...)
 		public bool CanInteractWithWire(WireInstance wire) => CanInteract && wire != WireToPlace;
+
+		public bool CanCompleteWireConnection(WireInstance wireToConnectTo, out PinInstance endPin)
+		{
+			// If we're joining this wire to an existing wire, choose the appropriate source/target pin from that wire to connect to
+			endPin = WireToPlace.FirstPin.IsSourcePin ? wireToConnectTo.TargetPin_BusCorrected : wireToConnectTo.SourcePin;
+			return CanCompleteWireConnection(endPin, wireToConnectTo);
+		}
 
 		public bool CanCompleteWireConnection(PinInstance endPin, WireInstance wireToConnectTo = null)
 		{
@@ -817,10 +824,7 @@ namespace DLS.Game
 			}
 			else if (InteractionState.ElementUnderMouse is WireInstance connectionWire)
 			{
-				// If we're joining this wire to an existing wire, choose the appropriate source/target pin from that wire to connect to
-				PinInstance endPin = WireToPlace.FirstPin.IsSourcePin ? connectionWire.TargetPin_BusCorrected : connectionWire.SourcePin;
-
-				if (CanCompleteWireConnection(endPin, connectionWire))
+				if (CanCompleteWireConnection(connectionWire, out PinInstance endPin))
 				{
 					WireInstance.ConnectionInfo info = CreateWireToWireConnectionInfo(connectionWire, endPin);
 					CompleteConnection(info);
