@@ -91,7 +91,7 @@ namespace DLS.Graphics
 
 		static readonly MenuEntry[] entries_note =
 		{
-			new(Format("EDIT"), EditWire, CanEditWire),
+			new(Format("EDIT"), OpenNoteTextPopup, CanEditCurrentChip),
 			new(Format("DELETE"), Delete, CanDelete)
 		};
 
@@ -357,6 +357,11 @@ namespace DLS.Graphics
 		static void OpenChipLabelPopup()
 		{
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.ChipLabelPopup);
+		}
+
+		static void OpenNoteTextPopup()
+		{
+			UIDrawer.SetActiveMenu(UIDrawer.MenuType.NoteTextPopup);
 		}
 
 		public static void EditWire()
