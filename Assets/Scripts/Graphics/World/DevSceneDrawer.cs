@@ -718,6 +718,10 @@ namespace DLS.Graphics
 
 			if (InteractionState.ElementUnderMousePrevFrame is WireInstance wireUnderMouse && wire == wireUnderMouse)
 			{
+				if (controller.IsCreatingWire)
+				{
+					return controller.CanCompleteWireConnection(wire, out PinInstance _);
+				}
 				return true;
 			}
 
