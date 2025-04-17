@@ -44,7 +44,6 @@ namespace DLS.Description
 	{
 		Off,
 		UnsignedDecimal,
-		SignedDecimal,
-		HEX,
+		SignedDecimal
 	}
 }

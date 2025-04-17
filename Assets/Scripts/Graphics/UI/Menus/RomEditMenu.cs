@@ -27,8 +27,7 @@ namespace DLS.Graphics
 		{
 			"Unsigned Decimal",
 			"Signed Decimal",
-			"Binary",
-			"HEX"
+			"Binary"
 		};
 
 		static DataDisplayMode[] allDisplayModes;
@@ -204,7 +203,6 @@ namespace DLS.Graphics
 				if (dataDisplayMode == DataDisplayMode.Binary && c is not ('0' or '1')) return false;
 
 				if (c == '-') continue; // allow negative sign (even in unsigned field as we'll do automatic conversion)
-				if (dataDisplayMode == DataDisplayMode.HEX && Uri.IsHexDigit(c)) continue;
 				if (!char.IsDigit(c)) return false;
 			}
 
@@ -219,7 +217,6 @@ namespace DLS.Graphics
 				DataDisplayMode.Binary => Convert.ToString(raw, 2).PadLeft(bitCount, '0'),
 				DataDisplayMode.DecimalSigned => Maths.TwosComplement(raw, bitCount) + "",
 				DataDisplayMode.DecimalUnsigned => raw + "",
-				DataDisplayMode.HEX => raw.ToString("X").PadLeft(bitCount / 4, '0'),
 				_ => throw new NotImplementedException("Unsupported display format: " + displayFormat)
 			};
 		}
@@ -253,10 +250,6 @@ namespace DLS.Graphics
 				case DataDisplayMode.DecimalUnsigned:
 					uintVal = uint.Parse(displayString);
 					break;
-				case DataDisplayMode.HEX:
- 					int value = Convert.ToInt32(displayString, 16);
- 					uintVal = (uint)value;
- 					break;
 				default:
 					throw new NotImplementedException("Unsupported display format: " + stringFormat);
 			}
@@ -374,8 +367,7 @@ namespace DLS.Graphics
 		{
 			DecimalUnsigned,
 			DecimalSigned,
-			Binary,
-			HEX
+			Binary
 		}
 	}
 }
