@@ -221,7 +221,17 @@ namespace DLS.Graphics
 		{
 			if (pin.pinValueDisplayMode == PinValueDisplayMode.Off) return;
 
-			int charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+			int charCount;
+
+ 			if (pin.pinValueDisplayMode != PinValueDisplayMode.HEX)
+ 			{
+ 				charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+ 			} 
+			
+			else
+ 			{
+ 				charCount = StringHelper.CreateHexStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+ 			}
 
 			FontType font = FontBold;
 			Bounds2D parentBounds = pin.BoundingBox;
