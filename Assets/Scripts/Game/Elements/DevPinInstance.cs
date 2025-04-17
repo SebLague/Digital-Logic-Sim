@@ -98,7 +98,6 @@ namespace DLS.Game
 			return displayValue;
 		}
 
-
 		Bounds2D CreateBoundingBox(float pad)
 		{
 			float x1 = HandlePosition.x - faceDir.x * DevPinHandleWidth / 2;
