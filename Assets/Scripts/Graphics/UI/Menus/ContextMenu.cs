@@ -89,6 +89,12 @@ namespace DLS.Graphics
 			new(Format("DELETE"), Delete, CanDelete)
 		};
 
+		static readonly MenuEntry[] entries_note =
+		{
+			new(Format("EDIT"), EditWire, CanEditWire),
+			new(Format("DELETE"), Delete, CanDelete)
+		};
+
 		static readonly MenuEntry[] entries_bottomBarChip =
 		{
 			openChipEntry,
@@ -148,8 +154,9 @@ namespace DLS.Graphics
 				bool openDevPinContextMenu = (hoverElement is PinInstance pin && pin.parent is DevPinInstance) || hoverElement is DevPinInstance;
 				bool openWireContextMenu = hoverElement is WireInstance;
 				bool openSubchipOutputPinContextMenu = hoverElement is PinInstance pin2 && pin2.parent is SubChipInstance && pin2.IsSourcePin && !pin2.IsBusPin;
+				bool openNoteContextMenu = hoverElement is NoteInstance;
 
-				if (openSubChipContextMenu || openDevPinContextMenu || openWireContextMenu || openSubchipOutputPinContextMenu)
+				if (openSubChipContextMenu || openDevPinContextMenu || openWireContextMenu || openSubchipOutputPinContextMenu || openNoteContextMenu)
 				{
 					interactionContextName = string.Empty;
 					interactionContext = hoverElement;
@@ -199,6 +206,12 @@ namespace DLS.Graphics
 						PinInstance pinContext = (PinInstance)interactionContext;
 						headerName = CreatePinHeaderName(pinContext.Name);
 						activeContextMenuEntries = entries_subChipOutput;
+					}
+					else if (openNoteContextMenu)
+					{
+						NoteInstance note = (NoteInstance)interactionContext;
+						headerName = "NOTE";
+						activeContextMenuEntries = entries_note;
 					}
 
 					SetContextMenuOpen(headerName);

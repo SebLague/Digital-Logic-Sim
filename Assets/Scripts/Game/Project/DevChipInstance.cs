@@ -16,6 +16,7 @@ namespace DLS.Game
 		public SimChip SimChip;
 		bool hasSimChip;
 		public readonly List<WireInstance> Wires = new();
+		private List<NoteInstance> Notes = new();
 
 		bool elementsModifiedSinceLastArrayUpdate;
 		DevPinInstance[] inputPins_cached = Array.Empty<DevPinInstance>();
@@ -217,6 +218,17 @@ namespace DLS.Game
 			}
 		}
 
+		public void AddNote(NoteInstance note, bool isLoading)
+		{
+			AddElement(note);
+			Notes.Add(note);
+		}
+
+		public NoteInstance[] GetNotes()
+		{
+			return Notes.ToArray();
+		}
+
 		void AddElement(IMoveable element)
 		{
 			Elements.Add(element);
@@ -228,7 +240,6 @@ namespace DLS.Game
 			Elements.Remove(element);
 			elementsModifiedSinceLastArrayUpdate = true;
 		}
-
 
 		public void DeleteDevPin(DevPinInstance devPin)
 		{

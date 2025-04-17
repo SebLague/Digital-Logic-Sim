@@ -315,6 +315,7 @@ namespace DLS.Game
 				{
 					element.IsSelected = false;
 					SelectedElements.Remove(element);
+					Debug.Log($"Deselected element: {element.GetType().Name}, ID: {element.ID}");
 				}
 			}
 			else
@@ -327,6 +328,7 @@ namespace DLS.Game
 				SelectedElements.Add(element);
 				element.IsSelected = true;
 				element.IsValidMovePos = true;
+				Debug.Log($"Selected element: {element.GetType().Name}, ID: {element.ID}");
 			}
 		}
 

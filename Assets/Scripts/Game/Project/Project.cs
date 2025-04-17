@@ -177,6 +177,7 @@ namespace DLS.Game
 			SetNewActiveDevChip(devChip);
 		}
 
+
 		public void LoadDevChipOrCreateNewIfDoesntExist(string chipName)
 		{
 			if (chipLibrary.TryGetChipDescription(chipName, out ChipDescription description))
@@ -310,6 +311,19 @@ namespace DLS.Game
 					}
 				}
 			}
+		}
+
+		public NoteInstance CreateBlankNote(Vector2 position, string text, float width = 2f, float height = 2f)
+		{
+			// Generate a unique ID for the note
+			// Create a new NoteInstance
+			NoteInstance newNote = new NoteInstance(IDGenerator.GenerateNewElementID(editModeChip), position, text, width, height);
+
+			// Add the note to the list
+			editModeChip.AddNote(newNote, true);
+
+			// Return the created note
+			return newNote;
 		}
 
 		// Must be called prior to library being updated with the change

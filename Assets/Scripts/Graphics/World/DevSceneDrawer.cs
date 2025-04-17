@@ -53,6 +53,11 @@ namespace DLS.Graphics
 			{
 				Draw.Quad(controller.SelectionBoxCentre, controller.SelectionBoxSize, ActiveTheme.SelectionBoxCol);
 			}
+
+			// foreach (var note in Project.ActiveProject.editModeChip.GetNotes())
+			// {
+			// 	DrawNote(note);
+			// }
 		}
 
 		static void DrawWires()
@@ -145,6 +150,9 @@ namespace DLS.Graphics
 							DrawSubChip(subchip, sim);
 							break;
 						}
+						case NoteInstance note:
+							DrawNote(note);
+							break;
 					}
 				}
 
@@ -197,6 +205,27 @@ namespace DLS.Graphics
 			Draw.Text(font, text, FontSizePinLabel, centre, Anchor.TextFirstLineCentre, Color.white);
 		}
 
+		public static void DrawNote(NoteInstance note)
+		{
+			Vector2 centre = note.Position + new Vector2(note.Width / 2, note.Height / 2);
+			Vector2 size = new Vector2(note.Width, note.Height);
+			Color col = new Color(0.6f, 0.2f, 0.16f, 0.17f);
+			// Highlight if selected
+			// Color backgroundColor = note.IsSelected ? ActiveTheme.NoteSelectedBackgroundCol : ActiveTheme.NoteBackgroundCol;
+
+			Draw.Quad(centre, size + Vector2.one * ChipOutlineWidth, GetChipOutlineCol(col));
+			Draw.Quad(centre, size, col);
+
+			// Draw.Quad(centre, size, backgroundColor);
+			Draw.Text(FontBold, note.Text, FontSizePinLabel, centre, Anchor.TextCentre, Color.white);
+		
+			if (InputHelper.MouseInsideBounds_World(centre, size))
+			{
+				InteractionState.NotifyElementUnderMouse(note);
+			}
+		
+		}
+
 		public static void DrawSubChipLabel(SubChipInstance chip)
 		{
 			string text = chip.Label;
@@ -222,7 +251,7 @@ namespace DLS.Graphics
  			{
  				charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
  			} 
-			
+
 			else
  			{
  				char[] chars = pin.GetStateHexadecimalDisplayValue().ToCharArray();
