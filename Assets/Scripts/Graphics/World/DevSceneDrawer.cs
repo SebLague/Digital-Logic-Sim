@@ -81,6 +81,11 @@ namespace DLS.Graphics
 			{
 				DrawWire(wire);
 			}
+
+			foreach (WireInstance wire in controller.DuplicatedWires)
+			{
+				DrawWire(wire);
+			}
 		}
 
 		static void DrawAllPinNamesAndChipLabels()
@@ -834,7 +839,7 @@ namespace DLS.Graphics
 			// Can't edit first and last point in wire (unless that point connects to another wire instead of a pin)
 			int startIndex = wire.SourceConnectionInfo.IsConnectedAtWire ? 0 : 1;
 			int endIndex = wire.TargetConnectionInfo.IsConnectedAtWire ? wire.WirePointCount - 1 : wire.WirePointCount - 2;
-			
+
 			const float r = 0.07f;
 			const float rBG = r + 0.02f;
 
