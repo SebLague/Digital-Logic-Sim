@@ -209,6 +209,12 @@ namespace Seb.Vis.UI
 
 				if (limitedLines.Count >= maxLines)
 					break;
+
+				// Preserve manual newlines
+				if (line.Length == 0 && limitedLines.Count < maxLines)
+				{
+					limitedLines.Add(string.Empty);
+				}
 			}
 
 			// Join the limited lines back into a single string
