@@ -14,6 +14,7 @@ namespace DLS.Game
 
 		// ---- Selection and placement state ----
 		public readonly List<IMoveable> SelectedElements = new();
+		public List<WireInstance> DuplicatedWires = new();
 		public WireInstance WireToPlace;
 		bool isPlacingNewElements;
 		float itemPlacementCurrVerticalSpacing;
@@ -41,7 +42,7 @@ namespace DLS.Game
 		public bool HasControl => !UIDrawer.InInputBlockingMenu() && project.CanEditViewedChip;
 
 		// Cannot interact with elements when other elements are being moved, in a menu, or drawing a selection box
-		bool CanInteract => !IsMovingSelection && !UIDrawer.InInputBlockingMenu() && !IsCreatingSelectionBox;
+		bool CanInteract => !IsMovingSelection && !UIDrawer.InInputBlockingMenu() && !IsCreatingSelectionBox && !InteractionState.MouseIsOverUI;
 		public bool IsCreatingWire => WireToPlace != null;
 		public bool IsPlacingElements => isPlacingNewElements;
 		public bool IsPlacingElementOrCreatingWire => isPlacingNewElements || IsCreatingWire;
@@ -72,6 +73,13 @@ namespace DLS.Game
 
 		// Don't allow interaction with wire that's currently being placed (this would allow it to try to connect to itself for example...)
 		public bool CanInteractWithWire(WireInstance wire) => CanInteract && wire != WireToPlace;
+
+		public bool CanCompleteWireConnection(WireInstance wireToConnectTo, out PinInstance endPin)
+		{
+			// If we're joining this wire to an existing wire, choose the appropriate source/target pin from that wire to connect to
+			endPin = WireToPlace.FirstPin.IsSourcePin ? wireToConnectTo.TargetPin_BusCorrected : wireToConnectTo.SourcePin;
+			return CanCompleteWireConnection(endPin, wireToConnectTo);
+		}
 
 		public bool CanCompleteWireConnection(PinInstance endPin, WireInstance wireToConnectTo = null)
 		{
@@ -184,7 +192,7 @@ namespace DLS.Game
 
 			if (KeyboardShortcuts.ToggleGridShortcutTriggered)
 			{
-				project.showGrid = !project.showGrid;
+				project.ToggleGridDisplay();
 			}
 
 			if (!KeyboardShortcuts.StraightLineModeHeld) straightLineMoveState = StraightLineMoveState.None;
@@ -257,26 +265,11 @@ namespace DLS.Game
 
 		void DuplicateSelectedElements()
 		{
-			IMoveable[] elementsToDuplicate = SelectedElements.Where(e => CanDuplicate(e)).ToArray();
+			IMoveable[] elementsToDuplicate = SelectedElements.Where(CanDuplicate).ToArray();
 			if (elementsToDuplicate.Length == 0) return;
 
-			// Find element closest to mouse to use as origin point for duplicated elements
-			Vector2 mousePos = InputHelper.MousePosWorld;
-			Vector2 closestElementPos = Vector2.zero;
-			float closestDst = float.MaxValue;
-
-			foreach (IMoveable element in elementsToDuplicate)
-			{
-				Vector2 pos = element is DevPinInstance pin ? pin.HandlePosition : element.Position;
-				float dst = Vector2.Distance(pos, mousePos);
-				if (dst < closestDst)
-				{
-					closestDst = dst;
-					closestElementPos = pos;
-				}
-			}
-
-			Vector2 offset = InputHelper.MousePosWorld - closestElementPos;
+			List<IMoveable> duplicatedElements = new(elementsToDuplicate.Length);
+			Dictionary<int, int> duplicatedElementIDFromOriginalID = new();
 
 			// Get description of each element, and start placing a copy of it
 			foreach (IMoveable element in elementsToDuplicate)
@@ -299,9 +292,82 @@ namespace DLS.Game
 				}
 
 
-				IMoveable duplicatedElement = StartPlacing(desc, element.Position + offset, true);
+				IMoveable duplicatedElement = StartPlacing(desc, element.Position, true);
 				duplicatedElement.StraightLineReferencePoint = element.Position;
+				duplicatedElements.Add(duplicatedElement);
+				duplicatedElementIDFromOriginalID.Add(element.ID, duplicatedElement.ID);
 			}
+
+			// ---- Duplicate wires ----
+			Dictionary<WireInstance, WireInstance> duplicatedWireFromOriginal = new();
+			DuplicatedWires.Clear();
+
+			foreach (WireInstance wire in ActiveDevChip.Wires)
+			{
+				bool wireSourceHasBeenDuplicated = duplicatedElementIDFromOriginalID.TryGetValue(wire.SourcePin.Address.PinOwnerID, out int sourceID);
+				bool wireTargetHasBeenDuplicated = duplicatedElementIDFromOriginalID.TryGetValue(wire.TargetPin.Address.PinOwnerID, out int targetID);
+
+				if (wireSourceHasBeenDuplicated && wireTargetHasBeenDuplicated)
+				{
+					PinAddress duplicatedSourcePinAddress = new(sourceID, wire.SourcePin.Address.PinID);
+					PinAddress duplicatedTargetPinAddress = new(targetID, wire.TargetPin.Address.PinID);
+
+					DevChipInstance.TryFindPin(duplicatedElements, duplicatedSourcePinAddress, out PinInstance duplicatedSourcePin);
+					DevChipInstance.TryFindPin(duplicatedElements, duplicatedTargetPinAddress, out PinInstance duplicatedTargetPin);
+
+					Debug.Assert(duplicatedSourcePin != null && duplicatedTargetPin != null, "Pins not found for duplicated wire!");
+
+					WireInstance duplicatedConnectedSourceWire = null;
+					WireInstance duplicatedConnectedTargetWire = null;
+					if (wire.SourceConnectionInfo.connectedWire != null) duplicatedWireFromOriginal.TryGetValue(wire.SourceConnectionInfo.connectedWire, out duplicatedConnectedSourceWire);
+					if (wire.TargetConnectionInfo.connectedWire != null) duplicatedWireFromOriginal.TryGetValue(wire.TargetConnectionInfo.connectedWire, out duplicatedConnectedTargetWire);
+
+					WireInstance.ConnectionInfo sourceConnectionInfo = new()
+					{
+						pin = duplicatedSourcePin,
+						connectedWire = duplicatedConnectedSourceWire,
+						connectionPoint = wire.SourceConnectionInfo.connectionPoint,
+						wireConnectionSegmentIndex = wire.SourceConnectionInfo.wireConnectionSegmentIndex
+					};
+
+					WireInstance.ConnectionInfo targetConnectionInfo = new()
+					{
+						pin = duplicatedTargetPin,
+						connectedWire = duplicatedConnectedTargetWire,
+						connectionPoint = wire.TargetConnectionInfo.connectionPoint,
+						wireConnectionSegmentIndex = wire.TargetConnectionInfo.wireConnectionSegmentIndex
+					};
+
+					Vector2[] wirePoints = new Vector2[wire.WirePointCount];
+					for (int i = 0; i < wirePoints.Length; i++)
+					{
+						wirePoints[i] = wire.GetWirePoint(i);
+					}
+
+					WireInstance duplicatedWire = new(sourceConnectionInfo, targetConnectionInfo, wirePoints, ActiveDevChip.Wires.Count + DuplicatedWires.Count);
+					duplicatedWireFromOriginal.Add(wire, duplicatedWire);
+					DuplicatedWires.Add(duplicatedWire);
+				}
+			}
+
+			// Find element closest to mouse to use as origin point for duplicated elements
+			Vector2 mousePos = InputHelper.MousePosWorld;
+			Vector2 closestElementPos = Vector2.zero;
+			float closestDst = float.MaxValue;
+
+			foreach (IMoveable element in elementsToDuplicate)
+			{
+				Vector2 pos = element is DevPinInstance pin ? pin.HandlePosition : element.Position;
+				float dst = Vector2.Distance(pos, mousePos);
+				if (dst < closestDst)
+				{
+					closestDst = dst;
+					closestElementPos = pos;
+				}
+			}
+
+			Vector2 offset = InputHelper.MousePosWorld - closestElementPos;
+			moveElementMouseStartPos -= offset;
 		}
 
 		public void Select(IMoveable element, bool addToCurrentSelection = true)
@@ -427,7 +493,7 @@ namespace DLS.Game
 		WireInstance.ConnectionInfo CreateWireToWireConnectionInfo(WireInstance wireToConnectTo, PinInstance pin)
 		{
 			Vector2 mousePos = InputHelper.MousePosWorld;
-			if (KeyboardShortcuts.SnapModeHeld) mousePos = GridHelper.SnapToGrid(mousePos, true, true);
+			if (project.ShouldSnapToGrid) mousePos = GridHelper.SnapToGrid(mousePos, true, true);
 
 			// If connecting a new wire to an existing wire, the target connection point is end pos of new wire (this is mouse pos but with snapping options applied)
 			// Otherwise if creating a new wire from an existing wire, connection point is at mouse pos.
@@ -490,6 +556,13 @@ namespace DLS.Game
 				if (elementToPlace is SubChipInstance subchip) ActiveDevChip.AddNewSubChip(subchip, false);
 				else if (elementToPlace is DevPinInstance devPin) ActiveDevChip.AddNewDevPin(devPin, false);
 			}
+
+			foreach (WireInstance wire in DuplicatedWires)
+			{
+				ActiveDevChip.AddWire(wire, false);
+			}
+
+			DuplicatedWires.Clear();
 
 			// When elements are placed, there are two cases where we automatically start placing new elements:
 			// 1) If placing a bus origin, a bus terminus is automatically created to place next
@@ -617,7 +690,7 @@ namespace DLS.Game
 		void UpdatePositionsToMouse()
 		{
 			Vector2 mousePos = InputHelper.MousePosWorld;
-			bool snapToGrid = KeyboardShortcuts.SnapModeHeld;
+			bool snapToGrid = project.ShouldSnapToGrid;
 
 			if (IsCreatingWire)
 			{
@@ -639,7 +712,7 @@ namespace DLS.Game
 						{
 							targetPos = GridHelper.SnapMovingElementToGrid(element, totalOffset, false, true);
 						}
-						// Snap additional selected elements relative to the first one. (Snapping each element independendly results in a 'jiggling' effect)
+						// Snap additional selected elements relative to the first one. (Snapping each element independently results in a 'jiggling' effect)
 						else
 						{
 							// Get snap points prior to movement
@@ -689,8 +762,19 @@ namespace DLS.Game
 					element.IsValidMovePos = legal;
 				}
 
+
 				// Update wires when their parents are moved
-				if (!isPlacingNewElements)
+				if (isPlacingNewElements)
+				{
+					foreach (WireInstance wire in DuplicatedWires)
+					{
+						Vector2 delA = wire.SourcePin.parent.Position - wire.SourcePin.parent.MoveStartPosition;
+						Vector2 delB = wire.TargetPin.parent.Position - wire.TargetPin.parent.MoveStartPosition;
+						// Parent chips may have been moved by slightly different amounts if snapping is enabled, so just take average
+						wire.MoveOffset = (delA + delB) / 2;
+					}
+				}
+				else
 				{
 					foreach (WireInstance wire in ActiveDevChip.Wires)
 					{
@@ -740,10 +824,7 @@ namespace DLS.Game
 			}
 			else if (InteractionState.ElementUnderMouse is WireInstance connectionWire)
 			{
-				// If we're joining this wire to an existing wire, choose the appropriate source/target pin from that wire to connect to
-				PinInstance endPin = WireToPlace.FirstPin.IsSourcePin ? connectionWire.TargetPin_BusCorrected : connectionWire.SourcePin;
-
-				if (CanCompleteWireConnection(endPin, connectionWire))
+				if (CanCompleteWireConnection(connectionWire, out PinInstance endPin))
 				{
 					WireInstance.ConnectionInfo info = CreateWireToWireConnectionInfo(connectionWire, endPin);
 					CompleteConnection(info);
@@ -884,6 +965,8 @@ namespace DLS.Game
 			// If canceling placement of bus terminus, destroy the linked bus origin 
 			if (isPlacingNewElements)
 			{
+				DuplicatedWires.Clear();
+
 				foreach (IMoveable element in SelectedElements)
 				{
 					if (element is SubChipInstance subChipInstance && subChipInstance.IsBus)

@@ -41,7 +41,7 @@ namespace DLS.Game
 		DevPinInstance[] inputPins = Array.Empty<DevPinInstance>();
 		int mainThreadFrameCount;
 
-		public bool showGrid;
+		public bool ShowGrid => description.Prefs_GridDisplayMode == 1;
 		public int simPausedSingleStepCounter;
 
 		bool simThreadActive;
@@ -395,6 +395,14 @@ namespace DLS.Game
 			inputPins = editModeChip.GetInputPins();
 			mainThreadFrameCount++;
 		}
+
+		public void ToggleGridDisplay()
+		{
+			description.Prefs_GridDisplayMode = 1 - description.Prefs_GridDisplayMode;
+		}
+
+		public bool ShouldSnapToGrid => KeyboardShortcuts.SnapModeHeld || (description.Prefs_Snapping == 1 && ShowGrid) || description.Prefs_Snapping == 2;
+		public bool ForceStraightWires => KeyboardShortcuts.StraightLineModeHeld || (description.Prefs_StraightWires == 1 && ShowGrid) || description.Prefs_StraightWires == 2;
 
 		public void NotifyExit()
 		{

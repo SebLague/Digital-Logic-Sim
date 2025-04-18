@@ -76,6 +76,11 @@ namespace DLS.Graphics
 			{
 				DrawWire(wire);
 			}
+
+			foreach (WireInstance wire in controller.DuplicatedWires)
+			{
+				DrawWire(wire);
+			}
 		}
 
 		static void DrawAllPinNamesAndChipLabels()
@@ -216,7 +221,17 @@ namespace DLS.Graphics
 		{
 			if (pin.pinValueDisplayMode == PinValueDisplayMode.Off) return;
 
-			int charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+			int charCount;
+
+ 			if (pin.pinValueDisplayMode != PinValueDisplayMode.HEX)
+ 			{
+ 				charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+ 			} 
+			
+			else
+ 			{
+ 				charCount = StringHelper.CreateHexStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+ 			}
 
 			FontType font = FontBold;
 			Bounds2D parentBounds = pin.BoundingBox;
@@ -418,6 +433,14 @@ namespace DLS.Graphics
 				bounds = DrawDisplay_Dot(posWorld, scaleWorld, sim);
 			}
 
+			else if (display.DisplayType == ChipType.DisplayLED)
+			{
+				bool simActive = sim != null;
+				bool isDisconnected = (!simActive) || (sim.numConnectedInputs == 0) || (sim.InputPins[0].State.GetBit(0) == PinState.LogicDisconnected);
+				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
+				bounds = DrawDisplay_DisplayLED(posWorld, scaleWorld, isDisconnected, isOn);
+			}
+
 			display.LastDrawBounds = bounds;
 			return bounds;
 		}
@@ -565,6 +588,22 @@ namespace DLS.Graphics
 			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
 		}
 
+		public static Bounds2D DrawDisplay_DisplayLED(Vector2 centre, float scale, bool isDisconnected, bool isOn)
+		{
+			const float pixelSizeT = 0.975f;
+			// Draw background
+			Draw.Quad(centre, Vector2.one * scale, Color.black);
+			float size = scale;
+
+			float pixelSize = size;
+			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
+
+			Color col = isDisconnected ? ActiveTheme.DisplayLEDCols[0] : (isOn ? ActiveTheme.DisplayLEDCols[2] : ActiveTheme.DisplayLEDCols[1]);
+
+			Draw.Quad(centre, pixelDrawSize, col);
+			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+		}
+
 		public static void DrawDevPin(DevPinInstance devPin)
 		{
 			if (devPin.BitCount == PinBitCount.Bit1)
@@ -692,11 +731,16 @@ namespace DLS.Graphics
 		// Wire should be highlighted if mouse is over it or if in edit mode
 		static bool ShouldHighlightWire(WireInstance wire)
 		{
+			if (InteractionState.MouseIsOverUI) return false;
 			if (wire == controller.wireToEdit) return true;
 
-			if (InteractionState.ElementUnderMousePrevFrame is WireInstance wireUnderMouse)
+			if (InteractionState.ElementUnderMousePrevFrame is WireInstance wireUnderMouse && wire == wireUnderMouse)
 			{
-				return wire == wireUnderMouse;
+				if (controller.IsCreatingWire)
+				{
+					return controller.CanCompleteWireConnection(wire, out PinInstance _);
+				}
+				return true;
 			}
 
 			return false;
@@ -775,7 +819,7 @@ namespace DLS.Graphics
 			// Can't edit first and last point in wire (unless that point connects to another wire instead of a pin)
 			int startIndex = wire.SourceConnectionInfo.IsConnectedAtWire ? 0 : 1;
 			int endIndex = wire.TargetConnectionInfo.IsConnectedAtWire ? wire.WirePointCount - 1 : wire.WirePointCount - 2;
-			
+
 			const float r = 0.07f;
 			const float rBG = r + 0.02f;
 

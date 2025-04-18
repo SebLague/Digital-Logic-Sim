@@ -79,32 +79,37 @@ namespace DLS.Graphics
 
 			Color[] stateHover = stateLow.Select(c => Brighten(c, 0.1f)).ToArray();
 
-			return new ThemeDLS
-			{
-				SelectionBoxCol = new Color(1, 1, 1, 0.1f),
-				SelectionBoxMovingCol = new Color(1, 1, 1, 0.125f),
-				SelectionBoxInvalidCol = MakeCol255(243, 81, 75, 120),
-				SelectionBoxOtherIsInvaldCol = MakeCol255(243, 150, 75, 80),
-				StateLowCol = stateLow,
-				StateHighCol = stateHigh,
-				StateHoverCol = stateHover,
-				StateDisconnectedCol = Color.black,
-				DevPinHandle = MakeCol(0.31f),
-				DevPinHandleHighlighted = MakeCol(0.7f),
-				PinCol = Color.black,
-				PinLabelCol = new Color(0, 0, 0, 0.7f),
-				PinHighlightCol = Color.white,
-				PinInvalidCol = MakeCol(0.15f),
-				SevenSegCols = new Color[]
-				{
-					new(0.1f, 0.09f, 0.09f), new(1, 0.32f, 0.28f), new(0.19f, 0.15f, 0.15f), // Col A: OFF, ON, HIGHLIGHT
+            return new ThemeDLS
+            {
+                SelectionBoxCol = new Color(1, 1, 1, 0.1f),
+                SelectionBoxMovingCol = new Color(1, 1, 1, 0.125f),
+                SelectionBoxInvalidCol = MakeCol255(243, 81, 75, 120),
+                SelectionBoxOtherIsInvaldCol = MakeCol255(243, 150, 75, 80),
+                StateLowCol = stateLow,
+                StateHighCol = stateHigh,
+                StateHoverCol = stateHover,
+                StateDisconnectedCol = Color.black,
+                DevPinHandle = MakeCol(0.31f),
+                DevPinHandleHighlighted = MakeCol(0.7f),
+                PinCol = Color.black,
+                PinLabelCol = new Color(0, 0, 0, 0.7f),
+                PinHighlightCol = Color.white,
+                PinInvalidCol = MakeCol(0.15f),
+                SevenSegCols = new Color[]
+                {
+                    new(0.1f, 0.09f, 0.09f), new(1, 0.32f, 0.28f), new(0.19f, 0.15f, 0.15f), // Col A: OFF, ON, HIGHLIGHT
 					new(0.09f, 0.09f, 0.1f), new(0, 0.61f, 1f), new(0.15f, 0.15f, 0.19f) // Col B: OFF, ON, HIGHLIGHT
 				},
-				Display2x2Cols = new[] { MakeCol(0.175f), MakeCol(1), MakeCol(0.275f) }, // OFF, ON, HIGHLIGHT
-				BackgroundCol = MakeCol255(66, 66, 69),
-				GridCol = MakeCol255(49, 49, 51)
-			};
-		}
+                Display2x2Cols = new[] { MakeCol(0.175f), MakeCol(1), MakeCol(0.275f) }, // OFF, ON, HIGHLIGHT
+                BackgroundCol = MakeCol255(66, 66, 69),
+                GridCol = MakeCol255(49, 49, 51),
+
+				DisplayLEDCols = new Color []
+                {
+					Color.black, new(0.2f, 0.1f, 0.1f), new(1, 0.32f, 0.28f) // Disconnected, OFF, ON
+				}
+            };
+        }
 
 		static UIThemeDLS CreateUITheme()
 		{
@@ -236,6 +241,8 @@ namespace DLS.Graphics
 			public Color[] StateHighCol;
 			public Color[] StateHoverCol;
 			public Color[] StateLowCol;
+
+			public Color[] DisplayLEDCols; // Disconnected, Off, On
 		}
 
 		public class UIThemeDLS
