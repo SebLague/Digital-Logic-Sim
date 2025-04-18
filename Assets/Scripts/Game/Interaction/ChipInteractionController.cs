@@ -558,6 +558,7 @@ namespace DLS.Game
 			{
 				if (elementToPlace is SubChipInstance subchip) ActiveDevChip.AddNewSubChip(subchip, false);
 				else if (elementToPlace is DevPinInstance devPin) ActiveDevChip.AddNewDevPin(devPin, false);
+				else if (elementToPlace is NoteInstance note) ActiveDevChip.AddNote(note, false);
 			}
 
 			foreach (WireInstance wire in DuplicatedWires)
@@ -913,6 +914,49 @@ namespace DLS.Game
 			else
 			{
 				moveElementMouseStartPos = InputHelper.MousePosWorld;
+				elementToPlace.MoveStartPosition = position;
+				elementToPlace.StraightLineReferencePoint = position;
+				elementToPlace.HasReferencePointForStraightLineMovement = isDuplicating;
+			}
+
+			Select(elementToPlace);
+			return elementToPlace;
+		}
+
+		public void StartPlacingNote(NoteDescription noteDescription)
+		{
+			StartPlacingNote(noteDescription, InputHelper.MousePosWorld, false);
+		}
+
+		public IMoveable StartPlacingNote(NoteDescription noteDescription, Vector2 position, bool isDuplicating)
+		{
+			newElementsAreDuplicatedElements = isDuplicating;
+
+			if (!isPlacingNewElements)
+			{
+				CancelEverything();
+				isPlacingNewElements = true;
+				hasExittedMultiModeSincePlacementStart = false;
+				StartMovingSelectedItems();
+			}
+
+			IMoveable elementToPlace;
+			int instanceID = IDGenerator.GenerateNewElementID(ActiveDevChip);
+			
+			NoteDescription noteDesc = DescriptionCreator.CreateNoteDescriptionForPlacing(instanceID, noteDescription.Colour, noteDescription.Text, position);
+			elementToPlace = new NoteInstance(noteDesc);
+
+			// If placing multiple elements simultaneously, place the new element below the previous one
+			// (unless is duplicating elements, in which case their relative positions should be preserved)
+			if (SelectedElements.Count > 0 && !isDuplicating)
+			{
+				float spacing = (elementToPlace.SelectionBoundingBox.Size.y + SelectedElements[^1].SelectionBoundingBox.Size.y) / 2;
+				elementToPlace.MoveStartPosition = SelectedElements[^1].MoveStartPosition + Vector2.down * spacing;
+				elementToPlace.HasReferencePointForStraightLineMovement = false;
+			}
+			else
+			{
+				moveElementMouseStartPos = InputHelper.MousePosWorld + elementToPlace.SelectionBoundingBox.Size / 2;;
 				elementToPlace.MoveStartPosition = position;
 				elementToPlace.StraightLineReferencePoint = position;
 				elementToPlace.HasReferencePointForStraightLineMovement = isDuplicating;

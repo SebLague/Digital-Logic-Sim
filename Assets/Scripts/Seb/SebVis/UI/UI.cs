@@ -536,7 +536,7 @@ namespace Seb.Vis.UI
 			}
 		}
 
-		public static InputFieldState TextArea(UIHandle id, InputFieldTheme theme, Vector2 pos, Vector2 size, string defaultText, Anchor anchor, float textPad, Func<string, bool> validation = null, bool forceFocus = false)
+		public static InputFieldState TextArea(UIHandle id, InputFieldTheme theme, Vector2 pos, Vector2 size, string defaultText, Anchor anchor, float textPad, string lineLength, int maxLines, Func<string, bool> validation = null, bool forceFocus = false)
 		{
 			InputFieldState state = GetInputFieldState(id);
 
@@ -574,10 +574,12 @@ namespace Seb.Vis.UI
 				// Draw focus outline and update text
 				if (state.focused)
 				{
+					state.EnforceTextLimit(lineLength.Length, maxLines);
 					const float outlineWidth = 0.05f;
 					Draw.QuadOutline(ss.centre, ss.size, outlineWidth * scale, theme.focusBorderCol);
 					foreach (char c in InputHelper.InputStringThisFrame)
 					{
+						if (maxLines <= state.CountLines()) continue;
 						bool invalidChar = char.IsControl(c) || char.IsSurrogate(c) || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.Format || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.PrivateUse;
 						if (invalidChar) continue;
 						state.TryInsertText(c + "", validation);
@@ -604,7 +606,7 @@ namespace Seb.Vis.UI
 						{
 							state.Delete(false, validation);
 						}
-						if (InputHelper.IsKeyDownThisFrame(KeyCode.Return)) 
+						if (InputHelper.IsKeyDownThisFrame(KeyCode.Return) && state.CountLines() < maxLines - 1) 
 						{
 							state.NewLine();
 						}
@@ -650,7 +652,7 @@ namespace Seb.Vis.UI
 				// Draw text
 				using (CreateMaskScope(centre, size))
 				{
-					state.WrapText(23);
+					state.WrapText(lineLength.Length);
 					float fontSize_ss = theme.fontSize * scale;
 					bool showDefaultText = string.IsNullOrEmpty(state.text) || !Application.isPlaying;
 					string displayString = showDefaultText ? defaultText : state.text;

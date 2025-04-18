@@ -45,7 +45,7 @@ namespace DLS.Graphics
 				Vector2 pos = UI.Centre + Vector2.up * 5;
 
 				// Draw input field
-				InputFieldState inputFieldState = UI.TextArea(ID_NameField, inputTheme, pos, inputFieldSize, note.Text, Anchor.Centre, padX / 2, null, true);
+				InputFieldState inputFieldState = UI.TextArea(ID_NameField, inputTheme, pos, inputFieldSize, note.Text, Anchor.Centre, padX / 2, MaxLabelLength, 7, null, true);
 				Bounds2D inputFieldBounds = UI.PrevBounds;
 				string newName = inputFieldState.text;
 
@@ -72,7 +72,5 @@ namespace DLS.Graphics
 		{
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 		}
-
-		static bool ValidateNameInput(string name) => name.Length <= MaxLabelLength.Length;
 	}
 }

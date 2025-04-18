@@ -165,6 +165,14 @@ namespace DLS.SaveSystem
 				note.Text,
 				note.Position
 			);
+		
+		public static NoteDescription CreateNoteDescriptionForPlacing(int id, NoteColour colour, string text, Vector2 pos) =>
+			new(
+				id,
+				colour,
+				text,
+				pos
+			);
 
 		static Color RandomInitialChipColour()
 		{

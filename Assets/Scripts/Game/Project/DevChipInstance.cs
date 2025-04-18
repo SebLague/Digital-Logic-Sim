@@ -228,7 +228,6 @@ namespace DLS.Game
 
 		public void AddNote(NoteInstance note, bool isLoading)
 		{
-			Debug.Log("Adding note: " + note.Text);
 			AddElement(note);
 		}
 

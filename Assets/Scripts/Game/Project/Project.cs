@@ -314,23 +314,19 @@ namespace DLS.Game
 			}
 		}
 
-		public NoteInstance CreateBlankNote(Vector2 position, string text)
+		public void CreateBlankNote(Vector2 position, string text)
 		{
 			// Generate a unique ID for the note
 			// Create a new NoteInstance
-			NoteInstance newNote = new NoteInstance(
-				new NoteDescription(
+			NoteDescription noteDesc = new NoteDescription(
 					IDGenerator.GenerateNewElementID(editModeChip),
 					NoteColour.Yellow,
 					text,
 					position
-				));
+				);
 
 			// Add the note to the list
-			editModeChip.AddNote(newNote, true);
-
-			// Return the created note
-			return newNote;
+			controller.StartPlacingNote(noteDesc);
 		}
 
 		// Must be called prior to library being updated with the change
