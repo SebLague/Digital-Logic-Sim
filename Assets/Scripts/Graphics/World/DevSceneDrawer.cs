@@ -210,7 +210,7 @@ namespace DLS.Graphics
 			Vector2 centre = note.Position + note.Size / 2;
 			int colIndex = (int)note.Colour;
 			Color col = ActiveTheme.NoteCol[colIndex];
-			// Highlight if selected
+			Color textCol = note.Colour == NoteColour.White ? Color.black : Color.white;
 			// Color backgroundColor = note.IsSelected ? ActiveTheme.NoteSelectedBackgroundCol : ActiveTheme.NoteBackgroundCol;
 
 			Draw.Quad(centre, note.Size + Vector2.one * ChipOutlineWidth, GetChipOutlineCol(col));
@@ -220,7 +220,7 @@ namespace DLS.Graphics
 
 
 			// Draw.Quad(centre, size, backgroundColor);
-			Draw.Text(FontBold, note.Text, FontSizeNoteText, centre, Anchor.TextCentre, Color.white);
+			Draw.Text(FontBold, note.Text, FontSizeNoteText, centre, Anchor.TextCentre, textCol);
 		
 			if (InputHelper.MouseInsideBounds_World(centre, note.Size))
 			{

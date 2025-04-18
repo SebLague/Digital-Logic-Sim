@@ -583,6 +583,7 @@ namespace Seb.Vis.UI
 						bool invalidChar = char.IsControl(c) || char.IsSurrogate(c) || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.Format || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.PrivateUse;
 						if (invalidChar) continue;
 						state.TryInsertText(c + "", validation);
+						state.WrapText(lineLength.Length);
 					}
 
 					// Paste from clipboard
@@ -652,7 +653,6 @@ namespace Seb.Vis.UI
 				// Draw text
 				using (CreateMaskScope(centre, size))
 				{
-					state.WrapText(lineLength.Length);
 					float fontSize_ss = theme.fontSize * scale;
 					bool showDefaultText = string.IsNullOrEmpty(state.text) || !Application.isPlaying;
 					string displayString = showDefaultText ? defaultText : state.text;
