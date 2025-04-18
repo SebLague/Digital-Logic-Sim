@@ -1,0 +1,20 @@
+{
+  "Name": "child",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 0.875,
+    "y": 0.375
+  },
+  "Colour": {
+    "r": 0.238809466,
+    "g": 0.3261003,
+    "b": 0.291639119,
+    "a": 1
+  },
+  "InputPins":[],
+  "OutputPins":[],
+  "SubChips":[],
+  "Wires":[],
+  "Displays": null
+}

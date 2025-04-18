@@ -1,0 +1,32 @@
+{
+  "Name": "parent",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 1.025,
+    "y": 0.375
+  },
+  "Colour": {
+    "r": 0.150869921,
+    "g": 0.484720856,
+    "b": 0.6375924,
+    "a": 1
+  },
+  "InputPins":[],
+  "OutputPins":[],
+  "SubChips":[
+    {
+      "Name":"child new",
+      "ID":1699980588,
+      "Label":"",
+      "Position":{
+        "x":-1.02686,
+        "y":-0.86098
+      },
+      "OutputPinColourInfo":[],
+      "InternalData":null
+    }
+  ],
+  "Wires":[],
+  "Displays": null
+}
