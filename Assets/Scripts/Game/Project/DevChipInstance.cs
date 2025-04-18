@@ -343,6 +343,15 @@ namespace DLS.Game
 			}
 		}
 
+		public void DeleteNote(NoteInstance note)
+		{
+			// Ensure subchip exists before deleting
+			// (required for buses, where one end of bus is deleted automatically when other end is deleted; but user may select both ends for deletion)
+			if (!Elements.Contains(note)) return;
+
+			RemoveElement(note);
+		}
+
 		// Delete subchip with given id (if it exists)
 		public void TryDeleteSubChipByID(int id)
 		{

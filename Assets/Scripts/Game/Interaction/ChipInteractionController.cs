@@ -67,6 +67,7 @@ namespace DLS.Game
 		{
 			if (!HasControl) return;
 			if (element is SubChipInstance subChip) ActiveDevChip.DeleteSubChip(subChip);
+			if (element is NoteInstance noteInstance) ActiveDevChip.DeleteNote(noteInstance);
 			if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
 			if (clearSelection) SelectedElements.Clear();
 		}
@@ -920,7 +921,6 @@ namespace DLS.Game
 			Select(elementToPlace);
 			return elementToPlace;
 		}
-
 
 		public void CancelEverything()
 		{
