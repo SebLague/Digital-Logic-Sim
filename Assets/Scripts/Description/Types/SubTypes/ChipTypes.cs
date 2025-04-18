@@ -109,10 +109,10 @@ namespace DLS.Description
 		BusTerminus_1Bit,
 		BusTerminus_4Bit,
 		BusTerminus_8Bit,
-   		BusTerminus_16Bit,
-   		BusTerminus_32Bit,
+   	BusTerminus_16Bit,
+   	BusTerminus_32Bit,
 		BusTerminus_64Bit,
-   		BusTerminus_128Bit,
-   		BusTerminus_256Bit,
-    }
+   	BusTerminus_128Bit,
+   	BusTerminus_256Bit,
+	}
 }

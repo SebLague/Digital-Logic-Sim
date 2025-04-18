@@ -25,7 +25,7 @@ namespace DLS.Graphics
 		{
 			bool isSnapping = KeyboardShortcuts.SnapModeHeld && Project.ActiveProject.controller.IsPlacingOrMovingElementOrCreatingWire;
 
-			if (Project.ActiveProject.showGrid || isSnapping)
+			if (Project.ActiveProject.ShowGrid || isSnapping)
 			{
 				DevSceneDrawer.DrawGrid(col);
 			}
