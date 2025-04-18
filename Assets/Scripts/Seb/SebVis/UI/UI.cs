@@ -604,6 +604,7 @@ namespace Seb.Vis.UI
 
 		public static Color DrawColourPicker(UIHandle id, Vector2 pos, float width, Anchor anchor = Anchor.Centre)
 		{
+			Color colRgb = Color.magenta;
 			ColourPickerState state = GetColourPickerState(id);
 			Vector2 centre = CalculateCentre(pos, Vector2.one * width, anchor);
 
@@ -615,13 +616,17 @@ namespace Seb.Vis.UI
 			float satValWidth = width - (hueBarWidth + hueBarSpacing);
 			Vector2 satValSize = Vector2.one * satValWidth;
 			Vector2 satValCentre = CalculateCentre(centre + new Vector2(-width, width) / 2, satValSize, Anchor.TopLeft);
-			Color colRgb = Color.magenta;
+			// Calculate hue bar position
+			Vector2 hueBarSize = new(hueBarWidth, satValSize.y);
+			Vector2 hueCentre = CalculateCentre(centre + new Vector2(width, width) / 2, hueBarSize, Anchor.TopRight);
+			// Calculate element bounds
+			Vector2 elementLeft = satValCentre + Vector2.left * satValWidth / 2;
+			Vector2 elementRight = hueCentre + Vector2.right * hueBarWidth / 2;
+			Vector2 elementCentre = (elementLeft + elementRight) / 2;
+			Vector2 elementSize = new(elementRight.x - elementLeft.x, satValSize.y);
 
 			if (IsRendering)
 			{
-				// Calculate hue bar position
-				Vector2 hueBarSize = new(hueBarWidth, satValSize.y);
-				Vector2 hueCentre = CalculateCentre(centre + new Vector2(width, width) / 2, hueBarSize, Anchor.TopRight);
 				(Vector2 centre, Vector2 size) hue_ss = UIToScreenSpace(hueCentre, hueBarSize);
 				(Vector2 centre, Vector2 size) satVal_ss = UIToScreenSpace(satValCentre, satValSize);
 
@@ -690,7 +695,8 @@ namespace Seb.Vis.UI
 				}
 			}
 
-			OnFinishedDrawingUIElement(centre, new Vector2(width, satValSize.y));
+
+			OnFinishedDrawingUIElement(elementCentre, elementSize);
 			return colRgb;
 		}
 

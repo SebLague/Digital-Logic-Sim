@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DLS.Description;
@@ -11,12 +12,6 @@ namespace DLS.Graphics
 {
 	public static class ChipCustomizationMenu
 	{
-		static readonly string[] topButtons =
-		{
-			"CANCEL",
-			"CONFIRM"
-		};
-
 		static readonly string[] nameDisplayOptions =
 		{
 			"Name: Middle",
@@ -24,13 +19,18 @@ namespace DLS.Graphics
 			"Name: Hidden"
 		};
 
+
+		// ---- State ----
 		static SubChipInstance[] subChipsWithDisplays;
 		static string displayLabelString;
+		static string colHexCodeString;
 
 		static readonly UIHandle ID_DisplaysScrollView = new("CustomizeMenu_DisplaysScroll");
 		static readonly UIHandle ID_ColourPicker = new("CustomizeMenu_ChipCol");
+		static readonly UIHandle ID_ColourHexInput = new("CustomizeMenu_ChipColHexInput");
 		static readonly UIHandle ID_NameDisplayOptions = new("CustomizeMenu_NameDisplayOptions");
 		static readonly UI.ScrollViewDrawElementFunc drawDisplayScrollEntry = DrawDisplayScroll;
+		static readonly Func<string, bool> hexStringInputValidator = ValidateHexStringInput;
 
 		public static void OnMenuOpened()
 		{
@@ -45,33 +45,43 @@ namespace DLS.Graphics
 		public static void DrawMenu()
 		{
 			// Don't draw menu when placing display
-			if (CustomizationSceneDrawer.IsPlacingDisplay)
-			{
-				return;
-			}
+			if (CustomizationSceneDrawer.IsPlacingDisplay) return;
+
+			const float width = 20;
+			const float pad = UILayoutHelper.DefaultSpacing;
+			const float pw = width - pad * 2;
 
 			DrawSettings.UIThemeDLS theme = DrawSettings.ActiveUITheme;
-
-			float width = 20;
-			float spacing = UILayoutHelper.DefaultSpacing;
-			float pad = UILayoutHelper.DefaultSpacing;
-			float pw = width - pad * 2;
 			UI.DrawPanel(UI.TopLeft, new Vector2(width, UI.Height), theme.MenuPanelCol, Anchor.TopLeft);
 
-			int cancelConfirmButtonIndex = UI.HorizontalButtonGroup(topButtons, theme.ButtonTheme, UI.TopLeft + Vector2.down * pad, width, spacing, pad, Anchor.TopLeft);
+			// ---- Cancel/confirm buttons ----
+			int cancelConfirmButtonIndex = MenuHelper.DrawButtonPair("CANCEL", "CONFIRM", UI.TopLeft + Vector2.down * pad, pw, false);
 
-			const float labelHeight = 2.2f;
-
-			int nameDisplayMode = UI.WheelSelector(ID_NameDisplayOptions, nameDisplayOptions, NextPos(), new Vector2(pw, 3), theme.OptionsWheel, Anchor.TopLeft);
+			// ---- Chip name UI ----
+			int nameDisplayMode = UI.WheelSelector(ID_NameDisplayOptions, nameDisplayOptions, NextPos(), new Vector2(pw, DrawSettings.ButtonHeight), theme.OptionsWheel, Anchor.TopLeft);
 			ChipSaveMenu.ActiveCustomizeDescription.NameLocation = (NameDisplayLocation)nameDisplayMode;
 
+			// ---- Chip colour UI ----
 			Color newCol = UI.DrawColourPicker(ID_ColourPicker, NextPos(), pw, Anchor.TopLeft);
-			ChipSaveMenu.ActiveCustomizeDescription.Colour = newCol;
+			InputFieldTheme inputTheme = MenuHelper.Theme.ChipNameInputField;
+			inputTheme.fontSize = MenuHelper.Theme.FontSizeRegular;
 
+			InputFieldState hexColInput = UI.InputField(ID_ColourHexInput, inputTheme, NextPos(), new Vector2(pw, DrawSettings.ButtonHeight), "#", Anchor.TopLeft, 1, hexStringInputValidator);
 
+			if (newCol != ChipSaveMenu.ActiveCustomizeDescription.Colour)
+			{
+				ChipSaveMenu.ActiveCustomizeDescription.Colour = newCol;
+				UpdateChipColHexStringFromColour(newCol);
+			}
+			else if (colHexCodeString != hexColInput.text)
+			{
+				UpdateChipColFromHexString(hexColInput.text);
+			}
+
+			// ---- Displays UI ----
 			Color labelCol = ColHelper.Darken(theme.MenuPanelCol, 0.01f);
-			Vector2 labelPos = UI.PrevBounds.BottomLeft + Vector2.down * pad;
-			UI.TextWithBackground(labelPos, new Vector2(pw, labelHeight), Anchor.TopLeft, displayLabelString, theme.FontBold, theme.FontSizeRegular, Color.white, labelCol);
+			Vector2 labelPos = NextPos(1);
+			UI.TextWithBackground(labelPos, new Vector2(pw, DrawSettings.ButtonHeight), Anchor.TopLeft, displayLabelString, theme.FontBold, theme.FontSizeRegular, Color.white, labelCol);
 
 			float scrollViewHeight = 20;
 			float scrollViewSpacing = UILayoutHelper.DefaultSpacing;
@@ -136,6 +146,7 @@ namespace DLS.Graphics
 			// Init col picker to chip colour
 			ColourPickerState chipColourPickerState = UI.GetColourPickerState(ID_ColourPicker);
 			Color.RGBToHSV(ChipSaveMenu.ActiveCustomizeDescription.Colour, out chipColourPickerState.hue, out chipColourPickerState.sat, out chipColourPickerState.val);
+			UpdateChipColHexStringFromColour(chipColourPickerState.GetRGB());
 
 			// Init name display mode
 			WheelSelectorState nameDisplayWheelState = UI.GetWheelSelectorState(ID_NameDisplayOptions);
@@ -144,8 +155,48 @@ namespace DLS.Graphics
 
 		static void UpdateCustomizeDescription()
 		{
-			List<DisplayInstance> displs = ChipSaveMenu.ActiveCustomizeChip.Displays;
-			ChipSaveMenu.ActiveCustomizeDescription.Displays = displs.Select(s => s.Desc).ToArray();
+			List<DisplayInstance> displays = ChipSaveMenu.ActiveCustomizeChip.Displays;
+			ChipSaveMenu.ActiveCustomizeDescription.Displays = displays.Select(s => s.Desc).ToArray();
+		}
+
+		static void UpdateChipColHexStringFromColour(Color col)
+		{
+			int colInt = (byte)(col.r * 255) << 16 | (byte)(col.g * 255) << 8 | (byte)(col.b * 255);
+			colHexCodeString = "#" + $"{colInt:X6}";
+			UI.GetInputFieldState(ID_ColourHexInput).SetText(colHexCodeString, false);
+		}
+
+		static void UpdateChipColFromHexString(string hexString)
+		{
+			colHexCodeString = hexString;
+			hexString = hexString.Replace("#", "");
+			hexString = hexString.PadRight(6, '0');
+
+			if (ColHelper.TryParseHexCode(hexString, out Color col))
+			{
+				UI.GetColourPickerState(ID_ColourPicker).SetRGB(col);
+				ChipSaveMenu.ActiveCustomizeDescription.Colour = col;
+			}
+		}
+
+		static bool ValidateHexStringInput(string text)
+		{
+			if (string.IsNullOrWhiteSpace(text)) return true;
+
+			int numHexDigits = 0;
+
+			for (int i = 0; i < text.Length; i++)
+			{
+				if (i == 0 && text[i] == '#') continue;
+
+				if (Uri.IsHexDigit(text[i]))
+				{
+					numHexDigits++;
+				}
+				else return false;
+			}
+
+			return numHexDigits <= 6;
 		}
 	}
 }

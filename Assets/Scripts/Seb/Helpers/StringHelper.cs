@@ -36,5 +36,28 @@ namespace Seb.Helpers
 
 			return charCount;
 		}
+
+		public static int CreateHexStringNonAlloc(char[] charArray, int value, bool upperCase = true)
+		{
+			const string hexDigits = "0123456789ABCDEF";
+			const string hexDigitsLower = "0123456789abcdef";
+
+			int charCount = 0;
+			uint uValue = (uint)value;
+			do
+			{
+				charArray[charCount++] = (upperCase ? hexDigits : hexDigitsLower)[(int)(uValue & 0xF)];
+				uValue >>= 4;
+			} while (uValue > 0);
+
+			for (int i = 0; i < charCount / 2; i++)
+			{
+				char tmp = charArray[i];
+				charArray[i] = charArray[charCount - i - 1];
+				charArray[charCount - i - 1] = tmp;
+			}
+
+			return charCount;
+		}
 	}
 }
