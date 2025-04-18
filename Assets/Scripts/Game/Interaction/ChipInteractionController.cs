@@ -276,9 +276,26 @@ namespace DLS.Game
 			foreach (IMoveable element in elementsToDuplicate)
 			{
 				ChipDescription desc;
+
 				if (element is SubChipInstance subchip)
 				{
 					desc = subchip.Description;
+				}
+				else if (element is NoteInstance note)
+				{
+					// Create a new NoteDescription for the duplicated note
+					NoteDescription noteDesc = new NoteDescription(
+						IDGenerator.GenerateNewElementID(ActiveDevChip),
+						note.Colour,
+						note.Text,
+						note.Position
+					);
+
+					// Create a new NoteInstance and add it to the duplicated elements
+					IMoveable duplicatedNote = StartPlacingNote(noteDesc, note.Position, true);
+					duplicatedElements.Add(duplicatedNote);
+					duplicatedElementIDFromOriginalID.Add(note.ID, duplicatedNote.ID);
+					continue;
 				}
 				else
 				{
@@ -291,7 +308,6 @@ namespace DLS.Game
 					if (devpin.IsInputPin) desc.InputPins[0] = pinDesc;
 					else desc.OutputPins[0] = pinDesc;
 				}
-
 
 				IMoveable duplicatedElement = StartPlacing(desc, element.Position, true);
 				duplicatedElement.StraightLineReferencePoint = element.Position;

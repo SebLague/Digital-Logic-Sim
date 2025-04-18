@@ -58,6 +58,7 @@ namespace DLS.Game
             Position = desc.Position;
             Text = desc.Text;
             Size = desc.Size;
+            Colour = desc.Colour;
             IsSelected = false;
             IsValidMovePos = true;
             Resize();
