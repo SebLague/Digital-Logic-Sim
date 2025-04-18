@@ -23,6 +23,7 @@ namespace DLS.Graphics
 			$"NEW CHIP     {shortcutTextCol}Ctrl+N",
 			$"SAVE CHIP    {shortcutTextCol}Ctrl+S",
 			$"FIND CHIP    {shortcutTextCol}Ctrl+F",
+			$"NEW NOTE     {shortcutTextCol}Ctrl+O",
 			$"LIBRARY      {shortcutTextCol}Ctrl+L",
 			$"PREFS        {shortcutTextCol}Ctrl+P",
 			$"QUIT         {shortcutTextCol}Ctrl+Q"

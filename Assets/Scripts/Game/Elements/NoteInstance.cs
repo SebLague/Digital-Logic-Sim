@@ -82,7 +82,7 @@ namespace DLS.Game
             {
                 Size = new Vector2(textSize.x + 1f, Size.y);
             }
-            if (textSize.y + 0.4f > minSize.y)
+            if (textSize.y + 1f > minSize.y)
             {
                 Size = new Vector2(Size.x, textSize.y + 1f);
             }
