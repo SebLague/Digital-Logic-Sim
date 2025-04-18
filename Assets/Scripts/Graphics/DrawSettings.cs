@@ -20,6 +20,7 @@ namespace DLS.Graphics
 
 		public const float FontSizeChipName = 0.25f;
 		public const float FontSizePinLabel = 0.2f;
+		public const float FontSizeNoteText = 0.2f;
 
 		public const float SubChipPinInset = 0.015f;
 		public const float SelectionBoundsPadding = 0.08f;

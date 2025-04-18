@@ -64,6 +64,7 @@ namespace DLS.Graphics
 		static void Confirm(string newName)
 		{
 			note.Text = newName;
+			note.Resize();
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 		}
 

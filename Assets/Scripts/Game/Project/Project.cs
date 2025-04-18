@@ -313,14 +313,13 @@ namespace DLS.Game
 			}
 		}
 
-		public NoteInstance CreateBlankNote(Vector2 position, string text, Vector2 size)
+		public NoteInstance CreateBlankNote(Vector2 position, string text)
 		{
 			// Generate a unique ID for the note
 			// Create a new NoteInstance
 			NoteInstance newNote = new NoteInstance(
 				new NoteDescription(
 					IDGenerator.GenerateNewElementID(editModeChip),
-					size, 
 					NoteColour.Yellow,
 					text,
 					position

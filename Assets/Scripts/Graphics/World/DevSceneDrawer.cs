@@ -215,9 +215,12 @@ namespace DLS.Graphics
 
 			Draw.Quad(centre, note.Size + Vector2.one * ChipOutlineWidth, GetChipOutlineCol(col));
 			Draw.Quad(centre, note.Size, col);
+			Draw.Quad(centre + new Vector2(0, note.Size.y / 2 - 0.1f), new Vector2(note.Size.x, 0.2f), GetChipOutlineCol(col));
+			Draw.Text(FontBold, "NOTE", 0.15f, centre + new Vector2(-note.Size.x / 2 + 0.2f, note.Size.y / 2 - 0.1f), Anchor.TextCentre, col);
+
 
 			// Draw.Quad(centre, size, backgroundColor);
-			Draw.Text(FontBold, note.Text, FontSizePinLabel, centre, Anchor.TextCentre, Color.white);
+			Draw.Text(FontBold, note.Text, FontSizeNoteText, centre, Anchor.TextCentre, Color.white);
 		
 			if (InputHelper.MouseInsideBounds_World(centre, note.Size))
 			{

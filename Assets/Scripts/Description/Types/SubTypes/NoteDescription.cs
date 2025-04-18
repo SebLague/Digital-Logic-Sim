@@ -10,10 +10,9 @@ namespace DLS.Description
         public Vector2 Position;
         public int ID;
 
-        public NoteDescription(int id, Vector2 size, NoteColour colour, string text, Vector2 position)
+        public NoteDescription(int id, NoteColour colour, string text, Vector2 position)
         {
             ID = id;
-            Size = size;
             Colour = colour;
             Text = text;
             Position = position;

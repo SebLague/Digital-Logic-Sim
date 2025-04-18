@@ -2,9 +2,11 @@ using System;
 using DLS.Graphics;
 using Seb.Helpers;
 using Seb.Types;
+using Seb.Vis;
 using UnityEngine;
 using static DLS.Graphics.DrawSettings;
 using DLS.Description;
+
 
 namespace DLS.Game
 {
@@ -58,6 +60,7 @@ namespace DLS.Game
             Size = desc.Size;
             IsSelected = false;
             IsValidMovePos = true;
+            Resize();
         }
 
         // Determines if the note should be included in a selection box
@@ -68,6 +71,21 @@ namespace DLS.Game
 
             return Math.Abs(Position.x - selectionCentre.x) <= (halfSelectionSize.x + halfNoteSize.x) &&
                 Math.Abs(Position.y - selectionCentre.y) <= (halfSelectionSize.y + halfNoteSize.y);
+        }
+
+        public void Resize()
+        {
+            Vector2 minSize = new Vector2(2f, 2f);
+            Size = minSize;
+            Vector2 textSize = Draw.CalculateTextBoundsSize(Text, FontSizeNoteText, DrawSettings.ActiveUITheme.FontBold);
+            if (textSize.x > minSize.x)
+            {
+                Size = new Vector2(textSize.x + 1f, Size.y);
+            }
+            if (textSize.y + 0.4f > minSize.y)
+            {
+                Size = new Vector2(Size.x, textSize.y + 1f);
+            }
         }
     }
 }

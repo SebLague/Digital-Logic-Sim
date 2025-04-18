@@ -158,7 +158,6 @@ namespace DLS.SaveSystem
 		public static NoteDescription CreateNoteDescription(NoteInstance note) =>
 			new(
 				note.ID,
-				note.Size,
 				note.Colour,
 				note.Text,
 				note.Position
