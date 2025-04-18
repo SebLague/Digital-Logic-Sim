@@ -122,7 +122,8 @@ namespace DLS.Game
 		public void SaveFromDescription(ChipDescription saveChipDescription, SaveMode saveMode = SaveMode.Normal)
 		{
 			// If this chip hasn't been saved before, it can't have been used anyway so no need to update anything
-			if (ViewedChip.LastSavedDescription != null)
+			// (same thing if saving a new version of it)
+			if (ViewedChip.LastSavedDescription != null && saveMode != SaveMode.SaveAs)
 			{
 				UpdateAndSaveAffectedChips(ViewedChip.LastSavedDescription, saveChipDescription, false);
 			}

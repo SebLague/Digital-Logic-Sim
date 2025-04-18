@@ -247,8 +247,17 @@ namespace DLS.Graphics
 		public static void DrawPinDecValue(DevPinInstance pin)
 		{
 			if (pin.pinValueDisplayMode == PinValueDisplayMode.Off) return;
+      int charCount;
+
+ 			if (pin.pinValueDisplayMode != PinValueDisplayMode.HEX)
+ 			{
+ 				charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+ 			} 
 			
-			int charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+			else
+ 			{
+ 				charCount = StringHelper.CreateHexStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+ 			}
 
 			FontType font = FontBold;
 			Bounds2D parentBounds = pin.BoundingBox;
@@ -740,11 +749,16 @@ namespace DLS.Graphics
 		// Wire should be highlighted if mouse is over it or if in edit mode
 		static bool ShouldHighlightWire(WireInstance wire)
 		{
+			if (InteractionState.MouseIsOverUI) return false;
 			if (wire == controller.wireToEdit) return true;
 
-			if (InteractionState.ElementUnderMousePrevFrame is WireInstance wireUnderMouse)
+			if (InteractionState.ElementUnderMousePrevFrame is WireInstance wireUnderMouse && wire == wireUnderMouse)
 			{
-				return wire == wireUnderMouse;
+				if (controller.IsCreatingWire)
+				{
+					return controller.CanCompleteWireConnection(wire, out PinInstance _);
+				}
+				return true;
 			}
 
 			return false;

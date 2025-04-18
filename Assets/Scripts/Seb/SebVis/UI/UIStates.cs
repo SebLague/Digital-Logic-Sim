@@ -1,4 +1,5 @@
 using System;
+using Seb.Helpers;
 using UnityEngine;
 
 namespace Seb.Vis.UI
@@ -24,13 +25,17 @@ namespace Seb.Vis.UI
 	public class ColourPickerState
 	{
 		public float hue;
-
-		public bool hueHandleSelected;
 		public float sat;
-		public bool satValHandleSelected;
 		public float val;
+		public bool satValHandleSelected;
+		public bool hueHandleSelected;
 
 		public Color GetRGB() => Color.HSVToRGB(hue, sat, val);
+
+		public void SetRGB(Color col)
+		{
+			(hue, sat, val) = ColHelper.GetHSV(col);
+		}
 	}
 
 
