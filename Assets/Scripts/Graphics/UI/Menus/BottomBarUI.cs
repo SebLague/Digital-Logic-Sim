@@ -23,7 +23,7 @@ namespace DLS.Graphics
 			$"NEW CHIP     {shortcutTextCol}Ctrl+N",
 			$"SAVE CHIP    {shortcutTextCol}Ctrl+S",
 			$"FIND CHIP    {shortcutTextCol}Ctrl+F",
-			$"NEW NOTE     {shortcutTextCol}Ctrl+O",
+			$"NEW NOTE     {shortcutTextCol}Ctrl+M",
 			$"LIBRARY      {shortcutTextCol}Ctrl+L",
 			$"PREFS        {shortcutTextCol}Ctrl+P",
 			$"QUIT         {shortcutTextCol}Ctrl+Q"
@@ -420,6 +420,7 @@ namespace DLS.Graphics
 			{
 				if (KeyboardShortcuts.CreateNewChipShortcutTriggered) CreateNewChip();
 				if (KeyboardShortcuts.SaveShortcutTriggered) OpenSaveMenu();
+				if (KeyboardShortcuts.NewNoteShortcutTriggered) CreateNewNote();
 				if (KeyboardShortcuts.LibraryShortcutTriggered) OpenLibraryMenu();
 			}
 
