@@ -27,7 +27,6 @@ namespace DLS.SaveSystem
 			Vector2 minChipsSize = SubChipInstance.CalculateMinChipSize(inputPins, outputPins, name);
 			size = Vector2.Max(minChipsSize, size);
 			NoteDescription[] notes = chip.GetNotes().Select(CreateNoteDescription).ToArray();
-			Debug.Log($"Found {notes.Length} notes");
 
 			UpdateWireIndicesForDescriptionCreation(chip);
 
