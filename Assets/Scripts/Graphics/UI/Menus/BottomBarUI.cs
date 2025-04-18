@@ -16,24 +16,24 @@ namespace DLS.Graphics
 		const float buttonSpacing = 0.25f;
 		const float buttonHeight = barHeight - padY * 2;
 
+		const string shortcutTextCol = "<color=#666666ff>";
+
+		static readonly string[] menuButtonNames =
+		{
+			$"NEW CHIP     {shortcutTextCol}Ctrl+N",
+			$"SAVE CHIP    {shortcutTextCol}Ctrl+S",
+			$"FIND CHIP    {shortcutTextCol}Ctrl+F",
+			$"LIBRARY      {shortcutTextCol}Ctrl+L",
+			$"PREFS        {shortcutTextCol}Ctrl+P",
+			$"QUIT         {shortcutTextCol}Ctrl+Q"
+		};
+
 		const int NewChipButtonIndex = 0;
 		const int SaveChipButtonIndex = 1;
 		const int FindChipButtonIndex = 2;
 		const int LibraryButtonIndex = 3;
 		const int OptionsButtonIndex = 4;
 		const int QuitButtonIndex = 5;
-
-		const string c = "<color=#666666ff>";
-
-		static readonly string[] menuButtonNames =
-		{
-			$"NEW CHIP     {c}Ctrl+N",
-			$"SAVE CHIP    {c}Ctrl+S",
-			$"FIND CHIP    {c}Ctrl+F",
-			$"LIBRARY      {c}Ctrl+L",
-			$"PREFS        {c}Ctrl+P",
-			$"QUIT         {c}Ctrl+Q"
-		};
 
 		// ---- State ----
 		static float scrollX;
@@ -244,68 +244,115 @@ namespace DLS.Graphics
 			}
 
 
-			// Draw collection popup
-			if (activeCollection != null && activeCollection.Chips.Count > 0)
+			DrawCollectionsPopup();
+		}
+
+
+		static void DrawCollectionsPopup()
+		{
+			if (activeCollection == null || activeCollection.Chips.Count <= 0) return;
+
+			DrawSettings.UIThemeDLS theme = DrawSettings.ActiveUITheme;
+			Project project = Project.ActiveProject;
+
+			int firstButtonIndex = activeCollection.Chips.Count - 1;
+			int pressedIndex = -1;
+			Vector2 layoutOrigin = collectionPopupBottomLeft + new Vector2(0, 0);
+			bool expandLeft = layoutOrigin.x > UI.HalfWidth;
+			bool isFirstPartial = true;
+			bool openedContextMenu = false;
+
+			while (firstButtonIndex >= 0)
 			{
-				Vector2 bottomLeftCurr = collectionPopupBottomLeft + new Vector2(0, 0);
-				Draw.ID popupPanelID = UI.ReservePanel();
-				float maxWidth = 0;
-				int pressedIndex = -1;
-				bool openedContextMenu = false;
+				Bounds2D collectionBounds = default;
+				int numButtonsToDraw = 0;
 
-				// Get max width so can draw all popup-buttons same width
-				using (UI.BeginBoundsScope(false))
+				// Layout pass: calculate draw bounds (stop before going past top of screen)
+				using (UI.BeginBoundsScope(draw: false))
 				{
-					foreach (string chipName in activeCollection.Chips)
-					{
-						UI.Button(chipName, buttonTheme, bottomLeftCurr, true, Anchor.BottomLeft);
-					}
+					Vector2 buttonLayoutPos = layoutOrigin;
 
-					maxWidth = UI.GetCurrentBoundsScope().Width;
+					for (int i = firstButtonIndex; i >= 0; i--)
+					{
+						string chipName = activeCollection.Chips[i];
+						UI.Button(chipName, DrawSettings.ActiveUITheme.ChipButton, buttonLayoutPos, new Vector2(0, buttonHeight), false, true, false, Anchor.BottomLeft, false, 0);
+						buttonLayoutPos = UI.PrevBounds.TopLeft + Vector2.up * buttonSpacing;
+
+						// Stop if approaching top of screen (we'll draw the rest of the collection starting on a new line)
+						if (buttonLayoutPos.y > UI.Height - 0.1f) break;
+
+						collectionBounds = UI.GetCurrentBoundsScope();
+						numButtonsToDraw++;
+					}
 				}
 
-				// Draw pop-up buttons
-				for (int i = activeCollection.Chips.Count - 1; i >= 0; i--)
+				if (expandLeft && !isFirstPartial)
 				{
-					const bool leftAlign = true;
-					const float offsetX = leftAlign ? 0.55f : 0;
-					string chipName = activeCollection.Chips[i];
-					bool enabled = project.ViewedChip.CanAddSubchip(chipName);
-					if (UI.Button(chipName, buttonTheme, bottomLeftCurr, new Vector2(maxWidth, buttonHeight), enabled, false, false, Anchor.BottomLeft, leftAlign, offsetX))
-					{
-						pressedIndex = i;
-					}
-					else if (isRightClick && UI.MouseInsideBounds(UI.PrevBounds))
-					{
-						ContextMenu.OpenBottomBarContextMenu(chipName, false, true);
-						openedContextMenu = true;
-					}
-
-					bottomLeftCurr = UI.PrevBounds.TopLeft + Vector2.up * buttonSpacing;
+					collectionBounds = Bounds2D.Translate(collectionBounds, Vector2.left * collectionBounds.Width);
 				}
 
-				UI.ModifyPanel(popupPanelID, collectionPopupBottomLeft + Vector2.left * buttonSpacing, new Vector2(maxWidth + buttonSpacing * 2, UI.PrevBounds.Top - collectionPopupBottomLeft.y + buttonSpacing), theme.StarredBarCol, Anchor.BottomLeft);
+				// Draw the collections (or as much as fit vertically), as well as a background panel
+				Bounds2D panelBounds = Bounds2D.Grow(collectionBounds, buttonSpacing * 2);
+				panelBounds = new Bounds2D(new Vector2(panelBounds.Min.x, barHeight), panelBounds.Max);
+				UI.DrawPanel(panelBounds, theme.StarredBarCol);
+				int buttonIndex = DrawCollectionsPopupPartial(collectionBounds.BottomLeft, collectionBounds.Width, firstButtonIndex, numButtonsToDraw, ref openedContextMenu);
+				if (buttonIndex != -1) pressedIndex = buttonIndex;
 
-				if (!openedContextMenu)
+				// Prepare for next part of the collection (if not all did fit on the screen)
+				firstButtonIndex -= numButtonsToDraw;
+				layoutOrigin = expandLeft ? panelBounds.BottomLeft : panelBounds.BottomRight;
+				isFirstPartial = false;
+			}
+
+			if (!openedContextMenu)
+			{
+				if (pressedIndex != -1)
 				{
-					if (pressedIndex != -1)
+					project.controller.StartPlacing(project.chipLibrary.GetChipDescription(activeCollection.Chips[pressedIndex]));
+					if (KeyboardShortcuts.MultiModeHeld)
 					{
-						project.controller.StartPlacing(project.chipLibrary.GetChipDescription(activeCollection.Chips[pressedIndex]));
-						if (KeyboardShortcuts.MultiModeHeld)
-						{
-							closeActiveCollectionMultiModeExit = true;
-						}
-						else
-						{
-							activeCollection = null;
-						}
+						closeActiveCollectionMultiModeExit = true;
 					}
-					else if (KeyboardShortcuts.CancelShortcutTriggered || (InputHelper.IsAnyMouseButtonDownThisFrame_IgnoreConsumed() && Time.frameCount != collectionInteractFrame) || UIDrawer.ActiveMenu != UIDrawer.MenuType.None)
+					else
 					{
 						activeCollection = null;
 					}
 				}
+				else if (KeyboardShortcuts.CancelShortcutTriggered || (InputHelper.IsAnyMouseButtonDownThisFrame_IgnoreConsumed() && Time.frameCount != collectionInteractFrame) || UIDrawer.ActiveMenu != UIDrawer.MenuType.None)
+				{
+					activeCollection = null;
+				}
 			}
+		}
+
+		static int DrawCollectionsPopupPartial(Vector2 bottomLeftCurr, float maxWidth, int startIndex, int count, ref bool openedContextMenu)
+		{
+			int pressedIndex = -1;
+			int endIndex = startIndex - count + 1;
+			ButtonTheme theme = DrawSettings.ActiveUITheme.ChipButton;
+			DevChipInstance viewedChip = Project.ActiveProject.ViewedChip;
+			bool ignoreInputs = ContextMenu.HasFocus();
+
+			// Draw pop-up buttons
+			for (int i = startIndex; i >= endIndex; i--)
+			{
+				const float offsetX = 0.55f;
+				string chipName = activeCollection.Chips[i];
+				bool enabled = viewedChip.CanAddSubchip(chipName);
+				if (UI.Button(chipName, theme, bottomLeftCurr, new Vector2(maxWidth, buttonHeight), enabled, false, false, Anchor.BottomLeft, true, offsetX, ignoreInputs))
+				{
+					pressedIndex = i;
+				}
+				else if (InputHelper.IsMouseDownThisFrame(MouseButton.Right) && UI.MouseInsideBounds(UI.PrevBounds))
+				{
+					ContextMenu.OpenBottomBarContextMenu(chipName, false, true);
+					openedContextMenu = true;
+				}
+
+				bottomLeftCurr = UI.PrevBounds.TopLeft + Vector2.up * buttonSpacing;
+			}
+
+			return pressedIndex;
 		}
 
 		static ChipCollection GetChipCollectionByName(string name)
@@ -337,10 +384,6 @@ namespace DLS.Graphics
 				}
 			}
 		}
-
-
-		static Color MakeCol(int v) => new(v / 255f, v / 255f, v / 255f, 1);
-		static Color MakeCol(int r, int g, int b) => new(r / 255f, g / 255f, b / 255f, 1);
 
 		static void OpenSaveMenu() => UIDrawer.SetActiveMenu(UIDrawer.MenuType.ChipSave);
 		static void OpenSearchMenu() => UIDrawer.SetActiveMenu(UIDrawer.MenuType.Search);

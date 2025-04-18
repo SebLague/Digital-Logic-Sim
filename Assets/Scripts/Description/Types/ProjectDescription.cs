@@ -73,7 +73,7 @@ namespace DLS.Description
 
 	public class ChipCollection
 	{
-		public List<string> Chips;
+		public readonly List<string> Chips;
 		[JsonIgnore] string displayName_closed;
 		[JsonIgnore] string displayName_empty;
 
