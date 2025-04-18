@@ -316,16 +316,20 @@ namespace DLS.Game
 
 		public void CreateBlankNote(Vector2 position, string text)
 		{
-			// Generate a unique ID for the note
-			// Create a new NoteInstance
-			NoteDescription noteDesc = new NoteDescription(
-					IDGenerator.GenerateNewElementID(editModeChip),
-					NoteColour.Yellow,
-					text,
-					position
-				);
+			// Get all possible values of the NoteColour enum
+			Array colours = Enum.GetValues(typeof(NoteColour));
+			
+			// Select a random color
+			NoteColour randomColour = (NoteColour)colours.GetValue(UnityEngine.Random.Range(0, colours.Length));
 
-			// Add the note to the list
+			// Create the note with the random color
+			NoteDescription noteDesc = new NoteDescription(
+				IDGenerator.GenerateNewElementID(editModeChip),
+				randomColour,
+				text,
+				position
+			);
+
 			controller.StartPlacingNote(noteDesc);
 		}
 
