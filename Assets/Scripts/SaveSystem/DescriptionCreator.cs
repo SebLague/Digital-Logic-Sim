@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DLS.Description;
 using DLS.Game;
+using DLS.Graphics;
 using UnityEngine;
 using Random = System.Random;
 
@@ -18,7 +19,24 @@ namespace DLS.SaveSystem
 			Vector2 size = hasSavedDesc ? descOld.Size : Vector2.zero;
 			Color col = hasSavedDesc ? descOld.Colour : RandomInitialChipColour();
 			string name = hasSavedDesc ? descOld.Name : string.Empty;
+            string comment = hasSavedDesc ? descOld.ChipComment : string.Empty;
 			DisplayDescription[] displays = hasSavedDesc ? descOld.Displays : null;
+            NameDisplayLocation nameLocation = hasSavedDesc ? descOld.NameLocation : NameDisplayLocation.Centre;
+
+
+            // If we are currently customizing, get potentially updated values from the customization state
+            if (UIDrawer.ActiveMenu == UIDrawer.MenuType.ChipCustomization && ChipSaveMenu.ActiveCustomizeChip != null)
+            {
+                 var customizeDesc = ChipSaveMenu.ActiveCustomizeDescription;
+                 name = customizeDesc.Name;
+                 size = customizeDesc.Size;
+                 col = customizeDesc.Colour;
+                 comment = customizeDesc.ChipComment;
+                 displays = customizeDesc.Displays;
+                 nameLocation = customizeDesc.NameLocation;
+                 // Note: Pin/SubChip/Wire structure comes from the actual DevChipInstance chip, not the customization preview
+            }
+
 
 			// Create pin and subchip descriptions
 			PinDescription[] inputPins = OrderPins(chip.GetInputPins()).Select(CreatePinDescription).ToArray();
@@ -29,13 +47,13 @@ namespace DLS.SaveSystem
 
 			UpdateWireIndicesForDescriptionCreation(chip);
 
-			// Create and return the chip description
 			return new ChipDescription
 			{
 				Name = name,
-				NameLocation = hasSavedDesc ? descOld.NameLocation : NameDisplayLocation.Centre,
+				NameLocation = nameLocation,
 				Size = size,
 				Colour = col,
+                ChipComment = comment,
 
 				SubChips = subchips,
 				InputPins = inputPins,

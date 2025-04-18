@@ -6,6 +6,7 @@ using Seb.Helpers;
 using Seb.Vis;
 using Seb.Vis.UI;
 using UnityEngine;
+using Seb.Types;
 
 namespace DLS.Graphics
 {
@@ -30,6 +31,7 @@ namespace DLS.Graphics
 		static readonly UIHandle ID_DisplaysScrollView = new("CustomizeMenu_DisplaysScroll");
 		static readonly UIHandle ID_ColourPicker = new("CustomizeMenu_ChipCol");
 		static readonly UIHandle ID_NameDisplayOptions = new("CustomizeMenu_NameDisplayOptions");
+        static readonly UIHandle ID_ChipCommentField = new("CustomizeMenu_ChipCommentField");
 		static readonly UI.ScrollViewDrawElementFunc drawDisplayScrollEntry = DrawDisplayScroll;
 
 		public static void OnMenuOpened()
@@ -40,6 +42,7 @@ namespace DLS.Graphics
 			displayLabelString = $"DISPLAYS ({subChipsWithDisplays.Length}):";
 
 			InitUIFromChipDescription();
+            UI.GetInputFieldState(ID_ChipCommentField).SetText(ChipSaveMenu.ActiveCustomizeDescription.ChipComment ?? "", false);
 		}
 
 		public static void DrawMenu()
@@ -68,12 +71,21 @@ namespace DLS.Graphics
 			Color newCol = UI.DrawColourPicker(ID_ColourPicker, NextPos(), pw, Anchor.TopLeft);
 			ChipSaveMenu.ActiveCustomizeDescription.Colour = newCol;
 
+            // Chip Comment Input Field
+            Vector2 commentLabelPos = NextPos();
+            Vector2 commentInputSize = new Vector2(pw, 5f);
+            UI.DrawText("Comment:", theme.FontBold, theme.FontSizeRegular, commentLabelPos, Anchor.TopLeft, Color.white);
+            Vector2 commentInputPos = commentLabelPos + Vector2.down * (labelHeight * 0.8f); // Position input below label
+            InputFieldState commentState = UI.InputField(ID_ChipCommentField, theme.ChipNameInputField, commentInputPos, commentInputSize, ChipSaveMenu.ActiveCustomizeDescription.ChipComment ?? "", Anchor.TopLeft, 1f, (s) => true); // No validation
+            ChipSaveMenu.ActiveCustomizeDescription.ChipComment = commentState.text;
+            UI.OverridePreviousBounds(Bounds2D.CreateFromTopLeftAndSize(commentInputPos, commentInputSize));
+
 
 			Color labelCol = ColHelper.Darken(theme.MenuPanelCol, 0.01f);
-			Vector2 labelPos = UI.PrevBounds.BottomLeft + Vector2.down * pad;
-			UI.TextWithBackground(labelPos, new Vector2(pw, labelHeight), Anchor.TopLeft, displayLabelString, theme.FontBold, theme.FontSizeRegular, Color.white, labelCol);
+			Vector2 displayLabelPos = NextPos();
+			UI.TextWithBackground(displayLabelPos, new Vector2(pw, labelHeight), Anchor.TopLeft, displayLabelString, theme.FontBold, theme.FontSizeRegular, Color.white, labelCol);
 
-			float scrollViewHeight = 20;
+			float scrollViewHeight = 15; // Adjusted height
 			float scrollViewSpacing = UILayoutHelper.DefaultSpacing;
 			UI.DrawScrollView(ID_DisplaysScrollView, NextPos(), new Vector2(pw, scrollViewHeight), scrollViewSpacing, Anchor.TopLeft, theme.ScrollTheme, drawDisplayScrollEntry, subChipsWithDisplays.Length);
 
@@ -129,6 +141,8 @@ namespace DLS.Graphics
 		{
 			ChipSaveMenu.RevertCustomizationStateToBeforeEnteringCustomizeMenu();
 			InitUIFromChipDescription();
+            // Also revert the comment field text
+            UI.GetInputFieldState(ID_ChipCommentField).SetText(ChipSaveMenu.ActiveCustomizeDescription.ChipComment ?? "", false);
 		}
 
 		static void InitUIFromChipDescription()
@@ -140,12 +154,16 @@ namespace DLS.Graphics
 			// Init name display mode
 			WheelSelectorState nameDisplayWheelState = UI.GetWheelSelectorState(ID_NameDisplayOptions);
 			nameDisplayWheelState.index = (int)ChipSaveMenu.ActiveCustomizeDescription.NameLocation;
+
+            // Init comment field
+            UI.GetInputFieldState(ID_ChipCommentField).SetText(ChipSaveMenu.ActiveCustomizeDescription.ChipComment ?? "", false);
 		}
 
 		static void UpdateCustomizeDescription()
 		{
 			List<DisplayInstance> displs = ChipSaveMenu.ActiveCustomizeChip.Displays;
 			ChipSaveMenu.ActiveCustomizeDescription.Displays = displs.Select(s => s.Desc).ToArray();
+            // Comment is already updated directly via InputFieldState
 		}
 	}
 }

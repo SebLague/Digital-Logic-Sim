@@ -462,40 +462,68 @@ namespace Seb.Vis.UI
 					float fontSize_ss = theme.fontSize * scale;
 					bool showDefaultText = string.IsNullOrEmpty(state.text) || !Application.isPlaying;
 					string displayString = showDefaultText ? defaultText : state.text;
-
 					Color textCol = showDefaultText ? theme.defaultTextCol : theme.textCol;
-					Draw.Text(theme.font, displayString, fontSize_ss, textCentreLeft_ss, Anchor.TextCentreLeft, textCol);
 
-					if (Application.isPlaying)
+					// --- Scrolling Logic ---
+					float scrollOffset = 0;
+					Vector2 textRenderPos = textCentreLeft_ss; // Start with original position
+
+					if (state.focused && !showDefaultText && state.text.Length > 0)
 					{
-						Vector2 boundsSizeUpToCaret = Draw.CalculateTextBoundsSize(displayString.AsSpan(0, state.cursorBeforeCharIndex), theme.fontSize, theme.font);
+						// Calculate the width of the text up to the caret position
+						float caretXRelative = Draw.CalculateTextBoundsSize(displayString.AsSpan(0, state.cursorBeforeCharIndex), theme.fontSize, theme.font).x * scale;
+						// Calculate the visible width within the input field's bounds (excluding padding)
+						float visibleWidth = ss.size.x - (textPad * scale * 2);
+
+						// If caret is beyond the visible area, calculate scroll offset
+						if (caretXRelative > visibleWidth)
+						{
+							scrollOffset = caretXRelative - visibleWidth;
+						}
+
+						// Apply the scroll offset to the text rendering position
+						textRenderPos.x -= scrollOffset;
+					}
+					// --- End Scrolling Logic ---
+
+					// Use textRenderPos instead of textCentreLeft_ss for Draw.Text
+					Draw.Text(theme.font, displayString, fontSize_ss, textRenderPos, Anchor.TextCentreLeft, textCol);
+
+					// Only draw caret/selection if the input field is focused in play mode
+					if (Application.isPlaying && state.focused)
+					{
+						// Recalculate caret and selection positions based on the scroll offset
+						float caretDrawX = textCentreLeft_ss.x + (Draw.CalculateTextBoundsSize(displayString.AsSpan(0, state.cursorBeforeCharIndex), theme.fontSize, theme.font).x * scale) - scrollOffset;
 
 						// Draw selection box
 						if (state.isSelecting)
 						{
-							Vector2 boundsSizeUpToSelect = Draw.CalculateTextBoundsSize(displayString.AsSpan(0, state.selectionStartIndex), theme.fontSize, theme.font);
-							Color col = new(0.2f, 0.6f, 1, 0.5f);
-							float startX = textCentreLeft_ss.x + boundsSizeUpToCaret.x * scale;
-							float endX = textCentreLeft_ss.x + boundsSizeUpToSelect.x * scale;
-							if (startX > endX)
-							{
-								(startX, endX) = (endX, startX);
-							}
+							float selectionStartX = textCentreLeft_ss.x + (Draw.CalculateTextBoundsSize(displayString.AsSpan(0, state.selectionStartIndex), theme.fontSize, theme.font).x * scale) - scrollOffset;
+							Color selCol = new(0.2f, 0.6f, 1, 0.5f);
+							float startX = Mathf.Min(caretDrawX, selectionStartX);
+							float endX = Mathf.Max(caretDrawX, selectionStartX);
 
-							Vector2 c = new((endX + startX) / 2, textCentreLeft_ss.y);
-							Vector2 s = new(endX - startX, theme.fontSize * 1.2f * scale);
-							Draw.Quad(c, s, col);
+							Vector2 selCentre = new((endX + startX) / 2, textCentreLeft_ss.y);
+							Vector2 selSize = new(endX - startX, theme.fontSize * 1.2f * scale);
+							// Ensure selection quad size is not negative
+							if (selSize.x > 0 && selSize.y > 0) {
+								Draw.Quad(selCentre, selSize, selCol);
+							}
 						}
 
 						// Draw caret
 						const float blinkDuration = 0.5f;
-						if (state.focused && (int)((Time.time - state.lastInputTime) / blinkDuration) % 2 == 0)
+						if ((int)((Time.time - state.lastInputTime) / blinkDuration) % 2 == 0)
 						{
 							Vector2 caretTextBoundsTest = Draw.CalculateTextBoundsSize("Mj", theme.fontSize, theme.font);
-							float caretOffset = 1 * 0.075f * (state.cursorBeforeCharIndex == 0 ? -1 : 1);
-							Vector2 caretPos_ss = textCentreLeft_ss + Vector2.right * ((boundsSizeUpToCaret.x + caretOffset) * scale);
+							// Scale caret offset based on UI scale
+							float caretOffsetPixels = 1 * 0.075f * (state.cursorBeforeCharIndex == 0 ? -1 : 1) * scale;
+							Vector2 caretPos_ss = new Vector2(caretDrawX + caretOffsetPixels, textCentreLeft_ss.y); // Use calculated caretDrawX
 							Vector2 caretSize = new(0.125f * theme.fontSize, caretTextBoundsTest.y * 1.2f);
-							Draw.Quad(caretPos_ss, caretSize * scale, theme.textCol);
+							// Ensure caret size is positive before drawing
+							if (caretSize.x > 0 && caretSize.y > 0) {
+								Draw.Quad(caretPos_ss, caretSize * scale, theme.textCol);
+							}
 						}
 					}
 				}

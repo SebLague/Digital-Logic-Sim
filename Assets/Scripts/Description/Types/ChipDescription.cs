@@ -15,6 +15,7 @@ namespace DLS.Description
 		public ChipType ChipType;
 		public Vector2 Size;
 		public Color Colour;
+        public string ChipComment;
 		public PinDescription[] InputPins;
 		public PinDescription[] OutputPins;
 		public SubChipDescription[] SubChips;

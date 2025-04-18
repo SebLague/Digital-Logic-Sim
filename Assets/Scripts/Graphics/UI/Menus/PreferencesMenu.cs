@@ -25,6 +25,13 @@ namespace DLS.Graphics
 			"Never"
 		};
 
+        static readonly string[] ChipCommentOptions = 
+		{
+			"Always",
+			"On Hover",
+			"Never"
+		};
+
 		static readonly string[] GridDisplayOptions =
 		{
 			"Off",
@@ -57,6 +64,7 @@ namespace DLS.Graphics
 		// ---- State ----
 		static readonly UIHandle ID_MainPinNames = new("PREFS_MainPinNames");
 		static readonly UIHandle ID_ChipPinNames = new("PREFS_ChipPinNames");
+        static readonly UIHandle ID_ChipComments = new("PREFS_ChipComments");
 		static readonly UIHandle ID_GridDisplay = new("PREFS_GridDisplay");
 		static readonly UIHandle ID_Snapping = new("PREFS_Snapping");
 		static readonly UIHandle ID_StraightWires = new("PREFS_StraightWires");
@@ -97,6 +105,7 @@ namespace DLS.Graphics
 				DrawHeader("DISPLAY:");
 				int mainPinNamesMode = DrawNextWheel("Show I/O pin names", PinDisplayOptions, ID_MainPinNames);
 				int chipPinNamesMode = DrawNextWheel("Show chip pin names", PinDisplayOptions, ID_ChipPinNames);
+                int chipCommentsMode = DrawNextWheel("Show chip comments", ChipCommentOptions, ID_ChipComments);
 				int gridDisplayMode = DrawNextWheel(showGridLabel, GridDisplayOptions, ID_GridDisplay);
 				DrawHeader("EDITING:");
 				int snappingMode = DrawNextWheel("Snap to grid", SnappingOptions, ID_Snapping);
@@ -133,6 +142,7 @@ namespace DLS.Graphics
 				// Assign changes immediately so can see them take effect in background
 				project.description.Prefs_MainPinNamesDisplayMode = mainPinNamesMode;
 				project.description.Prefs_ChipPinNamesDisplayMode = chipPinNamesMode;
+                project.description.Prefs_ShowChipComments = chipCommentsMode; 
 				project.description.Prefs_GridDisplayMode = gridDisplayMode;
 				project.description.Prefs_Snapping = snappingMode;
 				project.description.Prefs_StraightWires = straightWireMode;
@@ -191,6 +201,7 @@ namespace DLS.Graphics
 			// -- Wheels
 			UI.GetWheelSelectorState(ID_MainPinNames).index = projDesc.Prefs_MainPinNamesDisplayMode;
 			UI.GetWheelSelectorState(ID_ChipPinNames).index = projDesc.Prefs_ChipPinNamesDisplayMode;
+            UI.GetWheelSelectorState(ID_ChipComments).index = projDesc.Prefs_ShowChipComments;
 			UI.GetWheelSelectorState(ID_GridDisplay).index = projDesc.Prefs_GridDisplayMode;
 			UI.GetWheelSelectorState(ID_Snapping).index = projDesc.Prefs_Snapping;
 			UI.GetWheelSelectorState(ID_StraightWires).index = projDesc.Prefs_StraightWires;
