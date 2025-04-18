@@ -4,11 +4,13 @@ using Seb.Helpers;
 using Seb.Types;
 using UnityEngine;
 using static DLS.Graphics.DrawSettings;
+using DLS.Description;
 
 namespace DLS.Game
 {
     public class NoteInstance : IMoveable
     {
+        public readonly NoteDescription Description;
         // Position of the note in the simulation
         public Vector2 Position { get; set; }
 
@@ -33,8 +35,8 @@ namespace DLS.Game
         // Bounding box for selection
 
         // Bounding box for the note
-        public Bounds2D BoundingBox => Bounds2D.CreateFromCentreAndSize(Position + new Vector2(Width / 2, Height / 2), new Vector2(Width, Height));
-        public virtual Bounds2D SelectionBoundingBox => Bounds2D.CreateFromCentreAndSize(Position + new Vector2(Width / 2, Height / 2), new Vector2(Width + DrawSettings.ChipOutlineWidth + DrawSettings.SelectionBoundsPadding, Height + DrawSettings.ChipOutlineWidth + DrawSettings.SelectionBoundsPadding));
+        public Bounds2D BoundingBox => Bounds2D.CreateFromCentreAndSize(Position + Size / 2, Size);
+        public virtual Bounds2D SelectionBoundingBox => Bounds2D.CreateFromCentreAndSize(Position + Size / 2, Size + new Vector2(DrawSettings.ChipOutlineWidth + DrawSettings.SelectionBoundsPadding, DrawSettings.ChipOutlineWidth + DrawSettings.SelectionBoundsPadding));
 
         // Unique identifier for the note
         public int ID { get; private set; }
@@ -43,17 +45,17 @@ namespace DLS.Game
         public string Text { get; set; }
 
         // Dimensions of the note
-        public float Width { get; set; }
-        public float Height { get; set; }
+        public Vector2 Size { get; set; }
+        public NoteColour Colour;
 
         // Constructor
-        public NoteInstance(int id, Vector2 position, string text, float width = 100, float height = 50)
+        public NoteInstance(NoteDescription desc)
         {
-            ID = id;
-            Position = position;
-            Text = text;
-            Width = width;
-            Height = height;
+            Description = desc;
+            ID = desc.ID;
+            Position = desc.Position;
+            Text = desc.Text;
+            Size = desc.Size;
             IsSelected = false;
             IsValidMovePos = true;
         }
@@ -62,7 +64,7 @@ namespace DLS.Game
         public bool ShouldBeIncludedInSelectionBox(Vector2 selectionCentre, Vector2 selectionSize)
         {
             var halfSelectionSize = selectionSize / 2;
-            var halfNoteSize = new Vector2(Width, Height) / 2;
+            var halfNoteSize = Size / 2;
 
             return Math.Abs(Position.x - selectionCentre.x) <= (halfSelectionSize.x + halfNoteSize.x) &&
                 Math.Abs(Position.y - selectionCentre.y) <= (halfSelectionSize.y + halfNoteSize.y);

@@ -366,7 +366,7 @@ namespace DLS.Graphics
 
 		static void CreateNewNote()
 		{
-			Project.ActiveProject.CreateBlankNote(Vector2.zero, "Text");
+			Project.ActiveProject.CreateBlankNote(Vector2.zero, "Text", new Vector2(2f, 2f));
 		}
 
 		static void HandleKeyboardShortcuts()

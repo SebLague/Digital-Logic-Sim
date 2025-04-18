@@ -4,19 +4,30 @@ namespace DLS.Description
 {
     public class NoteDescription
     {
-        public string Name;
         public Vector2 Size;
-        public Color Colour;
-        public string Content; // Text content of the note
+        public NoteColour Colour;
+        public string Text; // Text content of the note
         public Vector2 Position;
+        public int ID;
 
-        public NoteDescription(string name, Vector2 size, Color colour, string content, Vector2 position)
+        public NoteDescription(int id, Vector2 size, NoteColour colour, string text, Vector2 position)
         {
-            Name = name;
+            ID = id;
             Size = size;
             Colour = colour;
-            Content = content;
+            Text = text;
             Position = position;
         }
     }
+
+    public enum NoteColour
+	{
+		Red,
+		Yellow,
+		Green,
+		Blue,
+		Violet,
+		Pink,
+		White
+	}
 }

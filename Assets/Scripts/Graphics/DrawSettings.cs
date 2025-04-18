@@ -77,6 +77,18 @@ namespace DLS.Graphics
 				new(whiteHigh, whiteHigh, whiteHigh)
 			};
 
+			Color[] note =
+			{
+				new Color(0.4f, 0.3f, 0.3f),
+				new Color(0.45f, 0.34f, 0.14f),
+				new Color(0.3f, 0.4f, 0.3f),
+				new Color(0.3f, 0.34f, 0.5f),
+				new Color(0.39f, 0.28f, 0.38f),
+				new Color(0.45f, 0.2f, 0.45f),
+				new Color(0.6f, 0.6f, 0.6f)
+			};
+
+
 			Color[] stateHover = stateLow.Select(c => Brighten(c, 0.1f)).ToArray();
 
             return new ThemeDLS
@@ -87,6 +99,7 @@ namespace DLS.Graphics
                 SelectionBoxOtherIsInvaldCol = MakeCol255(243, 150, 75, 80),
                 StateLowCol = stateLow,
                 StateHighCol = stateHigh,
+				NoteCol = note,
                 StateHoverCol = stateHover,
                 StateDisconnectedCol = Color.black,
                 DevPinHandle = MakeCol(0.31f),
@@ -241,6 +254,7 @@ namespace DLS.Graphics
 			public Color[] StateHighCol;
 			public Color[] StateHoverCol;
 			public Color[] StateLowCol;
+			public Color[] NoteCol;
 
 			public Color[] DisplayLEDCols; // Disconnected, Off, On
 		}
