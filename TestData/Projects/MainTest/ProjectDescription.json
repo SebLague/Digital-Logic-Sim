@@ -1,12 +1,14 @@
 {
   "ProjectName": "MainTest",
-  "DLSVersion_LastSaved": "2.1.0",
+  "DLSVersion_LastSaved": "2.1.2",
   "DLSVersion_EarliestCompatible": "2.0.0",
   "CreationTime": "2025-03-14T18:23:30.404+01:00",
-  "LastSaveTime": "2025-04-16T11:50:38.991+02:00",
+  "LastSaveTime": "2025-04-18T13:32:20.434+02:00",
   "Prefs_MainPinNamesDisplayMode": 0,
   "Prefs_ChipPinNamesDisplayMode": 1,
   "Prefs_GridDisplayMode": 1,
+  "Prefs_Snapping": 0,
+  "Prefs_StraightWires": 0,
   "Prefs_SimPaused": false,
   "Prefs_SimTargetStepsPerSecond": 20000,
   "Prefs_SimStepsPerClockTick": 6,
@@ -94,7 +96,7 @@
       "Name":"MERGE/SPLIT"
     },
     {
-      "Chips":["7-SEGMENT","DECIMAL-4","DECIMAL-8","DOT DISPLAY","RGB DISPLAY"],
+      "Chips":["7-SEGMENT","DECIMAL-4","DECIMAL-8","DOT DISPLAY","RGB DISPLAY","LED"],
       "IsToggledOpen":false,
       "Name":"DISPLAY"
     },
@@ -115,11 +117,11 @@
     },
     {
       "Chips":["WIP2","RAM-sync"],
-      "IsToggledOpen":true,
+      "IsToggledOpen":false,
       "Name":"TEST"
     },
     {
-      "Chips":["LED"],
+      "Chips":[],
       "IsToggledOpen":true,
       "Name":"OTHER"
     }
