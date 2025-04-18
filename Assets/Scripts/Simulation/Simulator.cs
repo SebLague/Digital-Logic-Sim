@@ -213,7 +213,32 @@ namespace DLS.Simulation
 					chip.OutputPins[0].State.SetBit(0, high ? PinState.LogicHigh : PinState.LogicLow);
 					break;
 				}
-				case ChipType.Split_4To1Bit:
+                case ChipType.Capacitor:
+                    {
+						uint signal = chip.InputPins[1].State.GetBit(0);
+
+						if (signal == PinState.LogicDisconnected) // Disconnect clears the capacitor
+						{
+							chip.InternalState[0] = 0;
+							chip.OutputPins[0].State.SetBit(0, signal);
+						}
+						else if (signal == PinState.LogicHigh) // High
+						{
+							chip.InternalState[0] = chip.InputPins[0].State.GetRawBits();
+                            chip.OutputPins[0].State.SetBit(0, signal);
+                        }
+						else if (signal == PinState.LogicLow) // Low
+						{
+							if (chip.InternalState[0] == 0) // No more time remaining
+							{
+								chip.OutputPins[0].State.SetBit(0, signal);
+							}
+                            chip.InternalState[0] -= 1;
+                        }
+
+                        break;
+                    }
+                case ChipType.Split_4To1Bit:
 				{
 					SimPin in4 = chip.InputPins[0];
 

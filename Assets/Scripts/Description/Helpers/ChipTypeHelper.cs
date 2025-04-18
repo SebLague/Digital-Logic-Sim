@@ -13,6 +13,7 @@ namespace DLS.Description
 			{ ChipType.Nand, "NAND" },
 			{ ChipType.Clock, "CLOCK" },
 			{ ChipType.TriStateBuffer, "3-STATE BUFFER" },
+			{ ChipType.Capacitor, "CAPACITOR" },
 			// ---- Memory ----
 			{ ChipType.dev_Ram_8Bit, "dev.RAM-8" },
 			{ ChipType.Rom_256x16, $"ROM 256{mulSymbol}16" },
