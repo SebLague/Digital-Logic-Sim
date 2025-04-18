@@ -20,12 +20,14 @@ namespace DLS.SaveSystem
 			string name = hasSavedDesc ? descOld.Name : string.Empty;
 			DisplayDescription[] displays = hasSavedDesc ? descOld.Displays : null;
 
-			// Create pin and subchip descriptions
+			// Create pin, subchip and notes descriptions
 			PinDescription[] inputPins = OrderPins(chip.GetInputPins()).Select(CreatePinDescription).ToArray();
 			PinDescription[] outputPins = OrderPins(chip.GetOutputPins()).Select(CreatePinDescription).ToArray();
 			SubChipDescription[] subchips = chip.GetSubchips().Select(CreateSubChipDescription).ToArray();
 			Vector2 minChipsSize = SubChipInstance.CalculateMinChipSize(inputPins, outputPins, name);
 			size = Vector2.Max(minChipsSize, size);
+			NoteDescription[] notes = chip.GetNotes().Select(CreateNoteDescription).ToArray();
+			Debug.Log($"Found {notes.Length} notes");
 
 			UpdateWireIndicesForDescriptionCreation(chip);
 
@@ -41,6 +43,7 @@ namespace DLS.SaveSystem
 				InputPins = inputPins,
 				OutputPins = outputPins,
 				Wires = chip.Wires.Select(CreateWireDescription).ToArray(),
+				Notes = notes,
 				Displays = displays,
 				ChipType = ChipType.Custom
 			};

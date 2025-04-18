@@ -16,7 +16,6 @@ namespace DLS.Game
 		public SimChip SimChip;
 		bool hasSimChip;
 		public readonly List<WireInstance> Wires = new();
-		private List<NoteInstance> Notes = new();
 
 		bool elementsModifiedSinceLastArrayUpdate;
 		DevPinInstance[] inputPins_cached = Array.Empty<DevPinInstance>();
@@ -58,6 +57,7 @@ namespace DLS.Game
 			description.InputPins ??= Array.Empty<PinDescription>();
 			description.OutputPins ??= Array.Empty<PinDescription>();
 			description.Wires ??= Array.Empty<WireDescription>();
+			description.Notes ??= Array.Empty<NoteDescription>();
 
 			bool anyElementFailedToLoad = false;
 
@@ -83,6 +83,14 @@ namespace DLS.Game
 			{
 				PinDescription pinDescription = description.OutputPins[i];
 				instance.AddNewDevPin(new DevPinInstance(pinDescription, false), true);
+			}
+
+			// Load notes
+			for (int i = 0; i < description.Notes.Length; i++)
+			{
+				NoteDescription noteDescription = description.Notes[i];
+				NoteInstance note = new(noteDescription);
+				instance.AddNote(note, true);
 			}
 
 			// ---- Load wires ----
@@ -220,13 +228,8 @@ namespace DLS.Game
 
 		public void AddNote(NoteInstance note, bool isLoading)
 		{
+			Debug.Log("Adding note: " + note.Text);
 			AddElement(note);
-			Notes.Add(note);
-		}
-
-		public NoteInstance[] GetNotes()
-		{
-			return Notes.ToArray();
 		}
 
 		void AddElement(IMoveable element)
@@ -464,6 +467,7 @@ namespace DLS.Game
 		}
 
 		public IEnumerable<SubChipInstance> GetSubchips() => Elements.OfType<SubChipInstance>();
+		public IEnumerable<NoteInstance> GetNotes() => Elements.OfType<NoteInstance>();
 
 		public IEnumerable<DevPinInstance> GetOutputPins()
 		{
