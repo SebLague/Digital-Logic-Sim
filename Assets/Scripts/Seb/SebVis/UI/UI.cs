@@ -536,6 +536,226 @@ namespace Seb.Vis.UI
 			}
 		}
 
+		public static InputFieldState TextArea(UIHandle id, InputFieldTheme theme, Vector2 pos, Vector2 size, string defaultText, Anchor anchor, float textPad, Func<string, bool> validation = null, bool forceFocus = false)
+		{
+			InputFieldState state = GetInputFieldState(id);
+
+			Vector2 centre = CalculateCentre(pos, size, anchor);
+			(Vector2 centre, Vector2 size) ss = UIToScreenSpace(centre, size);
+
+			if (IsRendering)
+			{
+				Vector2 textTopLeft_ss = ss.centre - new Vector2(ss.size.x / 2 - textPad * scale, -ss.size.y / 2 + textPad * 2 * scale);
+				Draw.Quad(ss.centre, ss.size, theme.bgCol);
+
+				// Focus input
+				bool mouseInBounds = InputHelper.MouseInBounds_ScreenSpace(ss.centre, ss.size);
+
+				if (InputHelper.IsMouseDownThisFrame(MouseButton.Left))
+				{
+					state.SetFocus(mouseInBounds);
+					state.isMouseDownInBounds = mouseInBounds;
+
+					// Set caret pos based on mouse position
+					if (mouseInBounds) state.SetCursorIndex(CharIndexBeforeMouse(textTopLeft_ss.x), InputHelper.ShiftIsHeld);
+				}
+
+				// Hold-drag left mouse to select
+				if (state.focused && InputHelper.IsMouseHeld(MouseButton.Left) && state.isMouseDownInBounds)
+				{
+					state.SetCursorIndex(CharIndexBeforeMouse(textTopLeft_ss.x), true);
+				}
+
+				if (forceFocus && !state.focused)
+				{
+					state.SetFocus(true);
+				}
+
+				// Draw focus outline and update text
+				if (state.focused)
+				{
+					const float outlineWidth = 0.05f;
+					Draw.QuadOutline(ss.centre, ss.size, outlineWidth * scale, theme.focusBorderCol);
+					foreach (char c in InputHelper.InputStringThisFrame)
+					{
+						bool invalidChar = char.IsControl(c) || char.IsSurrogate(c) || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.Format || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.PrivateUse;
+						if (invalidChar) continue;
+						state.TryInsertText(c + "", validation);
+					}
+
+					// Paste from clipboard
+					if (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.V))
+					{
+						state.TryInsertText(InputHelper.GetClipboardContents(), validation);
+					}
+
+					if (state.text.Length > 0)
+					{
+						// Backspace / delete
+						if (CanTrigger(ref state.backspaceTrigger, KeyCode.Backspace))
+						{
+							int charDeleteCount = InputHelper.CtrlIsHeld ? state.text.Length : 1; // delete all if ctrl is held
+							for (int i = 0; i < charDeleteCount; i++)
+							{
+								state.Delete(true, validation);
+							}
+						}
+						else if (CanTrigger(ref state.deleteTrigger, KeyCode.Delete))
+						{
+							state.Delete(false, validation);
+						}
+						if (InputHelper.IsKeyDownThisFrame(KeyCode.Return)) 
+						{
+							state.NewLine();
+						}
+
+						// Arrow keys
+						bool select = InputHelper.ShiftIsHeld;
+						bool leftArrow = CanTrigger(ref state.arrowKeyTrigger, KeyCode.LeftArrow);
+						bool rightArrow = CanTrigger(ref state.arrowKeyTrigger, KeyCode.RightArrow);
+						bool jumpToPrevWordStart = InputHelper.CtrlIsHeld && leftArrow;
+						bool jumpToNextWordEnd = InputHelper.CtrlIsHeld && rightArrow;
+						bool jumpToStart = InputHelper.IsKeyDownThisFrame(KeyCode.UpArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.PageUp) || InputHelper.IsKeyDownThisFrame(KeyCode.Home) || (jumpToPrevWordStart && InputHelper.AltIsHeld);
+						bool jumpToEnd = InputHelper.IsKeyDownThisFrame(KeyCode.DownArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.PageDown) || InputHelper.IsKeyDownThisFrame(KeyCode.End) || (jumpToNextWordEnd && InputHelper.AltIsHeld);
+
+						if (jumpToStart) state.SetCursorIndex(0, select);
+						else if (jumpToEnd) state.SetCursorIndex(state.text.Length, select);
+						else if (jumpToNextWordEnd) state.SetCursorIndex(state.NextWordEndIndex(), select);
+						else if (jumpToPrevWordStart) state.SetCursorIndex(state.PrevWordIndex(), select);
+						else if (leftArrow) state.DecrementCursor(select);
+						else if (rightArrow) state.IncrementCursor(select);
+
+						bool copyTriggered = InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.C);
+						bool cutTriggered = InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.X);
+
+						// Copy selected text (or all text if nothing selected)
+						if (copyTriggered || cutTriggered)
+						{
+							string copyText = state.text;
+							if (state.isSelecting) copyText = state.text.AsSpan(state.SelectionMinIndex, state.SelectionMaxIndex - state.SelectionMinIndex).ToString();
+							InputHelper.CopyToClipboard(copyText);
+
+							if (cutTriggered)
+							{
+								if (state.isSelecting) state.Delete(true, validation);
+								else state.ClearText();
+							}
+						}
+
+						// Select all
+						if (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.A)) state.SelectAll();
+					}
+				}
+
+				// Draw text
+				using (CreateMaskScope(centre, size))
+				{
+					state.WrapText(23);
+					float fontSize_ss = theme.fontSize * scale;
+					bool showDefaultText = string.IsNullOrEmpty(state.text) || !Application.isPlaying;
+					string displayString = showDefaultText ? defaultText : state.text;
+
+					Color textCol = showDefaultText ? theme.defaultTextCol : theme.textCol;
+					Draw.Text(theme.font, displayString, fontSize_ss, textTopLeft_ss, Anchor.TextCentreLeft, textCol);
+
+					if (Application.isPlaying)
+					{
+						Vector2 boundsSizeUpToCaret = Draw.CalculateTextBoundsSize(displayString.AsSpan(0, state.cursorBeforeCharIndex), theme.fontSize, theme.font);
+
+						// Draw selection box
+						if (state.isSelecting)
+						{
+							Vector2 boundsSizeUpToSelect = Draw.CalculateTextBoundsSize(displayString.AsSpan(0, state.selectionStartIndex), theme.fontSize, theme.font);
+							Color col = new(0.2f, 0.6f, 1, 0.5f);
+							float startX = textTopLeft_ss.x + boundsSizeUpToCaret.x * scale;
+							float endX = textTopLeft_ss.x + boundsSizeUpToSelect.x * scale;
+							if (startX > endX)
+							{
+								(startX, endX) = (endX, startX);
+							}
+
+							Vector2 c = new((endX + startX) / 2, textTopLeft_ss.y);
+							Vector2 s = new(endX - startX, theme.fontSize * 1.2f * scale);
+							Draw.Quad(c, s, col);
+						}
+
+						// Draw caret
+						const float blinkDuration = 0.5f;
+						if (state.focused && (int)((Time.time - state.lastInputTime) / blinkDuration) % 2 == 0)
+						{
+							Vector2 caretTextBoundsTest = Draw.CalculateTextBoundsSize("Mj", theme.fontSize, theme.font);
+							Vector2 caretOffset = GetCaretOffset(displayString, state.cursorBeforeCharIndex, theme.fontSize, theme.font);
+							Vector2 caretPos_ss = textTopLeft_ss + caretOffset * scale;
+							Vector2 caretSize = new(0.125f * theme.fontSize, caretTextBoundsTest.y * 1.2f);
+							Draw.Quad(caretPos_ss, caretSize * scale, theme.textCol);
+						}
+					}
+				}
+			}
+
+			OnFinishedDrawingUIElement(centre, size);
+			return state;
+
+			static bool CanTrigger(ref InputFieldState.TriggerState triggerState, KeyCode key)
+			{
+				if (InputHelper.IsKeyDownThisFrame(key)) triggerState.lastManualTime = Time.time;
+
+				if (InputHelper.IsKeyDownThisFrame(key) || (InputHelper.IsKeyHeld(key) && CanAutoTrigger(triggerState)))
+				{
+					triggerState.lastAutoTiggerTime = Time.time;
+					return true;
+				}
+
+				return false;
+			}
+
+			static bool CanAutoTrigger(InputFieldState.TriggerState triggerState)
+			{
+				const float autoTriggerStartDelay = 0.5f;
+				const float autoTriggerRepeatDelay = 0.04f;
+				bool initialDelayOver = Time.time - triggerState.lastManualTime > autoTriggerStartDelay;
+				bool canRepeat = Time.time - triggerState.lastAutoTiggerTime > autoTriggerRepeatDelay;
+				return initialDelayOver && canRepeat;
+			}
+
+			int CharIndexBeforeMouse(float textLeft)
+			{
+				//  (note: currently assumes monospaced)
+				float textBoundsWidth = Draw.CalculateTextBoundsSize(state.text, theme.fontSize, theme.font).x;
+				float textRight = textLeft + textBoundsWidth * scale;
+				float t = Mathf.InverseLerp(textLeft, textRight, InputHelper.MousePos.x);
+				return Mathf.RoundToInt(t * state.text.Length);
+			}
+
+			Vector2 GetCaretOffset(string text, int cursorIndex, float fontSize, FontType font)
+			{
+				// Ensure cursorIndex is within bounds
+				cursorIndex = Mathf.Clamp(cursorIndex, 0, text.Length);
+
+				ReadOnlySpan<char> span = text.AsSpan();
+				int lineIndex = 0, charStart = 0;
+
+				for (int i = 0; i < cursorIndex && i < text.Length; i++)
+				{
+					if (text[i] == '\n')
+					{
+						lineIndex++;
+						charStart = i + 1;
+					}
+				}
+
+				int charInLine = cursorIndex - charStart;
+				int lineEnd = text.IndexOf('\n', charStart);
+				if (lineEnd == -1) lineEnd = text.Length;
+
+				var lineSpan = span.Slice(charStart, Math.Min(charInLine, lineEnd - charStart));
+				float x = Draw.CalculateTextBoundsSize(lineSpan, fontSize, font).x;
+				float y = -lineIndex * fontSize * 1.3f;
+
+				return new Vector2(x, y);
+			}
+		}
+
 		// Reserve spot in the drawing order for a panel. Returns an ID which can be used
 		// to modify its properties (position, size, colour etc) at a later point.
 		public static Draw.ID ReservePanel() => Draw.ReserveQuad();

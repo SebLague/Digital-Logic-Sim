@@ -8,7 +8,7 @@ namespace DLS.Graphics
 {
 	public static class NoteTextMenu
 	{
-		const string MaxLabelLength = "MY LONG LABEL TEXT";
+		const string MaxLabelLength = "MY REAL LONG LABEL TEXT";
 		static NoteInstance note;
 		static readonly UIHandle ID_NameField = new("NoteTextMenu_NameField");
 
@@ -41,11 +41,11 @@ namespace DLS.Graphics
 			{
 				Vector2 unpaddedSize = Draw.CalculateTextBoundsSize(MaxLabelLength, inputTheme.fontSize, inputTheme.font);
 				const float padX = 2.25f;
-				Vector2 inputFieldSize = unpaddedSize + new Vector2(padX, 2.25f);
+				Vector2 inputFieldSize = unpaddedSize + new Vector2(padX, 26f);
 				Vector2 pos = UI.Centre + Vector2.up * 5;
 
 				// Draw input field
-				InputFieldState inputFieldState = UI.InputField(ID_NameField, inputTheme, pos, inputFieldSize, note.Text, Anchor.Centre, padX / 2, ValidateNameInput, true);
+				InputFieldState inputFieldState = UI.TextArea(ID_NameField, inputTheme, pos, inputFieldSize, note.Text, Anchor.Centre, padX / 2, null, true);
 				Bounds2D inputFieldBounds = UI.PrevBounds;
 				string newName = inputFieldState.text;
 
@@ -57,7 +57,7 @@ namespace DLS.Graphics
 
 				// Keyboard shortcuts and UI input
 				if (KeyboardShortcuts.CancelShortcutTriggered || buttonIndex == 0) Cancel();
-				else if (KeyboardShortcuts.ConfirmShortcutTriggered || buttonIndex == 1) Confirm(newName);
+				else if (buttonIndex == 1) Confirm(newName);
 			}
 		}
 

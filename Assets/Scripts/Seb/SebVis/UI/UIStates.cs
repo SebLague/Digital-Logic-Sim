@@ -140,6 +140,43 @@ namespace Seb.Vis.UI
 			UpdateLastInputTime();
 		}
 
+		public void NewLine()
+		{
+			if (isSelecting) Delete(true);
+			TryInsertText("\n");
+		}
+
+		public void WrapText(int maxCharsPerLine)
+		{
+			if (maxCharsPerLine <= 0 || string.IsNullOrEmpty(text))
+				return;
+
+			string[] lines = text.Split('\n');
+			string wrappedText = "";
+
+			foreach (string line in lines)
+			{
+				string unwrappedLine = line.Replace("\n", "");  // Remove any newlines inside the line itself
+				string lineWithWrap = "";
+
+				for (int i = 0; i < unwrappedLine.Length; i++)
+				{	
+					if (i > 0 && i % maxCharsPerLine == 0)
+						lineWithWrap += "\n";
+
+					lineWithWrap += unwrappedLine[i];
+				}
+
+				if (wrappedText.Length > 0)
+					wrappedText += "\n";
+				
+				wrappedText += lineWithWrap;
+			}
+
+			text = wrappedText;
+			SetCursorIndex(text.Length); // move cursor to the end
+		}
+
 		public void SelectAll()
 		{
 			SetCursorIndex(0);
