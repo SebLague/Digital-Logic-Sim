@@ -16,6 +16,7 @@ namespace DLS.Graphics
 			PinRename,
 			MainMenu,
 			RebindKeyChip,
+			Clock,
 			RomEdit,
 			UnsavedChanges,
 			Search,
@@ -56,21 +57,26 @@ namespace DLS.Graphics
 
 			if (menuToDraw != MenuType.ChipCustomization) BottomBarUI.DrawUI(project);
 
-			if (menuToDraw == MenuType.ChipSave) ChipSaveMenu.DrawMenu();
-			else if (menuToDraw == MenuType.ChipLibrary) ChipLibraryMenu.DrawMenu();
-			else if (menuToDraw == MenuType.ChipCustomization) ChipCustomizationMenu.DrawMenu();
-			else if (menuToDraw == MenuType.Options) PreferencesMenu.DrawMenu(project);
-			else if (menuToDraw == MenuType.PinRename) PinEditMenu.DrawMenu();
-			else if (menuToDraw == MenuType.RebindKeyChip) RebindKeyChipMenu.DrawMenu();
-			else if (menuToDraw == MenuType.RomEdit) RomEditMenu.DrawMenu();
-			else if (menuToDraw == MenuType.UnsavedChanges) UnsavedChangesPopup.DrawMenu();
-			else if (menuToDraw == MenuType.Search) SearchPopup.DrawMenu();
-			else if (menuToDraw == MenuType.ChipLabelPopup) ChipLabelMenu.DrawMenu();
-			else
+			switch (menuToDraw)
 			{
-				bool showSimPausedBanner = project.simPaused;
-				if (showSimPausedBanner) SimPausedUI.DrawPausedBanner();
-				if (project.chipViewStack.Count > 1) ViewedChipsBar.DrawViewedChipsBanner(project, showSimPausedBanner);
+				case MenuType.ChipSave: ChipSaveMenu.DrawMenu(); break;
+				case MenuType.ChipLibrary: ChipLibraryMenu.DrawMenu(); break;
+				case MenuType.ChipCustomization: ChipCustomizationMenu.DrawMenu(); break;
+				case MenuType.Options: PreferencesMenu.DrawMenu(project); break;
+				case MenuType.PinRename: PinEditMenu.DrawMenu(); break;
+				case MenuType.RebindKeyChip: RebindKeyChipMenu.DrawMenu(); break;
+				case MenuType.Clock: ClockMenu.DrawMenu(); break;
+				case MenuType.RomEdit: RomEditMenu.DrawMenu(); break;
+				case MenuType.UnsavedChanges: UnsavedChangesPopup.DrawMenu(); break;
+				case MenuType.Search: SearchPopup.DrawMenu(); break;
+				case MenuType.ChipLabelPopup: ChipLabelMenu.DrawMenu(); break;
+				default:
+				{
+					bool showSimPausedBanner = project.simPaused;
+					if (showSimPausedBanner) SimPausedUI.DrawPausedBanner();
+					if (project.chipViewStack.Count > 1) ViewedChipsBar.DrawViewedChipsBanner(project, showSimPausedBanner);
+					break;
+				}
 			}
 
 			ContextMenu.Update();
@@ -85,16 +91,20 @@ namespace DLS.Graphics
 			{
 				if (activeMenuOld == MenuType.ChipCustomization) CustomizationSceneDrawer.OnCustomizationMenuClosed();
 
-				if (ActiveMenu == MenuType.ChipSave) ChipSaveMenu.OnMenuOpened();
-				else if (ActiveMenu == MenuType.ChipLibrary) ChipLibraryMenu.OnMenuOpened();
-				else if (ActiveMenu == MenuType.ChipCustomization) ChipCustomizationMenu.OnMenuOpened();
-				else if (ActiveMenu == MenuType.PinRename) PinEditMenu.OnMenuOpened();
-				else if (ActiveMenu == MenuType.Options) PreferencesMenu.OnMenuOpened();
-				else if (ActiveMenu == MenuType.MainMenu) MainMenu.OnMenuOpened();
-				else if (ActiveMenu == MenuType.RebindKeyChip) RebindKeyChipMenu.OnMenuOpened();
-				else if (ActiveMenu == MenuType.RomEdit) RomEditMenu.OnMenuOpened();
-				else if (ActiveMenu == MenuType.Search) SearchPopup.OnMenuOpened();
-				else if (ActiveMenu == MenuType.ChipLabelPopup) ChipLabelMenu.OnMenuOpened();
+				switch (ActiveMenu)
+				{
+					case MenuType.ChipSave: ChipSaveMenu.OnMenuOpened(); break;
+					case MenuType.ChipLibrary: ChipLibraryMenu.OnMenuOpened(); break;
+					case MenuType.ChipCustomization: ChipCustomizationMenu.OnMenuOpened(); break;
+					case MenuType.PinRename: PinEditMenu.OnMenuOpened(); break;
+					case MenuType.Options: PreferencesMenu.OnMenuOpened(); break;
+					case MenuType.MainMenu: MainMenu.OnMenuOpened(); break;
+					case MenuType.RebindKeyChip: RebindKeyChipMenu.OnMenuOpened(); break;
+					case MenuType.Clock: ClockMenu.OnMenuOpened(); break;
+					case MenuType.RomEdit: RomEditMenu.OnMenuOpened(); break;
+					case MenuType.Search: SearchPopup.OnMenuOpened(); break;
+					case MenuType.ChipLabelPopup: ChipLabelMenu.OnMenuOpened(); break;
+				}
 
 				if (InInputBlockingMenu() && Project.ActiveProject != null && Project.ActiveProject.controller != null)
 				{

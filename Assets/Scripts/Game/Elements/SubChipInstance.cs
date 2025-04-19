@@ -21,13 +21,12 @@ namespace DLS.Game
 		public readonly SubChipDescription InitialSubChipDesc;
 		public readonly PinInstance[] InputPins;
 
-		public readonly uint[] InternalData;
+		public readonly UInt64[] InternalData;
 		public readonly bool IsBus;
 		public readonly Vector2 MinSize;
 
 		public readonly string MultiLineName;
 		public readonly PinInstance[] OutputPins;
-		public string activationKeyString; // input char for the 'key chip' type (stored as string to avoid allocating when drawing)
 		public string Label;
 
 		public SubChipInstance(ChipDescription description, SubChipDescription subChipDesc)
@@ -53,13 +52,8 @@ namespace DLS.Game
 			// Load internal data
 			if (subChipDesc.InternalData != null)
 			{
-				InternalData = new uint[subChipDesc.InternalData.Length];
+				InternalData = new UInt64[subChipDesc.InternalData.Length];
 				Array.Copy(subChipDesc.InternalData, InternalData, InternalData.Length);
-
-				if (ChipType == ChipType.Key)
-				{
-					SetKeyChipActivationChar((char)subChipDesc.InternalData[0]);
-				}
 
 				if (IsBus && InternalData.Length > 1)
 				{
@@ -88,6 +82,8 @@ namespace DLS.Game
 			}
 		}
 
+		public UInt64 Clockspeed => InternalData[0];
+		public byte Key => (byte)InternalData[0];
 		public int LinkedBusPairID => IsBus ? (int)InternalData[0] : -1;
 		public bool BusIsFlipped => IsBus && InternalData.Length > 1 && InternalData[1] == 1;
 		public Vector2 Size => Description.Size;
@@ -123,11 +119,16 @@ namespace DLS.Game
 			InternalData[0] = (uint)busPair.ID;
 		}
 
-		public void SetKeyChipActivationChar(char c)
+		public void SetClockspeed(UInt64 clockspeed)
+		{
+			if (ChipType != ChipType.Clock) throw new Exception("Expected ClockChip type, but instead got: " + ChipType);
+			InternalData[0] = clockspeed;
+		}
+
+		public void SetKeyChipActivation(byte key)
 		{
 			if (ChipType != ChipType.Key) throw new Exception("Expected KeyChip type, but instead got: " + ChipType);
-			activationKeyString = c.ToString();
-			InternalData[0] = c;
+			InternalData[0] = key;
 		}
 
 		public void UpdatePinLayout()

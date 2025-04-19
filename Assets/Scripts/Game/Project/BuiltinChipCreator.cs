@@ -30,6 +30,11 @@ namespace DLS.Game
 				CreateInputKeyChip(),
 				// ---- Basic Chips ----
 				CreateNand(),
+				CreateNand4(),
+				CreateNand8(),
+				CreateNand16(),
+				CreateNand32(),
+				CreateNand64(),
 				CreateTristateBuffer(),
 				CreateClock(),
 				// ---- Memory ----
@@ -40,16 +45,41 @@ namespace DLS.Game
 				CreateROM_16_24(),
 				// ---- Merge / Split ----
 				CreateBitConversionChip(ChipType.Split_4To1Bit, PinBitCount.Bit4, PinBitCount.Bit1, 1, 4),
-				CreateBitConversionChip(ChipType.Split_8To4Bit, PinBitCount.Bit8, PinBitCount.Bit4, 1, 2),
 				CreateBitConversionChip(ChipType.Split_8To1Bit, PinBitCount.Bit8, PinBitCount.Bit1, 1, 8),
+				CreateBitConversionChip(ChipType.Split_8To4Bit, PinBitCount.Bit8, PinBitCount.Bit4, 1, 2),
 				CreateBitConversionChip(ChipType.Split_16To1Bit, PinBitCount.Bit16, PinBitCount.Bit1, 1, 16),
+				CreateBitConversionChip(ChipType.Split_16To4Bit, PinBitCount.Bit16, PinBitCount.Bit1, 1, 4),
 				CreateBitConversionChip(ChipType.Split_16To8Bit, PinBitCount.Bit16, PinBitCount.Bit8, 1, 2),
 
+				CreateBitConversionChip(ChipType.Split_32To1Bit, PinBitCount.Bit32, PinBitCount.Bit1, 1, 32),
+				CreateBitConversionChip(ChipType.Split_32To4Bit, PinBitCount.Bit32, PinBitCount.Bit4, 1, 8),
+				CreateBitConversionChip(ChipType.Split_32To8Bit, PinBitCount.Bit32, PinBitCount.Bit8, 1, 4),
+				CreateBitConversionChip(ChipType.Split_32To16Bit, PinBitCount.Bit32, PinBitCount.Bit16, 1, 2),
+				
+				CreateBitConversionChip(ChipType.Split_64To1Bit, PinBitCount.Bit64, PinBitCount.Bit1, 1, 64),
+				CreateBitConversionChip(ChipType.Split_64To4Bit, PinBitCount.Bit64, PinBitCount.Bit4, 1, 16),
+				CreateBitConversionChip(ChipType.Split_64To8Bit, PinBitCount.Bit64, PinBitCount.Bit8, 1, 8),
+				CreateBitConversionChip(ChipType.Split_64To16Bit, PinBitCount.Bit64, PinBitCount.Bit16, 1, 4),
+				CreateBitConversionChip(ChipType.Split_64To32Bit, PinBitCount.Bit64, PinBitCount.Bit32, 1, 2),
+				
 				CreateBitConversionChip(ChipType.Merge_1To8Bit, PinBitCount.Bit1, PinBitCount.Bit8, 8, 1),
 				CreateBitConversionChip(ChipType.Merge_1To4Bit, PinBitCount.Bit1, PinBitCount.Bit4, 4, 1),
 				CreateBitConversionChip(ChipType.Merge_4To8Bit, PinBitCount.Bit4, PinBitCount.Bit8, 2, 1),
 				CreateBitConversionChip(ChipType.Merge_1To16Bit, PinBitCount.Bit1, PinBitCount.Bit16, 16, 1),
+				CreateBitConversionChip(ChipType.Merge_4To16Bit, PinBitCount.Bit8, PinBitCount.Bit16, 4, 1),
 				CreateBitConversionChip(ChipType.Merge_8To16Bit, PinBitCount.Bit8, PinBitCount.Bit16, 2, 1),
+				
+				CreateBitConversionChip(ChipType.Merge_1To32Bit, PinBitCount.Bit1, PinBitCount.Bit32, 32, 1),
+				CreateBitConversionChip(ChipType.Merge_4To32Bit, PinBitCount.Bit4, PinBitCount.Bit32, 8, 1),
+				CreateBitConversionChip(ChipType.Merge_8To32Bit, PinBitCount.Bit8, PinBitCount.Bit32, 4, 1),
+				CreateBitConversionChip(ChipType.Merge_16To32Bit, PinBitCount.Bit16, PinBitCount.Bit32, 2, 1),
+				
+				CreateBitConversionChip(ChipType.Merge_1To64Bit, PinBitCount.Bit1, PinBitCount.Bit64, 64, 1),
+				CreateBitConversionChip(ChipType.Merge_4To64Bit, PinBitCount.Bit4, PinBitCount.Bit64, 16, 1),
+				CreateBitConversionChip(ChipType.Merge_8To64Bit, PinBitCount.Bit8, PinBitCount.Bit64, 8, 1),
+				CreateBitConversionChip(ChipType.Merge_16To64Bit, PinBitCount.Bit16, PinBitCount.Bit64, 4, 1),
+				CreateBitConversionChip(ChipType.Merge_32To64Bit, PinBitCount.Bit32, PinBitCount.Bit64, 2, 1),
+
 				// ---- Displays ----
 				CreateDisplay7Seg(),
 				CreateDisplayRGB(),
@@ -80,6 +110,61 @@ namespace DLS.Game
 			PinDescription[] outputPins = { CreatePinDescription("OUT", 2) };
 
 			return CreateBuiltinChipDesciption(ChipType.Nand, size, col, inputPins, outputPins);
+		}
+
+		static ChipDescription CreateNand4()
+		{
+			Color col = new(0.73f, 0.26f, 0.26f);
+
+			PinDescription[] inputPins = { CreatePinDescription("IN B", 0, PinBitCount.Bit4), CreatePinDescription("IN A", 1, PinBitCount.Bit4) };
+			PinDescription[] outputPins = { CreatePinDescription("OUT", 2, PinBitCount.Bit4) };
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 8), SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
+
+			return CreateBuiltinChipDesciption(ChipType.Nand4, size, col, inputPins, outputPins);
+		}
+
+		static ChipDescription CreateNand8()
+		{
+			Color col = new(0.73f, 0.26f, 0.26f);
+
+			PinDescription[] inputPins = { CreatePinDescription("IN B", 0, PinBitCount.Bit8), CreatePinDescription("IN A", 1, PinBitCount.Bit8) };
+			PinDescription[] outputPins = { CreatePinDescription("OUT", 2, PinBitCount.Bit8) };
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 8), SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
+
+			return CreateBuiltinChipDesciption(ChipType.Nand8, size, col, inputPins, outputPins);
+		}
+
+		static ChipDescription CreateNand16()
+		{
+			Color col = new(0.73f, 0.26f, 0.26f);
+
+			PinDescription[] inputPins = { CreatePinDescription("IN B", 0, PinBitCount.Bit16), CreatePinDescription("IN A", 1, PinBitCount.Bit16) };
+			PinDescription[] outputPins = { CreatePinDescription("OUT", 2, PinBitCount.Bit16) };
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 10), SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
+
+			return CreateBuiltinChipDesciption(ChipType.Nand16, size, col, inputPins, outputPins);
+		}
+
+		static ChipDescription CreateNand32()
+		{
+			Color col = new(0.73f, 0.26f, 0.26f);
+
+			PinDescription[] inputPins = { CreatePinDescription("IN B", 0, PinBitCount.Bit32), CreatePinDescription("IN A", 1, PinBitCount.Bit32) };
+			PinDescription[] outputPins = { CreatePinDescription("OUT", 2, PinBitCount.Bit32) };
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 10), SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
+
+			return CreateBuiltinChipDesciption(ChipType.Nand32, size, col, inputPins, outputPins);
+		}
+
+		static ChipDescription CreateNand64()
+		{
+			Color col = new(0.73f, 0.26f, 0.26f);
+
+			PinDescription[] inputPins = { CreatePinDescription("IN B", 0, PinBitCount.Bit64), CreatePinDescription("IN A", 1, PinBitCount.Bit64) };
+			PinDescription[] outputPins = { CreatePinDescription("OUT", 2, PinBitCount.Bit64) };
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 10), SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
+
+			return CreateBuiltinChipDesciption(ChipType.Nand64, size, col, inputPins, outputPins);
 		}
 
 		static ChipDescription dev_CreateRAM_8()
@@ -227,9 +312,25 @@ namespace DLS.Game
 
 		static string GetPinName(int pinIndex, int pinCount, bool isInput)
 		{
-			string letter = " " + (char)('A' + pinCount - pinIndex - 1);
-			if (pinCount == 1) letter = "";
+			string letter = "";
+			if (pinCount > 1)
+			{
+				int index = pinCount - pinIndex - 1;
+				letter = " " + GetAlphabetLabel(index);
+			}
+
 			return (isInput ? "IN" : "OUT") + letter;
+		}
+
+		static string GetAlphabetLabel(int index)
+		{
+			string label = "";
+			while (index >= 0)
+			{
+				label = (char)('A' + (index % 26)) + label;
+				index = (index / 26) - 1;
+			}
+			return label;
 		}
 
 		static ChipDescription CreateDisplay7Seg()

@@ -213,11 +213,19 @@ namespace DLS.Graphics
 			Draw.Text(font, text, FontSizePinLabel, centre, Anchor.TextFirstLineCentre, Color.white);
 		}
 
+		private static ulong value = 0;
 		public static void DrawPinDecValue(DevPinInstance pin)
 		{
 			if (pin.pinValueDisplayMode == PinValueDisplayMode.Off) return;
-
-			int charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+			int charCount = 0;
+			if (pin.pinValueDisplayMode == PinValueDisplayMode.SignedDecimal)
+			{
+				charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, (Int64)pin.GetStateDecimalDisplayValue());
+			}
+			else
+			{
+				charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, (UInt64)pin.GetStateDecimalDisplayValue());
+			}
 
 			FontType font = FontBold;
 			Bounds2D parentBounds = pin.BoundingBox;
@@ -292,7 +300,7 @@ namespace DLS.Graphics
 			if (isButton || desc.NameLocation != NameDisplayLocation.Hidden)
 			{
 				// Display on single line if name fits comfortably, otherwise use 'formatted' version (split across multiple lines)
-				string displayName = isButton ? subchip.activationKeyString : subchip.MultiLineName;
+				string displayName = isButton ? RebindKeyChipMenu.KeyStrings[subchip.Key] : subchip.MultiLineName;
 				if (Draw.CalculateTextBoundsSize(subchip.Description.Name, FontSizeChipName, FontBold).x < subchip.Size.x - PinRadius * 2.5f)
 				{
 					displayName = subchip.Description.Name;
@@ -458,7 +466,7 @@ namespace DLS.Graphics
 					if (useSim)
 					{
 						int address = y * 16 + x;
-						uint pixelState = simSource.InternalState[address];
+						UInt64 pixelState = simSource.InternalState[address];
 						float red = Unpack4BitColChannel(pixelState);
 						float green = Unpack4BitColChannel(pixelState >> 4);
 						float blue = Unpack4BitColChannel(pixelState >> 8);
@@ -472,7 +480,7 @@ namespace DLS.Graphics
 
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 
-			float Unpack4BitColChannel(uint raw)
+			float Unpack4BitColChannel(UInt64 raw)
 			{
 				return (raw & 0b1111) / 15f;
 			}
@@ -502,7 +510,7 @@ namespace DLS.Graphics
 					if (useSim)
 					{
 						int address = y * 16 + x;
-						uint pixelState = simSource.InternalState[address];
+						UInt64 pixelState = simSource.InternalState[address];
 						float v = pixelState;
 						col = new Color(pixelState, pixelState, pixelState);
 					}
@@ -602,9 +610,7 @@ namespace DLS.Graphics
 		public static void DrawMultiBitDevPin(DevPinInstance devPin)
 		{
 			// Line between state display and pin
-			float pinOffsetX = Math.Max(0, devPin.StateGridDimensions.x - 4) * 0.21f * (devPin.IsInputPin ? 1 : -1);
-
-			Draw.Line(devPin.StateDisplayPosition, devPin.PinPosition + new Vector2(pinOffsetX, 0), 0.03f, Color.black);
+			Draw.Line(devPin.StateDisplayPosition, devPin.PinPosition, 0.03f, Color.black);
 
 			// ---- State indicator grid ----
 			Vector2Int stateGridDim = devPin.StateGridDimensions;
@@ -740,14 +746,24 @@ namespace DLS.Graphics
 
 		static void DrawMultiBitWire(WireInstance wire)
 		{
-			float thickness = (ShouldHighlightWire(wire) ? WireHighlightedThickness : WireThickness) / 2;
+			PinInstance pin = null;
+			if (wire.FirstPin != null)
+				pin = wire.FirstPin;
+			else if(wire.SourcePin != null)
+				pin = wire.SourcePin;
+			else if (wire.TargetPin != null)
+				pin = wire.TargetPin;
+			
+			float thicknessDivisor = pin == null ? 1 : 2.4f * SubChipInstance.PinHeightFromBitCount(pin.bitCount);
+			
+			float thickness = (ShouldHighlightWire(wire) ? WireHighlightedThickness : WireThickness) / thicknessDivisor;
 
 			Vector2 mousePos = InputHelper.MousePosWorld;
 			const float highlightDstThreshold = WireHighlightedThickness + (WireHighlightedThickness - WireThickness) * 0.8f;
 			const float sqrDstThreshold = highlightDstThreshold * highlightDstThreshold;
 			bool canInteract = controller.CanInteractWithWire(wire);
 
-			WireLayoutHelper.CreateMultiBitWireLayout(wire.BitWires, wire, WireThickness);
+			WireLayoutHelper.CreateMultiBitWireLayout(wire.BitWires, wire, WireThickness / thicknessDivisor);
 
 			// Draw
 			for (int bitIndex = 0; bitIndex < wire.BitWires.Length; bitIndex++)
@@ -844,13 +860,9 @@ namespace DLS.Graphics
 
 		static void DrawMultiBitPin(PinInstance pin)
 		{
-			float pinOffsetX = 0f;
-			if(pin.parent is DevPinInstance devPin)
-			{
-				pinOffsetX = Math.Max(0, devPin.StateGridDimensions.x - 4) * 0.21f * (devPin.IsInputPin ? 1 : -1);
-			}
+
 			const float pinWidth = PinRadius * 2 * 0.95f;
-			Vector2 pinPos = pin.GetWorldPos() + new Vector2(pinOffsetX, 0);
+			Vector2 pinPos = pin.GetWorldPos();
 			Vector2 pinSelectionBoundsPos = pinPos + Vector2.right * ((pin.IsSourcePin ? 1 : -1) * 0.02f);
 			float pinHeight = SubChipInstance.PinHeightFromBitCount(pin.bitCount);
 			

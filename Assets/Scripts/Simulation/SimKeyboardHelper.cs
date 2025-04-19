@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using Seb.Helpers;
 using UnityEngine;
 
@@ -17,43 +18,34 @@ namespace DLS.Simulation
 			KeyCode.Alpha5, KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9
 		};
 
-		static readonly HashSet<char> KeyLookup = new();
-		static bool HasAnyInput;
+		static long KeyStates = 0;
 
 		// Call from Main Thread
 		public static void RefreshInputState()
 		{
-			lock (KeyLookup)
+			if (!InputHelper.AnyKeyOrMouseHeldThisFrame || // early exit if no key held
+				InputHelper.CtrlIsHeld || InputHelper.ShiftIsHeld || InputHelper.AltIsHeld) // don't trigger key chips if modifier is held
 			{
-				KeyLookup.Clear();
-				HasAnyInput = false;
-
-				if (!InputHelper.AnyKeyOrMouseHeldThisFrame) return; // early exit if no key held
-				if (InputHelper.CtrlIsHeld || InputHelper.ShiftIsHeld || InputHelper.AltIsHeld) return; // don't trigger key chips if modifier is held
-
-				foreach (KeyCode key in ValidInputKeys)
-				{
-					if (InputHelper.IsKeyHeld(key))
-					{
-						char keyChar = char.ToUpper((char)key);
-						KeyLookup.Add(keyChar);
-						HasAnyInput = true;
-					}
-				}
+				Interlocked.Exchange(ref KeyStates, 0);
+				return;
 			}
+
+			long keyStates = 0;
+			for (int i = 0; i < ValidInputKeys.Length; ++i)
+			{
+				KeyCode keyCode = ValidInputKeys[i];
+				if (InputHelper.IsKeyHeld(keyCode))
+					keyStates |= (1L << i);
+			}
+
+			Interlocked.Exchange(ref KeyStates, keyStates);
 		}
 
 		// Call from Sim Thread
-		public static bool KeyIsHeld(char key)
+		public static bool KeyIsHeld(byte key)
 		{
-			bool isHeld;
-
-			lock (KeyLookup)
-			{
-				isHeld = HasAnyInput && KeyLookup.Contains(key);
-			}
-
-			return isHeld;
+			long keyStates = Interlocked.Read(ref KeyStates);
+			return ((keyStates >> key) & 1) != 0;
 		}
 	}
 }

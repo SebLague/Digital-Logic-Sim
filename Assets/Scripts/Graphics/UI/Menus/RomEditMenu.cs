@@ -212,15 +212,26 @@ namespace DLS.Graphics
 		}
 
 		// Convert from uint to display string with given display mode
-		static string UIntToDisplayString(uint raw, DataDisplayMode displayFormat, int bitCount)
+		static string UIntToDisplayString(UInt64 raw, DataDisplayMode displayFormat, int bitCount)
 		{
 			return displayFormat switch
 			{
-				DataDisplayMode.Binary => Convert.ToString(raw, 2).PadLeft(bitCount, '0'),
+				DataDisplayMode.Binary => ConvertUlongToBinary(raw, bitCount),
 				DataDisplayMode.DecimalSigned => Maths.TwosComplement(raw, bitCount) + "",
 				DataDisplayMode.DecimalUnsigned => raw + "",
 				_ => throw new NotImplementedException("Unsupported display format: " + displayFormat)
 			};
+		}
+		
+		private static string ConvertUlongToBinary(ulong value, int bitCount)
+		{
+			char[] bits = new char[bitCount];
+			for (int i = 0; i < bitCount; i++)
+			{
+				int shift = bitCount - 1 - i;
+				bits[i] = ((value >> shift) & 1) == 1 ? '1' : '0';
+			}
+			return new string(bits);
 		}
 
 		// Convert string with given format to uint

@@ -2,15 +2,16 @@ using DLS.Game;
 using Seb.Helpers;
 using Seb.Vis;
 using Seb.Vis.UI;
+using System.Linq;
 using UnityEngine;
 
 namespace DLS.Graphics
 {
 	public static class RebindKeyChipMenu
 	{
-		public const string allowedChars = "1234567890QWERTYUIOPASDFGHJKLZXCVBNM";
+		public static readonly string[] KeyStrings = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".Select(c => new string(c, 1)).ToArray();
+		public const string allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		static SubChipInstance keyChip;
-		static string chosenKey;
 
 		public static void DrawMenu()
 		{
@@ -22,19 +23,24 @@ namespace DLS.Graphics
 
 			using (UI.BeginBoundsScope(true))
 			{
+				byte newKey = keyChip.Key;
 				if (InputHelper.AnyKeyOrMouseDownThisFrame && !string.IsNullOrEmpty(InputHelper.InputStringThisFrame))
 				{
 					char activeChar = char.ToUpper(InputHelper.InputStringThisFrame[0]);
-					if (allowedChars.Contains(activeChar))
+					for (int i = 0; i < allowedChars.Length; ++i)
 					{
-						chosenKey = activeChar.ToString();
+						if (activeChar == allowedChars[i])
+						{
+							newKey = (byte)i;
+							break;
+						}
 					}
 				}
 
 				UI.DrawText("Press a key to rebind\n (alphanumeric only)", theme.FontBold, theme.FontSizeRegular, pos, Anchor.TextCentre, Color.white * 0.8f);
 
 				UI.DrawPanel(UI.PrevBounds.CentreBottom + Vector2.down, Vector2.one * 3.5f, new Color(0.1f, 0.1f, 0.1f), Anchor.CentreTop);
-				UI.DrawText(chosenKey, theme.FontBold, theme.FontSizeRegular * 1.5f, UI.PrevBounds.Centre, Anchor.TextCentre, Color.white);
+				UI.DrawText(KeyStrings[newKey], theme.FontBold, theme.FontSizeRegular * 1.5f, UI.PrevBounds.Centre, Anchor.TextCentre, Color.white);
 
 				MenuHelper.CancelConfirmResult result = MenuHelper.DrawCancelConfirmButtons(UI.GetCurrentBoundsScope().BottomLeft, UI.GetCurrentBoundsScope().Width, true);
 				MenuHelper.DrawReservedMenuPanel(panelID, UI.GetCurrentBoundsScope());
@@ -45,7 +51,7 @@ namespace DLS.Graphics
 				}
 				else if (result == MenuHelper.CancelConfirmResult.Confirm)
 				{
-					Project.ActiveProject.NotifyKeyChipBindingChanged(keyChip, chosenKey[0]);
+					Project.ActiveProject.NotifyKeyChipBindingChanged(keyChip, newKey);
 					UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 				}
 			}
@@ -54,7 +60,6 @@ namespace DLS.Graphics
 		public static void OnMenuOpened()
 		{
 			keyChip = (SubChipInstance)ContextMenu.interactionContext;
-			chosenKey = keyChip.activationKeyString;
 		}
 	}
 }

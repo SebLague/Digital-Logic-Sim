@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace DLS.Description
@@ -15,9 +16,9 @@ namespace DLS.Description
 		// BUS: stores id of linked bus pair (origin/terminus), and horizontal flip value (0 = no, 1 = yes)
 		// KEY: stores bound key code
 		// Otherwise is null
-		public uint[] InternalData;
+		public UInt64[] InternalData;
 
-		public SubChipDescription(string name, int id, string label, Vector2 position, OutputPinColourInfo[] outputPinColInfo, uint[] internalData = null)
+		public SubChipDescription(string name, int id, string label, Vector2 position, OutputPinColourInfo[] outputPinColInfo, UInt64[] internalData = null)
 		{
 			Name = name;
 			ID = id;

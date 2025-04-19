@@ -60,6 +60,13 @@ namespace DLS.Graphics
 			deleteEntry
 		};
 
+		static readonly MenuEntry[] entries_builtinClockSubchip =
+		{
+			new(Format("CLOCK"), OpenClockMenu, CanEditCurrentChip),
+			labelChipEntry,
+			deleteEntry
+		};
+
 		static readonly MenuEntry[] entries_builtinRomSubchip =
 		{
 			new(Format("EDIT"), OpenRomEditMenu, CanEditCurrentChip),
@@ -169,6 +176,7 @@ namespace DLS.Graphics
 						{
 							headerName = ChipTypeHelper.IsBusType(subChip.ChipType) ? "BUS" : subChip.Description.Name;
 							if (subChip.ChipType == ChipType.Key) activeContextMenuEntries = entries_builtinKeySubchip;
+							else if (subChip.ChipType == ChipType.Clock) activeContextMenuEntries = entries_builtinClockSubchip;
 							else if (ChipTypeHelper.IsRomType(subChip.ChipType)) activeContextMenuEntries = entries_builtinRomSubchip;
 							else if (ChipTypeHelper.IsBusType(subChip.ChipType)) activeContextMenuEntries = entries_builtinBus;
 							else activeContextMenuEntries = entries_builtinSubchip;
@@ -370,6 +378,11 @@ namespace DLS.Graphics
 		static void OpenKeyBindMenu()
 		{
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.RebindKeyChip);
+		}
+
+		static void OpenClockMenu()
+		{
+			UIDrawer.SetActiveMenu(UIDrawer.MenuType.Clock);
 		}
 
 		static void OpenRomEditMenu() => UIDrawer.SetActiveMenu(UIDrawer.MenuType.RomEdit);
