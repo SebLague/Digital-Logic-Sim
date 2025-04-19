@@ -12,6 +12,7 @@ namespace DLS.Graphics
 		public static readonly string[] KeyStrings = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".Select(c => new string(c, 1)).ToArray();
 		public const string allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		static SubChipInstance keyChip;
+		static byte key;
 
 		public static void DrawMenu()
 		{
@@ -23,7 +24,6 @@ namespace DLS.Graphics
 
 			using (UI.BeginBoundsScope(true))
 			{
-				byte newKey = keyChip.Key;
 				if (InputHelper.AnyKeyOrMouseDownThisFrame && !string.IsNullOrEmpty(InputHelper.InputStringThisFrame))
 				{
 					char activeChar = char.ToUpper(InputHelper.InputStringThisFrame[0]);
@@ -31,7 +31,7 @@ namespace DLS.Graphics
 					{
 						if (activeChar == allowedChars[i])
 						{
-							newKey = (byte)i;
+							key = (byte)i;
 							break;
 						}
 					}
@@ -40,7 +40,7 @@ namespace DLS.Graphics
 				UI.DrawText("Press a key to rebind\n (alphanumeric only)", theme.FontBold, theme.FontSizeRegular, pos, Anchor.TextCentre, Color.white * 0.8f);
 
 				UI.DrawPanel(UI.PrevBounds.CentreBottom + Vector2.down, Vector2.one * 3.5f, new Color(0.1f, 0.1f, 0.1f), Anchor.CentreTop);
-				UI.DrawText(KeyStrings[newKey], theme.FontBold, theme.FontSizeRegular * 1.5f, UI.PrevBounds.Centre, Anchor.TextCentre, Color.white);
+				UI.DrawText(KeyStrings[key], theme.FontBold, theme.FontSizeRegular * 1.5f, UI.PrevBounds.Centre, Anchor.TextCentre, Color.white);
 
 				MenuHelper.CancelConfirmResult result = MenuHelper.DrawCancelConfirmButtons(UI.GetCurrentBoundsScope().BottomLeft, UI.GetCurrentBoundsScope().Width, true);
 				MenuHelper.DrawReservedMenuPanel(panelID, UI.GetCurrentBoundsScope());
@@ -51,7 +51,7 @@ namespace DLS.Graphics
 				}
 				else if (result == MenuHelper.CancelConfirmResult.Confirm)
 				{
-					Project.ActiveProject.NotifyKeyChipBindingChanged(keyChip, newKey);
+					Project.ActiveProject.NotifyKeyChipBindingChanged(keyChip, key);
 					UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 				}
 			}
@@ -60,6 +60,7 @@ namespace DLS.Graphics
 		public static void OnMenuOpened()
 		{
 			keyChip = (SubChipInstance)ContextMenu.interactionContext;
+			key = keyChip.Key;
 		}
 	}
 }

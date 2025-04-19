@@ -1,10 +1,12 @@
-using System.Collections.Generic;
-using System.Linq;
 using DLS.Description;
 using DLS.Graphics;
 using DLS.SaveSystem;
 using Seb.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Categorization;
 
 namespace DLS.Game
 {
@@ -298,8 +300,7 @@ namespace DLS.Game
 					else desc.OutputPins[0] = pinDesc;
 				}
 
-
-				IMoveable duplicatedElement = StartPlacing(desc, element.Position + offset, true);
+				IMoveable duplicatedElement = StartPlacing(desc, element.Position + offset, element);
 				duplicatedElement.StraightLineReferencePoint = element.Position;
 			}
 		}
@@ -496,6 +497,7 @@ namespace DLS.Game
 			// 2) If multi-mode is held, a new copy of each element is made (not including bus elements)
 			List<ChipDescription> newElementsToStartPlacing = new();
 			List<Vector2> newElementPositions = new();
+			List<IMoveable> sourceElements = new();
 			List<SubChipInstance> newlyPlacedBusOrigins = new();
 			foreach (IMoveable elementToPlace in SelectedElements)
 			{
@@ -525,6 +527,7 @@ namespace DLS.Game
 				{
 					newElementsToStartPlacing.Add(autoPlaceElementDesc);
 					newElementPositions.Add(elementToPlace.Position);
+					sourceElements.Add(elementToPlace);
 				}
 			}
 
@@ -534,7 +537,7 @@ namespace DLS.Game
 
 			for (int i = 0; i < newElementsToStartPlacing.Count; i++)
 			{
-				StartPlacing(newElementsToStartPlacing[i], newElementPositions[i], true);
+				StartPlacing(newElementsToStartPlacing[i], newElementPositions[i], sourceElements[i]);
 			}
 
 			// Link bus origin and terminus together
@@ -781,12 +784,12 @@ namespace DLS.Game
 
 		public void StartPlacing(ChipDescription chipDescription)
 		{
-			StartPlacing(chipDescription, InputHelper.MousePosWorld, false);
+			StartPlacing(chipDescription, InputHelper.MousePosWorld, null);
 		}
 
-		public IMoveable StartPlacing(ChipDescription chipDescription, Vector2 position, bool isDuplicating)
+		public IMoveable StartPlacing(ChipDescription chipDescription, Vector2 position, IMoveable source = null)
 		{
-			newElementsAreDuplicatedElements = isDuplicating;
+			newElementsAreDuplicatedElements = source != null;
 
 			// Input/output dev pins are represented as chips for convenience
 			(bool isInput, bool isOutput, PinBitCount numBits) ioPinInfo = ChipTypeHelper.IsInputOrOutputPin(chipDescription.ChipType);
@@ -815,12 +818,14 @@ namespace DLS.Game
 			else
 			{
 				SubChipDescription subChipDesc = DescriptionCreator.CreateBuiltinSubChipDescriptionForPlacement(chipDescription.ChipType, chipDescription.Name, instanceID, position);
+				if (source != null && !ChipTypeHelper.IsBusType(chipDescription.ChipType))
+					Array.Copy(((SubChipInstance)source).InternalData, subChipDesc.InternalData, subChipDesc.InternalData.Length);
 				elementToPlace = new SubChipInstance(chipDescription, subChipDesc);
 			}
 
 			// If placing multiple elements simultaneously, place the new element below the previous one
 			// (unless is duplicating elements, in which case their relative positions should be preserved)
-			if (SelectedElements.Count > 0 && !isDuplicating)
+			if (SelectedElements.Count > 0 && source == null)
 			{
 				float spacing = (elementToPlace.SelectionBoundingBox.Size.y + SelectedElements[^1].SelectionBoundingBox.Size.y) / 2;
 				elementToPlace.MoveStartPosition = SelectedElements[^1].MoveStartPosition + Vector2.down * spacing;
@@ -831,7 +836,7 @@ namespace DLS.Game
 				moveElementMouseStartPos = InputHelper.MousePosWorld;
 				elementToPlace.MoveStartPosition = position;
 				elementToPlace.StraightLineReferencePoint = position;
-				elementToPlace.HasReferencePointForStraightLineMovement = isDuplicating;
+				elementToPlace.HasReferencePointForStraightLineMovement = source != null;
 			}
 
 			Select(elementToPlace);
