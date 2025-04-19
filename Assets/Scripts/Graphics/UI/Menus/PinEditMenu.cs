@@ -25,8 +25,7 @@ namespace DLS.Graphics
 		{
 			"Off",
 			"Unsigned",
-			"Signed",
-			"HEX"
+			"Signed"
 		};
 
 		public static void OnMenuOpened()

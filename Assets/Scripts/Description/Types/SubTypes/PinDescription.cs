@@ -26,7 +26,10 @@ namespace DLS.Description
 	{
 		Bit1 = 1,
 		Bit4 = 4,
-		Bit8 = 8
+		Bit8 = 8,
+		Bit16 = 16,
+		Bit32 = 32,
+		Bit64 = 64
 	}
 
 	public enum PinColour
@@ -44,7 +47,6 @@ namespace DLS.Description
 	{
 		Off,
 		UnsignedDecimal,
-		SignedDecimal,
-		HEX
+		SignedDecimal
 	}
 }

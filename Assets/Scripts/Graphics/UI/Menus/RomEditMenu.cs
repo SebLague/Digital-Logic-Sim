@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using DLS.Description;
 using DLS.Game;
 using Seb.Helpers;
 using Seb.Types;
@@ -27,8 +28,7 @@ namespace DLS.Graphics
 		{
 			"Unsigned Decimal",
 			"Signed Decimal",
-			"Binary",
-			"HEX"
+			"Binary"
 		};
 
 		static DataDisplayMode[] allDisplayModes;
@@ -39,7 +39,7 @@ namespace DLS.Graphics
 
 		static Bounds2D scrollViewBounds;
 
-		static float textPad => 0.52f;
+		static float textPad => 0.8f;
 		static float height => 2.5f;
 
 		public static void DrawMenu()
@@ -50,7 +50,7 @@ namespace DLS.Graphics
 			scrollViewBounds = Bounds2D.CreateFromCentreAndSize(UI.Centre, new Vector2(UI.Width * 0.4f, UI.Height * 0.8f));
 
 			ScrollViewTheme scrollTheme = DrawSettings.ActiveUITheme.ScrollTheme;
-			UI.DrawScrollView(ID_scrollbar, scrollViewBounds.TopLeft, scrollViewBounds.Size, 0, Anchor.TopLeft, scrollTheme, scrollViewDrawElementFunc, RowCount);
+			UI.DrawScrollView(ID_scrollbar, scrollViewBounds.TopLeft, scrollViewBounds.Size, 1, Anchor.TopLeft, scrollTheme, scrollViewDrawElementFunc, RowCount);
 
 
 			if (focusedRowIndex >= 0)
@@ -194,7 +194,8 @@ namespace DLS.Graphics
 		static bool ValidateInputString(string text)
 		{
 			if (string.IsNullOrEmpty(text)) return true;
-			if (text.Length > 34) return false;
+			if (text.Length > ChipTypeHelper.RomWidth(romChip.ChipType)) return false;
+			
 
 			foreach (char c in text)
 			{
@@ -204,7 +205,6 @@ namespace DLS.Graphics
 				if (dataDisplayMode == DataDisplayMode.Binary && c is not ('0' or '1')) return false;
 
 				if (c == '-') continue; // allow negative sign (even in unsigned field as we'll do automatic conversion)
-				if (dataDisplayMode == DataDisplayMode.HEX && Uri.IsHexDigit(c)) continue;
 				if (!char.IsDigit(c)) return false;
 			}
 
@@ -219,7 +219,6 @@ namespace DLS.Graphics
 				DataDisplayMode.Binary => Convert.ToString(raw, 2).PadLeft(bitCount, '0'),
 				DataDisplayMode.DecimalSigned => Maths.TwosComplement(raw, bitCount) + "",
 				DataDisplayMode.DecimalUnsigned => raw + "",
-				DataDisplayMode.HEX => raw.ToString("X").PadLeft(bitCount / 4, '0'),
 				_ => throw new NotImplementedException("Unsupported display format: " + displayFormat)
 			};
 		}
@@ -253,10 +252,6 @@ namespace DLS.Graphics
 				case DataDisplayMode.DecimalUnsigned:
 					uintVal = uint.Parse(displayString);
 					break;
-				case DataDisplayMode.HEX:
- 					int value = Convert.ToInt32(displayString, 16);
- 					uintVal = (uint)value;
- 					break;
 				default:
 					throw new NotImplementedException("Unsupported display format: " + stringFormat);
 			}
@@ -324,8 +319,9 @@ namespace DLS.Graphics
 				inputTheme.bgCol = col;
 				inputTheme.focusBorderCol = Color.clear;
 
+				// Draw input field
 
-				UI.InputField(inputFieldID, inputTheme, topLeft, panelSize, "0", Anchor.TopLeft, 5, inputStringValidator);
+				UI.InputField(inputFieldID, inputTheme, topLeft, panelSize, "0", Anchor.TopLeft, 7, inputStringValidator);
 
 				// Draw line index
 				Color lineNumCol = inputFieldState.focused ? new Color(0.53f, 0.8f, 0.57f) : ColHelper.MakeCol(0.32f);
@@ -340,7 +336,7 @@ namespace DLS.Graphics
 		{
 			romChip = (SubChipInstance)ContextMenu.interactionContext;
 			RowCount = romChip.InternalData.Length;
-			ActiveRomDataBitCount = 16; //
+			ActiveRomDataBitCount = ChipTypeHelper.RomWidth(romChip.ChipType); // update with the correct size for each rom
 
 			ID_DataDisplayMode = new UIHandle("ROM_DataDisplayMode", romChip.ID);
 			ID_scrollbar = new UIHandle("ROM_EditScrollbar", romChip.ID);
@@ -374,8 +370,7 @@ namespace DLS.Graphics
 		{
 			DecimalUnsigned,
 			DecimalSigned,
-			Binary,
-			HEX
+			Binary
 		}
 	}
 }

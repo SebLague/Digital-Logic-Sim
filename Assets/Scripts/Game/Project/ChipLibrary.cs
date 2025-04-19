@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DLS.Description;
@@ -9,17 +10,20 @@ namespace DLS.Game
 		public readonly List<ChipDescription> allChips = new();
 
 		readonly HashSet<string> builtinChipNames = new(ChipDescription.NameComparer);
+		readonly ChipDescription[] builtinChips;
 		readonly Dictionary<string, ChipDescription> descriptionFromNameLookup = new(ChipDescription.NameComparer);
 
 		readonly List<ChipDescription> hiddenChips = new();
 
-		public ChipLibrary(ChipDescription[] customChips, ChipDescription[] builtinChips)
+		public ChipLibrary(ChipDescription[] customChips)
 		{
+			builtinChips = BuiltinChipCreator.CreateAllBuiltinChipDescriptions();
+
 			// Add built-in chips to list of all chips
 			foreach (ChipDescription chip in builtinChips)
 			{
 				// Bus terminus chip should not be shown to the user (it is created automatically upon placement of a bus start point)
-				bool hidden = ChipTypeHelper.IsBusTerminusType(chip.ChipType) || chip.ChipType == ChipType.dev_Ram_8Bit;
+				bool hidden = ChipTypeHelper.IsBusTerminusType(chip.ChipType);
 
 				AddChipToLibrary(chip, hidden);
 				builtinChipNames.Add(chip.Name);

@@ -27,7 +27,11 @@ namespace DLS.SaveSystem
 			Vector2 minChipsSize = SubChipInstance.CalculateMinChipSize(inputPins, outputPins, name);
 			size = Vector2.Max(minChipsSize, size);
 
-			UpdateWireIndicesForDescriptionCreation(chip);
+			// Store wire's current index in wire for convenient access
+			for (int i = 0; i < chip.Wires.Count; i++)
+			{
+				chip.Wires[i].descriptionCreator_wireIndex = i;
+			}
 
 			// Create and return the chip description
 			return new ChipDescription
@@ -71,6 +75,8 @@ namespace DLS.SaveSystem
 			uint[] internalData = type switch
 			{
 				ChipType.Rom_256x16 => new uint[256],
+				ChipType.Rom_16Bit => new uint[65536],
+				ChipType.Rom_16Bit_24 => new uint[65536],
 				ChipType.Key => new uint[] { 'K' },
 				_ => ChipTypeHelper.IsBusType(type) ? new uint[2] : null
 			};
@@ -86,16 +92,6 @@ namespace DLS.SaveSystem
 			);
 		}
 
-		static void UpdateWireIndicesForDescriptionCreation(DevChipInstance chip)
-		{
-			// Store wire's current index in wire for convenient access
-			for (int i = 0; i < chip.Wires.Count; i++)
-			{
-				chip.Wires[i].descriptionCreator_wireIndex = i;
-			}
-		}
-
-		// Note: assumed that all wire indices have been set prior to calling this function
 		static WireDescription CreateWireDescription(WireInstance wire)
 		{
 			// Get wire points
@@ -104,7 +100,7 @@ namespace DLS.SaveSystem
 			{
 				// Don't need to save start/end points (just leave as zero) since they get their positions from the pins they're connected to (unless starting/ending at another wire).
 				// Benefit of leaving zero is that if a subchip is opened and modified (for example a pin is added, so pin spacing changes), then when opening this chip again, it won't
-				// immediately think it has unsaved changes (and unnecessarily notify the player), just because the start/end points of wires going to those modified pins has changed.
+				// immediately think it has unsaved changes (and unnecesarily notify the player), just because the start/end points of wires going to those modified pins has changed.
 				if (i == 0 && !wire.SourceConnectionInfo.IsConnectedAtWire) continue;
 				if (i == wirePoints.Length - 1 && !wire.TargetConnectionInfo.IsConnectedAtWire) continue;
 

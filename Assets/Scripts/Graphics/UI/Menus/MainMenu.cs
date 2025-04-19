@@ -71,7 +71,7 @@ namespace DLS.Graphics
 
 		static int selectedProjectIndex;
 
-		static readonly string authorString = "Created by: Sebastian Lague";
+		static readonly string authorString = "Created by: Sebastian Lague | Modified By: bonsall2004";
 		static readonly string versionString = $"Version: {Main.DLSVersion} ({Main.LastUpdatedString})";
 		static string SelectedProjectName => allProjectDescriptions[selectedProjectIndex].ProjectName;
 

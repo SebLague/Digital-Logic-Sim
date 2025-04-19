@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using DLS.Description;
 using DLS.Game;
 using UnityEngine;
@@ -23,7 +23,7 @@ namespace DLS.Simulation
 		static SimChip prevRootSimChip;
 
 		// Modifications to the sim are made from the main thread, but only applied on the sim thread to avoid conflicts
-		static readonly ConcurrentQueue<SimModifyCommand> modificationQueue = new();
+		static readonly Queue<SimModifyCommand> modificationQueue = new();
 
 		public static void UpdateKeyboardInputFromMainThread()
 		{
@@ -243,12 +243,27 @@ namespace DLS.Simulation
 					}
 
 					break;
+				case ChipType.Merge_1To16Bit:
+					for (int i = 0; i < 16; i++)
+					{
+						chip.OutputPins[0].State.SetBit(i, chip.InputPins[15 - i].State.GetBit(0));
+					}
+
+					break;
 				case ChipType.Merge_4To8Bit:
 				{
 					SimPin in4A = chip.InputPins[0];
 					SimPin in4B = chip.InputPins[1];
 					SimPin out8 = chip.OutputPins[0];
 					out8.State.Set8BitFrom4BitSources(in4B.State, in4A.State);
+					break;
+				}
+				case ChipType.Merge_8To16Bit:
+				{
+					SimPin in8A = chip.InputPins[0];
+					SimPin in8B = chip.InputPins[1];
+					SimPin out16 = chip.OutputPins[0];
+					out16.State.Set16BitFrom8BitSources(in8B.State, in8A.State);
 					break;
 				}
 				case ChipType.Split_8To4Bit:
@@ -260,12 +275,26 @@ namespace DLS.Simulation
 					out4B.State.Set4BitFrom8BitSource(in8.State, true);
 					break;
 				}
+				case ChipType.Split_16To8Bit:
+				{
+					SimPin in16 = chip.InputPins[0];
+					SimPin out8A = chip.OutputPins[0];
+					SimPin out8B = chip.OutputPins[1];
+					out8A.State.Set8BitFrom16BitSource(in16.State, false);
+					out8B.State.Set8BitFrom16BitSource(in16.State, true);
+					break;
+				}
 				case ChipType.Split_8To1Bit:
 					for (int i = 0; i < 8; i++)
 					{
 						chip.OutputPins[i].State.SetBit(0, chip.InputPins[0].State.GetBit(7 - i));
 					}
-
+					break;
+				case ChipType.Split_16To1Bit:
+					for (int i = 0; i < 16; i++)
+					{
+						chip.OutputPins[i].State.SetBit(0, chip.InputPins[0].State.GetBit(15 - i));
+					}
 					break;
 				case ChipType.TriStateBuffer:
 				{
@@ -410,7 +439,7 @@ namespace DLS.Simulation
 					{
 						if (resetPin.FirstBitHigh())
 						{
-							for (int i = 0; i < 256; i++)
+							for (int i = 0; i < Math.Pow(2, 8); i++)
 							{
 								chip.InternalState[i] = 0;
 							}
@@ -423,7 +452,46 @@ namespace DLS.Simulation
 
 					// Output data at current address
 					chip.OutputPins[0].State.SetAllBits_NoneDisconnected(chip.InternalState[addressPin.GetRawBits()]);
+					break;
+				}
+				case ChipType.Ram_16Bit:
+				{
+					PinState addressPin = chip.InputPins[0].State;
+					PinState dataPin = chip.InputPins[1].State;
+					PinState writeEnablePin = chip.InputPins[2].State;
+					PinState resetPin = chip.InputPins[3].State;
+					PinState clockPin = chip.InputPins[4].State;
 
+					// Detect clock rising edge
+					bool clockHigh = clockPin.FirstBitHigh();
+					bool isRisingEdge = clockHigh && chip.InternalState[^1] == 0;
+					chip.InternalState[^1] = clockHigh ? 1u : 0;
+
+					// Write/Reset on rising edge
+					if (isRisingEdge)
+					{
+						if (resetPin.FirstBitHigh())
+						{
+							for (int i = 0; i < Math.Pow(2, 16); i++)
+							{
+								chip.InternalState[i] = 0;
+							}
+						}
+						else if (writeEnablePin.FirstBitHigh())
+						{
+							chip.InternalState[addressPin.GetRawBits()] = dataPin.GetRawBits();
+						}
+					}
+
+					// Output data at current address
+					chip.OutputPins[0].State.SetAllBits_NoneDisconnected(chip.InternalState[addressPin.GetRawBits()]);
+					break;
+				}
+				case ChipType.Rom_16Bit:
+				{
+					uint address = chip.InputPins[0].State.GetRawBits();
+					uint data = chip.InternalState[address];
+					chip.OutputPins[0].State.SetAllBits_NoneDisconnected(data);
 					break;
 				}
 				case ChipType.Rom_256x16:
@@ -435,12 +503,22 @@ namespace DLS.Simulation
 					chip.OutputPins[1].State.SetAllBits_NoneDisconnected(data & ByteMask);
 					break;
 				}
+				case ChipType.Rom_16Bit_24:
+				{
+					uint address = chip.InputPins[0].State.GetRawBits();
+					uint data = chip.InternalState[address];
+					chip.OutputPins[0].State.SetAllBits_NoneDisconnected((data >> 16) & 0xff);
+					chip.OutputPins[1].State.SetAllBits_NoneDisconnected(data & 0xffff);
+					break;
+				}
 				// ---- Bus types ----
 				default:
 				{
 					if (ChipTypeHelper.IsBusOriginType(chip.ChipType))
 					{
 						SimPin inputPin = chip.InputPins[0];
+					
+						
 						chip.OutputPins[0].State.SetFromSource(inputPin.State);
 					}
 

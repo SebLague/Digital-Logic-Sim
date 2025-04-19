@@ -54,6 +54,7 @@ namespace DLS.Simulation
 
 			// ---- Initialize internal state ----
 			const int addressSize_8Bit = 256;
+			const int addressSize_16Bit = 65536;
 
 			if (ChipType is ChipType.DisplayRGB)
 			{
@@ -68,6 +69,18 @@ namespace DLS.Simulation
 			else if (ChipType is ChipType.dev_Ram_8Bit)
 			{
 				InternalState = new uint[addressSize_8Bit + 1]; // +1 for clock state (to allow edge-trigger behaviour)
+
+				// Initialize memory contents to random state
+				Span<byte> randomBytes = stackalloc byte[4];
+				for (int i = 0; i < InternalState.Length - 1; i++)
+				{
+					Simulator.rng.NextBytes(randomBytes);
+					InternalState[i] = BitConverter.ToUInt32(randomBytes);
+				}
+			}
+			else if (ChipType is ChipType.Ram_16Bit)
+			{
+				InternalState = new uint[addressSize_16Bit + 1]; // +1 for clock state (to allow edge-trigger behaviour)
 
 				// Initialize memory contents to random state
 				Span<byte> randomBytes = stackalloc byte[4];
@@ -119,10 +132,9 @@ namespace DLS.Simulation
 
 		public (bool success, SimChip chip) TryGetSubChipFromID(int id)
 		{
-			// Todo: address possible errors if accessing from main thread while being modified on sim thread?
 			foreach (SimChip s in SubChips)
 			{
-				if (s?.ID == id)
+				if (s.ID == id)
 				{
 					return (true, s);
 				}
@@ -172,7 +184,6 @@ namespace DLS.Simulation
 
 		public SimPin GetSimPinFromAddress(PinAddress address)
 		{
-			// Todo: address possible errors if accessing from main thread while being modified on sim thread?
 			foreach (SimChip s in SubChips)
 			{
 				if (s.ID == address.PinOwnerID)

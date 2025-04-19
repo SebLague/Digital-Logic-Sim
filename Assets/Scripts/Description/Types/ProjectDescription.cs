@@ -15,9 +15,6 @@ namespace DLS.Description
 		// Prefs
 		public int Prefs_MainPinNamesDisplayMode;
 		public int Prefs_ChipPinNamesDisplayMode;
-		public int Prefs_GridDisplayMode;
-		public int Prefs_Snapping;
-		public int Prefs_StraightWires;
 		public bool Prefs_SimPaused;
 		public int Prefs_SimTargetStepsPerSecond;
 		public int Prefs_SimStepsPerClockTick;
@@ -73,7 +70,7 @@ namespace DLS.Description
 
 	public class ChipCollection
 	{
-		public readonly List<string> Chips;
+		public List<string> Chips;
 		[JsonIgnore] string displayName_closed;
 		[JsonIgnore] string displayName_empty;
 

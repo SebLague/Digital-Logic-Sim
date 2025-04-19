@@ -5,7 +5,7 @@ namespace DLS.Description
 {
 	public class ChipDescription
 	{
-		// ---- Name Comparison ----
+		// ---- Name Comparion ----
 		public const StringComparison NameComparison = StringComparison.OrdinalIgnoreCase;
 		public static readonly StringComparer NameComparer = StringComparer.OrdinalIgnoreCase;
 

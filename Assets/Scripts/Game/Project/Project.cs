@@ -41,7 +41,7 @@ namespace DLS.Game
 		DevPinInstance[] inputPins = Array.Empty<DevPinInstance>();
 		int mainThreadFrameCount;
 
-		public bool ShowGrid => description.Prefs_GridDisplayMode == 1;
+		public bool showGrid;
 		public int simPausedSingleStepCounter;
 
 		bool simThreadActive;
@@ -122,8 +122,7 @@ namespace DLS.Game
 		public void SaveFromDescription(ChipDescription saveChipDescription, SaveMode saveMode = SaveMode.Normal)
 		{
 			// If this chip hasn't been saved before, it can't have been used anyway so no need to update anything
-			// (same thing if saving a new version of it)
-			if (ViewedChip.LastSavedDescription != null && saveMode != SaveMode.SaveAs)
+			if (ViewedChip.LastSavedDescription != null)
 			{
 				UpdateAndSaveAffectedChips(ViewedChip.LastSavedDescription, saveChipDescription, false);
 			}
@@ -396,14 +395,6 @@ namespace DLS.Game
 			inputPins = editModeChip.GetInputPins();
 			mainThreadFrameCount++;
 		}
-
-		public void ToggleGridDisplay()
-		{
-			description.Prefs_GridDisplayMode = 1 - description.Prefs_GridDisplayMode;
-		}
-
-		public bool ShouldSnapToGrid => KeyboardShortcuts.SnapModeHeld || (description.Prefs_Snapping == 1 && ShowGrid) || description.Prefs_Snapping == 2;
-		public bool ForceStraightWires => KeyboardShortcuts.StraightLineModeHeld || (description.Prefs_StraightWires == 1 && ShowGrid) || description.Prefs_StraightWires == 2;
 
 		public void NotifyExit()
 		{
