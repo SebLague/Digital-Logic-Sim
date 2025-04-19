@@ -1,0 +1,59 @@
+{
+  "Name": "FA",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 0.425,
+    "y": 0.375
+  },
+  "Colour": {
+    "r": 0.2509804,
+    "g": 0.1254902,
+    "b": 0.0627451,
+    "a": 1
+  },
+  "InputPins":[],
+  "OutputPins":[
+    {
+      "Name":"OUT",
+      "ID":809242313,
+      "Position":{
+        "x":-2.5,
+        "y":-0.3125
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "SubChips":[
+    {
+      "Name":"KEY",
+      "ID":983666613,
+      "Label":"",
+      "Position":{
+        "x":-4.5725,
+        "y":-0.3125
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":0}],
+      "InternalData":[10]
+    }
+  ],
+  "Wires":[
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":983666613
+      },
+      "TargetPinAddress":{
+        "PinID":0,
+        "PinOwnerID":809242313
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    }
+  ],
+  "Displays":[]
+}

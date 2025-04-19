@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using DLS.Description;
 using DLS.Game;
 using Seb.Helpers;
 using Seb.Types;
@@ -194,7 +195,8 @@ namespace DLS.Graphics
 		static bool ValidateInputString(string text)
 		{
 			if (string.IsNullOrEmpty(text)) return true;
-			if (text.Length > 34) return false;
+			if (text.Length > ChipTypeHelper.RomWidth(romChip.ChipType)) return false;
+
 
 			foreach (char c in text)
 			{
@@ -212,16 +214,27 @@ namespace DLS.Graphics
 		}
 
 		// Convert from uint to display string with given display mode
-		static string UIntToDisplayString(uint raw, DataDisplayMode displayFormat, int bitCount)
+		static string UIntToDisplayString(UInt64 raw, DataDisplayMode displayFormat, int bitCount)
 		{
 			return displayFormat switch
 			{
-				DataDisplayMode.Binary => Convert.ToString(raw, 2).PadLeft(bitCount, '0'),
+				DataDisplayMode.Binary => ConvertUlongToBinary(raw, bitCount),
 				DataDisplayMode.DecimalSigned => Maths.TwosComplement(raw, bitCount) + "",
 				DataDisplayMode.DecimalUnsigned => raw + "",
 				DataDisplayMode.HEX => raw.ToString("X").PadLeft(bitCount / 4, '0'),
 				_ => throw new NotImplementedException("Unsupported display format: " + displayFormat)
 			};
+		}
+
+		private static string ConvertUlongToBinary(ulong value, int bitCount)
+		{
+			char[] bits = new char[bitCount];
+			for (int i = 0; i < bitCount; i++)
+			{
+				int shift = bitCount - 1 - i;
+				bits[i] = ((value >> shift) & 1) == 1 ? '1' : '0';
+			}
+			return new string(bits);
 		}
 
 		// Convert string with given format to uint
@@ -254,9 +267,8 @@ namespace DLS.Graphics
 					uintVal = uint.Parse(displayString);
 					break;
 				case DataDisplayMode.HEX:
- 					int value = Convert.ToInt32(displayString, 16);
- 					uintVal = (uint)value;
- 					break;
+					uintVal = uint.Parse(displayString, System.Globalization.NumberStyles.HexNumber);
+					break;
 				default:
 					throw new NotImplementedException("Unsupported display format: " + stringFormat);
 			}
@@ -324,6 +336,7 @@ namespace DLS.Graphics
 				inputTheme.bgCol = col;
 				inputTheme.focusBorderCol = Color.clear;
 
+				// Draw input field
 
 				UI.InputField(inputFieldID, inputTheme, topLeft, panelSize, "0", Anchor.TopLeft, 5, inputStringValidator);
 
@@ -340,7 +353,7 @@ namespace DLS.Graphics
 		{
 			romChip = (SubChipInstance)ContextMenu.interactionContext;
 			RowCount = romChip.InternalData.Length;
-			ActiveRomDataBitCount = 16; //
+			ActiveRomDataBitCount = ChipTypeHelper.RomWidth(romChip.ChipType); // update with the correct size for each rom
 
 			ID_DataDisplayMode = new UIHandle("ROM_DataDisplayMode", romChip.ID);
 			ID_scrollbar = new UIHandle("ROM_EditScrollbar", romChip.ID);

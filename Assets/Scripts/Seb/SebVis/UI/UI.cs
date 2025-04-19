@@ -695,7 +695,6 @@ namespace Seb.Vis.UI
 				}
 			}
 
-
 			OnFinishedDrawingUIElement(elementCentre, elementSize);
 			return colRgb;
 		}

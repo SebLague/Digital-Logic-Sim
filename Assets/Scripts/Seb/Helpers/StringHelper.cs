@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Seb.Helpers
 {
@@ -12,9 +13,25 @@ namespace Seb.Helpers
 			return text.Split(newLineStrings, options);
 		}
 
-		public static int CreateIntegerStringNonAlloc(char[] charArray, int value)
+		public static int CreateIntegerStringNonAlloc(char[] charArray, UInt64 value)
+		{
+			int digitCount = value == 0 ? 1 : (int)Math.Log10(value) + 1;
+			int charCount = digitCount;
+			int digitIndex = digitCount - 1;
+
+			do
+			{
+				charArray[digitIndex--] = (char)('0' + value % 10);
+				value /= 10;
+			} while (value > 0);
+
+			return charCount;
+		}
+
+		public static int CreateIntegerStringNonAlloc(char[] charArray, Int64 value)
 		{
 			bool isNegative = value < 0;
+
 			value = Math.Abs(value);
 
 			int digitCount = value == 0 ? 1 : (int)Math.Log10(value) + 1;
@@ -37,20 +54,19 @@ namespace Seb.Helpers
 			return charCount;
 		}
 
-		public static int CreateHexStringNonAlloc(char[] charArray, int value, bool upperCase = true)
+		public static int CreateHexStringNonAlloc(char[] charArray, UInt64 value, bool upperCase = true)
 		{
 			const string hexDigits = "0123456789ABCDEF";
 			const string hexDigitsLower = "0123456789abcdef";
 
 			int charCount = 0;
-			uint uValue = (uint)value;
 			do
 			{
-				charArray[charCount++] = (upperCase ? hexDigits : hexDigitsLower)[(int)(uValue & 0xF)];
-				uValue >>= 4;
-			} while (uValue > 0);
+				charArray[charCount++] = (upperCase ? hexDigits : hexDigitsLower)[(int)(value & 0xF)];
+				value >>= 4;
+			} while (value > 0);
 
-			for (int i = 0; i < charCount / 2; i++)
+			for (int i = 0; i < charCount / 2; ++i)
 			{
 				char tmp = charArray[i];
 				charArray[i] = charArray[charCount - i - 1];

@@ -1,5 +1,5 @@
-using System;
 using Seb.Helpers;
+using System;
 using UnityEngine;
 
 namespace Seb.Vis.UI
@@ -25,6 +25,7 @@ namespace Seb.Vis.UI
 	public class ColourPickerState
 	{
 		public float hue;
+
 		public float sat;
 		public float val;
 		public bool satValHandleSelected;

@@ -208,7 +208,7 @@ namespace DLS.Game
 		{
 			if (Project.ActiveProject.ShouldSnapToGrid) p = GridHelper.SnapToGrid(p, true, true);
 			if (Project.ActiveProject.ForceStraightWires) p = GridHelper.ForceStraightLine(straightLineRefPoint, p);
-			
+
 			SetWirePoint(p, i);
 		}
 

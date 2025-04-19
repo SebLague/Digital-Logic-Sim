@@ -28,6 +28,11 @@ namespace DLS.SaveSystem
 			size = Vector2.Max(minChipsSize, size);
 
 			UpdateWireIndicesForDescriptionCreation(chip);
+			// Store wire's current index in wire for convenient access
+			for (int i = 0; i < chip.Wires.Count; i++)
+			{
+				chip.Wires[i].descriptionCreator_wireIndex = i;
+			}
 
 			// Create and return the chip description
 			return new ChipDescription
@@ -66,14 +71,23 @@ namespace DLS.SaveSystem
 			);
 		}
 
-		public static SubChipDescription CreateBuiltinSubChipDescriptionForPlacement(ChipType type, string name, int id, Vector2 position)
+		public static SubChipDescription CreateBuiltinSubChipDescriptionForPlacement(ChipType type, string name, int id, Vector2 position, UInt64[] sourceInternalData = null)
 		{
-			uint[] internalData = type switch
+			UInt64[] internalData = type switch
 			{
-				ChipType.Rom_256x16 => new uint[256],
-				ChipType.Key => new uint[] { 'K' },
-				_ => ChipTypeHelper.IsBusType(type) ? new uint[2] : null
+				ChipType.Rom_256x16 => new UInt64[256],
+				ChipType.Rom_16Bit => new UInt64[65536],
+				ChipType.Rom_16Bit_24 => new UInt64[65536],
+				ChipType.Clock => new UInt64[] { sourceInternalData != null && sourceInternalData.Length > 0 ? sourceInternalData[0] : 5, 0 },
+				ChipType.Key => new UInt64[] { sourceInternalData != null && sourceInternalData.Length > 0 ? sourceInternalData[0] : 10 },
+				_ => ChipTypeHelper.IsBusType(type) ? new UInt64[2] : null
 			};
+
+			if (sourceInternalData != null)
+			{
+				if (ChipTypeHelper.IsRomType(type))
+					Array.Copy(sourceInternalData, internalData, Math.Min(sourceInternalData.Length, internalData.Length));
+			}
 
 			return new SubChipDescription
 			(
@@ -89,13 +103,12 @@ namespace DLS.SaveSystem
 		static void UpdateWireIndicesForDescriptionCreation(DevChipInstance chip)
 		{
 			// Store wire's current index in wire for convenient access
-			for (int i = 0; i < chip.Wires.Count; i++)
+			for (int i = 0; i < chip.Wires.Count; ++i)
 			{
 				chip.Wires[i].descriptionCreator_wireIndex = i;
 			}
 		}
 
-		// Note: assumed that all wire indices have been set prior to calling this function
 		static WireDescription CreateWireDescription(WireInstance wire)
 		{
 			// Get wire points

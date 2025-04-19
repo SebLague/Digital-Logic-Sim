@@ -19,8 +19,6 @@ namespace DLS.Graphics
 			"Name: Hidden"
 		};
 
-
-		// ---- State ----
 		static SubChipInstance[] subChipsWithDisplays;
 		static string displayLabelString;
 		static string colHexCodeString;
@@ -47,21 +45,21 @@ namespace DLS.Graphics
 			// Don't draw menu when placing display
 			if (CustomizationSceneDrawer.IsPlacingDisplay) return;
 
-			const float width = 20;
-			const float pad = UILayoutHelper.DefaultSpacing;
-			const float pw = width - pad * 2;
+			float width = 20;
+			float pad = UILayoutHelper.DefaultSpacing;
+			float pw = width - pad * 2;
 
 			DrawSettings.UIThemeDLS theme = DrawSettings.ActiveUITheme;
+
 			UI.DrawPanel(UI.TopLeft, new Vector2(width, UI.Height), theme.MenuPanelCol, Anchor.TopLeft);
 
-			// ---- Cancel/confirm buttons ----
-			int cancelConfirmButtonIndex = MenuHelper.DrawButtonPair("CANCEL", "CONFIRM", UI.TopLeft + Vector2.down * pad, pw, false);
+			int cancelConfirmButtonIndex = MenuHelper.DrawButtonPair("CANCEL", "COMFIRM", UI.TopLeft + Vector2.down * pad, pw, false);
 
 			// ---- Chip name UI ----
 			int nameDisplayMode = UI.WheelSelector(ID_NameDisplayOptions, nameDisplayOptions, NextPos(), new Vector2(pw, DrawSettings.ButtonHeight), theme.OptionsWheel, Anchor.TopLeft);
 			ChipSaveMenu.ActiveCustomizeDescription.NameLocation = (NameDisplayLocation)nameDisplayMode;
 
-			// ---- Chip colour UI ----
+			// ---- Cip colour UI ----
 			Color newCol = UI.DrawColourPicker(ID_ColourPicker, NextPos(), pw, Anchor.TopLeft);
 			InputFieldTheme inputTheme = MenuHelper.Theme.ChipNameInputField;
 			inputTheme.fontSize = MenuHelper.Theme.FontSizeRegular;
@@ -80,7 +78,7 @@ namespace DLS.Graphics
 
 			// ---- Displays UI ----
 			Color labelCol = ColHelper.Darken(theme.MenuPanelCol, 0.01f);
-			Vector2 labelPos = NextPos(1);
+			Vector2 labelPos = NextPos();
 			UI.TextWithBackground(labelPos, new Vector2(pw, DrawSettings.ButtonHeight), Anchor.TopLeft, displayLabelString, theme.FontBold, theme.FontSizeRegular, Color.white, labelCol);
 
 			float scrollViewHeight = 20;
@@ -184,16 +182,14 @@ namespace DLS.Graphics
 			if (string.IsNullOrWhiteSpace(text)) return true;
 
 			int numHexDigits = 0;
-
-			for (int i = 0; i < text.Length; i++)
+			for (int i = 0; i < text.Length; ++i)
 			{
 				if (i == 0 && text[i] == '#') continue;
 
 				if (Uri.IsHexDigit(text[i]))
-				{
-					numHexDigits++;
-				}
-				else return false;
+					++numHexDigits;
+				else
+					return false;
 			}
 
 			return numHexDigits <= 6;

@@ -5,6 +5,7 @@ using Seb.Helpers;
 using Seb.Types;
 using Seb.Vis;
 using Seb.Vis.UI;
+using UnityEditor;
 using UnityEngine;
 
 namespace DLS.Graphics
@@ -15,6 +16,13 @@ namespace DLS.Graphics
 		const float padY = 0.3f;
 		const float buttonSpacing = 0.25f;
 		const float buttonHeight = barHeight - padY * 2;
+
+		const int NewChipButtonIndex = 0;
+		const int SaveChipButtonIndex = 1;
+		const int FindChipButtonIndex = 2;
+		const int LibraryButtonIndex = 3;
+		const int OptionsButtonIndex = 4;
+		const int QuitButtonIndex = 5;
 
 		const string shortcutTextCol = "<color=#666666ff>";
 
@@ -27,13 +35,6 @@ namespace DLS.Graphics
 			$"PREFS        {shortcutTextCol}Ctrl+P",
 			$"QUIT         {shortcutTextCol}Ctrl+Q"
 		};
-
-		const int NewChipButtonIndex = 0;
-		const int SaveChipButtonIndex = 1;
-		const int FindChipButtonIndex = 2;
-		const int LibraryButtonIndex = 3;
-		const int OptionsButtonIndex = 4;
-		const int QuitButtonIndex = 5;
 
 		// ---- State ----
 		static float scrollX;
@@ -243,10 +244,8 @@ namespace DLS.Graphics
 				chipBarTotalWidthLastFrame = UI.PrevBounds.Right - firstButtonLeft + buttonSpacing;
 			}
 
-
 			DrawCollectionsPopup();
 		}
-
 
 		static void DrawCollectionsPopup()
 		{
@@ -272,17 +271,17 @@ namespace DLS.Graphics
 				{
 					Vector2 buttonLayoutPos = layoutOrigin;
 
-					for (int i = firstButtonIndex; i >= 0; i--)
+					for (int i = firstButtonIndex; i >= 0; --i)
 					{
 						string chipName = activeCollection.Chips[i];
 						UI.Button(chipName, DrawSettings.ActiveUITheme.ChipButton, buttonLayoutPos, new Vector2(0, buttonHeight), false, true, false, Anchor.BottomLeft, false, 0);
 						buttonLayoutPos = UI.PrevBounds.TopLeft + Vector2.up * buttonSpacing;
 
-						// Stop if approaching top of screen (we'll draw the rest of the collection starting on a new line)
+						// stop if approaching top of screen (we'll draw the rest of the collection starting on a new line)
 						if (buttonLayoutPos.y > UI.Height - 0.1f) break;
 
 						collectionBounds = UI.GetCurrentBoundsScope();
-						numButtonsToDraw++;
+						++numButtonsToDraw;
 					}
 				}
 

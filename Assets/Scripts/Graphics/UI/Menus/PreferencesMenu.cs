@@ -62,7 +62,6 @@ namespace DLS.Graphics
 		static readonly UIHandle ID_StraightWires = new("PREFS_StraightWires");
 		static readonly UIHandle ID_SimStatus = new("PREFS_SimStatus");
 		static readonly UIHandle ID_SimFrequencyField = new("PREFS_SimTickTarget");
-		static readonly UIHandle ID_ClockSpeedInput = new("PREFS_ClockSpeed");
 
 		static readonly string showGridLabel = "Show grid" + UI.CreateColouredText(" (ctrl+G)", new Color(1, 1, 1, 0.35f));
 		static readonly Func<string, bool> integerInputValidator;
@@ -105,8 +104,6 @@ namespace DLS.Graphics
 				DrawHeader("SIMULATION:");
 				bool pauseSim = MenuHelper.LabeledOptionsWheel("Status", labelCol, labelPosCurr, entrySize, ID_SimStatus, SimulationStatusOptions, settingFieldSize.x, true) == 1;
 				AddSpacing();
-				InputFieldState clockSpeedInputFieldState = MenuHelper.LabeledInputField("Steps per clock tick", labelCol, labelPosCurr, entrySize, ID_ClockSpeedInput, integerInputValidator, settingFieldSize.x, true);
-				AddSpacing();
 				InputFieldState freqState = MenuHelper.LabeledInputField("Steps per second (target)", labelCol, labelPosCurr, entrySize, ID_SimFrequencyField, integerInputValidator, settingFieldSize.x, true);
 				AddSpacing();
 				// Draw current simulation speed
@@ -122,9 +119,6 @@ namespace DLS.Graphics
 				Bounds2D menuBounds = UI.GetCurrentBoundsScope();
 				MenuHelper.DrawReservedMenuPanel(panelID, menuBounds);
 
-				// ---- Handle changes ----
-				int.TryParse(clockSpeedInputFieldState.text, out int clockSpeed);
-
 				// Parse target sim tick rate
 				int.TryParse(freqState.text, out int targetSimTicksPerSecond);
 				targetSimTicksPerSecond = Mathf.Max(1, targetSimTicksPerSecond);
@@ -137,7 +131,6 @@ namespace DLS.Graphics
 				project.description.Prefs_Snapping = snappingMode;
 				project.description.Prefs_StraightWires = straightWireMode;
 				project.description.Prefs_SimTargetStepsPerSecond = targetSimTicksPerSecond;
-				project.description.Prefs_SimStepsPerClockTick = clockSpeed;
 				project.description.Prefs_SimPaused = pauseSim;
 
 				// Cancel / Confirm
@@ -197,7 +190,6 @@ namespace DLS.Graphics
 			UI.GetWheelSelectorState(ID_SimStatus).index = projDesc.Prefs_SimPaused ? 1 : 0;
 			// -- Input fields
 			UI.GetInputFieldState(ID_SimFrequencyField).SetText(projDesc.Prefs_SimTargetStepsPerSecond + "", false);
-			UI.GetInputFieldState(ID_ClockSpeedInput).SetText(projDesc.Prefs_SimStepsPerClockTick + "", false);
 
 			simAvgTicksPerSec_delayedRefreshForUI = Project.ActiveProject.simAvgTicksPerSec;
 			lastSimAvgTicksPerSecRefreshTime = float.MinValue;

@@ -58,7 +58,6 @@ namespace DLS.Game
 		public bool CanEditViewedChip => chipViewStack.Count == 1;
 
 		public int targetTicksPerSecond => Mathf.Max(1, description.Prefs_SimTargetStepsPerSecond);
-		public int stepsPerClockTransition => description.Prefs_SimStepsPerClockTick;
 		public bool simPaused => description.Prefs_SimPaused;
 		public double simAvgTicksPerSec { get; private set; }
 
@@ -217,10 +216,17 @@ namespace DLS.Game
 			}
 		}
 
-		// Key chip has been bound to a different key, so simulation must be updated
-		public void NotifyKeyChipBindingChanged(SubChipInstance keyChip, char newKey)
+		public void NotifyClockChipClockspeedChanged(SubChipInstance clockChip, UInt64 newClockspeed)
 		{
-			keyChip.SetKeyChipActivationChar(newKey);
+			clockChip.SetClockspeed(newClockspeed);
+			SimChip simChip = rootSimChip.GetSubChipFromID(clockChip.ID);
+			simChip.ChangeClockspeed(newClockspeed);
+		}
+
+		// Key chip has been bound to a different key, so simulation must be updated
+		public void NotifyKeyChipBindingChanged(SubChipInstance keyChip, byte newKey)
+		{
+			keyChip.SetKeyChipActivation(newKey);
 			SimChip simChip = rootSimChip.GetSubChipFromID(keyChip.ID);
 			simChip.ChangeKeyBinding(newKey);
 		}
@@ -460,7 +466,7 @@ namespace DLS.Game
 				if (!stopwatchTotal.IsRunning) stopwatchTotal.Start();
 
 				// ---- Run sim ----
-				Simulator.stepsPerClockTransition = stepsPerClockTransition;
+				Simulator.ticksPerSecond = targetTicksPerSecond;
 				SimChip simChip = rootSimChip;
 				if (simChip == null) continue; // Could potentially be null for a frame when switching between chips
 				Simulator.RunSimulationStep(simChip, inputPins);

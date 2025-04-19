@@ -1,4 +1,5 @@
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 
 namespace DLS.SaveSystem
@@ -11,6 +12,9 @@ namespace DLS.SaveSystem
 		public static readonly string dataPath_Build = Application.persistentDataPath;
 		static readonly string dataPath_Editor = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "TestData");
 		public static readonly string AllData = Application.isEditor && !UseBuildPathInEditor ? dataPath_Editor : dataPath_Build;
+		
+		public static readonly string ModDirectory = Path.Combine(AllData, "Mods");
+
 
 		// Path to save folder for all projects
 		public static readonly string ProjectsPath = Path.Combine(AllData, "Projects");

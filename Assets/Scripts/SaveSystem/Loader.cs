@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DLS.Description;
+using DLS.Description.Types;
 using DLS.Game;
-using UnityEngine;
+using UnityEngine.WSA;
 
 namespace DLS.SaveSystem
 {
@@ -78,6 +79,43 @@ namespace DLS.SaveSystem
 			projectDescriptions.Sort((a, b) => b.LastSaveTime.CompareTo(a.LastSaveTime));
 			return projectDescriptions.ToArray();
 		}
+		
+		public static ModDescription LoadModDescription(string modName)
+		{
+			string path = SavePaths.ModDirectory+$"\\{modName}\\manifest.json";
+			if (!File.Exists(path)) throw new Exception("No mod description found at " + path);
+
+			ModDescription desc = Serializer.DeserializeModDescription(File.ReadAllText(path));
+			desc.ModName = modName; // enforce name = directory name (in case player modifies manually -- operations like deleting mods rely on this)
+
+			return desc;
+		}
+		public static ModDescription[] LoadAllModDescriptions()
+		{
+			List<ModDescription> modDescriptions = new();
+
+			if (!Directory.Exists(SavePaths.ModDirectory))
+			{
+				Directory.CreateDirectory(SavePaths.ModDirectory);
+				return modDescriptions.ToArray();
+			}
+
+			foreach (string dir in Directory.EnumerateDirectories(SavePaths.ModDirectory))
+			{
+				try
+				{
+					string modName = Path.GetFileName(dir);
+					modDescriptions.Add(LoadModDescription(modName));
+				}
+				catch (Exception)
+				{
+					// Ignore invalid mods
+				}
+			}
+
+			modDescriptions.Sort((a, b) => string.Compare(a.Author, b.Author, StringComparison.OrdinalIgnoreCase));
+			return modDescriptions.ToArray();
+		}
 
 		static ChipLibrary LoadChipLibrary(ProjectDescription projectDescription)
 		{
@@ -98,8 +136,7 @@ namespace DLS.SaveSystem
 				loadedChips[i] = chipDesc;
 				customChipNameHashset.Add(chipDesc.Name);
 			}
-			
-			
+
 			// If built-in chip name conflicts with a custom chip, the built-in chip must have been added in a newer version.
 			// In that case, simply exclude the built-in chip. TODO: warn player that they should rename their chip if they want access to new builtin version
 			builtinChips = builtinChips.Where(b => !customChipNameHashset.Contains(b.Name)).ToArray();
