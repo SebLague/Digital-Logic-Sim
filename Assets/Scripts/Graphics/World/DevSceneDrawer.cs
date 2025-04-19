@@ -424,7 +424,6 @@ namespace DLS.Graphics
 			{
 				bounds = DrawDisplay_Dot(posWorld, scaleWorld, sim);
 			}
-
 			else if (display.DisplayType == ChipType.DisplayLED)
 			{
 				bool simActive = sim != null;

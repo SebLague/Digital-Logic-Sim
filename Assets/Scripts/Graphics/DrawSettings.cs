@@ -13,6 +13,11 @@ namespace DLS.Graphics
 		public const float PinHeight1Bit = 0.185f;
 		public const float PinHeight4Bit = 0.3f;
 		public const float PinHeight8Bit = 0.43f;
+		public const float PinHeight16Bit = 0.52f;
+		public const float PinHeight32Bit = 0.71f;
+		public const float PinHeight64Bit = 1f;
+		public const float PinHeight128Bit = 1.39f;
+		public const float PinHeight256Bit = 1.88f;
 		public const float PinRadius = PinHeight1Bit / 2;
 
 		public const FontType FontBold = FontType.JetbrainsMonoBold;
@@ -78,8 +83,7 @@ namespace DLS.Graphics
 			};
 
 			Color[] stateHover = stateLow.Select(c => Brighten(c, 0.1f)).ToArray();
-
-            return new ThemeDLS
+			return new ThemeDLS
             {
                 SelectionBoxCol = new Color(1, 1, 1, 0.1f),
                 SelectionBoxMovingCol = new Color(1, 1, 1, 0.125f),
@@ -241,7 +245,6 @@ namespace DLS.Graphics
 			public Color[] StateHighCol;
 			public Color[] StateHoverCol;
 			public Color[] StateLowCol;
-
 			public Color[] DisplayLEDCols; // Disconnected, Off, On
 		}
 
