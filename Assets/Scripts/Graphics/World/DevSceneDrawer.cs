@@ -306,7 +306,7 @@ namespace DLS.Graphics
 			if (isButton || desc.NameLocation != NameDisplayLocation.Hidden)
 			{
 				// Display on single line if name fits comfortably, otherwise use 'formatted' version (split across multiple lines)
-				string displayName = isButton ? subchip.activationKeyString : subchip.MultiLineName;
+				string displayName = isButton ? subchip.activationKeyString : subchip.GetUpdatedMultilineName();
 				if (Draw.CalculateTextBoundsSize(subchip.Description.Name, FontSizeChipName, FontBold).x < subchip.Size.x - PinRadius * 2.5f)
 				{
 					displayName = subchip.Description.Name;
@@ -315,6 +315,14 @@ namespace DLS.Graphics
 				bool nameCentre = desc.NameLocation == NameDisplayLocation.Centre || isButton;
 				Anchor textAnchor = nameCentre ? Anchor.TextCentre : Anchor.CentreTop;
 				Vector2 textPos = nameCentre ? pos : pos + Vector2.up * (subchip.Size.y / 2 - GridSize / 2);
+
+				if (desc.NameAlignment != NameAlignment.Centre)
+				{
+					int mult = desc.NameAlignment == NameAlignment.Right ? 1 : -1;
+					TextRenderer.BoundingBox textBounds = Draw.CalculateTextBounds(displayName, FontBold, FontSizeChipName, textPos, textAnchor);
+					textPos.x += (pos.x + desc.Size.x / 2 - textBounds.BoundsMax.x) * mult;
+				}
+
 
 				// Draw background band behind text if placed at top (so it doesn't look out of place..)
 				if (desc.NameLocation == NameDisplayLocation.Top)

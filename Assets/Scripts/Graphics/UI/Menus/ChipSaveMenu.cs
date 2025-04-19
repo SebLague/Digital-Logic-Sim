@@ -105,7 +105,7 @@ namespace DLS.Graphics
 					if (ActiveCustomizeDescription.Name != newName)
 					{
 						ActiveCustomizeDescription.Name = newName;
-						Vector2 minChipSize = SubChipInstance.CalculateMinChipSize(ActiveCustomizeDescription.InputPins, ActiveCustomizeDescription.OutputPins, newName);
+						Vector2 minChipSize = SubChipInstance.CalculateMinChipSize(ActiveCustomizeDescription.InputPins, ActiveCustomizeDescription.OutputPins, newName, NameAlignment.Centre);
 						Vector2 chipSizeNew = Vector2.Max(minChipSize, ActiveCustomizeDescription.Size);
 						ActiveCustomizeDescription.Size = chipSizeNew;
 					}

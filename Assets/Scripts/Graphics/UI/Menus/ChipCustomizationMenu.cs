@@ -19,8 +19,13 @@ namespace DLS.Graphics
 			"Name: Hidden"
 		};
 
-
-		// ---- State ----
+		static readonly string[] nameAlignmentOptions =
+		{
+			"Center Aligned",
+			"Right Aligned",
+			"Left Aligned"
+		};
+    
 		static SubChipInstance[] subChipsWithDisplays;
 		static string displayLabelString;
 		static string colHexCodeString;
@@ -29,6 +34,7 @@ namespace DLS.Graphics
 		static readonly UIHandle ID_ColourPicker = new("CustomizeMenu_ChipCol");
 		static readonly UIHandle ID_ColourHexInput = new("CustomizeMenu_ChipColHexInput");
 		static readonly UIHandle ID_NameDisplayOptions = new("CustomizeMenu_NameDisplayOptions");
+		static readonly UIHandle ID_NameAlignmentOptions = new("CustomizeMenu_NameAlignmentOptions");
 		static readonly UI.ScrollViewDrawElementFunc drawDisplayScrollEntry = DrawDisplayScroll;
 		static readonly Func<string, bool> hexStringInputValidator = ValidateHexStringInput;
 
@@ -61,7 +67,11 @@ namespace DLS.Graphics
 			int nameDisplayMode = UI.WheelSelector(ID_NameDisplayOptions, nameDisplayOptions, NextPos(), new Vector2(pw, DrawSettings.ButtonHeight), theme.OptionsWheel, Anchor.TopLeft);
 			ChipSaveMenu.ActiveCustomizeDescription.NameLocation = (NameDisplayLocation)nameDisplayMode;
 
+			int nameAlignmentMode = UI.WheelSelector(ID_NameAlignmentOptions, nameAlignmentOptions, NextPos(), new Vector2(pw, 3), theme.OptionsWheel, Anchor.TopLeft);
+			ChipSaveMenu.ActiveCustomizeDescription.NameAlignment = (NameAlignment)nameAlignmentMode;
+
 			// ---- Chip colour UI ----
+
 			Color newCol = UI.DrawColourPicker(ID_ColourPicker, NextPos(), pw, Anchor.TopLeft);
 			InputFieldTheme inputTheme = MenuHelper.Theme.ChipNameInputField;
 			inputTheme.fontSize = MenuHelper.Theme.FontSizeRegular;
