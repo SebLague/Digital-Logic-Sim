@@ -105,7 +105,8 @@ namespace DLS.Graphics
 				},
 				Display2x2Cols = new[] { MakeCol(0.175f), MakeCol(1), MakeCol(0.275f) }, // OFF, ON, HIGHLIGHT
 				BackgroundCol = MakeCol255(66, 66, 69),
-				GridCol = MakeCol255(49, 49, 51)
+				GridCol = MakeCol255(49, 49, 51),
+				DisplayLEDCols = new[] { Color.black, new(0.2f, 0.1f, 0.1f), new(1, 0.32f, 0.28f) } // Disconnected, OFF, ON
 			};
 		}
 
@@ -239,6 +240,7 @@ namespace DLS.Graphics
 			public Color[] StateHighCol;
 			public Color[] StateHoverCol;
 			public Color[] StateLowCol;
+			public Color[] DisplayLEDCols; // Disconnected, Off, On
 		}
 
 		public class UIThemeDLS

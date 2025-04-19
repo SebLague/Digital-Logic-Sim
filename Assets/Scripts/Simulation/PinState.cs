@@ -55,8 +55,8 @@ namespace DLS.Simulation
 		public UInt64 GetBit(int bitIndex)
 		{
 			UInt64 state = (bitStates >> bitIndex) & 1;
-			UInt64 tri = (tristateFlags >> (bitIndex - 1)) & 2;
-			return state | tri; // Combine to form tri-stated value: 0 = LOW, 1 = HIGH, 2 = DISCONNECTED
+			UInt64 tri = (tristateFlags >> bitIndex) & 1;
+			return state | (tri << 1); // Combine to form tri-stated value: 0 = LOW, 1 = HIGH, 2 = DISCONNECTED
 		}
 
 		public void SetFromSource(PinState source)
@@ -126,7 +126,14 @@ namespace DLS.Simulation
 		public void SetAllDisconnected()
 		{
 			bitStates = 0;
-			tristateFlags = (1ul << BitCount) - 1;
+			if (BitCount == 64)
+			{
+				tristateFlags = ~0UL;
+			}
+			else
+			{
+				tristateFlags = (1ul << BitCount) - 1;
+			}
 		}
 	}
 }

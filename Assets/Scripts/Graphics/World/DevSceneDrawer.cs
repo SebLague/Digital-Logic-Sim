@@ -77,6 +77,11 @@ namespace DLS.Graphics
 			{
 				DrawWire(wire);
 			}
+
+			foreach (WireInstance wire in controller.DuplicatedWires)
+			{
+				DrawWire(wire);
+			}
 		}
 
 		static void DrawAllPinNamesAndChipLabels()
@@ -213,18 +218,26 @@ namespace DLS.Graphics
 			Draw.Text(font, text, FontSizePinLabel, centre, Anchor.TextFirstLineCentre, Color.white);
 		}
 
-		private static ulong value = 0;
 		public static void DrawPinDecValue(DevPinInstance pin)
 		{
 			if (pin.pinValueDisplayMode == PinValueDisplayMode.Off) return;
-			int charCount = 0;
-			if (pin.pinValueDisplayMode == PinValueDisplayMode.SignedDecimal)
+
+			int charCount;
+
+			switch (pin.pinValueDisplayMode)
 			{
-				charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, (Int64)pin.GetStateDecimalDisplayValue());
-			}
-			else
-			{
-				charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, (UInt64)pin.GetStateDecimalDisplayValue());
+				case PinValueDisplayMode.SignedDecimal:
+					charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, (Int64)pin.GetStateDecimalDisplayValue());
+					break;
+				case PinValueDisplayMode.UnsignedDecimal:
+					charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, (UInt64)pin.GetStateDecimalDisplayValue());
+					break;
+				case PinValueDisplayMode.HEX:
+					charCount = StringHelper.CreateHexStringNonAlloc(pin.decimalDisplayCharBuffer, (UInt64)pin.GetStateDecimalDisplayValue());
+					break;
+				default:
+					charCount = 0;
+					break;
 			}
 
 			FontType font = FontBold;
@@ -383,40 +396,55 @@ namespace DLS.Graphics
 			Vector2 posWorld = posParent + posLocal * parentScale;
 			float scaleWorld = display.Desc.Scale * parentScale;
 
-			if (display.DisplayType is ChipType.Custom)
+			switch (display.DisplayType)
 			{
-				sim = sim?.GetSubChipFromID(display.Desc.SubChipID);
-
-				foreach (DisplayInstance child in display.ChildDisplays)
+				case ChipType.Custom:
 				{
-					Bounds2D childBounds = DrawDisplay(child, posWorld, scaleWorld, rootChip, sim);
-					bounds = Bounds2D.Grow(bounds, childBounds);
-				}
-			}
-			else if (display.DisplayType is ChipType.SevenSegmentDisplay)
-			{
-				bool simActive = sim != null;
-				// if this is the builtin 7Seg, highlight segments when mouse is over corresponding pin
-				bool hoverActive = rootChip.ChipType == ChipType.SevenSegmentDisplay;
-				PinInstance pin = InteractionState.PinUnderMouse;
-				int colOffset = simActive && sim.InputPins[7].FirstBitHigh ? 3 : 0;
+					sim = sim?.GetSubChipFromID(display.Desc.SubChipID);
 
-				int A = (simActive && sim.InputPins[0].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[0] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int B = (simActive && sim.InputPins[1].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[1] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int C = (simActive && sim.InputPins[2].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[2] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int D = (simActive && sim.InputPins[3].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[3] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int E = (simActive && sim.InputPins[4].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[4] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int F = (simActive && sim.InputPins[5].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[5] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int G = (simActive && sim.InputPins[6].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[6] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				bounds = DrawDisplay_SevenSegment(posWorld, scaleWorld, A, B, C, D, E, F, G);
-			}
-			else if (display.DisplayType == ChipType.DisplayRGB)
-			{
-				bounds = DrawDisplay_RGB(posWorld, scaleWorld, sim);
-			}
-			else if (display.DisplayType == ChipType.DisplayDot)
-			{
-				bounds = DrawDisplay_Dot(posWorld, scaleWorld, sim);
+					foreach (DisplayInstance child in display.ChildDisplays)
+					{
+						Bounds2D childBounds = DrawDisplay(child, posWorld, scaleWorld, rootChip, sim);
+						bounds = Bounds2D.Grow(bounds, childBounds);
+					}
+					break;
+				}
+				case ChipType.SevenSegmentDisplay:
+				{
+					bool simActive = sim != null;
+					// if this is the builtin 7Seg, highlight segments when mouse is over corresponding pin
+					bool hoverActive = rootChip.ChipType == ChipType.SevenSegmentDisplay;
+					PinInstance pin = InteractionState.PinUnderMouse;
+					int colOffset = simActive && sim.InputPins[7].FirstBitHigh ? 3 : 0;
+
+					int A = (simActive && sim.InputPins[0].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[0] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int B = (simActive && sim.InputPins[1].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[1] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int C = (simActive && sim.InputPins[2].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[2] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int D = (simActive && sim.InputPins[3].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[3] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int E = (simActive && sim.InputPins[4].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[4] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int F = (simActive && sim.InputPins[5].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[5] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int G = (simActive && sim.InputPins[6].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[6] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					bounds = DrawDisplay_SevenSegment(posWorld, scaleWorld, A, B, C, D, E, F, G);
+					break;
+				}
+				case ChipType.DisplayRGB:
+				{
+					bounds = DrawDisplay_RGB(posWorld, scaleWorld, sim);
+					break;
+				}
+				case ChipType.DisplayDot:
+				{
+					bounds = DrawDisplay_Dot(posWorld, scaleWorld, sim);
+					break;
+				}
+				case ChipType.DisplayLED:
+				{
+					bool simActive = sim != null;
+					bool isDisconnected = (!simActive) || (sim.numConnectedInputs == 0) || (sim.InputPins[0].State.GetBit(0) == PinState.LogicDisconnected);
+					bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
+					bounds = DrawDisplay_DisplayLED(posWorld, scaleWorld, isDisconnected, isOn);
+					break;
+				}
 			}
 
 			display.LastDrawBounds = bounds;
@@ -520,6 +548,22 @@ namespace DLS.Graphics
 				}
 			}
 
+			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+		}
+
+		public static Bounds2D DrawDisplay_DisplayLED(Vector2 centre, float scale, bool isDisconnected, bool isOn)
+		{
+			const float pixelSizeT = 0.975f;
+			// Draw background
+			Draw.Quad(centre, Vector2.one * scale, Color.black);
+			float size = scale;
+
+			float pixelSize = size;
+			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
+
+			Color col = isDisconnected ? ActiveTheme.DisplayLEDCols[0] : (isOn ? ActiveTheme.DisplayLEDCols[2] : ActiveTheme.DisplayLEDCols[1]);
+
+			Draw.Quad(centre, pixelDrawSize, col);
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
 
@@ -693,11 +737,14 @@ namespace DLS.Graphics
 		// Wire should be highlighted if mouse is over it or if in edit mode
 		static bool ShouldHighlightWire(WireInstance wire)
 		{
+			if (InteractionState.MouseIsOverUI) return false;
 			if (wire == controller.wireToEdit) return true;
 
-			if (InteractionState.ElementUnderMousePrevFrame is WireInstance wireUnderMouse)
+			if (InteractionState.ElementUnderMousePrevFrame is WireInstance wireUnderMouse && wire == wireUnderMouse)
 			{
-				return wire == wireUnderMouse;
+				if (controller.IsCreatingWire)
+					return controller.CanCompleteWireConnection(wire, out PinInstance _);
+				return true;
 			}
 
 			return false;
@@ -749,13 +796,13 @@ namespace DLS.Graphics
 			PinInstance pin = null;
 			if (wire.FirstPin != null)
 				pin = wire.FirstPin;
-			else if(wire.SourcePin != null)
+			else if (wire.SourcePin != null)
 				pin = wire.SourcePin;
 			else if (wire.TargetPin != null)
 				pin = wire.TargetPin;
-			
+
 			float thicknessDivisor = pin == null ? 1 : 2.4f * SubChipInstance.PinHeightFromBitCount(pin.bitCount);
-			
+
 			float thickness = (ShouldHighlightWire(wire) ? WireHighlightedThickness : WireThickness) / thicknessDivisor;
 
 			Vector2 mousePos = InputHelper.MousePosWorld;
@@ -786,7 +833,7 @@ namespace DLS.Graphics
 			// Can't edit first and last point in wire (unless that point connects to another wire instead of a pin)
 			int startIndex = wire.SourceConnectionInfo.IsConnectedAtWire ? 0 : 1;
 			int endIndex = wire.TargetConnectionInfo.IsConnectedAtWire ? wire.WirePointCount - 1 : wire.WirePointCount - 2;
-			
+
 			const float r = 0.07f;
 			const float rBG = r + 0.02f;
 
@@ -865,7 +912,7 @@ namespace DLS.Graphics
 			Vector2 pinPos = pin.GetWorldPos();
 			Vector2 pinSelectionBoundsPos = pinPos + Vector2.right * ((pin.IsSourcePin ? 1 : -1) * 0.02f);
 			float pinHeight = SubChipInstance.PinHeightFromBitCount(pin.bitCount);
-			
+
 			Vector2 pinSize = new(pinWidth, pinHeight);
 
 			bool mouseOverPin = !InteractionState.MouseIsOverUI && InputHelper.MouseInsideBounds_World(pinSelectionBoundsPos, pinSize);

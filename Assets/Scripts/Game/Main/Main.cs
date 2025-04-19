@@ -11,9 +11,9 @@ namespace DLS.Game
 {
 	public static class Main
 	{
-		public static readonly Version DLSVersion = new(2, 1, 0);
+		public static readonly Version DLSVersion = new(2, 1, 2);
 		public static readonly Version DLSVersion_EarliestCompatible = new(2, 0, 0);
-		public static readonly string LastUpdatedString = "15 April 2025";
+		public static readonly string LastUpdatedString = "18 April 2025";
 		public static AppSettings ActiveAppSettings;
 
 		public static Project ActiveProject { get; private set; }
@@ -80,8 +80,10 @@ namespace DLS.Game
 				CreationTime = DateTime.Now,
 				Prefs_ChipPinNamesDisplayMode = PreferencesMenu.DisplayMode_OnHover,
 				Prefs_MainPinNamesDisplayMode = PreferencesMenu.DisplayMode_OnHover,
+				Prefs_GridDisplayMode = 0,
+				Prefs_Snapping = 0,
+				Prefs_StraightWires = 0,
 				Prefs_SimTargetStepsPerSecond = 1000,
-				Prefs_SimStepsPerClockTick = 250,
 				Prefs_SimPaused = false,
 				AllCustomChipNames = Array.Empty<string>(),
 				StarredList = BuiltinCollectionCreator.GetDefaultStarredList().ToList(),

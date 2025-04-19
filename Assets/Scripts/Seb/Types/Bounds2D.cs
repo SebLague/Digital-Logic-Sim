@@ -43,6 +43,8 @@ namespace Seb.Types
 
 		public static Bounds2D CreateEmpty() => new(Vector2.one * float.MaxValue, Vector2.one * float.MinValue);
 
+		public static Bounds2D Translate(Bounds2D a, Vector2 offset) => new(a.Min + offset, a.Max + offset);
+
 		public static Bounds2D Grow(Bounds2D a, Bounds2D b) => new(Vector2.Min(a.Min, b.Min), Vector2.Max(a.Max, b.Max));
 
 		public static Bounds2D Grow(Bounds2D bounds, Vector2 p) => new(Vector2.Min(bounds.Min, p), Vector2.Max(bounds.Max, p));

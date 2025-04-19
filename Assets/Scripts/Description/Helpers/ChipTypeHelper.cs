@@ -21,12 +21,12 @@ namespace DLS.Description
 			// ---- Memory ----
 			{ ChipType.dev_Ram_8Bit, $"RAM 8-8" },
 			{ ChipType.Ram_16Bit, $"RAM 16-16" },
-			{ ChipType.Rom_256x16, $"ROM 8-16" },
+			{ ChipType.Rom_256x16, $"ROM 256{mulSymbol}16" },
 			{ ChipType.Rom_16Bit, $"ROM 16-16" },
 			{ ChipType.Rom_16Bit_24, $"ROM 16-24" },
 			// ---- Split / Merge ----
 			{ ChipType.Split_4To1Bit, "4-1BIT" },
-			
+
 			{ ChipType.Split_8To1Bit, "8-1BIT" },
 			{ ChipType.Split_8To4Bit, "8-4BIT" },
 			{ ChipType.Merge_4To8Bit, "4-8BIT" },
@@ -38,7 +38,7 @@ namespace DLS.Description
 			{ ChipType.Split_16To1Bit, "16-1BIT" },
 			{ ChipType.Split_16To4Bit, "16-4BIT" },
 			{ ChipType.Split_16To8Bit, "16-8BIT" },
-			
+
 			{ ChipType.Split_32To1Bit, "32-1BIT" },
 			{ ChipType.Split_32To4Bit, "32-4BIT" },
 			{ ChipType.Split_32To8Bit, "32-8BIT" },
@@ -48,7 +48,7 @@ namespace DLS.Description
 			{ ChipType.Split_64To8Bit, "64-8BIT" },
 			{ ChipType.Split_64To16Bit,"64-16BIT" },
 			{ ChipType.Split_64To32Bit,"64-32BIT" },
-			
+
 			{ ChipType.Merge_1To32Bit, "1-32BIT" },
 			{ ChipType.Merge_4To32Bit, "4-32BIT" },
 			{ ChipType.Merge_8To32Bit, "8-32BIT" },
@@ -63,6 +63,7 @@ namespace DLS.Description
 			{ ChipType.DisplayRGB, "RGB DISPLAY" },
 			{ ChipType.DisplayDot, "DOT DISPLAY" },
 			{ ChipType.SevenSegmentDisplay, "7-SEGMENT" },
+			{ ChipType.DisplayLED, "LED" },
 
 			// ---- Not really chips (but convenient to treat them as such anyway) ----
 

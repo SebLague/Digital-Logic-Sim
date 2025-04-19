@@ -137,9 +137,10 @@ namespace DLS.Simulation
 
 		public (bool success, SimChip chip) TryGetSubChipFromID(int id)
 		{
+			// Todo: address possible errors if accessing from main thread while being modified on sim thread?
 			foreach (SimChip s in SubChips)
 			{
-				if (s.ID == id)
+				if (s?.ID == id)
 				{
 					return (true, s);
 				}
@@ -150,6 +151,7 @@ namespace DLS.Simulation
 
 		public SimChip GetSubChipFromID(int id)
 		{
+			// Todo: address possible errors if accessing from main thread while being modified on sim thread?
 			(bool success, SimChip chip) = TryGetSubChipFromID(id);
 			if (success) return chip;
 
