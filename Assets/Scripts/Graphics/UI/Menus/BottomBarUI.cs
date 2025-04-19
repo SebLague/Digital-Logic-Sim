@@ -48,16 +48,37 @@ namespace DLS.Graphics
 		static Vector2 collectionPopupBottomLeft;
 		static Bounds2D barBounds_ScreenSpace;
 
+        static bool showCommentTooltip = false;
+        static string commentTooltipText = "";
+        static Vector2 commentTooltipPosition = Vector2.zero;
+		static StarredItem? hoveredStarredItem = null;
+		static Bounds2D hoveredButtonBounds = Bounds2D.CreateEmpty();
+        static bool tooltipHoverSourceIsPopup = false; 
+
+
 		static bool MenuButtonsAndShortcutsEnabled => Project.ActiveProject.CanEditViewedChip;
 
 		public static void DrawUI(Project project)
 		{
-			DrawBottomBar(project);
+            // Reset hover state at the beginning of the frame
+            showCommentTooltip = false;
+            commentTooltipText = "";
+			hoveredStarredItem = null;
+            hoveredButtonBounds = Bounds2D.CreateEmpty();
+            tooltipHoverSourceIsPopup = false;
+
+
+			DrawBottomBar(project); 
 
 			if (UIDrawer.ActiveMenu == UIDrawer.MenuType.BottomBarMenuPopup)
 			{
 				DrawPopupMenu();
 			}
+            else if (showCommentTooltip && !string.IsNullOrEmpty(commentTooltipText))
+            {
+                DrawCommentTooltip();
+            }
+
 
 			if (UIDrawer.ActiveMenu is UIDrawer.MenuType.BottomBarMenuPopup or UIDrawer.MenuType.None)
 			{
@@ -68,7 +89,7 @@ namespace DLS.Graphics
 		static void DrawPopupMenu()
 		{
 			ButtonTheme theme = DrawSettings.ActiveUITheme.MenuPopupButtonTheme;
-			float menuWidth = Draw.CalculateTextBoundsSize(menuButtonNames[0].AsSpan(), theme.fontSize, theme.font).x + 1;
+			float menuWidth = Draw.CalculateTextBoundsSize(menuButtonNames[0], theme.fontSize, theme.font).x + 1;
 			Vector2 pos = new(buttonSpacing, barHeight + buttonSpacing);
 			Vector2 size = new(menuWidth, buttonHeight);
 			Draw.ID panelID = UI.ReservePanel();
@@ -123,8 +144,6 @@ namespace DLS.Graphics
 
 			bool inOtherMenu = !(UIDrawer.ActiveMenu is UIDrawer.MenuType.BottomBarMenuPopup or UIDrawer.MenuType.None);
 			DrawSettings.UIThemeDLS theme = DrawSettings.ActiveUITheme;
-			// If mouse is over context menu, then ignore inputs (don't want to actually disable the buttons because the grey-out effect is distracting here)
-			// Also if middle mouse is held, as may be dragging the bar so don't want to select buttons
 			bool ignoreInputs = ContextMenu.HasFocus() || InputHelper.IsMouseHeld(MouseButton.Middle);
 			bool isRightClick = InputHelper.IsMouseDownThisFrame(MouseButton.Right);
 			if (closeActiveCollectionMultiModeExit && !KeyboardShortcuts.MultiModeHeld)
@@ -149,6 +168,7 @@ namespace DLS.Graphics
 
 			// Chips
 			ButtonTheme buttonTheme = theme.ChipButton;
+			int commentPreference = project.description.Prefs_ShowChipCommentsBottomBar; // Use the correct preference
 
 			using (UI.CreateMaskScopeMinMax(new Vector2(UI.PrevBounds.Right + buttonSpacing, 0), new Vector2(UI.Width, barHeight)))
 			{
@@ -177,7 +197,7 @@ namespace DLS.Graphics
 					}
 				}
 
-				// -- Draw --
+
 				float chipButtonsRegionStartX = UI.PrevBounds.Right + buttonSpacing;
 				float chipButtonRegionWidth = UI.Width - chipButtonsRegionStartX;
 
@@ -190,9 +210,7 @@ namespace DLS.Graphics
 					StarredItem starred = project.description.StarredList[i];
 					bool isToggledOpenCollection = activeCollection != null && ChipDescription.NameMatch(starred.Name, activeCollection.Name);
 					string buttonName = starred.GetDisplayStringForBottomBar(isToggledOpenCollection);
-
 					float textOffsetX = 0;
-
 					Vector2 buttonPos = new(buttonPosX, padY);
 					Vector2 buttonSize = new(0.5f, buttonHeight);
 
@@ -202,20 +220,18 @@ namespace DLS.Graphics
 						buttonSize.x += -0.5f;
 					}
 
-					bool canAdd = starred.IsCollection || project.ViewedChip.CanAddSubchip(buttonName);
+					bool canAdd = starred.IsCollection || project.ViewedChip.CanAddSubchip(starred.Name);
 
 					if (UI.Button(buttonName, buttonTheme, buttonPos, buttonSize, chipButtonsEnabled && canAdd, true, false, Anchor.BottomLeft, textOffsetX: textOffsetX, ignoreInputs: ignoreInputs))
 					{
 						if (starred.IsCollection)
 						{
 							ChipCollection newActiveCollection = GetChipCollectionByName(starred.Name);
-							// Take first item from collection without opening
 							if (newActiveCollection.Chips.Count > 0 && KeyboardShortcuts.TakeFirstFromCollectionModifierHeld)
 							{
 								project.controller.StartPlacing(newActiveCollection.Chips[0]);
 								activeCollection = null;
 							}
-							// Open collection in popup
 							else
 							{
 								collectionPopupBottomLeft = new Vector2(UI.PrevBounds.Left, barHeight);
@@ -230,21 +246,54 @@ namespace DLS.Graphics
 							activeCollection = null;
 						}
 					}
-					else if (isRightClick && UI.MouseInsideBounds(UI.PrevBounds))
+
+                    Bounds2D currentButtonBounds = UI.PrevBounds;
+                    bool isHoveringCurrentButton = UI.MouseInsideBounds(currentButtonBounds);
+
+					if(isHoveringCurrentButton && activeCollection == null && !ignoreInputs && !starred.IsCollection)
+					{
+						hoveredStarredItem = starred;
+                        hoveredButtonBounds = currentButtonBounds; // Store button bounds for positioning
+                        tooltipHoverSourceIsPopup = false; // Set hover source flag
+						bool showBasedOnPreference = false;
+
+						if (commentPreference == PreferencesMenu.DisplayMode_OnHover)
+						{
+							showBasedOnPreference = true;
+						}
+						else if (commentPreference == PreferencesMenu.DisplayMode_OnHover_ALT) 
+						{
+							showBasedOnPreference = InputHelper.AltIsHeld;
+						}
+
+						if(showBasedOnPreference)
+						{
+							if (project.chipLibrary.TryGetChipDescription(starred.Name, out ChipDescription chipDesc))
+							{
+								if (!string.IsNullOrEmpty(chipDesc.ChipComment))
+								{
+									showCommentTooltip = true; 
+									commentTooltipText = chipDesc.ChipComment;
+								}
+							}
+						}
+					}
+
+					if (isRightClick && UI.MouseInsideBounds(currentButtonBounds))
 					{
 						ContextMenu.OpenBottomBarContextMenu(starred.Name, starred.IsCollection, false);
 					}
 
 
-					buttonPosX += UI.PrevBounds.Width + buttonSpacing;
+					buttonPosX += currentButtonBounds.Width + buttonSpacing;
 				}
 
 				// Record total width of all buttons to be used as scroll bounds for the next frame
 				chipBarTotalWidthLastFrame = UI.PrevBounds.Right - firstButtonLeft + buttonSpacing;
-			}
+			} // End Mask Scope for Main Bar
 
 
-			// Draw collection popup
+			// Draw collection popup (if active)
 			if (activeCollection != null && activeCollection.Chips.Count > 0)
 			{
 				Vector2 bottomLeftCurr = collectionPopupBottomLeft + new Vector2(0, 0);
@@ -253,60 +302,155 @@ namespace DLS.Graphics
 				int pressedIndex = -1;
 				bool openedContextMenu = false;
 
-				// Get max width so can draw all popup-buttons same width
-				using (UI.BeginBoundsScope(false))
-				{
-					foreach (string chipName in activeCollection.Chips)
-					{
-						UI.Button(chipName, buttonTheme, bottomLeftCurr, true, Anchor.BottomLeft);
-					}
+                const float popupOffsetX = 0.55f;
+                maxWidth = 0f;
+                foreach (string chipName in activeCollection.Chips)
+                {
+                    Vector2 textSize = Draw.CalculateTextBoundsSize(chipName, buttonTheme.fontSize, buttonTheme.font);
+                    float estimatedButtonWidth = textSize.x + DrawSettings.DefaultButtonSpacing * 2 + popupOffsetX; 
+                    maxWidth = Mathf.Max(maxWidth, estimatedButtonWidth);
+                }
+                 maxWidth = Mathf.Max(maxWidth, 5f);
 
-					maxWidth = UI.GetCurrentBoundsScope().Width;
-				}
 
-				// Draw pop-up buttons
+                Bounds2D popupTotalBounds = Bounds2D.CreateEmpty();
 				for (int i = activeCollection.Chips.Count - 1; i >= 0; i--)
 				{
 					const bool leftAlign = true;
-					const float offsetX = leftAlign ? 0.55f : 0;
 					string chipName = activeCollection.Chips[i];
 					bool enabled = project.ViewedChip.CanAddSubchip(chipName);
-					if (UI.Button(chipName, buttonTheme, bottomLeftCurr, new Vector2(maxWidth, buttonHeight), enabled, false, false, Anchor.BottomLeft, leftAlign, offsetX))
+
+					if (UI.Button(chipName, buttonTheme, bottomLeftCurr, new Vector2(maxWidth, buttonHeight), enabled, false, false, Anchor.BottomLeft, leftAlign, popupOffsetX, ignoreInputs: ignoreInputs))
 					{
 						pressedIndex = i;
 					}
-					else if (isRightClick && UI.MouseInsideBounds(UI.PrevBounds))
+
+                    Bounds2D currentPopupButtonBounds = UI.PrevBounds;
+                    popupTotalBounds = Bounds2D.Grow(popupTotalBounds, currentPopupButtonBounds);
+                    bool isHoveringCurrentPopupButton = UI.MouseInsideBounds(currentPopupButtonBounds);
+
+                    if (isHoveringCurrentPopupButton && !ignoreInputs)
+                    {
+						hoveredStarredItem = null;
+                        hoveredButtonBounds = currentPopupButtonBounds; 
+                        tooltipHoverSourceIsPopup = true; 
+                        bool showBasedOnPreference = false;
+
+
+                        if (commentPreference == PreferencesMenu.DisplayMode_OnHover)
+                        {
+                            showBasedOnPreference = true;
+                        }
+                        else if (commentPreference == PreferencesMenu.DisplayMode_OnHover_ALT)
+                        {
+                            showBasedOnPreference = InputHelper.AltIsHeld;
+                        }
+
+                        if (showBasedOnPreference)
+                        {
+                            if (project.chipLibrary.TryGetChipDescription(chipName, out ChipDescription chipDesc))
+                            {
+                                if (!string.IsNullOrEmpty(chipDesc.ChipComment))
+                                {
+                                    showCommentTooltip = true; 
+                                    commentTooltipText = chipDesc.ChipComment;
+                                }
+                            }
+                        }
+                    }
+
+					else if (isRightClick && isHoveringCurrentPopupButton)
 					{
 						ContextMenu.OpenBottomBarContextMenu(chipName, false, true);
 						openedContextMenu = true;
 					}
 
-					bottomLeftCurr = UI.PrevBounds.TopLeft + Vector2.up * buttonSpacing;
+					bottomLeftCurr = currentPopupButtonBounds.TopLeft + Vector2.up * buttonSpacing;
 				}
 
-				UI.ModifyPanel(popupPanelID, collectionPopupBottomLeft + Vector2.left * buttonSpacing, new Vector2(maxWidth + buttonSpacing * 2, UI.PrevBounds.Top - collectionPopupBottomLeft.y + buttonSpacing), theme.StarredBarCol, Anchor.BottomLeft);
+                // Draw popup background panel using calculated max width and height
+				UI.ModifyPanel(popupPanelID, collectionPopupBottomLeft + Vector2.left * buttonSpacing, new Vector2(maxWidth + buttonSpacing * 2, popupTotalBounds.Height + buttonSpacing * 2), theme.StarredBarCol, Anchor.BottomLeft);
+
 
 				if (!openedContextMenu)
 				{
 					if (pressedIndex != -1)
 					{
 						project.controller.StartPlacing(project.chipLibrary.GetChipDescription(activeCollection.Chips[pressedIndex]));
-						if (KeyboardShortcuts.MultiModeHeld)
-						{
-							closeActiveCollectionMultiModeExit = true;
-						}
-						else
-						{
-							activeCollection = null;
-						}
+						if (KeyboardShortcuts.MultiModeHeld) closeActiveCollectionMultiModeExit = true;
+						else activeCollection = null;
 					}
-					else if (KeyboardShortcuts.CancelShortcutTriggered || (InputHelper.IsAnyMouseButtonDownThisFrame_IgnoreConsumed() && Time.frameCount != collectionInteractFrame) || UIDrawer.ActiveMenu != UIDrawer.MenuType.None)
+                    else if (InputHelper.IsAnyMouseButtonDownThisFrame_IgnoreConsumed() && Time.frameCount != collectionInteractFrame && !UI.MouseInsideBounds(popupTotalBounds))
+                    {
+                         activeCollection = null;
+                    }
+                    else if (KeyboardShortcuts.CancelShortcutTriggered || UIDrawer.ActiveMenu != UIDrawer.MenuType.None)
 					{
 						activeCollection = null;
 					}
 				}
 			}
 		}
+
+        static void DrawCommentTooltip()
+        {
+            if (hoveredButtonBounds.Size == Vector2.zero) return; 
+
+            DrawSettings.UIThemeDLS theme = DrawSettings.ActiveUITheme;
+            FontType font = FontType.JetbrainsMonoRegular;
+            float fontSize = theme.FontSizeRegular * 0.9f;
+            Color textColor = Color.black;
+            Color bgColor = Color.white * 0.95f;
+            float maxWidth = 30f;
+            float padding = 0.5f;
+            float sideOffset = 0.3f;
+
+            string wrappedComment = ChipLibraryMenu.WrapText(commentTooltipText, font, fontSize, maxWidth - padding * 2);
+
+            Vector2 textSize = Draw.CalculateTextBoundsSize(wrappedComment, fontSize, font);
+            Vector2 panelSize = textSize + Vector2.one * padding * 2;
+
+
+            if (tooltipHoverSourceIsPopup) 
+            {
+                Vector2 mouseUIPos = UI.ScreenToUISpace(InputHelper.MousePos);
+                bool preferRight = mouseUIPos.x > hoveredButtonBounds.Centre.x;
+
+                Vector2 positionRight = hoveredButtonBounds.CentreRight + Vector2.right * (panelSize.x / 2f + sideOffset);
+                Vector2 positionLeft = hoveredButtonBounds.CentreLeft + Vector2.left * (panelSize.x / 2f + sideOffset);
+
+                bool cantFitRight = positionRight.x + panelSize.x / 2f > UI.Width;
+                bool cantFitLeft = positionLeft.x - panelSize.x / 2f < 0;
+
+                if (preferRight && !cantFitRight) {
+                    commentTooltipPosition = positionRight;
+                } else if (!preferRight && !cantFitLeft) {
+                    commentTooltipPosition = positionLeft;
+                } else if (!cantFitRight) { 
+                    commentTooltipPosition = positionRight;
+                } else if (!cantFitLeft) { 
+                    commentTooltipPosition = positionLeft;
+                } else {
+                    commentTooltipPosition = hoveredButtonBounds.CentreTop + Vector2.up * (panelSize.y / 2f + sideOffset);
+                }
+                 commentTooltipPosition.y = hoveredButtonBounds.Centre.y;
+
+            }
+            else
+            {
+                 commentTooltipPosition = hoveredButtonBounds.CentreTop + Vector2.up * (panelSize.y / 2f + sideOffset);
+            }
+
+
+            commentTooltipPosition.y = Mathf.Clamp(commentTooltipPosition.y, panelSize.y / 2f + barHeight, UI.Height - panelSize.y / 2f);
+            commentTooltipPosition.x = Mathf.Clamp(commentTooltipPosition.x, panelSize.x / 2f, UI.Width - panelSize.x / 2f);
+
+
+			Draw.StartLayer(Vector2.zero, 1, true);
+            UI.DrawPanel(commentTooltipPosition, panelSize, bgColor);
+            UI.DrawText(wrappedComment, font, fontSize, commentTooltipPosition, Anchor.TextCentre, textColor);
+        }
+
 
 		static ChipCollection GetChipCollectionByName(string name)
 		{
@@ -318,7 +462,7 @@ namespace DLS.Graphics
 				}
 			}
 
-			throw new Exception("Failed to find collection with name: " + name);
+			throw new Exception($"Failed to find collection with name: {name}"); 
 		}
 
 		static bool MouseIsOverBar() => InputHelper.MouseInBounds_ScreenSpace(barBounds_ScreenSpace);
@@ -380,6 +524,11 @@ namespace DLS.Graphics
 			chipBarTotalWidthLastFrame = 0;
 			isDraggingChipBar = false;
 			activeCollection = null;
+            showCommentTooltip = false;
+            commentTooltipText = "";
+			hoveredStarredItem = null;
+            hoveredButtonBounds = Bounds2D.CreateEmpty();
+            tooltipHoverSourceIsPopup = false; 
 		}
 	}
 }

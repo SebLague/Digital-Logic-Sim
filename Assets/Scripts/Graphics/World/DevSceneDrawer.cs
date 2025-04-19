@@ -10,7 +10,7 @@ using Seb.Vis.Text.Rendering;
 using UnityEngine;
 using static DLS.Graphics.DrawSettings;
 using ChipTypeHelper = DLS.Description.ChipTypeHelper;
-using Seb.Vis.UI;
+using Seb.Vis.UI; // Added using for UI
 
 namespace DLS.Graphics
 {
@@ -19,7 +19,7 @@ namespace DLS.Graphics
 		public const int DisplayOffState = 0;
 		public const int DisplayOnState = 1;
 		public const int DisplayHighlightState = 2;
-        const int MaxCommentCharsPerLine = 40;
+		const int MaxCommentCharsPerLine = 40; // Maximum characters per line for chip comments
 		static ChipInteractionController controller;
 
 		static readonly List<WireInstance> orderedWires = new();
@@ -37,7 +37,7 @@ namespace DLS.Graphics
 			// Draw dev pins and subchips (non-selected only)
 			DrawMoveableElements(false);
 
-			if (controller.IsMovingSelection) DrawAllPinNamesAndChipLabelsAndComments(); 
+			if (controller.IsMovingSelection) DrawAllPinNamesAndChipLabelsAndComments();
 
 			// Draw selected items on top
 			Draw.StartLayer(Vector2.zero, 1, false);
@@ -95,7 +95,7 @@ namespace DLS.Graphics
 			// -- Draw names of all pins (when mode is set to always). Also draw decimal displays for multi-bit pins --
 			bool drawAllDevPinNames = projectDesc.Prefs_MainPinNamesDisplayMode == PreferencesMenu.DisplayMode_Always;
 			bool drawAllSubchipPinNames = projectDesc.Prefs_ChipPinNamesDisplayMode == PreferencesMenu.DisplayMode_Always;
-            bool drawAllChipComments = projectDesc.Prefs_ShowChipComments == PreferencesMenu.DisplayMode_Always;
+            int chipCommentDisplayMode = projectDesc.Prefs_ShowChipCommentsScene; // Use the scene-specific preference
 
 			foreach (IMoveable element in chip.Elements)
 			{
@@ -113,23 +113,65 @@ namespace DLS.Graphics
 							DrawPinLabel(subChipPin);
 						}
 					}
-                    if (drawAllChipComments && !string.IsNullOrEmpty(subchip.Description.ChipComment))
-                    {
-                        Bounds2D chipBounds = subchip.SelectionBoundingBox;
-                        Vector2 commentPos = new Vector2(chipBounds.Centre.x, chipBounds.Top + 0.1f);
-                        DrawChipComment(subchip, commentPos, Anchor.CentreBottom);
-                    }
+
+					// Draw chip comment based on preference
+					bool drawChipComment = false;
+					if (!string.IsNullOrEmpty(subchip.Description.ChipComment))
+					{
+						if (chipCommentDisplayMode == PreferencesMenu.DisplayMode_Always) // Value 0
+						{
+							drawChipComment = true;
+						}
+						else if (chipCommentDisplayMode == PreferencesMenu.DisplayMode_OnHover) // Value 1
+						{
+							 if (InteractionState.ElementUnderMouse is SubChipInstance hoveredSubchip && hoveredSubchip == subchip)
+							 {
+								 drawChipComment = true;
+							 }
+						}
+						else if (chipCommentDisplayMode == PreferencesMenu.DisplayMode_OnHover_ALT) // Value 2
+						{
+							 if (InteractionState.ElementUnderMouse is SubChipInstance hoveredSubchip && hoveredSubchip == subchip && InputHelper.AltIsHeld)
+							 {
+								 drawChipComment = true;
+							 }
+						}
+                        // No need to check for 'Never' (value 3) explicitly
+					}
+
+					if (drawChipComment)
+					{
+						 Bounds2D chipBounds = subchip.SelectionBoundingBox;
+						 // Position comment below the chip
+						 Vector2 commentPos = new Vector2(chipBounds.Centre.x, chipBounds.Bottom - 0.1f);
+						 DrawChipComment(subchip, commentPos, Anchor.CentreTop); // Anchor to top center
+					}
+
 
 					DrawSubChipLabel(subchip);
 				}
 			}
 
-			// -- Draw name of pin under mouse (when mode is set to hover) --
+			// -- Draw name of pin under mouse (when mode is set to hover or hover+alt) --
 			if (InteractionState.ElementUnderMouse is PinInstance highlightedPin && controller.CanInteractWithPin)
 			{
 				bool drawHighlightedPinName = false;
-				drawHighlightedPinName |= highlightedPin.parent is SubChipInstance && projectDesc.Prefs_ChipPinNamesDisplayMode == PreferencesMenu.DisplayMode_OnHover;
-				drawHighlightedPinName |= highlightedPin.parent is DevPinInstance && projectDesc.Prefs_MainPinNamesDisplayMode == PreferencesMenu.DisplayMode_OnHover;
+                bool altHeld = InputHelper.AltIsHeld;
+				bool checkHover = projectDesc.Prefs_ChipPinNamesDisplayMode == PreferencesMenu.DisplayMode_OnHover;
+                bool checkHoverAlt = projectDesc.Prefs_ChipPinNamesDisplayMode == PreferencesMenu.DisplayMode_OnHover_ALT;
+				bool checkHoverDevPin = projectDesc.Prefs_MainPinNamesDisplayMode == PreferencesMenu.DisplayMode_OnHover;
+                bool checkHoverAltDevPin = projectDesc.Prefs_MainPinNamesDisplayMode == PreferencesMenu.DisplayMode_OnHover_ALT;
+
+
+				if (highlightedPin.parent is SubChipInstance)
+				{
+                    drawHighlightedPinName = checkHover || (checkHoverAlt && altHeld);
+				}
+                else if (highlightedPin.parent is DevPinInstance)
+                {
+                     drawHighlightedPinName = checkHoverDevPin || (checkHoverAltDevPin && altHeld);
+                }
+
 
 				if (drawHighlightedPinName)
 				{
@@ -138,15 +180,20 @@ namespace DLS.Graphics
 				}
 			}
 
-            if (InteractionState.ElementUnderMouse is SubChipInstance hoveredSubchip)
+			// -- Draw chip comment under mouse (when mode is set to hover or hover+alt) --
+            if (InteractionState.ElementUnderMouse is SubChipInstance highlightedSubchip && controller.HasControl)
             {
-                 bool drawHoverChipComment = projectDesc.Prefs_ShowChipComments == PreferencesMenu.DisplayMode_OnHover;
-                 if (drawHoverChipComment && !string.IsNullOrEmpty(hoveredSubchip.Description.ChipComment))
-                 {
-                     Draw.StartLayer(Vector2.zero, 1, false);
-                     Vector2 commentPos = InputHelper.MousePosWorld + new Vector2(0.1f, -0.1f);
-                     DrawChipComment(hoveredSubchip, commentPos, Anchor.TopLeft); // Anchor top-left of comment box
-                 }
+                bool drawChipCommentOnHover = chipCommentDisplayMode == PreferencesMenu.DisplayMode_OnHover;
+                bool drawChipCommentOnHoverAlt = chipCommentDisplayMode == PreferencesMenu.DisplayMode_OnHover_ALT && InputHelper.AltIsHeld;
+
+                if ((drawChipCommentOnHover || drawChipCommentOnHoverAlt) && !string.IsNullOrEmpty(highlightedSubchip.Description.ChipComment))
+                {
+                    Draw.StartLayer(Vector2.zero, 1, false);
+                    Bounds2D chipBounds = highlightedSubchip.SelectionBoundingBox;
+                    // Position comment below the chip
+                    Vector2 commentPos = new Vector2(chipBounds.Centre.x, chipBounds.Bottom - 0.1f);
+                    DrawChipComment(highlightedSubchip, commentPos, Anchor.CentreTop); // Anchor to top center
+                }
             }
 		}
 
@@ -212,33 +259,42 @@ namespace DLS.Graphics
 			}
 		}
 
-        static void DrawChipComment(SubChipInstance chip, Vector2 position, Anchor anchor)
-        {
-            string comment = chip.Description.ChipComment;
-            if (string.IsNullOrEmpty(comment)) return;
+		// Draws the chip comment below the chip
+		static void DrawChipComment(SubChipInstance chip, Vector2 position, Anchor anchor)
+		{
+			string comment = chip.Description.ChipComment;
+			if (string.IsNullOrEmpty(comment)) return;
 
-            // Wrap text
-            string formattedComment = UI.LineBreakByCharCount(comment, MaxCommentCharsPerLine);
+			// Wrap text
+			string formattedComment = Seb.Vis.UI.UI.LineBreakByCharCount(comment, MaxCommentCharsPerLine); // Use UI.LineBreakByCharCount
 
-            FontType font = FontBold;
-            float fontSize = FontSizePinLabel;
-            Color textCol = Color.white;
-            Color bgCol = ActiveTheme.PinLabelCol;
+			FontType font = FontBold;
+			float fontSize = FontSizePinLabel;
+			Color textCol = Color.white;
+			Color bgCol = ActiveTheme.PinLabelCol; // Use a semi-transparent background
 
-            Vector2 textSize = Draw.CalculateTextBoundsSize(formattedComment.AsSpan(), fontSize, font);
-            Vector2 panelSize = textSize + LabelBackgroundPadding * 2;
+			Vector2 textSize = Draw.CalculateTextBoundsSize(formattedComment, fontSize, font); // Removed AsSpan
+			Vector2 panelSize = textSize + LabelBackgroundPadding * 2;
 
-            Vector2 panelCentre = position + anchor switch
+			Vector2 panelCentre = position;
+			// Adjust position based on anchor
+            switch (anchor)
             {
-                Anchor.TopLeft => new Vector2(panelSize.x / 2, -panelSize.y / 2),
-                Anchor.CentreBottom => new Vector2(0, panelSize.y/2),
-                _ => Vector2.zero
-            };
+                case Anchor.CentreTop:
+                    panelCentre = position + Vector2.down * (panelSize.y / 2); // Position below the anchor point
+                    break;
+                 case Anchor.CentreBottom: // Added case for positioning above
+                    panelCentre = position + Vector2.up * (panelSize.y / 2);
+                    break;
+                // Add other anchor cases if needed
+                default:
+                    panelCentre = position; // Default to centering on the position
+                    break;
+            }
 
-
-            Draw.Quad(panelCentre, panelSize, bgCol);
-            Draw.Text(font, formattedComment, fontSize, panelCentre, Anchor.Centre, textCol); // Center text within background
-        }
+			Draw.Quad(panelCentre, panelSize, bgCol);
+			Draw.Text(font, formattedComment, fontSize, panelCentre, Anchor.TextCentre, textCol); // Center text within background
+		}
 
 
 		public static void DrawPinLabel(PinInstance pin)
@@ -249,7 +305,7 @@ namespace DLS.Graphics
 			const float offsetX = PinRadius + 0.05f;
 			FontType font = FontBold;
 
-			Vector2 size = Draw.CalculateTextBoundsSize(text.AsSpan(), FontSizePinLabel, font) + LabelBackgroundPadding;
+			Vector2 size = Draw.CalculateTextBoundsSize(text, FontSizePinLabel, font) + LabelBackgroundPadding; // Removed AsSpan
 			Vector2 centre = pin.GetWorldPos() + pin.ForwardDir * (size.x / 2 + offsetX);
 
 			Draw.Quad(centre, size, ActiveTheme.PinLabelCol);
@@ -264,7 +320,7 @@ namespace DLS.Graphics
 			const float offsetY = 0.2f;
 			FontType font = FontBold;
 
-			Vector2 size = Draw.CalculateTextBoundsSize(text.AsSpan(), FontSizePinLabel, font) + LabelBackgroundPadding;
+			Vector2 size = Draw.CalculateTextBoundsSize(text, FontSizePinLabel, font) + LabelBackgroundPadding; // Removed AsSpan
 			Vector2 centre = chip.Position + Vector2.down * (chip.Size.y / 2 + offsetY);
 
 			Draw.Quad(centre, size, ActiveTheme.PinLabelCol);
@@ -360,7 +416,7 @@ namespace DLS.Graphics
 			{
 				// Display on single line if name fits comfortably, otherwise use 'formatted' version (split across multiple lines)
 				string displayName = isButton ? subchip.activationKeyString : subchip.MultiLineName;
-				if (Draw.CalculateTextBoundsSize(subchip.Description.Name.AsSpan(), FontSizeChipName, FontBold).x < subchip.Size.x - PinRadius * 2.5f)
+				if (Draw.CalculateTextBoundsSize(subchip.Description.Name, FontSizeChipName, FontBold).x < subchip.Size.x - PinRadius * 2.5f) // Removed AsSpan
 				{
 					displayName = subchip.Description.Name;
 				}
@@ -374,7 +430,7 @@ namespace DLS.Graphics
 				{
 					Color bgBandCol = GetChipDisplayBorderCol(chipCol);
 					Vector2 topLeft = pos + new Vector2(-desc.Size.x / 2, desc.Size.y / 2);
-					TextRenderer.BoundingBox textBounds = Draw.CalculateTextBounds(displayName.AsSpan(), FontBold, FontSizeChipName, textPos, textAnchor);
+					TextRenderer.BoundingBox textBounds = Draw.CalculateTextBounds(displayName, FontBold, FontSizeChipName, textPos, textAnchor); // Removed AsSpan
 					float h = (topLeft.y - textBounds.Centre.y) * 2;
 
 					Vector2 s = new(desc.Size.x, h);
@@ -416,6 +472,7 @@ namespace DLS.Graphics
 				}
 			}
 		}
+
 
 		public static Bounds2D DrawDisplayWithBackground(DisplayInstance display, Vector2 pos, SubChipInstance rootChip, SimChip sim = null)
 		{
@@ -492,7 +549,7 @@ namespace DLS.Graphics
 		}
 
 
-		public static Vector2 CalculateChipNameBounds(string name) => Draw.CalculateTextBoundsSize(name.AsSpan(), FontSizeChipName, FontBold, ChipNameLineSpacing);
+		public static Vector2 CalculateChipNameBounds(string name) => Draw.CalculateTextBoundsSize(name, FontSizeChipName, FontBold, ChipNameLineSpacing); // Removed AsSpan
 
 		public static Bounds2D DrawDisplay_2x2(Vector2 centre, float scale, int A, int B, int C, int D)
 		{
@@ -573,7 +630,7 @@ namespace DLS.Graphics
 
 			for (int y = 0; y < 16; y++)
 			{
-				for (int x = 0; x < 16; x++)
+				for (int x = 15; x >= 0; x--) // Iterate x backwards to match display order
 				{
 					if (useSim)
 					{
@@ -583,7 +640,7 @@ namespace DLS.Graphics
 						col = new Color(pixelState, pixelState, pixelState);
 					}
 
-					Vector2 pos = bottomLeft + Vector2.one * pixelSize / 2 + Vector2.right * (pixelSize * x) + Vector2.up * (pixelSize * y);
+					Vector2 pos = bottomLeft + Vector2.one * pixelSize / 2 + Vector2.right * (pixelSize * (15-x)) + Vector2.up * (pixelSize * y); // Adjust x position
 					Draw.Point(pos, pixelDrawSize.x / 2, col);
 				}
 			}
@@ -605,7 +662,7 @@ namespace DLS.Graphics
 			// Width of horizontal segments
 			float segmentWidth = boundsWidth - segmentThickness - scale * displayInsetFac;
 			// Distance between the centres of the bottom-most and top-most segments
-			float segmentRegionHeight = boundsHeight - segmentThickness - scale * displayInsetFac;
+			float segmentRegionHeight = boundsHeight - segmentThickness - scale * segmentVerticalSpacingFac;
 			// Height of the vertical segments
 			float segmentHeight = segmentRegionHeight / 2 - scale * segmentVerticalSpacingFac;
 

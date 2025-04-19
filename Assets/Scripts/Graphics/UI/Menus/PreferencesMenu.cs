@@ -12,51 +12,44 @@ namespace DLS.Graphics
 	{
 		const float entrySpacing = 0.5f;
 		const float menuWidth = 55;
-		const float verticalOffset = 22;
+		const float verticalOffset = 26; 
 
+		// Constants for display modes (shared where applicable)
 		public const int DisplayMode_Always = 0;
 		public const int DisplayMode_OnHover = 1;
-		public const int DisplayMode_Never = 2;
+		public const int DisplayMode_OnHover_ALT = 2;
+		public const int DisplayMode_Never = 3;
+
+        // No separate BottomBar constants needed now
 
 		static readonly string[] PinDisplayOptions =
 		{
-			"Always",
-			"On Hover",
-			"Never"
+			"Always", 
+			"On Hover", 
+			"On Hover + ALT", 
+			"Never" 
 		};
 
-        static readonly string[] ChipCommentOptions = 
+		static readonly string[] DevChipCommentDisplayOptions =
 		{
-			"Always",
-			"On Hover",
-			"Never"
+			"Always", 
+			"On Hover", 
+			"On Hover + ALT", 
+			"Never" 
 		};
 
-		static readonly string[] GridDisplayOptions =
-		{
-			"Off",
-			"On"
-		};
+        static readonly string[] BottomBarCommentDisplayOptions =
+        {
+            "On Hover", 
+            "On Hover + ALT", 
+            "Never" 
+        };
 
-		static readonly string[] SnappingOptions =
-		{
-			"Hold Ctrl",
-			"If Grid Shown",
-			"Always"
-		};
 
-		static readonly string[] StraightWireOptions =
-		{
-			"Hold Shift",
-			"If Grid Shown",
-			"Always"
-		};
-
-		static readonly string[] SimulationStatusOptions =
-		{
-			"Active",
-			"Paused"
-		};
+		static readonly string[] GridDisplayOptions = { "Off", "On" };
+		static readonly string[] SnappingOptions = { "Hold Ctrl", "If Grid Shown", "Always" };
+		static readonly string[] StraightWireOptions = { "Hold Shift", "If Grid Shown", "Always" };
+		static readonly string[] SimulationStatusOptions = { "Active", "Paused" };
 
 		static readonly Vector2 entrySize = new(menuWidth, DrawSettings.SelectorWheelHeight);
 		public static readonly Vector2 settingFieldSize = new(entrySize.x / 3, entrySize.y);
@@ -64,7 +57,8 @@ namespace DLS.Graphics
 		// ---- State ----
 		static readonly UIHandle ID_MainPinNames = new("PREFS_MainPinNames");
 		static readonly UIHandle ID_ChipPinNames = new("PREFS_ChipPinNames");
-        static readonly UIHandle ID_ChipComments = new("PREFS_ChipComments");
+        static readonly UIHandle ID_DevChipComments = new("PREFS_DevChipComments");
+        static readonly UIHandle ID_BottomBarChipComments = new("PREFS_BottomBarChipComments");
 		static readonly UIHandle ID_GridDisplay = new("PREFS_GridDisplay");
 		static readonly UIHandle ID_Snapping = new("PREFS_Snapping");
 		static readonly UIHandle ID_StraightWires = new("PREFS_StraightWires");
@@ -73,7 +67,7 @@ namespace DLS.Graphics
 		static readonly UIHandle ID_ClockSpeedInput = new("PREFS_ClockSpeed");
 
 		static readonly string showGridLabel = "Show grid" + UI.CreateColouredText(" (ctrl+G)", new Color(1, 1, 1, 0.35f));
-		static readonly Func<string, bool> integerInputValidator;
+		static readonly Func<string, bool> integerInputValidator = ValidateIntegerInput;
 
 		static double simAvgTicksPerSec_delayedRefreshForUI;
 		static float lastSimAvgTicksPerSecRefreshTime;
@@ -99,73 +93,94 @@ namespace DLS.Graphics
 			Vector2 topLeft = UI.Centre + new Vector2(-menuWidth / 2, verticalOffset);
 			Vector2 labelPosCurr = topLeft;
 
+			int mainPinNamesMode;
+			int chipPinNamesMode;
+            int devChipCommentsMode;
+            int bottomBarCommentsModeIndex; 
+			int gridDisplayMode;
+			int snappingMode;
+			int straightWireMode;
+			bool pauseSim;
+			InputFieldState clockSpeedInputFieldState;
+			InputFieldState freqState;
+			Bounds2D contentBounds;
+            float buttonAreaHeight = DrawSettings.ButtonHeight + DrawSettings.DefaultButtonSpacing * 4;
+
+
 			using (UI.BeginBoundsScope(true))
 			{
 				// ---- Draw settings ----
 				DrawHeader("DISPLAY:");
-				int mainPinNamesMode = DrawNextWheel("Show I/O pin names", PinDisplayOptions, ID_MainPinNames);
-				int chipPinNamesMode = DrawNextWheel("Show chip pin names", PinDisplayOptions, ID_ChipPinNames);
-                int chipCommentsMode = DrawNextWheel("Show chip comments", ChipCommentOptions, ID_ChipComments);
-				int gridDisplayMode = DrawNextWheel(showGridLabel, GridDisplayOptions, ID_GridDisplay);
+				mainPinNamesMode = DrawNextWheel("Show I/O pin names", PinDisplayOptions, ID_MainPinNames);
+				chipPinNamesMode = DrawNextWheel("Show chip pin names", PinDisplayOptions, ID_ChipPinNames);
+                devChipCommentsMode = DrawNextWheel("Show comments (scene)", DevChipCommentDisplayOptions, ID_DevChipComments);
+                bottomBarCommentsModeIndex = DrawNextWheel("Show comments (bottom bar)", BottomBarCommentDisplayOptions, ID_BottomBarChipComments); 
+				gridDisplayMode = DrawNextWheel(showGridLabel, GridDisplayOptions, ID_GridDisplay);
 				DrawHeader("EDITING:");
-				int snappingMode = DrawNextWheel("Snap to grid", SnappingOptions, ID_Snapping);
-				int straightWireMode = DrawNextWheel("Straight wires", StraightWireOptions, ID_StraightWires);
+				snappingMode = DrawNextWheel("Snap to grid", SnappingOptions, ID_Snapping);
+				straightWireMode = DrawNextWheel("Straight wires", StraightWireOptions, ID_StraightWires);
 
 				DrawHeader("SIMULATION:");
-				bool pauseSim = MenuHelper.LabeledOptionsWheel("Status", labelCol, labelPosCurr, entrySize, ID_SimStatus, SimulationStatusOptions, settingFieldSize.x, true) == 1;
+				pauseSim = MenuHelper.LabeledOptionsWheel("Status", labelCol, labelPosCurr, entrySize, ID_SimStatus, SimulationStatusOptions, settingFieldSize.x, true) == 1;
 				AddSpacing();
-				InputFieldState clockSpeedInputFieldState = MenuHelper.LabeledInputField("Steps per clock tick", labelCol, labelPosCurr, entrySize, ID_ClockSpeedInput, integerInputValidator, settingFieldSize.x, true);
+				clockSpeedInputFieldState = MenuHelper.LabeledInputField("Steps per clock tick", labelCol, labelPosCurr, entrySize, ID_ClockSpeedInput, integerInputValidator, settingFieldSize.x, true);
 				AddSpacing();
-				InputFieldState freqState = MenuHelper.LabeledInputField("Steps per second (target)", labelCol, labelPosCurr, entrySize, ID_SimFrequencyField, integerInputValidator, settingFieldSize.x, true);
+				freqState = MenuHelper.LabeledInputField("Steps per second (target)", labelCol, labelPosCurr, entrySize, ID_SimFrequencyField, integerInputValidator, settingFieldSize.x, true);
 				AddSpacing();
 				// Draw current simulation speed
 				Vector2 tickLabelRight = MenuHelper.DrawLabelSectionOfLabelInputPair(labelPosCurr, entrySize, "Steps per second (current)", labelCol * 0.75f, true);
 				UI.DrawPanel(tickLabelRight, settingFieldSize, new Color(0.18f, 0.18f, 0.18f), Anchor.CentreRight);
 				UI.DrawText(currentSimSpeedString, theme.FontBold, theme.FontSizeRegular, tickLabelRight + new Vector2(inputTextPad - settingFieldSize.x, 0), Anchor.TextCentreLeft, currentSimSpeedStringColour);
+                AddSpacing();
 
-				// Draw cancel/confirm buttons
-				Vector2 buttonTopLeft = new(labelPosCurr.x, UI.PrevBounds.Bottom);
-				MenuHelper.CancelConfirmResult result = MenuHelper.DrawCancelConfirmButtons(buttonTopLeft, menuWidth, true);
+                contentBounds = UI.GetCurrentBoundsScope();
+			}
+            Bounds2D panelDrawBounds = Bounds2D.Grow(contentBounds, new Bounds2D(contentBounds.Min + Vector2.down * buttonAreaHeight, contentBounds.Max));
+            MenuHelper.DrawReservedMenuPanel(panelID, panelDrawBounds);
 
-				// Draw menu background
-				Bounds2D menuBounds = UI.GetCurrentBoundsScope();
-				MenuHelper.DrawReservedMenuPanel(panelID, menuBounds);
 
-				// ---- Handle changes ----
-				int.TryParse(clockSpeedInputFieldState.text, out int clockSpeed);
+            Vector2 buttonTopLeft = new(labelPosCurr.x, contentBounds.Bottom);
+            MenuHelper.CancelConfirmResult result = MenuHelper.DrawCancelConfirmButtons(buttonTopLeft, menuWidth, true);
 
-				// Parse target sim tick rate
-				int.TryParse(freqState.text, out int targetSimTicksPerSecond);
-				targetSimTicksPerSecond = Mathf.Max(1, targetSimTicksPerSecond);
-				if (project.targetTicksPerSecond != targetSimTicksPerSecond || project.simPaused != pauseSim) lastSimTickRateSetTime = Time.time;
 
-				// Assign changes immediately so can see them take effect in background
-				project.description.Prefs_MainPinNamesDisplayMode = mainPinNamesMode;
-				project.description.Prefs_ChipPinNamesDisplayMode = chipPinNamesMode;
-                project.description.Prefs_ShowChipComments = chipCommentsMode; 
-				project.description.Prefs_GridDisplayMode = gridDisplayMode;
-				project.description.Prefs_Snapping = snappingMode;
-				project.description.Prefs_StraightWires = straightWireMode;
-				project.description.Prefs_SimTargetStepsPerSecond = targetSimTicksPerSecond;
-				project.description.Prefs_SimStepsPerClockTick = clockSpeed;
-				project.description.Prefs_SimPaused = pauseSim;
+			int.TryParse(clockSpeedInputFieldState.text, out int clockSpeed);
+			int.TryParse(freqState.text, out int targetSimTicksPerSecond);
+			targetSimTicksPerSecond = Mathf.Max(1, targetSimTicksPerSecond);
+			if (project.targetTicksPerSecond != targetSimTicksPerSecond || project.simPaused != pauseSim) lastSimTickRateSetTime = Time.time;
 
-				// Cancel / Confirm
-				if (result == MenuHelper.CancelConfirmResult.Cancel)
-				{
-					// Restore original description
-					project.description = originalProjectDesc;
-					UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
-				}
-				else if (result == MenuHelper.CancelConfirmResult.Confirm)
-				{
-					// Save changes
-					project.UpdateAndSaveProjectDescription(project.description);
-					UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
-				}
+            int bottomBarPreferenceValue = bottomBarCommentsModeIndex switch
+            {
+                0 => DisplayMode_OnHover,
+                1 => DisplayMode_OnHover_ALT,
+                2 => DisplayMode_Never,
+                _ => DisplayMode_Never
+            };
+
+
+			project.description.Prefs_MainPinNamesDisplayMode = mainPinNamesMode;
+			project.description.Prefs_ChipPinNamesDisplayMode = chipPinNamesMode;
+            project.description.Prefs_ShowChipCommentsScene = devChipCommentsMode;
+            project.description.Prefs_ShowChipCommentsBottomBar = bottomBarPreferenceValue;
+			project.description.Prefs_GridDisplayMode = gridDisplayMode;
+			project.description.Prefs_Snapping = snappingMode;
+			project.description.Prefs_StraightWires = straightWireMode;
+			project.description.Prefs_SimTargetStepsPerSecond = targetSimTicksPerSecond;
+			project.description.Prefs_SimStepsPerClockTick = clockSpeed;
+			project.description.Prefs_SimPaused = pauseSim;
+
+			if (result == MenuHelper.CancelConfirmResult.Cancel)
+			{
+				project.description = originalProjectDesc;
+				UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
+			}
+			else if (result == MenuHelper.CancelConfirmResult.Confirm)
+			{
+				project.UpdateAndSaveProjectDescription(project.description);
+				UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 			}
 
-			return;
+
+			return; 
 
 			int DrawNextWheel(string label, string[] options, UIHandle id)
 			{
@@ -197,16 +212,24 @@ namespace DLS.Graphics
 			ProjectDescription projDesc = Project.ActiveProject.description;
 			originalProjectDesc = projDesc;
 
+            int initialBottomBarIndex = projDesc.Prefs_ShowChipCommentsBottomBar switch
+            {
+                DisplayMode_OnHover => 0, 
+                DisplayMode_OnHover_ALT => 1, 
+                DisplayMode_Never => 2, 
+                _ => 2 
+            };
+
 			// Init ui from description
-			// -- Wheels
 			UI.GetWheelSelectorState(ID_MainPinNames).index = projDesc.Prefs_MainPinNamesDisplayMode;
 			UI.GetWheelSelectorState(ID_ChipPinNames).index = projDesc.Prefs_ChipPinNamesDisplayMode;
-            UI.GetWheelSelectorState(ID_ChipComments).index = projDesc.Prefs_ShowChipComments;
+            UI.GetWheelSelectorState(ID_DevChipComments).index = projDesc.Prefs_ShowChipCommentsScene;
+            UI.GetWheelSelectorState(ID_BottomBarChipComments).index = initialBottomBarIndex; // Set mapped index
 			UI.GetWheelSelectorState(ID_GridDisplay).index = projDesc.Prefs_GridDisplayMode;
 			UI.GetWheelSelectorState(ID_Snapping).index = projDesc.Prefs_Snapping;
 			UI.GetWheelSelectorState(ID_StraightWires).index = projDesc.Prefs_StraightWires;
 			UI.GetWheelSelectorState(ID_SimStatus).index = projDesc.Prefs_SimPaused ? 1 : 0;
-			// -- Input fields
+
 			UI.GetInputFieldState(ID_SimFrequencyField).SetText(projDesc.Prefs_SimTargetStepsPerSecond + "", false);
 			UI.GetInputFieldState(ID_ClockSpeedInput).SetText(projDesc.Prefs_SimStepsPerClockTick + "", false);
 
@@ -225,8 +248,6 @@ namespace DLS.Graphics
 
 		static void UpdateSimSpeedString(Project project)
 		{
-			// Annoying if sim tick rate value flickers too much, so use slower refresh rate for ui
-			// (but if sim target rate has been recently changed, update fast so doesn't feel laggy)
 			bool slowModeSimUI = Time.time - lastSimTickRateSetTime > Project.SimulationPerformanceTimeWindowSec;
 			const float slowModeRefreshDelay = 0.35f;
 			const float fastModeRefreshDelay = 0.05f;

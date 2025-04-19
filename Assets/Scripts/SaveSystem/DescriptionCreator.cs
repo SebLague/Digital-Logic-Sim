@@ -13,32 +13,26 @@ namespace DLS.SaveSystem
 	{
 		public static ChipDescription CreateChipDescription(DevChipInstance chip)
 		{
-			// Get previously saved customizations such as name and colour (if exist)
 			ChipDescription descOld = chip.LastSavedDescription;
 			bool hasSavedDesc = descOld != null;
 			Vector2 size = hasSavedDesc ? descOld.Size : Vector2.zero;
 			Color col = hasSavedDesc ? descOld.Colour : RandomInitialChipColour();
 			string name = hasSavedDesc ? descOld.Name : string.Empty;
-            string comment = hasSavedDesc ? descOld.ChipComment : string.Empty;
+            string comment = hasSavedDesc ? descOld.ChipComment : string.Empty; 
 			DisplayDescription[] displays = hasSavedDesc ? descOld.Displays : null;
             NameDisplayLocation nameLocation = hasSavedDesc ? descOld.NameLocation : NameDisplayLocation.Centre;
 
-
-            // If we are currently customizing, get potentially updated values from the customization state
             if (UIDrawer.ActiveMenu == UIDrawer.MenuType.ChipCustomization && ChipSaveMenu.ActiveCustomizeChip != null)
             {
                  var customizeDesc = ChipSaveMenu.ActiveCustomizeDescription;
                  name = customizeDesc.Name;
                  size = customizeDesc.Size;
                  col = customizeDesc.Colour;
-                 comment = customizeDesc.ChipComment;
+                 comment = customizeDesc.ChipComment; 
                  displays = customizeDesc.Displays;
                  nameLocation = customizeDesc.NameLocation;
-                 // Note: Pin/SubChip/Wire structure comes from the actual DevChipInstance chip, not the customization preview
             }
 
-
-			// Create pin and subchip descriptions
 			PinDescription[] inputPins = OrderPins(chip.GetInputPins()).Select(CreatePinDescription).ToArray();
 			PinDescription[] outputPins = OrderPins(chip.GetOutputPins()).Select(CreatePinDescription).ToArray();
 			SubChipDescription[] subchips = chip.GetSubchips().Select(CreateSubChipDescription).ToArray();
@@ -53,7 +47,7 @@ namespace DLS.SaveSystem
 				NameLocation = nameLocation,
 				Size = size,
 				Colour = col,
-                ChipComment = comment,
+                ChipComment = comment, 
 
 				SubChips = subchips,
 				InputPins = inputPins,
@@ -64,7 +58,7 @@ namespace DLS.SaveSystem
 			};
 		}
 
-		static IOrderedEnumerable<DevPinInstance> OrderPins(IEnumerable<DevPinInstance> pins)
+        static IOrderedEnumerable<DevPinInstance> OrderPins(IEnumerable<DevPinInstance> pins)
 		{
 			return pins.OrderByDescending(p => p.Position.y).ThenBy(p => p.Position.x);
 		}
@@ -78,7 +72,6 @@ namespace DLS.SaveSystem
 				subChip.ID,
 				subChip.Label,
 				subChip.Position,
-				// Don't save colour info for bus since it changes based on received input, so would just trigger unecessary 'unsaved changes' warnings
 				subChip.IsBus ? null : subChip.OutputPins.Select(p => new OutputPinColourInfo(p.Colour, p.Address.PinID)).ToArray(),
 				subChip.InternalData
 			);
@@ -106,31 +99,23 @@ namespace DLS.SaveSystem
 
 		static void UpdateWireIndicesForDescriptionCreation(DevChipInstance chip)
 		{
-			// Store wire's current index in wire for convenient access
 			for (int i = 0; i < chip.Wires.Count; i++)
 			{
 				chip.Wires[i].descriptionCreator_wireIndex = i;
 			}
 		}
 
-		// Note: assumed that all wire indices have been set prior to calling this function
 		static WireDescription CreateWireDescription(WireInstance wire)
 		{
-			// Get wire points
 			Vector2[] wirePoints = new Vector2[wire.WirePointCount];
 			for (int i = 0; i < wirePoints.Length; i++)
 			{
-				// Don't need to save start/end points (just leave as zero) since they get their positions from the pins they're connected to (unless starting/ending at another wire).
-				// Benefit of leaving zero is that if a subchip is opened and modified (for example a pin is added, so pin spacing changes), then when opening this chip again, it won't
-				// immediately think it has unsaved changes (and unnecessarily notify the player), just because the start/end points of wires going to those modified pins has changed.
 				if (i == 0 && !wire.SourceConnectionInfo.IsConnectedAtWire) continue;
 				if (i == wirePoints.Length - 1 && !wire.TargetConnectionInfo.IsConnectedAtWire) continue;
-
 				wirePoints[i] = wire.GetWirePoint(i);
 			}
 
 			WireConnectionType connectionType = WireConnectionType.ToPins;
-
 			int connectedWireIndex = -1;
 			int connectedWireSegmentIndex = -1;
 
@@ -146,10 +131,8 @@ namespace DLS.SaveSystem
 					connectionType = WireConnectionType.ToWireTarget;
 					connectedWireSegmentIndex = wire.TargetConnectionInfo.wireConnectionSegmentIndex;
 				}
-
 				connectedWireIndex = wire.ConnectedWire.descriptionCreator_wireIndex;
 			}
-
 
 			return new WireDescription
 			{
@@ -168,7 +151,6 @@ namespace DLS.SaveSystem
 				devPin.ID,
 				devPin.Position,
 				devPin.Pin.bitCount,
-				// Don't save colour info for output pin since it changes based on received input, so would just trigger unecessary 'unsaved changes' warnings
 				devPin.IsInputPin ? devPin.Pin.Colour : default,
 				devPin.pinValueDisplayMode
 			);

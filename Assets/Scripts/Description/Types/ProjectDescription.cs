@@ -15,7 +15,8 @@ namespace DLS.Description
 		// Prefs
 		public int Prefs_MainPinNamesDisplayMode;
 		public int Prefs_ChipPinNamesDisplayMode;
-        public int Prefs_ShowChipComments;
+        public int Prefs_ShowChipCommentsScene; 
+        public int Prefs_ShowChipCommentsBottomBar; 
 		public int Prefs_GridDisplayMode;
 		public int Prefs_Snapping;
 		public int Prefs_StraightWires;
@@ -32,6 +33,8 @@ namespace DLS.Description
 		// ---- Helper functions ----
 		public bool IsStarred(string chipName, bool isCollection)
 		{
+            if (StarredList == null) return false;
+
 			foreach (StarredItem item in StarredList)
 			{
 				if (item.IsCollection == isCollection && ChipDescription.NameMatch(chipName, item.Name)) return true;
@@ -99,7 +102,7 @@ namespace DLS.Description
 
 		public string GetDisplayString()
 		{
-			if (Chips.Count == 0) return displayName_empty;
+			if (Chips == null || Chips.Count == 0) return displayName_empty;
 			return IsToggledOpen ? displayName_open : displayName_closed;
 		}
 	}
