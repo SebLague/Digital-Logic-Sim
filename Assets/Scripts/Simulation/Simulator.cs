@@ -682,11 +682,11 @@ namespace DLS.Simulation
 		{
 			UInt64 output = 0;
 			UInt64 tristate = 0;
-			UInt64 mask = 1ul << inputBits;
+			UInt64 mask = (1ul << inputBits) - 1;
 			for (int i = 0; i < outputBits / inputBits; i++)
 			{
-				output |= (chip.InputPins[i].State.GetRawBits() & mask) << (i * inputBits);
-				tristate |= (chip.InputPins[i].State.GetTristateFlags() & mask) << (i * inputBits);
+				output |= (chip.InputPins[outputBits / inputBits - 1 - i].State.GetRawBits() & mask) << (i * inputBits);
+				tristate |= (chip.InputPins[outputBits / inputBits - 1 - i].State.GetTristateFlags() & mask) << (i * inputBits);
 			}
 
 			chip.OutputPins[0].State.SetAllBits(output);
