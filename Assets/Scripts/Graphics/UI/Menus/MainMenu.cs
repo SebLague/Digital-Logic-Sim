@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DLS.Description;
+using DLS.Description.Types;
 using DLS.Game;
 using DLS.SaveSystem;
+using Game.ModLoader;
 using Seb.Helpers;
 using Seb.Vis;
 using Seb.Vis.UI;
@@ -36,6 +40,7 @@ namespace DLS.Graphics
 		{
 			FormatButtonString("New Project"),
 			FormatButtonString("Open Project"),
+			FormatButtonString("Mods"),
 			FormatButtonString("Settings"),
 			FormatButtonString("About"),
 			FormatButtonString("Quit")
@@ -48,6 +53,14 @@ namespace DLS.Graphics
 			FormatButtonString("Duplicate"),
 			FormatButtonString("Rename"),
 			FormatButtonString("Open")
+		};
+		
+		static readonly string[] modMenuButtonNames =
+		{
+			FormatButtonString("Back"),
+			FormatButtonString("Disable All"),
+			FormatButtonString("Enable All"),
+			FormatButtonString("Disable"),
 		};
 
 		static readonly Vector2Int[] Resolutions =
@@ -64,12 +77,17 @@ namespace DLS.Graphics
 		static readonly bool[] settingsButtonGroupStates = new bool[settingsButtonGroupNames.Length];
 
 		static readonly bool[] openProjectButtonStates = new bool[openProjectButtonNames.Length];
+		
+		static readonly bool[] modMenuButtonStates = new bool[modMenuButtonNames.Length];
+
 
 		static ProjectDescription[] allProjectDescriptions;
+		static ModDescription[] allModDescriptions;
 		static string[] allProjectNames;
 		static (bool compatible, string message)[] projectCompatibilities;
 
 		static int selectedProjectIndex;
+		static int selectedModIndex = -1;
 
 		static readonly string authorString = "Created by: Sebastian Lague | Modified By: bonsall2004";
 		static readonly string versionString = $"Version: {Main.DLSVersion} ({Main.LastUpdatedString})";
@@ -102,6 +120,9 @@ namespace DLS.Graphics
 					break;
 				case MenuScreen.LoadProject:
 					DrawLoadProjectScreen();
+					break;
+				case MenuScreen.Mods:
+					DrawModsScreen();
 					break;
 				case MenuScreen.Settings:
 					DrawSettingsScreen();
@@ -155,17 +176,22 @@ namespace DLS.Graphics
 				selectedProjectIndex = -1;
 				activeMenuScreen = MenuScreen.LoadProject;
 			}
-			else if (buttonIndex == 2 || KeyboardShortcuts.MainMenu_SettingsShortcutTriggered) // Settings
+			else if (buttonIndex == 2 || KeyboardShortcuts.MainMenu_SettingsShortcutTriggered) // Mods
+			{
+				activeMenuScreen = MenuScreen.Mods;
+				OnModMenuOpened();
+			}
+			else if (buttonIndex == 3 || KeyboardShortcuts.MainMenu_SettingsShortcutTriggered) // Settings
 			{
 				EditedAppSettings = Main.ActiveAppSettings;
 				activeMenuScreen = MenuScreen.Settings;
 				OnSettingsMenuOpened();
 			}
-			else if (buttonIndex == 3) // About
+			else if (buttonIndex == 4) // About
 			{
 				activeMenuScreen = MenuScreen.About;
 			}
-			else if (buttonIndex == 4 || KeyboardShortcuts.MainMenu_QuitShortcutTriggered) // Quit
+			else if (buttonIndex == 5 || KeyboardShortcuts.MainMenu_QuitShortcutTriggered) // Quit
 			{
 				Quit();
 			}
@@ -296,6 +322,101 @@ namespace DLS.Graphics
 				}
 			}
 		}
+		
+		
+		static void OnModMenuOpened()
+		{
+			allModDescriptions = Loader.LoadAllModDescriptions();
+			selectedModIndex = -1;
+		}
+		
+		static ModDescription selectedMod;
+
+		static void DrawModsScreen()
+		{
+			const int backButtonIndex = 0;
+			const int disableAllIndex = 1;
+			const int enableAllIndex = 2;
+			const int disableButtonIndex = 3;
+			DrawSettings.UIThemeDLS theme = DrawSettings.ActiveUITheme;
+
+			Vector2 pos = UI.Centre + new Vector2(0, -1);
+			Vector2 size = new(68, 32);
+
+			UI.DrawScrollView(ID_ProjectsScrollView, pos, size, Anchor.Centre, theme.ScrollTheme, DrawAllModsInScrollView);
+			ButtonTheme buttonTheme = DrawSettings.ActiveUITheme.MainMenuButtonTheme;
+			modMenuButtonStates[backButtonIndex] = true;
+			
+			modMenuButtonStates[disableAllIndex] = allModDescriptions.Any(m => m.Enabled);
+			modMenuButtonStates[enableAllIndex] = allModDescriptions.Any(m => !m.Enabled);
+			
+			if (selectedMod != null)
+			{
+				bool buttonEnabled = activePopup == PopupKind.None && selectedModIndex != -1;
+
+				modMenuButtonStates[disableButtonIndex] = buttonEnabled;
+				modMenuButtonNames[disableButtonIndex] = selectedMod.Enabled ? FormatButtonString("Disable") : FormatButtonString("Enable");
+			}
+
+			Vector2 buttonRegionPos = UI.PrevBounds.BottomLeft + Vector2.down * DrawSettings.VerticalButtonSpacing;
+			int buttonIndex = UI.HorizontalButtonGroup(modMenuButtonNames, modMenuButtonStates, buttonTheme, buttonRegionPos, UI.PrevBounds.Width, UILayoutHelper.DefaultSpacing, 0, Anchor.TopLeft);
+
+			// if (projectSelected && !compatibleProject)
+			// {
+			// 	Vector2 errorMessagePos = UI.PrevBounds.BottomLeft + Vector2.down * (DrawSettings.DefaultButtonSpacing * 2);
+			// 	UI.DrawText(projectCompatibilities[selectedProjectIndex].message, buttonTheme.font, buttonTheme.fontSize, errorMessagePos, Anchor.TopLeft, Color.yellow);
+			// }
+
+			// ---- Handle button input ----
+			if (buttonIndex == backButtonIndex)
+			{
+				foreach (var mod in allModDescriptions)
+				{
+					File.WriteAllText(SavePaths.ModDirectory + $"\\{mod.ModName}\\manifest.json", Serializer.SerializeModDescription(mod));
+				}
+				ModLoader.activeModDescriptions = allModDescriptions.Where(m => m.Enabled).ToArray();
+				ModLoader.Load();
+				BackToMain();
+			}
+			else if (buttonIndex == disableAllIndex)
+			{
+				foreach (var mod in allModDescriptions)
+				{
+					mod.Enabled = false;
+				}
+			}
+			else if (buttonIndex == enableAllIndex)
+				foreach (var mod in allModDescriptions)
+				{
+					mod.Enabled = true;
+				}
+			else if (buttonIndex == disableButtonIndex && selectedMod != null)
+			{
+				selectedMod.Enabled = !selectedMod.Enabled;
+			}
+		}
+		
+		static void DrawAllModsInScrollView(Vector2 topLeft, float width, bool isLayoutPass)
+		{
+			float spacing = 0;
+			bool enabled = activePopup == PopupKind.None;
+
+			for (int i = 0; i < allModDescriptions.Length; i++)
+			{
+				ModDescription desc = allModDescriptions[i];
+				bool selected = i == selectedModIndex;
+				ButtonTheme buttonTheme = selected ? DrawSettings.ActiveUITheme.ProjectSelectionButtonSelected : DrawSettings.ActiveUITheme.ProjectSelectionButton;
+				
+				if (UI.Button(" " + (desc.Enabled ? "[x] " : "[ ] ")+desc.ModName, buttonTheme, topLeft, new Vector2(width, 0), enabled, false, true, Anchor.TopLeft, true))
+				{
+					selectedModIndex = i;
+					selectedMod = allModDescriptions[i];
+				}
+
+				topLeft = UI.PrevBounds.BottomLeft + Vector2.down * spacing;
+			}
+		}
+
 
 		static void DrawSettingsScreen()
 		{
@@ -490,6 +611,7 @@ namespace DLS.Graphics
 		{
 			Main,
 			LoadProject,
+			Mods,
 			Settings,
 			About
 		}
