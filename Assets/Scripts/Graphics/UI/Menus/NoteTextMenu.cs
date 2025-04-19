@@ -45,9 +45,9 @@ namespace DLS.Graphics
 				Vector2 pos = UI.Centre + Vector2.up * 5;
 
 				// Draw input field
-				InputFieldState inputFieldState = UI.TextArea(ID_NameField, inputTheme, pos, inputFieldSize, note.Text, Anchor.Centre, padX / 2, MaxLabelLength, 7, null, true);
+				TextAreaState inputFieldState = UI.TextArea(ID_NameField, inputTheme, pos, inputFieldSize, note.Text, Anchor.Centre, padX / 2, MaxLabelLength, 7, null, true);
 				Bounds2D inputFieldBounds = UI.PrevBounds;
-				string newName = inputFieldState.text;
+				string newName = string.Join("", inputFieldState.lines);
 
 				// Draw cancel/confirm buttons
 				Vector2 buttonsTopLeft = UI.PrevBounds.BottomLeft + Vector2.down * spacing;
