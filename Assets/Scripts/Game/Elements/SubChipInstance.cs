@@ -243,6 +243,12 @@ namespace DLS.Game
 				ChipDescription childDesc = GetDescriptionOfDisplayedSubChip(chipDesc, displayDesc.SubChipID);
 				instance.ChildDisplays = CreateDisplayInstances(childDesc);
 			}
+			
+			if (chipDesc.ChipType == ChipType.Modded)
+			{
+				ChipDescription childDesc = GetDescriptionOfDisplayedSubChip(chipDesc, displayDesc.SubChipID);
+				instance.ChildDisplays = CreateDisplayInstances(childDesc);
+			}
 
 
 			return instance;

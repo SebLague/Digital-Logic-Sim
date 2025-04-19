@@ -3,6 +3,7 @@ namespace DLS.Description
 	public enum ChipType
 	{
 		Custom,
+		Modded,
 
 		// ---- Basic Chips ----
 		Nand,
