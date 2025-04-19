@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DLS.Description;
 using DLS.Game;
 
@@ -84,14 +85,24 @@ namespace DLS.SaveSystem
 
 			if (!Directory.Exists(chipDirectoryPath) && loadedChips.Length > 0) throw new DirectoryNotFoundException(chipDirectoryPath);
 
+			ChipDescription[] builtinChips = BuiltinChipCreator.CreateAllBuiltinChipDescriptions();
+			HashSet<string> customChipNameHashset = new(ChipDescription.NameComparer);
+
 			for (int i = 0; i < loadedChips.Length; i++)
 			{
 				string chipPath = Path.Combine(chipDirectoryPath, projectDescription.AllCustomChipNames[i] + ".json");
 				string chipSaveString = File.ReadAllText(chipPath);
-				loadedChips[i] = Serializer.DeserializeChipDescription(chipSaveString);
+
+				ChipDescription chipDesc = Serializer.DeserializeChipDescription(chipSaveString);
+				loadedChips[i] = chipDesc;
+				customChipNameHashset.Add(chipDesc.Name);
 			}
 
-			return new ChipLibrary(loadedChips);
+			// If built-in chip name conflicts with a custom chip, the built-in chip must have been added in a newer version.
+			// In that case, simply exclude the built-in chip. TODO: warn player that they should rename their chip if they want access to new builtin version
+			builtinChips = builtinChips.Where(b => !customChipNameHashset.Contains(b.Name)).ToArray();
+
+			return new ChipLibrary(loadedChips, builtinChips);
 		}
 	}
 }

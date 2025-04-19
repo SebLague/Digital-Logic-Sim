@@ -1,3 +1,4 @@
+using Seb.Helpers;
 using System;
 using UnityEngine;
 
@@ -25,12 +26,17 @@ namespace Seb.Vis.UI
 	{
 		public float hue;
 
-		public bool hueHandleSelected;
 		public float sat;
-		public bool satValHandleSelected;
 		public float val;
+		public bool satValHandleSelected;
+		public bool hueHandleSelected;
 
 		public Color GetRGB() => Color.HSVToRGB(hue, sat, val);
+
+		public void SetRGB(Color col)
+		{
+			(hue, sat, val) = ColHelper.GetHSV(col);
+		}
 	}
 
 

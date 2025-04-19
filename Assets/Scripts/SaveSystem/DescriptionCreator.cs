@@ -27,6 +27,7 @@ namespace DLS.SaveSystem
 			Vector2 minChipsSize = SubChipInstance.CalculateMinChipSize(inputPins, outputPins, name);
 			size = Vector2.Max(minChipsSize, size);
 
+			UpdateWireIndicesForDescriptionCreation(chip);
 			// Store wire's current index in wire for convenient access
 			for (int i = 0; i < chip.Wires.Count; i++)
 			{
@@ -70,17 +71,23 @@ namespace DLS.SaveSystem
 			);
 		}
 
-		public static SubChipDescription CreateBuiltinSubChipDescriptionForPlacement(ChipType type, string name, int id, Vector2 position)
+		public static SubChipDescription CreateBuiltinSubChipDescriptionForPlacement(ChipType type, string name, int id, Vector2 position, UInt64[] sourceInternalData = null)
 		{
 			UInt64[] internalData = type switch
 			{
 				ChipType.Rom_256x16 => new UInt64[256],
 				ChipType.Rom_16Bit => new UInt64[65536],
 				ChipType.Rom_16Bit_24 => new UInt64[65536],
-				ChipType.Clock => new UInt64[] { 5, 0 },
-				ChipType.Key => new UInt64[] { 10 },
+				ChipType.Clock => new UInt64[] { sourceInternalData != null && sourceInternalData.Length > 0 ? sourceInternalData[0] : 5, 0 },
+				ChipType.Key => new UInt64[] { sourceInternalData != null && sourceInternalData.Length > 0 ? sourceInternalData[0] : 10 },
 				_ => ChipTypeHelper.IsBusType(type) ? new UInt64[2] : null
 			};
+
+			if (sourceInternalData != null)
+			{
+				if (ChipTypeHelper.IsRomType(type))
+					Array.Copy(sourceInternalData, internalData, Math.Min(sourceInternalData.Length, internalData.Length));
+			}
 
 			return new SubChipDescription
 			(
@@ -93,6 +100,15 @@ namespace DLS.SaveSystem
 			);
 		}
 
+		static void UpdateWireIndicesForDescriptionCreation(DevChipInstance chip)
+		{
+			// Store wire's current index in wire for convenient access
+			for (int i = 0; i < chip.Wires.Count; ++i)
+			{
+				chip.Wires[i].descriptionCreator_wireIndex = i;
+			}
+		}
+
 		static WireDescription CreateWireDescription(WireInstance wire)
 		{
 			// Get wire points
@@ -101,7 +117,7 @@ namespace DLS.SaveSystem
 			{
 				// Don't need to save start/end points (just leave as zero) since they get their positions from the pins they're connected to (unless starting/ending at another wire).
 				// Benefit of leaving zero is that if a subchip is opened and modified (for example a pin is added, so pin spacing changes), then when opening this chip again, it won't
-				// immediately think it has unsaved changes (and unnecesarily notify the player), just because the start/end points of wires going to those modified pins has changed.
+				// immediately think it has unsaved changes (and unnecessarily notify the player), just because the start/end points of wires going to those modified pins has changed.
 				if (i == 0 && !wire.SourceConnectionInfo.IsConnectedAtWire) continue;
 				if (i == wirePoints.Length - 1 && !wire.TargetConnectionInfo.IsConnectedAtWire) continue;
 

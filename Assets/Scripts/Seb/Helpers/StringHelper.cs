@@ -27,6 +27,7 @@ namespace Seb.Helpers
 
 			return charCount;
 		}
+
 		public static int CreateIntegerStringNonAlloc(char[] charArray, Int64 value)
 		{
 			bool isNegative = value < 0;
@@ -46,10 +47,31 @@ namespace Seb.Helpers
 
 			do
 			{
-				Debug.Log($"Max Size: {charArray.Length} | Index: {digitIndex} | Value: {value}");
 				charArray[digitIndex--] = (char)('0' + value % 10);
 				value /= 10;
 			} while (value > 0);
+
+			return charCount;
+		}
+
+		public static int CreateHexStringNonAlloc(char[] charArray, UInt64 value, bool upperCase = true)
+		{
+			const string hexDigits = "0123456789ABCDEF";
+			const string hexDigitsLower = "0123456789abcdef";
+
+			int charCount = 0;
+			do
+			{
+				charArray[charCount++] = (upperCase ? hexDigits : hexDigitsLower)[(int)(value & 0xF)];
+				value >>= 4;
+			} while (value > 0);
+
+			for (int i = 0; i < charCount / 2; ++i)
+			{
+				char tmp = charArray[i];
+				charArray[i] = charArray[charCount - i - 1];
+				charArray[charCount - i - 1] = tmp;
+			}
 
 			return charCount;
 		}

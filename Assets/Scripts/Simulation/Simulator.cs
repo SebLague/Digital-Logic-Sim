@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using DLS.Description;
 using DLS.Game;
 using UnityEngine;
@@ -23,7 +23,7 @@ namespace DLS.Simulation
 		static SimChip prevRootSimChip;
 
 		// Modifications to the sim are made from the main thread, but only applied on the sim thread to avoid conflicts
-		static readonly Queue<SimModifyCommand> modificationQueue = new();
+		static readonly ConcurrentQueue<SimModifyCommand> modificationQueue = new();
 
 		public static void UpdateKeyboardInputFromMainThread()
 		{
@@ -290,7 +290,7 @@ namespace DLS.Simulation
 					}
 
 					break;
-				
+
 				case ChipType.Merge_1To32Bit:
 				{
 					for (int i = 0; i < 32; i++)
@@ -590,7 +590,7 @@ namespace DLS.Simulation
 					{
 						if (resetPin.FirstBitHigh())
 						{
-							for (int i = 0; i < Math.Pow(2, 8); i++)
+							for (int i = 0; i < 256; i++)
 							{
 								chip.InternalState[i] = 0;
 							}
@@ -677,7 +677,7 @@ namespace DLS.Simulation
 				}
 			}
 		}
-		
+
 		public static void MergeXBitToYSource(SimChip chip, int inputBits, int outputBits)
 		{
 			UInt64 output = 0;
@@ -692,10 +692,10 @@ namespace DLS.Simulation
 			chip.OutputPins[0].State.SetAllBits(output);
 			chip.OutputPins[0].State.SetAllTristateFlags(tristate);
 		}
-		
+
 		public static void SplitXBitToYSource(SimChip chip, int inputBits, int outputBits)
 		{
-			UInt64 input = chip.InputPins[0].State.GetRawBits(); 
+			UInt64 input = chip.InputPins[0].State.GetRawBits();
 			UInt64 tristate = chip.InputPins[0].State.GetTristateFlags();
 
 			int groups = inputBits / outputBits;

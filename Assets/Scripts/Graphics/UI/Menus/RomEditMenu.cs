@@ -28,7 +28,8 @@ namespace DLS.Graphics
 		{
 			"Unsigned Decimal",
 			"Signed Decimal",
-			"Binary"
+			"Binary",
+			"HEX"
 		};
 
 		static DataDisplayMode[] allDisplayModes;
@@ -39,7 +40,7 @@ namespace DLS.Graphics
 
 		static Bounds2D scrollViewBounds;
 
-		static float textPad => 0.8f;
+		static float textPad => 0.52f;
 		static float height => 2.5f;
 
 		public static void DrawMenu()
@@ -50,7 +51,7 @@ namespace DLS.Graphics
 			scrollViewBounds = Bounds2D.CreateFromCentreAndSize(UI.Centre, new Vector2(UI.Width * 0.4f, UI.Height * 0.8f));
 
 			ScrollViewTheme scrollTheme = DrawSettings.ActiveUITheme.ScrollTheme;
-			UI.DrawScrollView(ID_scrollbar, scrollViewBounds.TopLeft, scrollViewBounds.Size, 1, Anchor.TopLeft, scrollTheme, scrollViewDrawElementFunc, RowCount);
+			UI.DrawScrollView(ID_scrollbar, scrollViewBounds.TopLeft, scrollViewBounds.Size, 0, Anchor.TopLeft, scrollTheme, scrollViewDrawElementFunc, RowCount);
 
 
 			if (focusedRowIndex >= 0)
@@ -195,7 +196,7 @@ namespace DLS.Graphics
 		{
 			if (string.IsNullOrEmpty(text)) return true;
 			if (text.Length > ChipTypeHelper.RomWidth(romChip.ChipType)) return false;
-			
+
 
 			foreach (char c in text)
 			{
@@ -205,6 +206,7 @@ namespace DLS.Graphics
 				if (dataDisplayMode == DataDisplayMode.Binary && c is not ('0' or '1')) return false;
 
 				if (c == '-') continue; // allow negative sign (even in unsigned field as we'll do automatic conversion)
+				if (dataDisplayMode == DataDisplayMode.HEX && Uri.IsHexDigit(c)) continue;
 				if (!char.IsDigit(c)) return false;
 			}
 
@@ -219,10 +221,11 @@ namespace DLS.Graphics
 				DataDisplayMode.Binary => ConvertUlongToBinary(raw, bitCount),
 				DataDisplayMode.DecimalSigned => Maths.TwosComplement(raw, bitCount) + "",
 				DataDisplayMode.DecimalUnsigned => raw + "",
+				DataDisplayMode.HEX => raw.ToString("X").PadLeft(bitCount / 4, '0'),
 				_ => throw new NotImplementedException("Unsupported display format: " + displayFormat)
 			};
 		}
-		
+
 		private static string ConvertUlongToBinary(ulong value, int bitCount)
 		{
 			char[] bits = new char[bitCount];
@@ -262,6 +265,9 @@ namespace DLS.Graphics
 				}
 				case DataDisplayMode.DecimalUnsigned:
 					uintVal = uint.Parse(displayString);
+					break;
+				case DataDisplayMode.HEX:
+					uintVal = uint.Parse(displayString, System.Globalization.NumberStyles.HexNumber);
 					break;
 				default:
 					throw new NotImplementedException("Unsupported display format: " + stringFormat);
@@ -332,7 +338,7 @@ namespace DLS.Graphics
 
 				// Draw input field
 
-				UI.InputField(inputFieldID, inputTheme, topLeft, panelSize, "0", Anchor.TopLeft, 7, inputStringValidator);
+				UI.InputField(inputFieldID, inputTheme, topLeft, panelSize, "0", Anchor.TopLeft, 5, inputStringValidator);
 
 				// Draw line index
 				Color lineNumCol = inputFieldState.focused ? new Color(0.53f, 0.8f, 0.57f) : ColHelper.MakeCol(0.32f);
@@ -381,7 +387,8 @@ namespace DLS.Graphics
 		{
 			DecimalUnsigned,
 			DecimalSigned,
-			Binary
+			Binary,
+			HEX
 		}
 	}
 }
