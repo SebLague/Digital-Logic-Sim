@@ -1,0 +1,33 @@
+{
+  "Name": "AMFsdf",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 1.025,
+    "y": 0.375
+  },
+  "Colour": {
+    "r": 0.739096463,
+    "g": 0.53381747,
+    "b": 0.150521308,
+    "a": 1
+  },
+  "InputPins":[],
+  "OutputPins":[],
+  "SubChips":[
+    {
+      "Name":"SDFS",
+      "ID":1021676828,
+      "Label":"",
+      "Position":{
+        "x":-2.02778,
+        "y":-1.61806
+      },
+      "OutputPinColourInfo":[],
+      "InternalData":null
+    }
+  ],
+  "Wires":[],
+  "Displays": null,
+  "Notes": null
+}

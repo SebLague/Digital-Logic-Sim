@@ -1,6 +1,8 @@
 using System;
 using Seb.Helpers;
 using UnityEngine;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Seb.Vis.UI
 {
@@ -143,6 +145,83 @@ namespace Seb.Vis.UI
 			}
 
 			UpdateLastInputTime();
+		}
+
+		public void NewLine()
+		{
+			if (isSelecting) Delete(true);
+			TryInsertText("\n");
+		}
+
+		public int CountLines()
+		{
+			return text.Count(c => c == '\n');
+		}
+
+		public void WrapText(int maxCharsPerLine)
+		{
+			if (maxCharsPerLine <= 0 || string.IsNullOrEmpty(text))
+				return;
+
+			string[] lines = text.Split('\n');
+			string wrappedText = "";
+
+			foreach (string line in lines)
+			{
+				string unwrappedLine = line.Replace("\n", "");  // Remove any newlines inside the line itself
+				string lineWithWrap = "";
+
+				for (int i = 0; i < unwrappedLine.Length; i++)
+				{	
+					if (i > 0 && i % maxCharsPerLine == 0)
+						lineWithWrap += "\n";
+
+					lineWithWrap += unwrappedLine[i];
+				}
+
+				if (wrappedText.Length > 0)
+					wrappedText += "\n";
+				
+				wrappedText += lineWithWrap;
+			}
+
+			text = wrappedText;
+			SetCursorIndex(text.Length); // move cursor to the end
+		}
+
+		public void EnforceTextLimit(int lineLength, int maxLines)
+		{
+			// Split the text into lines
+			string[] lines = text.Split('\n');
+			List<string> limitedLines = new();
+
+			foreach (string line in lines)
+			{
+				// Wrap the line if it exceeds the lineLength
+				for (int i = 0; i < line.Length; i += lineLength)
+				{
+					if (limitedLines.Count >= maxLines)
+						break;
+
+					string wrappedLine = line.Substring(i, Math.Min(lineLength, line.Length - i));
+					limitedLines.Add(wrappedLine);
+				}
+
+				if (limitedLines.Count >= maxLines)
+					break;
+
+				// Preserve manual newlines
+				if (line.Length == 0 && limitedLines.Count < maxLines)
+				{
+					limitedLines.Add(string.Empty);
+				}
+			}
+
+			// Join the limited lines back into a single string
+			text = string.Join("\n", limitedLines);
+
+			// Adjust the cursor position if it exceeds the new text length
+			cursorBeforeCharIndex = Mathf.Clamp(cursorBeforeCharIndex, 0, text.Length);
 		}
 
 		public void SelectAll()

@@ -67,6 +67,7 @@ namespace DLS.Game
 		{
 			if (!HasControl) return;
 			if (element is SubChipInstance subChip) ActiveDevChip.DeleteSubChip(subChip);
+			if (element is NoteInstance noteInstance) ActiveDevChip.DeleteNote(noteInstance);
 			if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
 			if (clearSelection) SelectedElements.Clear();
 		}
@@ -275,9 +276,26 @@ namespace DLS.Game
 			foreach (IMoveable element in elementsToDuplicate)
 			{
 				ChipDescription desc;
+
 				if (element is SubChipInstance subchip)
 				{
 					desc = subchip.Description;
+				}
+				else if (element is NoteInstance note)
+				{
+					// Create a new NoteDescription for the duplicated note
+					NoteDescription noteDesc = new NoteDescription(
+						IDGenerator.GenerateNewElementID(ActiveDevChip),
+						note.Colour,
+						note.Text,
+						note.Position
+					);
+
+					// Create a new NoteInstance and add it to the duplicated elements
+					IMoveable duplicatedNote = StartPlacingNote(noteDesc, note.Position, true);
+					duplicatedElements.Add(duplicatedNote);
+					duplicatedElementIDFromOriginalID.Add(note.ID, duplicatedNote.ID);
+					continue;
 				}
 				else
 				{
@@ -290,7 +308,6 @@ namespace DLS.Game
 					if (devpin.IsInputPin) desc.InputPins[0] = pinDesc;
 					else desc.OutputPins[0] = pinDesc;
 				}
-
 
 				IMoveable duplicatedElement = StartPlacing(desc, element.Position, true);
 				duplicatedElement.StraightLineReferencePoint = element.Position;
@@ -555,6 +572,7 @@ namespace DLS.Game
 			{
 				if (elementToPlace is SubChipInstance subchip) ActiveDevChip.AddNewSubChip(subchip, false);
 				else if (elementToPlace is DevPinInstance devPin) ActiveDevChip.AddNewDevPin(devPin, false);
+				else if (elementToPlace is NoteInstance note) ActiveDevChip.AddNote(note, false);
 			}
 
 			foreach (WireInstance wire in DuplicatedWires)
@@ -919,6 +937,48 @@ namespace DLS.Game
 			return elementToPlace;
 		}
 
+		public void StartPlacingNote(NoteDescription noteDescription)
+		{
+			StartPlacingNote(noteDescription, InputHelper.MousePosWorld, false);
+		}
+
+		public IMoveable StartPlacingNote(NoteDescription noteDescription, Vector2 position, bool isDuplicating)
+		{
+			newElementsAreDuplicatedElements = isDuplicating;
+
+			if (!isPlacingNewElements)
+			{
+				CancelEverything();
+				isPlacingNewElements = true;
+				hasExittedMultiModeSincePlacementStart = false;
+				StartMovingSelectedItems();
+			}
+
+			IMoveable elementToPlace;
+			int instanceID = IDGenerator.GenerateNewElementID(ActiveDevChip);
+			
+			NoteDescription noteDesc = DescriptionCreator.CreateNoteDescriptionForPlacing(instanceID, noteDescription.Colour, noteDescription.Text, position);
+			elementToPlace = new NoteInstance(noteDesc);
+
+			// If placing multiple elements simultaneously, place the new element below the previous one
+			// (unless is duplicating elements, in which case their relative positions should be preserved)
+			if (SelectedElements.Count > 0 && !isDuplicating)
+			{
+				float spacing = (elementToPlace.SelectionBoundingBox.Size.y + SelectedElements[^1].SelectionBoundingBox.Size.y) / 2;
+				elementToPlace.MoveStartPosition = SelectedElements[^1].MoveStartPosition + Vector2.down * spacing;
+				elementToPlace.HasReferencePointForStraightLineMovement = false;
+			}
+			else
+			{
+				moveElementMouseStartPos = InputHelper.MousePosWorld + elementToPlace.SelectionBoundingBox.Size / 2;;
+				elementToPlace.MoveStartPosition = position;
+				elementToPlace.StraightLineReferencePoint = position;
+				elementToPlace.HasReferencePointForStraightLineMovement = isDuplicating;
+			}
+
+			Select(elementToPlace);
+			return elementToPlace;
+		}
 
 		public void CancelEverything()
 		{

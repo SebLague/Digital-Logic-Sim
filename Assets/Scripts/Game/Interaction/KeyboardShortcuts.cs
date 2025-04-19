@@ -12,6 +12,7 @@ namespace DLS.Game
 		public static bool MainMenu_QuitShortcutTriggered => CtrlShortcutTriggered(KeyCode.Q);
 
 		// ---- Bottom Bar Menu shorcuts ----
+		public static bool NewNoteShortcutTriggered => CtrlShortcutTriggered(KeyCode.M);
 		public static bool SaveShortcutTriggered => CtrlShortcutTriggered(KeyCode.S);
 		public static bool LibraryShortcutTriggered => CtrlShortcutTriggered(KeyCode.L);
 		public static bool PreferencesShortcutTriggered => CtrlShortcutTriggered(KeyCode.P);

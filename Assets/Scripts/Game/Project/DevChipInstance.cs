@@ -57,6 +57,7 @@ namespace DLS.Game
 			description.InputPins ??= Array.Empty<PinDescription>();
 			description.OutputPins ??= Array.Empty<PinDescription>();
 			description.Wires ??= Array.Empty<WireDescription>();
+			description.Notes ??= Array.Empty<NoteDescription>();
 
 			bool anyElementFailedToLoad = false;
 
@@ -82,6 +83,14 @@ namespace DLS.Game
 			{
 				PinDescription pinDescription = description.OutputPins[i];
 				instance.AddNewDevPin(new DevPinInstance(pinDescription, false), true);
+			}
+
+			// Load notes
+			for (int i = 0; i < description.Notes.Length; i++)
+			{
+				NoteDescription noteDescription = description.Notes[i];
+				NoteInstance note = new(noteDescription);
+				instance.AddNote(note, true);
 			}
 
 			// ---- Load wires ----
@@ -217,6 +226,11 @@ namespace DLS.Game
 			}
 		}
 
+		public void AddNote(NoteInstance note, bool isLoading)
+		{
+			AddElement(note);
+		}
+
 		void AddElement(IMoveable element)
 		{
 			Elements.Add(element);
@@ -228,7 +242,6 @@ namespace DLS.Game
 			Elements.Remove(element);
 			elementsModifiedSinceLastArrayUpdate = true;
 		}
-
 
 		public void DeleteDevPin(DevPinInstance devPin)
 		{
@@ -327,6 +340,15 @@ namespace DLS.Game
 			{
 				TryDeleteSubChipByID(subChip.LinkedBusPairID);
 			}
+		}
+
+		public void DeleteNote(NoteInstance note)
+		{
+			// Ensure subchip exists before deleting
+			// (required for buses, where one end of bus is deleted automatically when other end is deleted; but user may select both ends for deletion)
+			if (!Elements.Contains(note)) return;
+
+			RemoveElement(note);
 		}
 
 		// Delete subchip with given id (if it exists)
@@ -453,6 +475,7 @@ namespace DLS.Game
 		}
 
 		public IEnumerable<SubChipInstance> GetSubchips() => Elements.OfType<SubChipInstance>();
+		public IEnumerable<NoteInstance> GetNotes() => Elements.OfType<NoteInstance>();
 
 		public IEnumerable<DevPinInstance> GetOutputPins()
 		{
