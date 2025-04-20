@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DLS.Description;
@@ -92,13 +93,25 @@ namespace DLS.Game
 		{
 			Project.ActiveProject.controller.CancelEverything();
 
-			if (action is MoveUndoAction move)
+			try
 			{
-				move.Trigger(undo, devChip.Elements);
+				if (action is MoveUndoAction move)
+				{
+					move.Trigger(undo, devChip.Elements);
+				}
+				else if (action is AddOrDeleteUndoAction delete)
+				{
+					delete.Trigger(undo, devChip);
+				}
 			}
-			else if (action is AddOrDeleteUndoAction delete)
+			catch (Exception e)
 			{
-				delete.Trigger(undo, devChip);
+				// Undo/redo can fail in some cases. For example: player moves chip A, then goes into library and deletes that chip type from the project.
+				// Attempting to undo the chip movement will now fail since that chip was forcibly removed. If we encounter such a problem, clear the undo history to prevent potential problems.
+				// (should probably think about handling more gracefully in the future though)
+				undoHistory.Clear();
+				undoIndex = -1;
+				if (Application.isEditor) Debug.Log($"Undo/redo action failed. Clearing undo history. Reason: {e.Message} Stack trace: {e.StackTrace}");
 			}
 		}
 
@@ -143,7 +156,10 @@ namespace DLS.Game
 						SubChipInstance subchip = new(description, subchipDescriptions[i]);
 						devChip.AddNewSubChip(subchip, false);
 					}
-					else devChip.TryDeleteSubChipByID(subchipDescriptions[i].ID);
+					else if (!devChip.TryDeleteSubChipByID(subchipDescriptions[i].ID))
+					{
+						throw new Exception("Failed to delete subchip");
+					}
 				}
 
 				for (int i = 0; i < pinDescriptions.Length; i++)
@@ -155,7 +171,10 @@ namespace DLS.Game
 						DevPinInstance devPin = new(pinDescription, pinInInputFlags[i]);
 						devChip.AddNewDevPin(devPin, false);
 					}
-					else devChip.TryDeleteDevPinByID(pinDescription.ID);
+					else if (devChip.TryDeleteDevPinByID(pinDescription.ID))
+					{
+						throw new Exception("Failed to delete dev pin");
+					}
 				}
 			}
 		}

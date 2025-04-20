@@ -338,29 +338,33 @@ namespace DLS.Game
 		}
 
 		// Delete subchip with given id (if it exists)
-		public void TryDeleteSubChipByID(int id)
+		public bool TryDeleteSubChipByID(int id)
 		{
 			for (int i = 0; i < Elements.Count; i++)
 			{
 				if (Elements[i] is SubChipInstance subchip && subchip.ID == id)
 				{
 					DeleteSubChip(subchip);
-					return;
+					return true;
 				}
 			}
+
+			return false;
 		}
 
 		// Delete devpin with given id (if it exists)
-		public void TryDeleteDevPinByID(int id)
+		public bool TryDeleteDevPinByID(int id)
 		{
 			for (int i = 0; i < Elements.Count; i++)
 			{
 				if (Elements[i] is DevPinInstance devPin && devPin.ID == id)
 				{
 					DeleteDevPin(devPin);
-					return;
+					return true;
 				}
 			}
+
+			return false;
 		}
 
 		// Update the currently viewed chip from the state of the corresponding simChip.
