@@ -66,7 +66,7 @@ namespace DLS.Game
 		public void Delete(IMoveable element, bool clearSelection = true, bool recordUndo = true)
 		{
 			if (!HasControl) return;
-			if (recordUndo) ActiveDevChip.UndoController.RecordDeleteAction(new List<IMoveable>(new[] { element }));
+			if (recordUndo) ActiveDevChip.UndoController.RecordDeleteElements(new List<IMoveable>(new[] { element }));
 
 			if (element is SubChipInstance subChip) ActiveDevChip.DeleteSubChip(subChip);
 			else if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
@@ -131,8 +131,8 @@ namespace DLS.Game
 			// Delete selected subchips/pins
 			if (SelectedElements.Count > 0)
 			{
-				ActiveDevChip.UndoController.RecordDeleteAction(SelectedElements);
-				
+				ActiveDevChip.UndoController.RecordDeleteElements(SelectedElements);
+
 				foreach (IMoveable selectedElement in SelectedElements)
 				{
 					Delete(selectedElement, false, false);
@@ -171,6 +171,7 @@ namespace DLS.Game
 		{
 			if (HasControl)
 			{
+				ActiveDevChip.UndoController.RecordDeleteWire(wire);
 				ActiveDevChip.DeleteWire(wire);
 			}
 		}
@@ -566,7 +567,7 @@ namespace DLS.Game
 				hasMoved |= (element.MoveStartPosition != element.Position);
 			}
 
-			if (hasMoved) ActiveDevChip.UndoController.RecordMoveUndoAction(SelectedElements);
+			if (hasMoved) ActiveDevChip.UndoController.RecordMoveElements(SelectedElements);
 
 			// -- Apply movement --
 			IsMovingSelection = false;
@@ -600,7 +601,7 @@ namespace DLS.Game
 				ActiveDevChip.AddWire(wire, false);
 			}
 
-			ActiveDevChip.UndoController.RecordAddAction(SelectedElements);
+			ActiveDevChip.UndoController.RecordAddElements(SelectedElements);
 
 			DuplicatedWires.Clear();
 
@@ -878,6 +879,7 @@ namespace DLS.Game
 			{
 				WireToPlace.FinishPlacingWire(info);
 				ActiveDevChip.AddWire(WireToPlace, false);
+				ActiveDevChip.UndoController.RecordAddWire(WireToPlace);
 			}
 		}
 

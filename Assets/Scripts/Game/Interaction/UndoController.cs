@@ -38,8 +38,28 @@ namespace DLS.Game
 			UndoRedo(action, false);
 		}
 
+		public void RecordAddWire(WireInstance wire) => RecordAddOrDeleteWire(wire, false);
 
-		public void RecordMoveUndoAction(List<IMoveable> movedElements)
+		public void RecordDeleteWire(WireInstance wire) => RecordAddOrDeleteWire(wire, true);
+
+		void RecordAddOrDeleteWire(WireInstance wire, bool delete)
+		{
+			DescriptionCreator.UpdateWireIndicesForDescriptionCreation(devChip);
+			int wireIndex = wire.descriptionCreator_wireIndex;
+			WireDescription wireDesc = DescriptionCreator.CreateWireDescription(wire);
+
+			WireExistenceAction action = new()
+			{
+				wireDescription = wireDesc,
+				wireIndex = wireIndex,
+				isDeleteAction = delete
+			};
+
+			RecordUndoAction(action);
+		}
+
+
+		public void RecordMoveElements(List<IMoveable> movedElements)
 		{
 			MoveUndoAction moveUndoAction = new()
 			{
@@ -51,17 +71,17 @@ namespace DLS.Game
 			RecordUndoAction(moveUndoAction);
 		}
 
-		public void RecordDeleteAction(List<IMoveable> deletedElements)
+		public void RecordDeleteElements(List<IMoveable> deletedElements)
 		{
-			RecordAddOrDeleteAction(deletedElements, true);
+			RecordAddOrDeleteElements(deletedElements, true);
 		}
 
-		public void RecordAddAction(List<IMoveable> addedElements)
+		public void RecordAddElements(List<IMoveable> addedElements)
 		{
-			RecordAddOrDeleteAction(addedElements, false);
+			RecordAddOrDeleteElements(addedElements, false);
 		}
 
-		void RecordAddOrDeleteAction(List<IMoveable> elements, bool delete)
+		void RecordAddOrDeleteElements(List<IMoveable> elements, bool delete)
 		{
 			List<SubChipInstance> subchips = elements.OfType<SubChipInstance>().ToList();
 			DevPinInstance[] devPins = elements.OfType<DevPinInstance>().ToArray();
@@ -91,7 +111,7 @@ namespace DLS.Game
 				}
 			}
 
-			AddOrDeleteUndoAction deleteAction = new()
+			ElementExistenceAction deleteAction = new()
 			{
 				chipNames = subchips.Select(s => s.Description.Name).ToArray(),
 				subchipDescriptions = subchips.Select(DescriptionCreator.CreateSubChipDescription).ToArray(),
@@ -124,9 +144,13 @@ namespace DLS.Game
 				{
 					move.Trigger(undo, devChip.Elements);
 				}
-				else if (action is AddOrDeleteUndoAction delete)
+				else if (action is ElementExistenceAction elementExistence)
 				{
-					delete.Trigger(undo, devChip);
+					elementExistence.Trigger(undo, devChip);
+				}
+				else if (action is WireExistenceAction wireExistence)
+				{
+					wireExistence.Trigger(undo, devChip);
 				}
 			}
 			catch (Exception e)
@@ -159,7 +183,32 @@ namespace DLS.Game
 			}
 		}
 
-		class AddOrDeleteUndoAction : UndoAction
+		class WireExistenceAction : UndoAction
+		{
+			public WireDescription wireDescription;
+			public int wireIndex;
+			public bool isDeleteAction;
+
+			public void Trigger(bool undo, DevChipInstance devChip)
+			{
+				if (!isDeleteAction) undo = !undo;
+				bool addWire = undo;
+
+				if (addWire)
+				{
+					WireInstance connectedWire = wireDescription.ConnectedWireIndex >= 0 ? devChip.Wires[wireDescription.ConnectedWireIndex] : null;
+					(WireInstance loadedWire, bool failed) = DevChipInstance.TryLoadWireFromDescription(wireDescription, wireIndex, devChip, connectedWire);
+					if (failed) throw new Exception("Failed to load wire in undo/redo action");
+					else devChip.AddWire(loadedWire, false, wireIndex);
+				}
+				else
+				{
+					devChip.DeleteWire(devChip.Wires[wireIndex]);
+				}
+			}
+		}
+
+		class ElementExistenceAction : UndoAction
 		{
 			public string[] chipNames;
 			public SubChipDescription[] subchipDescriptions;
@@ -172,7 +221,7 @@ namespace DLS.Game
 			public void Trigger(bool undo, DevChipInstance devChip)
 			{
 				if (!isDeleteAction) undo = !undo;
-				bool delete = undo;
+				bool addElement = undo;
 
 
 				// ---- Handle subchips ----
@@ -180,7 +229,7 @@ namespace DLS.Game
 				{
 					ChipDescription description = Project.ActiveProject.chipLibrary.GetChipDescription(chipNames[i]);
 
-					if (delete)
+					if (addElement)
 					{
 						SubChipInstance subchip = new(description, subchipDescriptions[i]);
 						devChip.AddNewSubChip(subchip, false);
@@ -198,7 +247,7 @@ namespace DLS.Game
 				{
 					PinDescription pinDescription = pinDescriptions[i];
 
-					if (delete)
+					if (addElement)
 					{
 						DevPinInstance devPin = new(pinDescription, pinInInputFlags[i]);
 						devChip.AddNewDevPin(devPin, false);

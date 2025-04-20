@@ -86,7 +86,7 @@ namespace DLS.SaveSystem
 			);
 		}
 
-		static void UpdateWireIndicesForDescriptionCreation(DevChipInstance chip)
+		public static void UpdateWireIndicesForDescriptionCreation(DevChipInstance chip)
 		{
 			// Store wire's current index in wire for convenient access
 			for (int i = 0; i < chip.Wires.Count; i++)
@@ -96,7 +96,7 @@ namespace DLS.SaveSystem
 		}
 
 		// Note: assumed that all wire indices have been set prior to calling this function
-		static WireDescription CreateWireDescription(WireInstance wire)
+		public static WireDescription CreateWireDescription(WireInstance wire)
 		{
 			// Get wire points
 			Vector2[] wirePoints = new Vector2[wire.WirePointCount];
