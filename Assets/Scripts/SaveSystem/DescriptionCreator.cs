@@ -52,7 +52,7 @@ namespace DLS.SaveSystem
 		}
 
 
-		static SubChipDescription CreateSubChipDescription(SubChipInstance subChip)
+		public static SubChipDescription CreateSubChipDescription(SubChipInstance subChip)
 		{
 			return new SubChipDescription
 			(
@@ -60,7 +60,7 @@ namespace DLS.SaveSystem
 				subChip.ID,
 				subChip.Label,
 				subChip.Position,
-				// Don't save colour info for bus since it changes based on received input, so would just trigger unecessary 'unsaved changes' warnings
+				// Don't save colour info for bus since it changes based on received input, so would just trigger unnecessary 'unsaved changes' warnings
 				subChip.IsBus ? null : subChip.OutputPins.Select(p => new OutputPinColourInfo(p.Colour, p.Address.PinID)).ToArray(),
 				subChip.InternalData
 			);

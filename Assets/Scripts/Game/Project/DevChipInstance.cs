@@ -19,9 +19,42 @@ namespace DLS.Game
 			public int[] subChipIDs;
 			public Vector2[] originalPositions;
 			public Vector2[] newPositions;
+
+			public void Trigger(bool undo, List<IMoveable> elements)
+			{
+				Dictionary<int, IMoveable> elementLookupByID = elements.ToDictionary(element => element.ID, element => element);
+				for (int i = 0; i < subChipIDs.Length; i++)
+				{
+					IMoveable element = elementLookupByID[subChipIDs[i]];
+					element.Position = undo ? originalPositions[i] : newPositions[i];
+				}
+			}
 		}
 
-		readonly Stack<UndoAction> undoStack = new();
+		public class DeleteUndoAction : UndoAction
+		{
+			public string[] chipNames;
+			public SubChipDescription[] subchipDescriptions;
+
+			public void Trigger(bool undo, DevChipInstance devChip)
+			{
+				for (int i = 0; i < chipNames.Length; i++)
+				{
+					ChipDescription description = Project.ActiveProject.chipLibrary.GetChipDescription(chipNames[i]);
+					if (ChipTypeHelper.IsBusType(description.ChipType)) continue; // TODO
+
+					if (undo)
+					{
+						SubChipInstance subchip = new(description, subchipDescriptions[i]);
+						devChip.AddNewSubChip(subchip, false);
+					}
+					else devChip.TryDeleteSubChipByID(subchipDescriptions[i].ID);
+				}
+			}
+		}
+
+		readonly List<UndoAction> undoHistory = new();
+		int undoIndex = -1;
 
 		// Names of all the chips which contain this chip (either directly, or inside some other subchip)
 		public readonly HashSet<string> AllParentChipNames = new(ChipDescription.NameComparer);
@@ -40,19 +73,35 @@ namespace DLS.Game
 			SimChip = simChip;
 		}
 
+		public void TryRedo()
+		{
+			if (undoIndex == undoHistory.Count - 1) return;
+
+			UndoAction action = undoHistory[undoIndex + 1];
+			undoIndex++;
+
+			UndoRedo(action, false);
+		}
+
 		public void TryUndo()
 		{
-			if (undoStack.TryPop(out UndoAction undo))
+			if (undoIndex == -1) return;
+
+			UndoAction action = undoHistory[undoIndex];
+			undoIndex--;
+
+			UndoRedo(action, true);
+		}
+
+		void UndoRedo(UndoAction action, bool undo)
+		{
+			if (action is MoveUndoAction move)
 			{
-				if (undo is MoveUndoAction move)
-				{
-					Dictionary<int, IMoveable> elementLookupByID = Elements.ToDictionary(element => element.ID, element => element);
-					for (int i = 0; i < move.subChipIDs.Length; i++)
-					{
-						IMoveable element = elementLookupByID[move.subChipIDs[i]];
-						element.Position = move.originalPositions[i];
-					}
-				}
+				move.Trigger(undo, Elements);
+			}
+			else if (action is DeleteUndoAction delete)
+			{
+				delete.Trigger(undo, this);
 			}
 		}
 
@@ -64,8 +113,32 @@ namespace DLS.Game
 				originalPositions = movedElements.Select(element => element.MoveStartPosition).ToArray(),
 				newPositions = movedElements.Select(element => element.Position).ToArray(),
 			};
-			
-			undoStack.Push(moveUndoAction);
+
+			RecordUndoAction(moveUndoAction);
+		}
+
+		public void RecordDeleteSubchipAction(List<IMoveable> deletedElements)
+		{
+			SubChipInstance[] deletedSubChips = deletedElements.Where(e => e is SubChipInstance).Cast<SubChipInstance>().ToArray();
+
+			DeleteUndoAction deleteAction = new()
+			{
+				chipNames = deletedSubChips.Select(s => s.Description.Name).ToArray(),
+				subchipDescriptions = deletedSubChips.Select(DescriptionCreator.CreateSubChipDescription).ToArray(),
+			};
+
+			RecordUndoAction(deleteAction);
+		}
+
+		void RecordUndoAction(UndoAction action)
+		{
+			if (undoIndex != undoHistory.Count)
+			{
+				undoHistory.RemoveRange(undoIndex + 1, undoHistory.Count - (undoIndex + 1));
+			}
+
+			undoHistory.Add(action);
+			undoIndex = undoHistory.Count - 1;
 		}
 
 		public void RebuildSimulation()
@@ -236,7 +309,7 @@ namespace DLS.Game
 			AddElement(subChip);
 			if (!isLoading)
 			{
-				Simulator.AddSubChip(SimChip, subChip.Description, Project.ActiveProject.chipLibrary, subChip.InitialSubChipDesc);
+				Simulator.AddSubChip(SimChip, subChip.Description, Project.ActiveProject.chipLibrary, subChip.ID, subChip.InternalData);
 			}
 		}
 
