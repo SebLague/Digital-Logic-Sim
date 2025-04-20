@@ -284,7 +284,9 @@ namespace Seb.Vis.UI
 
 				if (!newFocusState)
 				{
+					// Reset selection and caret position when focus is lost
 					isSelecting = false;
+					// selectionStartIndex = cursorBeforeCharIndex; // Reset selection start
 				}
 			}
 		}
@@ -325,6 +327,13 @@ namespace Seb.Vis.UI
 				{
 					// Merge with the previous line
 					string previousLine = lines[cursorLineIndex - 1];
+
+					// Remove the trailing \n from the previous line if it exists
+					if (previousLine.EndsWith("\n"))
+					{
+						previousLine = previousLine.Substring(0, previousLine.Length - 1);
+					}
+
 					lines[cursorLineIndex - 1] = previousLine + currentLine;
 					lines.RemoveAt(cursorLineIndex);
 					cursorLineIndex--;
@@ -367,6 +376,10 @@ namespace Seb.Vis.UI
 			int startChar = Mathf.Min(cursorBeforeCharIndex, selectionStartIndex % maxCharsPerLine);
 			int endChar = Mathf.Max(cursorBeforeCharIndex, selectionStartIndex % maxCharsPerLine);
 
+			// Clamp startChar and endChar to the valid range of the string
+			startChar = Mathf.Clamp(startChar, 0, lines[startLine].Length);
+			endChar = Mathf.Clamp(endChar, 0, lines[endLine].Length);
+
 			if (startLine == endLine)
 			{
 				string line = lines[startLine];
@@ -395,11 +408,17 @@ namespace Seb.Vis.UI
 
 		public void NewLine()
 		{
+			// Clear selection before creating a new line
+			if (isSelecting)
+			{
+				DeleteSelection();
+			}
+
 			string currentLine = lines[cursorLineIndex];
 			string newLine = currentLine.Substring(cursorBeforeCharIndex); // Text after the caret
-			lines[cursorLineIndex] = currentLine.Substring(0, cursorBeforeCharIndex) + "\n"; // Text before the caret with \n
+			lines[cursorLineIndex] = currentLine.Substring(0, cursorBeforeCharIndex) + "\n"; // Text before the caret
 
-			// Insert the new line into the list
+			// Insert the new line into the list with a newline character
 			lines.Insert(cursorLineIndex + 1, newLine);
 
 			// Move the caret to the start of the new line
@@ -428,9 +447,12 @@ namespace Seb.Vis.UI
 			cursorLineIndex = Mathf.Clamp(lineIndex, 0, lines.Count - 1);
 			cursorBeforeCharIndex = Mathf.Clamp(charIndex, 0, lines[cursorLineIndex].Length);
 
+
 			UpdateLastInputTime();
 
-			if (cursorBeforeCharIndex == selectionStartIndex || !select)
+			int globalIndex = maxCharsPerLine * cursorLineIndex + cursorBeforeCharIndex;
+
+			if (globalIndex == selectionStartIndex || !select)
 			{
 				isSelecting = false;
 			}

@@ -561,7 +561,6 @@ namespace Seb.Vis.UI
 					// Set caret pos based on mouse position
 					if (mouseInBounds) 
 					{
-
 						Vector2Int newCaretPos = CharIndexBeforeMouse(textTopLeft_ss.x, textTopLeft_ss.y);
 						state.SetCursorIndex(newCaretPos.x, newCaretPos.y, InputHelper.ShiftIsHeld);
 					}
@@ -596,7 +595,8 @@ namespace Seb.Vis.UI
 					// Paste from clipboard
 					if (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.V))
 					{
-						state.TryInsertText(InputHelper.GetClipboardContents(), validation);
+						string sanitizedText = InputHelper.GetClipboardContents().Replace("\n", "");
+						state.TryInsertText(sanitizedText, validation);
 					}
 
 					if (state.lines.Count > 0)
@@ -701,7 +701,6 @@ namespace Seb.Vis.UI
 					float fontSize_ss = theme.fontSize * scale;
 					bool showDefaultText = (state.lines.Count == 0 || (state.lines.Count == 1 && string.IsNullOrEmpty(state.lines[0]))) || !Application.isPlaying;
 					string[] lines = showDefaultText ? new[] { "Enter something..." } : state.lines.ToArray();
-
 					Color textCol = showDefaultText ? theme.defaultTextCol : theme.textCol;
 					for (int i = 0; i < lines.Length; i++)
 					{
@@ -733,14 +732,13 @@ namespace Seb.Vis.UI
 							}
 						}
 
-						// Draw selection box
 						if (state.isSelecting)
 						{
-							Debug.Log($"Drawing selection: selectionStartIndex={state.selectionStartIndex}, cursorBeforeCharIndex={state.cursorBeforeCharIndex}");
-
+							// Calculate start and end line indices
 							int startLine = Mathf.Min(state.cursorLineIndex, state.selectionStartIndex / state.maxCharsPerLine);
 							int endLine = Mathf.Max(state.cursorLineIndex, state.selectionStartIndex / state.maxCharsPerLine);
 
+							// Calculate start and end character indices
 							int startChar = Mathf.Min(state.cursorBeforeCharIndex, state.selectionStartIndex % state.maxCharsPerLine);
 							int endChar = Mathf.Max(state.cursorBeforeCharIndex, state.selectionStartIndex % state.maxCharsPerLine);
 
@@ -751,9 +749,16 @@ namespace Seb.Vis.UI
 								int lineEndIndex = line.Length;
 
 								// Determine the selection range for this line
-								int selectionStartInLine = (lineIndex == startLine) ? startChar : lineStartIndex;
-								int selectionEndInLine = (lineIndex == endLine) ? endChar : lineEndIndex;
+								int selectionStartInLine = (lineIndex == startLine) ? Mathf.Clamp(startChar, lineStartIndex, lineEndIndex) : lineStartIndex;
+								int selectionEndInLine = (lineIndex == endLine) ? Mathf.Clamp(endChar, lineStartIndex, lineEndIndex) : lineEndIndex;
 
+								// Ensure selectionStartInLine is less than or equal to selectionEndInLine
+								if (selectionStartInLine > selectionEndInLine)
+								{
+									(selectionStartInLine, selectionEndInLine) = (selectionEndInLine, selectionStartInLine);
+								}
+
+								// Draw the selection box for the current line
 								Vector2 boundsSizeUpToStart = Draw.CalculateTextBoundsSize(line.AsSpan(0, selectionStartInLine), theme.fontSize, theme.font);
 								Vector2 boundsSizeUpToEnd = Draw.CalculateTextBoundsSize(line.AsSpan(0, selectionEndInLine), theme.fontSize, theme.font);
 
@@ -768,7 +773,6 @@ namespace Seb.Vis.UI
 								Vector2 c = new((endX + startX) / 2, textTopLeft_ss.y - lineIndex * theme.fontSize * scale);
 								Vector2 s = new(endX - startX, theme.fontSize * 1.2f * scale);
 
-								Debug.Log($"Drawing selection box for line {lineIndex}: startX={startX}, endX={endX}, center={c}, size={s}");
 								Draw.Quad(c, s, new Color(0.2f, 0.6f, 1, 0.5f));
 							}
 						}
