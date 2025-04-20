@@ -36,6 +36,9 @@ namespace DLS.Game
 			public string[] chipNames;
 			public SubChipDescription[] subchipDescriptions;
 
+			public PinDescription[] pinDescriptions;
+			public bool[] pinInInputFlags;
+
 			public void Trigger(bool undo, DevChipInstance devChip)
 			{
 				for (int i = 0; i < chipNames.Length; i++)
@@ -49,6 +52,18 @@ namespace DLS.Game
 						devChip.AddNewSubChip(subchip, false);
 					}
 					else devChip.TryDeleteSubChipByID(subchipDescriptions[i].ID);
+				}
+
+				for (int i = 0; i < pinDescriptions.Length; i++)
+				{
+					PinDescription pinDescription = pinDescriptions[i];
+					
+					if (undo)
+					{
+						DevPinInstance devPin = new (pinDescription, pinInInputFlags[i]);
+						devChip.AddNewDevPin(devPin, false);
+					}
+					else devChip.TryDeleteDevPinByID(pinDescription.ID);
 				}
 			}
 		}
@@ -95,6 +110,8 @@ namespace DLS.Game
 
 		void UndoRedo(UndoAction action, bool undo)
 		{
+			Project.ActiveProject.controller.CancelEverything();
+			
 			if (action is MoveUndoAction move)
 			{
 				move.Trigger(undo, Elements);
@@ -119,12 +136,15 @@ namespace DLS.Game
 
 		public void RecordDeleteSubchipAction(List<IMoveable> deletedElements)
 		{
-			SubChipInstance[] deletedSubChips = deletedElements.Where(e => e is SubChipInstance).Cast<SubChipInstance>().ToArray();
+			SubChipInstance[] deletedSubChips = deletedElements.OfType<SubChipInstance>().ToArray();
+			DevPinInstance[] deletedDevPins = deletedElements.OfType<DevPinInstance>().ToArray();
 
 			DeleteUndoAction deleteAction = new()
 			{
 				chipNames = deletedSubChips.Select(s => s.Description.Name).ToArray(),
 				subchipDescriptions = deletedSubChips.Select(DescriptionCreator.CreateSubChipDescription).ToArray(),
+				pinDescriptions = deletedDevPins.Select(DescriptionCreator.CreatePinDescription).ToArray(),
+				pinInInputFlags = deletedDevPins.Select(p => p.IsInputPin).ToArray(),
 			};
 
 			RecordUndoAction(deleteAction);
@@ -451,6 +471,19 @@ namespace DLS.Game
 				if (Elements[i] is SubChipInstance subchip && subchip.ID == id)
 				{
 					DeleteSubChip(subchip);
+					return;
+				}
+			}
+		}
+		
+		// Delete devpin with given id (if it exists)
+		public void TryDeleteDevPinByID(int id)
+		{
+			for (int i = 0; i < Elements.Count; i++)
+			{
+				if (Elements[i] is DevPinInstance devPin && devPin.ID == id)
+				{
+					DeleteDevPin(devPin);
 					return;
 				}
 			}
