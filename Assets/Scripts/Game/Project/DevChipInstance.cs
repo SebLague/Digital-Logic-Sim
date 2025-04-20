@@ -10,6 +10,19 @@ namespace DLS.Game
 {
 	public class DevChipInstance
 	{
+		public class UndoAction
+		{
+		}
+
+		public class MoveUndoAction : UndoAction
+		{
+			public int[] subChipIDs;
+			public Vector2[] originalPositions;
+			public Vector2[] newPositions;
+		}
+
+		readonly Stack<UndoAction> undoStack = new();
+
 		// Names of all the chips which contain this chip (either directly, or inside some other subchip)
 		public readonly HashSet<string> AllParentChipNames = new(ChipDescription.NameComparer);
 		public readonly List<IMoveable> Elements = new();
@@ -25,6 +38,34 @@ namespace DLS.Game
 		{
 			hasSimChip = true;
 			SimChip = simChip;
+		}
+
+		public void TryUndo()
+		{
+			if (undoStack.TryPop(out UndoAction undo))
+			{
+				if (undo is MoveUndoAction move)
+				{
+					Dictionary<int, IMoveable> elementLookupByID = Elements.ToDictionary(element => element.ID, element => element);
+					for (int i = 0; i < move.subChipIDs.Length; i++)
+					{
+						IMoveable element = elementLookupByID[move.subChipIDs[i]];
+						element.Position = move.originalPositions[i];
+					}
+				}
+			}
+		}
+
+		public void RecordMoveUndoAction(List<IMoveable> movedElements)
+		{
+			MoveUndoAction moveUndoAction = new()
+			{
+				subChipIDs = movedElements.Select(element => element.ID).ToArray(),
+				originalPositions = movedElements.Select(element => element.MoveStartPosition).ToArray(),
+				newPositions = movedElements.Select(element => element.Position).ToArray(),
+			};
+			
+			undoStack.Push(moveUndoAction);
 		}
 
 		public void RebuildSimulation()
@@ -406,7 +447,7 @@ namespace DLS.Game
 		}
 
 		public bool TryFindPin(PinAddress address, out PinInstance pinInstance) => TryFindPin(Elements, address, out pinInstance);
-		
+
 		public static bool TryFindPin(List<IMoveable> elements, PinAddress address, out PinInstance pinInstance)
 		{
 			foreach (IMoveable element in elements)
@@ -436,7 +477,7 @@ namespace DLS.Game
 					break;
 				}
 			}
-			
+
 			pinInstance = null;
 			return false;
 		}

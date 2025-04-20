@@ -190,6 +190,11 @@ namespace DLS.Game
 			// Ignore shortcuts if don't have control
 			if (!HasControl) return;
 
+			if (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.Z))
+			{
+				ActiveDevChip.TryUndo();
+			}
+
 			if (KeyboardShortcuts.ToggleGridShortcutTriggered)
 			{
 				project.ToggleGridDisplay();
@@ -529,6 +534,8 @@ namespace DLS.Game
 					return;
 				}
 			}
+
+			ActiveDevChip.RecordMoveUndoAction(SelectedElements);
 
 			// -- Apply movement --
 			IsMovingSelection = false;
