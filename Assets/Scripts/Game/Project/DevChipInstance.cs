@@ -10,17 +10,20 @@ namespace DLS.Game
 {
 	public class DevChipInstance
 	{
+		public readonly List<IMoveable> Elements = new();
+		public readonly List<WireInstance> Wires = new();
+		public readonly UndoController UndoController;
 		// Names of all the chips which contain this chip (either directly, or inside some other subchip)
 		public readonly HashSet<string> AllParentChipNames = new(ChipDescription.NameComparer);
-		public readonly List<IMoveable> Elements = new();
+		
+		public ChipDescription LastSavedDescription;
+		DevPinInstance[] inputPins_cached = Array.Empty<DevPinInstance>();
+		bool elementsModifiedSinceLastArrayUpdate;
+		
 		public SimChip SimChip;
 		bool hasSimChip;
-		public readonly List<WireInstance> Wires = new();
 
-		bool elementsModifiedSinceLastArrayUpdate;
-		DevPinInstance[] inputPins_cached = Array.Empty<DevPinInstance>();
-		public ChipDescription LastSavedDescription;
-		public readonly UndoController UndoController;
+		public string ChipName => LastSavedDescription == null ? string.Empty : LastSavedDescription.Name;
 
 		public DevChipInstance()
 		{
@@ -40,7 +43,6 @@ namespace DLS.Game
 			SetSimChip(simChip);
 		}
 
-		public string ChipName => LastSavedDescription == null ? string.Empty : LastSavedDescription.Name;
 
 		public DevPinInstance[] GetInputPins()
 		{
