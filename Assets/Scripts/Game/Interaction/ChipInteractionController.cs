@@ -69,7 +69,7 @@ namespace DLS.Game
 			if (element is SubChipInstance subChip) ActiveDevChip.DeleteSubChip(subChip);
 			if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
 
-			if (recordUndo) ActiveDevChip.RecordDeleteSubchipAction(new List<IMoveable>(new[] { element }));
+			if (recordUndo) ActiveDevChip.UndoController.RecordDeleteSubchipAction(new List<IMoveable>(new[] { element }));
 			if (clearSelection) SelectedElements.Clear();
 		}
 
@@ -135,7 +135,7 @@ namespace DLS.Game
 					Delete(selectedElement, false, false);
 				}
 
-				ActiveDevChip.RecordDeleteSubchipAction(SelectedElements);
+				ActiveDevChip.UndoController.RecordDeleteSubchipAction(SelectedElements);
 
 				SelectedElements.Clear();
 			}
@@ -196,8 +196,8 @@ namespace DLS.Game
 
 			if (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.Z))
 			{
-				if (InputHelper.IsKeyHeld(KeyCode.LeftShift)) ActiveDevChip.TryRedo();
-				else ActiveDevChip.TryUndo();
+				if (InputHelper.IsKeyHeld(KeyCode.LeftShift)) ActiveDevChip.UndoController.TryRedo();
+				else ActiveDevChip.UndoController.TryUndo();
 			}
 
 			if (KeyboardShortcuts.ToggleGridShortcutTriggered)
@@ -567,7 +567,7 @@ namespace DLS.Game
 				hasMoved |= (element.MoveStartPosition != element.Position);
 			}
 
-			if (hasMoved) ActiveDevChip.RecordMoveUndoAction(SelectedElements);
+			if (hasMoved) ActiveDevChip.UndoController.RecordMoveUndoAction(SelectedElements);
 
 			// -- Apply movement --
 			IsMovingSelection = false;
