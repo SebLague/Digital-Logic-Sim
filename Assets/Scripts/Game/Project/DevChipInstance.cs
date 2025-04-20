@@ -12,14 +12,16 @@ namespace DLS.Game
 	{
 		public readonly List<IMoveable> Elements = new();
 		public readonly List<WireInstance> Wires = new();
+
 		public readonly UndoController UndoController;
+
 		// Names of all the chips which contain this chip (either directly, or inside some other subchip)
 		public readonly HashSet<string> AllParentChipNames = new(ChipDescription.NameComparer);
-		
+
 		public ChipDescription LastSavedDescription;
 		DevPinInstance[] inputPins_cached = Array.Empty<DevPinInstance>();
 		bool elementsModifiedSinceLastArrayUpdate;
-		
+
 		public SimChip SimChip;
 		bool hasSimChip;
 
@@ -364,6 +366,21 @@ namespace DLS.Game
 				}
 			}
 
+			return false;
+		}
+
+		public bool TryGetSubChipByID(int id, out SubChipInstance subchip)
+		{
+			foreach (IMoveable element in Elements)
+			{
+				if (element.ID == id)
+				{
+					subchip = (SubChipInstance)element;
+					return true;
+				}
+			}
+
+			subchip = null;
 			return false;
 		}
 

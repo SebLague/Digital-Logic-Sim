@@ -66,10 +66,11 @@ namespace DLS.Game
 		public void Delete(IMoveable element, bool clearSelection = true, bool recordUndo = true)
 		{
 			if (!HasControl) return;
-			if (element is SubChipInstance subChip) ActiveDevChip.DeleteSubChip(subChip);
-			if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
-
 			if (recordUndo) ActiveDevChip.UndoController.RecordDeleteAction(new List<IMoveable>(new[] { element }));
+
+			if (element is SubChipInstance subChip) ActiveDevChip.DeleteSubChip(subChip);
+			else if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
+
 			if (clearSelection) SelectedElements.Clear();
 		}
 
@@ -130,12 +131,12 @@ namespace DLS.Game
 			// Delete selected subchips/pins
 			if (SelectedElements.Count > 0)
 			{
+				ActiveDevChip.UndoController.RecordDeleteAction(SelectedElements);
+				
 				foreach (IMoveable selectedElement in SelectedElements)
 				{
 					Delete(selectedElement, false, false);
 				}
-
-				ActiveDevChip.UndoController.RecordDeleteAction(SelectedElements);
 
 				SelectedElements.Clear();
 			}
@@ -229,7 +230,8 @@ namespace DLS.Game
 				}
 				else
 				{
-					DeleteSelected();
+					if (isPlacingNewElements) CancelPlacingItems();
+					else DeleteSelected();
 				}
 			}
 

@@ -63,8 +63,33 @@ namespace DLS.Game
 
 		void RecordAddOrDeleteAction(List<IMoveable> elements, bool delete)
 		{
-			SubChipInstance[] subchips = elements.OfType<SubChipInstance>().ToArray();
+			List<SubChipInstance> subchips = elements.OfType<SubChipInstance>().ToList();
 			DevPinInstance[] devPins = elements.OfType<DevPinInstance>().ToArray();
+
+			// ---- Bus handling ----
+			if (!delete)
+			{
+				// Ignore bus origin when placing (it's not a 'complete' element on its own, it requires the corresponding bus terminus)
+				subchips = subchips.Where(s => !ChipTypeHelper.IsBusOriginType(s.ChipType)).ToList();
+				if (subchips.Count == 0) return;
+			}
+
+			// Ensure that if we have one part of the bus, the linked pair is included as well
+			SubChipInstance[] buses = subchips.Where(s => s.IsBus).ToArray();
+			if (buses.Length > 0)
+			{
+				HashSet<int> busIDsInOriginalList = subchips.Where(s => s.IsBus).Select(b => b.ID).ToHashSet();
+
+				foreach (SubChipInstance bus in buses)
+				{
+					if (busIDsInOriginalList.Contains(bus.LinkedBusPairID)) continue;
+
+					bool foundPair = devChip.TryGetSubChipByID(bus.LinkedBusPairID, out SubChipInstance linkedBus);
+					if (!foundPair) throw new Exception("Failed to find bus pair when creating undo/redo action");
+
+					subchips.Add(linkedBus);
+				}
+			}
 
 			AddOrDeleteUndoAction deleteAction = new()
 			{
@@ -72,7 +97,7 @@ namespace DLS.Game
 				subchipDescriptions = subchips.Select(DescriptionCreator.CreateSubChipDescription).ToArray(),
 				pinDescriptions = devPins.Select(DescriptionCreator.CreatePinDescription).ToArray(),
 				pinInInputFlags = devPins.Select(p => p.IsInputPin).ToArray(),
-				delete = delete
+				isDeleteAction = delete
 			};
 
 			RecordUndoAction(deleteAction);
@@ -141,18 +166,21 @@ namespace DLS.Game
 
 			public PinDescription[] pinDescriptions;
 			public bool[] pinInInputFlags;
-			public bool delete;
+
+			public bool isDeleteAction;
 
 			public void Trigger(bool undo, DevChipInstance devChip)
 			{
-				if (!delete) undo = !undo;
+				if (!isDeleteAction) undo = !undo;
+				bool delete = undo;
 
+
+				// ---- Handle subchips ----
 				for (int i = 0; i < chipNames.Length; i++)
 				{
 					ChipDescription description = Project.ActiveProject.chipLibrary.GetChipDescription(chipNames[i]);
-					if (ChipTypeHelper.IsBusType(description.ChipType)) continue; // TODO
 
-					if (undo)
+					if (delete)
 					{
 						SubChipInstance subchip = new(description, subchipDescriptions[i]);
 						devChip.AddNewSubChip(subchip, false);
@@ -160,15 +188,17 @@ namespace DLS.Game
 					}
 					else if (!devChip.TryDeleteSubChipByID(subchipDescriptions[i].ID))
 					{
-						throw new Exception("Failed to delete subchip");
+						// (bus pairs deleted automatically, so the other part is expected to fail)
+						if (!ChipTypeHelper.IsBusType(description.ChipType)) throw new Exception("Failed to delete subchip");
 					}
 				}
 
+				// ---- Handle dev pins ----
 				for (int i = 0; i < pinDescriptions.Length; i++)
 				{
 					PinDescription pinDescription = pinDescriptions[i];
 
-					if (undo)
+					if (delete)
 					{
 						DevPinInstance devPin = new(pinDescription, pinInInputFlags[i]);
 						devChip.AddNewDevPin(devPin, false);
