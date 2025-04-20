@@ -213,6 +213,26 @@ namespace DLS.Simulation
 					chip.OutputPins[0].State.SetBit(0, high ? PinState.LogicHigh : PinState.LogicLow);
 					break;
 				}
+				case ChipType.Random:
+				{
+					uint signal = chip.InputPins[0].State.GetBit(0);
+
+					if (signal == PinState.LogicDisconnected) // Disconnect 
+					{
+						chip.OutputPins[0].State.SetBit(0, signal);
+					}
+					else if (signal == PinState.LogicHigh)
+					{
+						if (chip.InternalState[0] == PinState.LogicLow)
+						{
+							chip.OutputPins[0].State.SetBit(0, RandomBool() ? PinState.LogicHigh : PinState.LogicLow);
+						}
+					}
+
+					chip.InternalState[0] = signal;
+
+					break;
+				}
 				case ChipType.Split_4To1Bit:
 				{
 					SimPin in4 = chip.InputPins[0];

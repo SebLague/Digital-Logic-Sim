@@ -26,6 +26,7 @@ namespace DLS.Game
 				CreateNand(),
 				CreateTristateBuffer(),
 				CreateClock(),
+				CreateRandom(),
 				// ---- Memory ----
 				dev_CreateRAM_8(),
 				CreateROM_8(),
@@ -63,7 +64,18 @@ namespace DLS.Game
 			return CreateBuiltinChipDescription(ChipType.Nand, size, col, inputPins, outputPins);
 		}
 
-		static ChipDescription dev_CreateRAM_8()
+		static ChipDescription CreateRandom()
+		{
+			Color col = new(0.26f, 0.73f, 0.26f);
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 10), GridSize * 2);
+
+			PinDescription[] inputPins = { CreatePinDescription("IN", 0) };
+			PinDescription[] outputPins = { CreatePinDescription("OUT", 1) };
+
+			return CreateBuiltinChipDescription(ChipType.Random, size, col, inputPins, outputPins);
+		}
+
+        static ChipDescription dev_CreateRAM_8()
 		{
 			Color col = new(0.85f, 0.45f, 0.3f);
 
