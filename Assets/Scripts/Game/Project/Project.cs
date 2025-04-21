@@ -240,6 +240,13 @@ namespace DLS.Game
 			// restart the simulation in this case (this is not ideal though, since state of latches etc will be lost)
 			bool simReloadRequired = ChipContainsSubchipIndirectly(ViewedChip, chipToDeleteName);
 
+			if (ChipContainsSubChipDirectly(ViewedChip, chipToDeleteName))
+			{
+				// if deleted chip is a subchip of the current chip, clear undo history as it may now be invalid
+				// (Todo: maybe handle more gracefully...)
+				ViewedChip.UndoController.Clear();
+			}
+
 
 			UpdateAndSaveAffectedChips(chipLibrary.GetChipDescription(chipToDeleteName), null, true);
 
@@ -311,6 +318,19 @@ namespace DLS.Game
 					}
 				}
 			}
+		}
+
+		bool ChipContainsSubChipDirectly(DevChipInstance chip, string targetName)
+		{
+			foreach (IMoveable element in chip.Elements)
+			{
+				if (element is SubChipInstance s && ChipDescription.NameMatch(s.Description.Name, targetName))
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		// Must be called prior to library being updated with the change

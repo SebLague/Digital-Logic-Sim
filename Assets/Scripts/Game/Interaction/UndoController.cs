@@ -18,6 +18,12 @@ namespace DLS.Game
 			this.devChip = devChip;
 		}
 
+		public void Clear()
+		{
+			undoHistory.Clear();
+			undoIndex = -1;
+		}
+
 		public void TryUndo()
 		{
 			if (undoIndex == -1) return;
@@ -198,12 +204,7 @@ namespace DLS.Game
 			}
 			catch (Exception e)
 			{
-				// Undo/redo can fail in some cases. For example: player moves chip A, then goes into library and deletes that chip type from the project.
-				// Attempting to undo the chip movement will now fail since that chip was forcibly removed. If we encounter such a problem, clear the undo history to prevent potential problems.
-				// (should probably think about handling more gracefully in the future though)
-				undoHistory.Clear();
-				undoIndex = -1;
-				if (Application.isEditor) Debug.Log($"Undo/redo action failed. Clearing undo history. Reason: {e.Message} Stack trace: {e.StackTrace}");
+				if (Application.isEditor) Debug.Log($"Undo/redo action failed. Reason: {e.Message} Stack trace: {e.StackTrace}");
 			}
 		}
 
