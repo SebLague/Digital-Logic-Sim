@@ -11,7 +11,7 @@ namespace DLS.Game
 	{
 		readonly List<UndoAction> undoHistory = new();
 		int undoIndex = -1;
-		DevChipInstance devChip;
+		readonly DevChipInstance devChip;
 
 		public UndoController(DevChipInstance devChip)
 		{
@@ -71,13 +71,30 @@ namespace DLS.Game
 
 		public void RecordMoveElements(List<IMoveable> movedElements)
 		{
+			int count = movedElements.Count;
 			MoveUndoAction moveUndoAction = new()
 			{
-				subChipIDs = movedElements.Select(element => element.ID).ToArray(),
-				originalPositions = movedElements.Select(element => element.MoveStartPosition).ToArray(),
-				newPositions = movedElements.Select(element => element.Position).ToArray(),
-				wireMoveOffsets = devChip.Wires.Select(w => w.MoveOffset).ToArray()
+				subChipIDs = new int[count],
+				originalPositions = new Vector2[count],
+				newPositions = new Vector2[count]
 			};
+
+			// Selected elements
+			for (int i = 0; i < count; i++)
+			{
+				IMoveable element = movedElements[i];
+				moveUndoAction.subChipIDs[i] = element.ID;
+				moveUndoAction.originalPositions[i] = element.MoveStartPosition;
+				moveUndoAction.newPositions[i] = element.Position;
+			}
+
+			// Wire move offsets
+			int wireCount = devChip.Wires.Count;
+			moveUndoAction.wireMoveOffsets = new Vector2[wireCount];
+			for (int i = 0; i < wireCount; i++)
+			{
+				moveUndoAction.wireMoveOffsets[i] = devChip.Wires[i].MoveOffset;
+			}
 
 			RecordUndoAction(moveUndoAction);
 		}
@@ -102,7 +119,7 @@ namespace DLS.Game
 			{
 				// Ignore bus origin when placing (it's not a 'complete' element on its own, it requires the corresponding bus terminus)
 				subchips = subchips.Where(s => !ChipTypeHelper.IsBusOriginType(s.ChipType)).ToList();
-				if (subchips.Count == 0) return;
+				if (subchips.Count == 0 && devPins.Length == 0) return;
 			}
 
 			// Ensure that if we have one part of the bus, the linked pair is included as well
@@ -333,9 +350,9 @@ namespace DLS.Game
 						devChip.AddNewDevPin(devPin, false);
 						Project.ActiveProject.controller.Select(devPin, true);
 					}
-					else if (!devChip.TryDeleteDevPinByID(pinDescription.ID))
+					else
 					{
-						throw new Exception("Failed to delete dev pin");
+						if (!devChip.TryDeleteDevPinByID(pinDescription.ID)) throw new Exception("Failed to delete dev pin");
 					}
 				}
 
