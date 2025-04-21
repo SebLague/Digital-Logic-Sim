@@ -48,10 +48,14 @@ namespace DLS.Game
 			int wireIndex = wire.descriptionCreator_wireIndex;
 			WireDescription wireDesc = DescriptionCreator.CreateWireDescription(wire);
 
+			FullWireState stateBeforeDelete = null;
+			if (delete) stateBeforeDelete = CreateFullWireState(devChip, new HashSet<WireInstance>(new[] { wire }));
+
 			WireExistenceAction action = new()
 			{
 				wireDescription = wireDesc,
 				wireIndex = wireIndex,
+				fullWireStateBeforeDelete = stateBeforeDelete,
 				isDeleteAction = delete
 			};
 
@@ -235,6 +239,8 @@ namespace DLS.Game
 			public WireDescription wireDescription;
 			public int wireIndex;
 			public bool isDeleteAction;
+			public FullWireState fullWireStateBeforeDelete;
+
 
 			public void Trigger(bool undo, DevChipInstance devChip)
 			{
@@ -243,9 +249,16 @@ namespace DLS.Game
 
 				if (addWire)
 				{
-					(WireInstance loadedWire, bool failed) = DevChipInstance.TryLoadWireFromDescription(wireDescription, wireIndex, devChip, devChip.Wires);
-					if (failed) throw new Exception("Failed to load wire in undo/redo action");
-					else devChip.AddWire(loadedWire, false, wireIndex);
+					if (fullWireStateBeforeDelete != null)
+					{
+						fullWireStateBeforeDelete.Restore(devChip);
+					}
+					else
+					{
+						(WireInstance loadedWire, bool failed) = DevChipInstance.TryLoadWireFromDescription(wireDescription, wireIndex, devChip, devChip.Wires);
+						if (failed) throw new Exception("Failed to load wire in undo/redo action");
+						else devChip.AddWire(loadedWire, false, wireIndex);
+					}
 				}
 				else
 				{
