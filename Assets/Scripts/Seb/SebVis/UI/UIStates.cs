@@ -447,7 +447,6 @@ namespace Seb.Vis.UI
 			cursorLineIndex = Mathf.Clamp(lineIndex, 0, lines.Count - 1);
 			cursorBeforeCharIndex = Mathf.Clamp(charIndex, 0, lines[cursorLineIndex].Length);
 
-
 			UpdateLastInputTime();
 
 			int globalIndex = maxCharsPerLine * cursorLineIndex + cursorBeforeCharIndex;
@@ -476,6 +475,21 @@ namespace Seb.Vis.UI
 			if (isSelecting) Delete(true);
 
 			string currentLine = lines[cursorLineIndex];
+
+			// Check if the current line contains a newline character
+			if (currentLine.Contains("\n"))
+			{
+				// Find the index of the newline character
+				int newlineIndex = currentLine.IndexOf('\n');
+
+				// If the cursor is positioned after the newline, move it before the newline
+				if (cursorBeforeCharIndex > newlineIndex)
+				{
+					cursorBeforeCharIndex = newlineIndex;
+				}
+			}
+
+			// Insert the text at the current cursor position
 			string newLine = currentLine.Insert(cursorBeforeCharIndex, textToAdd);
 
 			if (validation == null || validation(newLine))
