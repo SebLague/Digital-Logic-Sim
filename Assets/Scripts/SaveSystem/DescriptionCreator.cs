@@ -72,6 +72,7 @@ namespace DLS.SaveSystem
 			{
 				ChipType.Rom_256x16 => new uint[256],
 				ChipType.Key => new uint[] { 'K' },
+				ChipType.Pulse => new uint[] { 50, 0, 0 },
 				_ => ChipTypeHelper.IsBusType(type) ? new uint[2] : null
 			};
 

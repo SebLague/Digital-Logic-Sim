@@ -66,6 +66,13 @@ namespace DLS.Graphics
 			labelChipEntry,
 			deleteEntry
 		};
+		
+		static readonly MenuEntry[] entries_builtinPulseChip =
+		{
+			new(Format("EDIT"), OpenPulseEditMenu, CanEditCurrentChip),
+			labelChipEntry,
+			deleteEntry
+		};
 
 
 		static readonly MenuEntry[] entries_subChipOutput = pinColEntries;
@@ -168,8 +175,9 @@ namespace DLS.Graphics
 						else // builtin type
 						{
 							headerName = ChipTypeHelper.IsBusType(subChip.ChipType) ? "BUS" : subChip.Description.Name;
-							if (subChip.ChipType == ChipType.Key) activeContextMenuEntries = entries_builtinKeySubchip;
+							if (subChip.ChipType is ChipType.Key) activeContextMenuEntries = entries_builtinKeySubchip;
 							else if (ChipTypeHelper.IsRomType(subChip.ChipType)) activeContextMenuEntries = entries_builtinRomSubchip;
+							else if (subChip.ChipType is ChipType.Pulse) activeContextMenuEntries = entries_builtinPulseChip;
 							else if (ChipTypeHelper.IsBusType(subChip.ChipType)) activeContextMenuEntries = entries_builtinBus;
 							else activeContextMenuEntries = entries_builtinSubchip;
 						}
@@ -373,6 +381,8 @@ namespace DLS.Graphics
 		}
 
 		static void OpenRomEditMenu() => UIDrawer.SetActiveMenu(UIDrawer.MenuType.RomEdit);
+		
+		static void OpenPulseEditMenu() => UIDrawer.SetActiveMenu(UIDrawer.MenuType.PulseEdit);
 
 		static bool CanEditCurrentChip() => Project.ActiveProject.CanEditViewedChip;
 

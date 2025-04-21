@@ -225,6 +225,14 @@ namespace DLS.Game
 			simChip.ChangeKeyBinding(newKey);
 		}
 
+		// Chip's pulse width has been changed, so simulation must be updated
+		public void NotifyPulseWidthChanged(SubChipInstance chip, uint widthNew)
+		{
+			chip.InternalData[0] = widthNew;
+			SimChip simChip = rootSimChip.GetSubChipFromID(chip.ID);
+			simChip.InternalState[0] = widthNew;
+		}
+
 		// Rom has been edited, so simulation must be updated
 		public void NotifyRomContentsEdited(SubChipInstance romChip)
 		{
