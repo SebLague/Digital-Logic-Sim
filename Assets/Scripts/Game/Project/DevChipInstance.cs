@@ -102,9 +102,8 @@ namespace DLS.Game
 			for (int i = 0; i < description.Wires.Length; i++)
 			{
 				WireDescription wireDescription = description.Wires[i];
-				WireInstance connectedWire = wireDescription.ConnectedWireIndex >= 0 ? loadedWiresWithOriginalIndices[wireDescription.ConnectedWireIndex] : null;
-				(WireInstance loadedWire, bool failed) = TryLoadWireFromDescription(wireDescription, i, instance, connectedWire);
-				
+				(WireInstance loadedWire, bool failed) = TryLoadWireFromDescription(wireDescription, i, instance, loadedWiresWithOriginalIndices);
+
 				if (!failed) instance.AddWire(loadedWire, true);
 
 				loadedWiresWithOriginalIndices[i] = loadedWire;
@@ -116,10 +115,11 @@ namespace DLS.Game
 			return (instance, anyElementFailedToLoad);
 		}
 
-		public static (WireInstance loadedWire, bool failed) TryLoadWireFromDescription(WireDescription wireDescription, int wireIndex, DevChipInstance instance, WireInstance connectedWire)
+		public static (WireInstance loadedWire, bool failed) TryLoadWireFromDescription(WireDescription wireDescription, int wireIndex, DevChipInstance instance, IList<WireInstance> allWires)
 		{
 			bool failedToLoad = false;
 			WireInstance loadedWire = null;
+			WireInstance connectedWire = wireDescription.ConnectedWireIndex >= 0 ? allWires[wireDescription.ConnectedWireIndex] : null;
 
 			instance.TryFindPin(wireDescription.SourcePinAddress, out PinInstance sourcePin);
 			instance.TryFindPin(wireDescription.TargetPinAddress, out PinInstance targetPin);
@@ -237,7 +237,7 @@ namespace DLS.Game
 			bool insert = insertIndex != -1;
 			if (insert) Wires.Insert(insertIndex, wire);
 			else Wires.Add(wire);
-			
+
 			if (!isLoading)
 			{
 				Simulator.AddConnection(SimChip, wire.SourcePin.Address, wire.TargetPin.Address);
@@ -296,14 +296,6 @@ namespace DLS.Game
 		}
 
 
-		void DeleteWiresAttachedToPins(PinInstance[] pins)
-		{
-			foreach (PinInstance pin in pins)
-			{
-				DeleteWiresAttachedToPin(pin);
-			}
-		}
-
 		void DeleteWiresAttachedToPin(PinInstance pin)
 		{
 			for (int i = Wires.Count - 1; i >= 0; i--)
@@ -317,15 +309,16 @@ namespace DLS.Game
 			}
 		}
 
-		public bool DeleteWiresAttachedToSubChip(int id)
+
+		public bool DeleteWiresAttachedToPinOfSubChip(int pinID)
 		{
 			bool anyDeleted = false;
 
 			for (int i = Wires.Count - 1; i >= 0; i--)
 			{
 				WireInstance wire = Wires[i];
-				bool sourceMatch = wire.SourcePin.parent is SubChipInstance && wire.SourcePin.Address.PinID == id;
-				bool targetMatch = wire.TargetPin.parent is SubChipInstance && wire.TargetPin.Address.PinID == id;
+				bool sourceMatch = wire.SourcePin.parent is SubChipInstance && wire.SourcePin.Address.PinID == pinID;
+				bool targetMatch = wire.TargetPin.parent is SubChipInstance && wire.TargetPin.Address.PinID == pinID;
 
 				if (sourceMatch || targetMatch)
 				{
@@ -337,6 +330,35 @@ namespace DLS.Game
 			return anyDeleted;
 		}
 
+		public void GetWiresAttachedToElement(int elementID, HashSet<WireInstance> set)
+		{
+			foreach (WireInstance wire in Wires)
+			{
+				bool sourceMatch = wire.SourcePin.Address.PinOwnerID == elementID;
+				bool targetMatch = wire.TargetPin.Address.PinOwnerID == elementID;
+
+				if (sourceMatch || targetMatch)
+				{
+					set.Add(wire);
+				}
+			}
+		}
+
+		public void DeleteWiresAttachedToElement(int elementID)
+		{
+			for (int i = Wires.Count - 1; i >= 0; i--)
+			{
+				WireInstance wire = Wires[i];
+				bool sourceMatch = wire.SourcePin.Address.PinOwnerID == elementID;
+				bool targetMatch = wire.TargetPin.Address.PinOwnerID == elementID;
+
+				if (sourceMatch || targetMatch)
+				{
+					DeleteWire(wire);
+				}
+			}
+		}
+
 
 		public void DeleteSubChip(SubChipInstance subChip)
 		{
@@ -344,7 +366,7 @@ namespace DLS.Game
 			// (required for buses, where one end of bus is deleted automatically when other end is deleted; but user may select both ends for deletion)
 			if (!Elements.Contains(subChip)) return;
 
-			DeleteWiresAttachedToPins(subChip.AllPins);
+			DeleteWiresAttachedToElement(subChip.ID);
 			RemoveElement(subChip);
 
 			if (hasSimChip) Simulator.RemoveSubChip(SimChip, subChip.ID);

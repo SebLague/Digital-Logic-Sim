@@ -351,12 +351,12 @@ namespace DLS.Game
 					// Detect deleted dev pins, and remove any connections to the corresponding subchip pins in the affected chip
 					foreach (PinDescription p in root_desc.InputPins)
 					{
-						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToSubChip(p.ID);
+						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToPinOfSubChip(p.ID);
 					}
 
 					foreach (PinDescription p in root_desc.OutputPins)
 					{
-						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToSubChip(p.ID);
+						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToPinOfSubChip(p.ID);
 					}
 				}
 

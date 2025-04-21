@@ -111,12 +111,40 @@ namespace DLS.Game
 				}
 			}
 
+			FullWireState wireStateBeforeDelete = null;
+			if (delete)
+			{
+				DescriptionCreator.UpdateWireIndicesForDescriptionCreation(devChip);
+				WireDescription[] wireDescriptions = new WireDescription[devChip.Wires.Count];
+				bool[] willDeleteWireFlags = new bool[devChip.Wires.Count];
+
+				HashSet<WireInstance> wiresThatWillBeDeletedAutomatically = new();
+				foreach (IMoveable element in elements)
+				{
+					devChip.GetWiresAttachedToElement(element.ID, wiresThatWillBeDeletedAutomatically);
+				}
+
+				for (int i = 0; i < wireDescriptions.Length; i++)
+				{
+					wireDescriptions[i] = DescriptionCreator.CreateWireDescription(devChip.Wires[i]);
+					willDeleteWireFlags[i] = wiresThatWillBeDeletedAutomatically.Contains(devChip.Wires[i]);
+					Debug.Log($"Full wire state: {i}  Will delete: {willDeleteWireFlags[i]}");
+				}
+
+				wireStateBeforeDelete = new()
+				{
+					wireDescriptions = wireDescriptions,
+					createFlags = willDeleteWireFlags,
+				};
+			}
+
 			ElementExistenceAction deleteAction = new()
 			{
 				chipNames = subchips.Select(s => s.Description.Name).ToArray(),
 				subchipDescriptions = subchips.Select(DescriptionCreator.CreateSubChipDescription).ToArray(),
 				pinDescriptions = devPins.Select(DescriptionCreator.CreatePinDescription).ToArray(),
 				pinInInputFlags = devPins.Select(p => p.IsInputPin).ToArray(),
+				wireStateBeforeDelete = wireStateBeforeDelete,
 				isDeleteAction = delete
 			};
 
@@ -196,14 +224,32 @@ namespace DLS.Game
 
 				if (addWire)
 				{
-					WireInstance connectedWire = wireDescription.ConnectedWireIndex >= 0 ? devChip.Wires[wireDescription.ConnectedWireIndex] : null;
-					(WireInstance loadedWire, bool failed) = DevChipInstance.TryLoadWireFromDescription(wireDescription, wireIndex, devChip, connectedWire);
+					(WireInstance loadedWire, bool failed) = DevChipInstance.TryLoadWireFromDescription(wireDescription, wireIndex, devChip, devChip.Wires);
 					if (failed) throw new Exception("Failed to load wire in undo/redo action");
 					else devChip.AddWire(loadedWire, false, wireIndex);
 				}
 				else
 				{
 					devChip.DeleteWire(devChip.Wires[wireIndex]);
+				}
+			}
+		}
+
+		class FullWireState
+		{
+			public WireDescription[] wireDescriptions;
+			public bool[] createFlags;
+
+			public void Restore(DevChipInstance devChip)
+			{
+				for (int i = 0; i < wireDescriptions.Length; i++)
+				{
+					Debug.Log($"Restoring wire {i} | Create new = {createFlags[i]}");
+					var res = DevChipInstance.TryLoadWireFromDescription(wireDescriptions[i], i, devChip, devChip.Wires);
+					if (res.failed) throw new Exception("Failed to load wire in undo/redo action");
+
+					if (createFlags[i]) devChip.AddWire(res.loadedWire, false, i);
+					else devChip.Wires[i] = res.loadedWire;
 				}
 			}
 		}
@@ -215,6 +261,7 @@ namespace DLS.Game
 
 			public PinDescription[] pinDescriptions;
 			public bool[] pinInInputFlags;
+			public FullWireState wireStateBeforeDelete;
 
 			public bool isDeleteAction;
 
@@ -257,6 +304,11 @@ namespace DLS.Game
 					{
 						throw new Exception("Failed to delete dev pin");
 					}
+				}
+
+				if (addElement && wireStateBeforeDelete != null)
+				{
+					wireStateBeforeDelete.Restore(devChip);
 				}
 			}
 		}
