@@ -66,6 +66,7 @@ namespace DLS.Game
 				subChipIDs = movedElements.Select(element => element.ID).ToArray(),
 				originalPositions = movedElements.Select(element => element.MoveStartPosition).ToArray(),
 				newPositions = movedElements.Select(element => element.Position).ToArray(),
+				wireMoveOffsets = devChip.Wires.Select(w => w.MoveOffset).ToArray()
 			};
 
 			RecordUndoAction(moveUndoAction);
@@ -111,31 +112,19 @@ namespace DLS.Game
 				}
 			}
 
+			// When deleting elements, store full state of ALL wires, not just those affected by the deletion.
+			// This is because other wires may be connected to the deleted wires (in which case their points are modified),
+			// and we want their original state to be restored as well. It's a bit of a pain to specially handle those, so just do a full state backup.
 			FullWireState wireStateBeforeDelete = null;
 			if (delete)
 			{
-				DescriptionCreator.UpdateWireIndicesForDescriptionCreation(devChip);
-				WireDescription[] wireDescriptions = new WireDescription[devChip.Wires.Count];
-				bool[] willDeleteWireFlags = new bool[devChip.Wires.Count];
-
 				HashSet<WireInstance> wiresThatWillBeDeletedAutomatically = new();
 				foreach (IMoveable element in elements)
 				{
 					devChip.GetWiresAttachedToElement(element.ID, wiresThatWillBeDeletedAutomatically);
 				}
 
-				for (int i = 0; i < wireDescriptions.Length; i++)
-				{
-					wireDescriptions[i] = DescriptionCreator.CreateWireDescription(devChip.Wires[i]);
-					willDeleteWireFlags[i] = wiresThatWillBeDeletedAutomatically.Contains(devChip.Wires[i]);
-					Debug.Log($"Full wire state: {i}  Will delete: {willDeleteWireFlags[i]}");
-				}
-
-				wireStateBeforeDelete = new()
-				{
-					wireDescriptions = wireDescriptions,
-					createFlags = willDeleteWireFlags,
-				};
+				wireStateBeforeDelete = CreateFullWireState(devChip, wiresThatWillBeDeletedAutomatically);
 			}
 
 			ElementExistenceAction deleteAction = new()
@@ -149,6 +138,28 @@ namespace DLS.Game
 			};
 
 			RecordUndoAction(deleteAction);
+		}
+
+		static FullWireState CreateFullWireState(DevChipInstance devChip, HashSet<WireInstance> wiresThatWillBeDeleted)
+		{
+			DescriptionCreator.UpdateWireIndicesForDescriptionCreation(devChip);
+			WireDescription[] wireDescriptions = new WireDescription[devChip.Wires.Count];
+			bool[] willDeleteWireFlags = new bool[devChip.Wires.Count];
+
+			for (int i = 0; i < wireDescriptions.Length; i++)
+			{
+				wireDescriptions[i] = DescriptionCreator.CreateWireDescription(devChip.Wires[i]);
+				willDeleteWireFlags[i] = wiresThatWillBeDeleted.Contains(devChip.Wires[i]);
+				//Debug.Log($"Full wire state: {i}  Will delete: {willDeleteWireFlags[i]}");
+			}
+
+			FullWireState wireStateBeforeDelete = new()
+			{
+				wireDescriptions = wireDescriptions,
+				createFlags = willDeleteWireFlags,
+			};
+
+			return wireStateBeforeDelete;
 		}
 
 		void RecordUndoAction(UndoAction action)
@@ -170,7 +181,7 @@ namespace DLS.Game
 			{
 				if (action is MoveUndoAction move)
 				{
-					move.Trigger(undo, devChip.Elements);
+					move.Trigger(undo, devChip);
 				}
 				else if (action is ElementExistenceAction elementExistence)
 				{
@@ -198,15 +209,23 @@ namespace DLS.Game
 			public int[] subChipIDs;
 			public Vector2[] originalPositions;
 			public Vector2[] newPositions;
+			public Vector2[] wireMoveOffsets;
 
-			public void Trigger(bool undo, List<IMoveable> elements)
+
+			public void Trigger(bool undo, DevChipInstance devChip)
 			{
-				Dictionary<int, IMoveable> elementLookupByID = elements.ToDictionary(element => element.ID, element => element);
+				Dictionary<int, IMoveable> elementLookupByID = devChip.Elements.ToDictionary(element => element.ID, element => element);
 				for (int i = 0; i < subChipIDs.Length; i++)
 				{
 					IMoveable element = elementLookupByID[subChipIDs[i]];
 					element.Position = undo ? originalPositions[i] : newPositions[i];
 					Project.ActiveProject.controller.Select(element, true);
+				}
+
+				for (int i = 0; i < devChip.Wires.Count; i++)
+				{
+					devChip.Wires[i].MoveOffset = wireMoveOffsets[i] * (undo ? -1 : 1);
+					devChip.Wires[i].ApplyMoveOffset();
 				}
 			}
 		}
@@ -244,8 +263,8 @@ namespace DLS.Game
 			{
 				for (int i = 0; i < wireDescriptions.Length; i++)
 				{
-					Debug.Log($"Restoring wire {i} | Create new = {createFlags[i]}");
-					var res = DevChipInstance.TryLoadWireFromDescription(wireDescriptions[i], i, devChip, devChip.Wires);
+					//Debug.Log($"Restoring wire {i} | Create new = {createFlags[i]}");
+					(WireInstance loadedWire, bool failed) res = DevChipInstance.TryLoadWireFromDescription(wireDescriptions[i], i, devChip, devChip.Wires);
 					if (res.failed) throw new Exception("Failed to load wire in undo/redo action");
 
 					if (createFlags[i]) devChip.AddWire(res.loadedWire, false, i);
