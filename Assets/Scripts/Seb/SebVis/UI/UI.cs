@@ -734,29 +734,43 @@ namespace Seb.Vis.UI
 
 						if (state.isSelecting)
 						{
-							// Calculate start and end line indices
-							int startLine = Mathf.Min(state.cursorLineIndex, state.selectionStartIndex / state.maxCharsPerLine);
-							int endLine = Mathf.Max(state.cursorLineIndex, state.selectionStartIndex / state.maxCharsPerLine);
+							// Calculate global start and end indices dynamically
+							int startGlobalIndex = 0;
+							int endGlobalIndex = 0;
 
-							// Calculate start and end character indices
-							int startChar = Mathf.Min(state.cursorBeforeCharIndex, state.selectionStartIndex % state.maxCharsPerLine);
-							int endChar = Mathf.Max(state.cursorBeforeCharIndex, state.selectionStartIndex % state.maxCharsPerLine);
+							// Calculate the global index for the cursor and selection start
+							for (int i = 0; i < state.lines.Count; i++)
+							{
+								if (i < state.cursorLineIndex)
+								{
+									startGlobalIndex += state.lines[i].Length;
+								}
+								if (i < state.selectionStartIndex / state.maxCharsPerLine)
+								{
+									endGlobalIndex += state.lines[i].Length;
+								}
+							}
 
-							for (int lineIndex = startLine; lineIndex <= endLine; lineIndex++)
+							startGlobalIndex += state.cursorBeforeCharIndex;
+							endGlobalIndex += state.selectionStartIndex % state.maxCharsPerLine;
+
+							// Ensure startGlobalIndex is less than or equal to endGlobalIndex
+							if (startGlobalIndex > endGlobalIndex)
+							{
+								(startGlobalIndex, endGlobalIndex) = (endGlobalIndex, startGlobalIndex);
+							}
+
+							int currentGlobalIndex = 0;
+
+							for (int lineIndex = 0; lineIndex < state.lines.Count; lineIndex++)
 							{
 								string line = state.lines[lineIndex];
-								int lineStartIndex = 0;
-								int lineEndIndex = line.Length;
+								int lineStartIndex = currentGlobalIndex;
+								int lineEndIndex = lineStartIndex + line.Length;
 
-								// Determine the selection range for this line
-								int selectionStartInLine = (lineIndex == startLine) ? Mathf.Clamp(startChar, lineStartIndex, lineEndIndex) : lineStartIndex;
-								int selectionEndInLine = (lineIndex == endLine) ? Mathf.Clamp(endChar, lineStartIndex, lineEndIndex) : lineEndIndex;
-
-								// Ensure selectionStartInLine is less than or equal to selectionEndInLine
-								if (selectionStartInLine > selectionEndInLine)
-								{
-									(selectionStartInLine, selectionEndInLine) = (selectionEndInLine, selectionStartInLine);
-								}
+								// Determine the selection range for this line using global indices
+								int selectionStartInLine = Mathf.Clamp(startGlobalIndex - lineStartIndex, 0, line.Length);
+								int selectionEndInLine = Mathf.Clamp(endGlobalIndex - lineStartIndex, 0, line.Length);
 
 								// Draw the selection box for the current line
 								Vector2 boundsSizeUpToStart = Draw.CalculateTextBoundsSize(line.AsSpan(0, selectionStartInLine), theme.fontSize, theme.font);
@@ -774,6 +788,8 @@ namespace Seb.Vis.UI
 								Vector2 s = new(endX - startX, theme.fontSize * 1.2f * scale);
 
 								Draw.Quad(c, s, new Color(0.2f, 0.6f, 1, 0.5f));
+
+								currentGlobalIndex += line.Length;
 							}
 						}
 
