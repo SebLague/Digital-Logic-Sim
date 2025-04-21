@@ -451,18 +451,17 @@ namespace DLS.Simulation
 
 		public static SimChip BuildSimChip(ChipDescription chipDesc, ChipLibrary library)
 		{
-			SubChipDescription subChipDescription = new(chipDesc.Name, -1, string.Empty, Vector2.zero, null);
-			return BuildSimChip(chipDesc, library, subChipDescription);
+			return BuildSimChip(chipDesc, library, -1, null);
 		}
 
-		public static SimChip BuildSimChip(ChipDescription chipDesc, ChipLibrary library, SubChipDescription selfSubChip)
+		public static SimChip BuildSimChip(ChipDescription chipDesc, ChipLibrary library, int subChipID, uint[] internalState)
 		{
-			SimChip simChip = BuildSimChipRecursive(chipDesc, library, selfSubChip);
+			SimChip simChip = BuildSimChipRecursive(chipDesc, library, subChipID, internalState);
 			return simChip;
 		}
 
 		// Recursively build full representation of chip from its description for simulation.
-		static SimChip BuildSimChipRecursive(ChipDescription chipDesc, ChipLibrary library, SubChipDescription selfSubChip)
+		static SimChip BuildSimChipRecursive(ChipDescription chipDesc, ChipLibrary library, int subChipID, uint[] internalState)
 		{
 			// Recursively create subchips
 			SimChip[] subchips = chipDesc.SubChips.Length == 0 ? Array.Empty<SimChip>() : new SimChip[chipDesc.SubChips.Length];
@@ -471,11 +470,11 @@ namespace DLS.Simulation
 			{
 				SubChipDescription subchipDesc = chipDesc.SubChips[i];
 				ChipDescription subchipFullDesc = library.GetChipDescription(subchipDesc.Name);
-				SimChip subChip = BuildSimChipRecursive(subchipFullDesc, library, subchipDesc);
+				SimChip subChip = BuildSimChipRecursive(subchipFullDesc, library, subchipDesc.ID, subchipDesc.InternalData);
 				subchips[i] = subChip;
 			}
 
-			SimChip simChip = new(chipDesc, selfSubChip, subchips);
+			SimChip simChip = new(chipDesc, subChipID, internalState, subchips);
 
 
 			// Create connections
@@ -510,7 +509,7 @@ namespace DLS.Simulation
 			modificationQueue.Enqueue(command);
 		}
 
-		public static void AddSubChip(SimChip simChip, ChipDescription desc, ChipLibrary chipLibrary, SubChipDescription subChipDesc)
+		public static void AddSubChip(SimChip simChip, ChipDescription desc, ChipLibrary chipLibrary, int subChipID, uint[] subChipInternalData)
 		{
 			SimModifyCommand command = new()
 			{
@@ -518,7 +517,8 @@ namespace DLS.Simulation
 				modifyTarget = simChip,
 				chipDesc = desc,
 				lib = chipLibrary,
-				subChipDesc = subChipDesc
+				subChipID = subChipID,
+				subChipInternalData = subChipInternalData
 			};
 			modificationQueue.Enqueue(command);
 		}
@@ -569,7 +569,7 @@ namespace DLS.Simulation
 				{
 					if (cmd.type == SimModifyCommand.ModificationType.AddSubchip)
 					{
-						SimChip newSubChip = BuildSimChip(cmd.chipDesc, cmd.lib, cmd.subChipDesc);
+						SimChip newSubChip = BuildSimChip(cmd.chipDesc, cmd.lib, cmd.subChipID, cmd.subChipInternalData);
 						cmd.modifyTarget.AddSubChip(newSubChip);
 					}
 					else if (cmd.type == SimModifyCommand.ModificationType.RemoveSubChip)
@@ -618,7 +618,8 @@ namespace DLS.Simulation
 			public SimChip modifyTarget;
 			public ChipDescription chipDesc;
 			public ChipLibrary lib;
-			public SubChipDescription subChipDesc;
+			public int subChipID;
+			public uint[] subChipInternalData;
 			public PinAddress sourcePinAddress;
 			public PinAddress targetPinAddress;
 			public SimPin simPinToAdd;

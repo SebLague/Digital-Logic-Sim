@@ -240,6 +240,13 @@ namespace DLS.Game
 			// restart the simulation in this case (this is not ideal though, since state of latches etc will be lost)
 			bool simReloadRequired = ChipContainsSubchipIndirectly(ViewedChip, chipToDeleteName);
 
+			if (ChipContainsSubChipDirectly(ViewedChip, chipToDeleteName))
+			{
+				// if deleted chip is a subchip of the current chip, clear undo history as it may now be invalid
+				// (Todo: maybe handle more gracefully...)
+				ViewedChip.UndoController.Clear();
+			}
+
 
 			UpdateAndSaveAffectedChips(chipLibrary.GetChipDescription(chipToDeleteName), null, true);
 
@@ -313,6 +320,19 @@ namespace DLS.Game
 			}
 		}
 
+		bool ChipContainsSubChipDirectly(DevChipInstance chip, string targetName)
+		{
+			foreach (IMoveable element in chip.Elements)
+			{
+				if (element is SubChipInstance s && ChipDescription.NameMatch(s.Description.Name, targetName))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		// Must be called prior to library being updated with the change
 		// If deleting, new description can be left null
 		void UpdateAndSaveAffectedChips(ChipDescription root_desc, ChipDescription root_descNew, bool willDelete)
@@ -351,12 +371,12 @@ namespace DLS.Game
 					// Detect deleted dev pins, and remove any connections to the corresponding subchip pins in the affected chip
 					foreach (PinDescription p in root_desc.InputPins)
 					{
-						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToSubChip(p.ID);
+						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToPinOfSubChip(p.ID);
 					}
 
 					foreach (PinDescription p in root_desc.OutputPins)
 					{
-						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToSubChip(p.ID);
+						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToPinOfSubChip(p.ID);
 					}
 				}
 
