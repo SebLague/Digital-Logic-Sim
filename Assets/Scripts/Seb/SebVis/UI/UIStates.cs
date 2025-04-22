@@ -262,6 +262,7 @@ namespace Seb.Vis.UI
 		public List<string> lines { get; private set; } = new();
 		public bool focused { get; private set; }
 		public int maxCharsPerLine = 0;
+		public int maxLines = 0;
 
 		public int SelectionMinIndex => Mathf.Min(selectionStartIndex, cursorBeforeCharIndex);
 		public int SelectionMaxIndex => Mathf.Max(selectionStartIndex, cursorBeforeCharIndex);
@@ -415,10 +416,25 @@ namespace Seb.Vis.UI
 			}
 
 			string currentLine = lines[cursorLineIndex];
-			string newLine = currentLine.Substring(cursorBeforeCharIndex); // Text after the caret
-			lines[cursorLineIndex] = currentLine.Substring(0, cursorBeforeCharIndex) + "\n"; // Text before the caret
 
-			// Insert the new line into the list with a newline character
+			// Check if the current line already ends with a newline character
+			bool endsWithNewline = currentLine.Contains("\n");
+
+			// Text after the caret
+			string newLine = currentLine.Substring(cursorBeforeCharIndex);
+
+			// Text before the caret
+			if (endsWithNewline)
+			{
+				lines[cursorLineIndex] = currentLine.Substring(0, cursorBeforeCharIndex); // Keep the existing \n
+				newLine = newLine + "\n"; // Remove the \n from the new line
+			}
+			else
+			{
+				lines[cursorLineIndex] = currentLine.Substring(0, cursorBeforeCharIndex) + "\n"; // Add a new \n
+			}
+
+			// Insert the new line into the list
 			lines.Insert(cursorLineIndex + 1, newLine);
 
 			// Move the caret to the start of the new line
@@ -432,7 +448,9 @@ namespace Seb.Vis.UI
 		{
 			cursorLineIndex = 0;
 			cursorBeforeCharIndex = 0;
-			selectionStartIndex = lines.Sum(line => line.Length + 1) - 1; // Account for line breaks
+			selectionStartIndex = 0;
+			cursorLineIndex = lines.Count - 1;
+			cursorBeforeCharIndex = lines[cursorLineIndex].Length;
 			isSelecting = true;
 		}
 
@@ -472,24 +490,27 @@ namespace Seb.Vis.UI
 
 		public void TryInsertText(string textToAdd, Func<string, bool> validation = null)
 		{
-			if (isSelecting) Delete(true);
+			if (isSelecting)
+			{
+				Delete(true);
+			}
 
 			string currentLine = lines[cursorLineIndex];
 
-			// Check if the current line contains a newline character
-			if (currentLine.Contains("\n"))
+			// Prevent adding text if maxLines is reached and the cursor is on the last line
+			if (lines.Count == maxLines && cursorLineIndex == lines.Count - 1)
 			{
-				// Find the index of the newline character
-				int newlineIndex = currentLine.IndexOf('\n');
-
-				// If the cursor is positioned after the newline, move it before the newline
-				if (cursorBeforeCharIndex > newlineIndex)
+				// Limit the number of characters in the last line
+				if (currentLine.Length >= maxCharsPerLine)
 				{
-					cursorBeforeCharIndex = newlineIndex;
+					return; // Do nothing if the last line is already full
 				}
+
+				// Truncate the text to fit within the maxCharsPerLine limit
+				int remainingChars = maxCharsPerLine - currentLine.Length;
+				textToAdd = textToAdd.Substring(0, Mathf.Min(textToAdd.Length, remainingChars));
 			}
 
-			// Insert the text at the current cursor position
 			string newLine = currentLine.Insert(cursorBeforeCharIndex, textToAdd);
 
 			if (validation == null || validation(newLine))
@@ -514,14 +535,26 @@ namespace Seb.Vis.UI
 						{
 							lines[cursorLineIndex + 1] = overflowText + lines[cursorLineIndex + 1];
 						}
-						else
+						else if (lines.Count < maxLines)
 						{
 							lines.Add(overflowText);
+						}
+						else
+						{
+							// Truncate overflow text if maxLines is reached
+							lines[cursorLineIndex] += overflowText.Substring(0, Mathf.Min(overflowText.Length, maxCharsPerLine - lines[cursorLineIndex].Length));
+							break;
 						}
 
 						// Adjust cursor position
 						cursorLineIndex++;
 						cursorBeforeCharIndex = overflowText.Length;
+
+						// Stop wrapping if maxLines is reached
+						if (lines.Count >= maxLines)
+						{
+							break;
+						}
 					}
 				}
 			}

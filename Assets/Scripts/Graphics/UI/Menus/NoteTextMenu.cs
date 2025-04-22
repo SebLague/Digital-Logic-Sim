@@ -41,11 +41,11 @@ namespace DLS.Graphics
 			{
 				Vector2 unpaddedSize = Draw.CalculateTextBoundsSize(MaxLabelLength, inputTheme.fontSize, inputTheme.font);
 				const float padX = 2.25f;
-				Vector2 inputFieldSize = unpaddedSize + new Vector2(padX, 26f);
+				Vector2 inputFieldSize = unpaddedSize + new Vector2(padX, 28f);
 				Vector2 pos = UI.Centre + Vector2.up * 5;
 
 				// Draw input field
-				TextAreaState inputFieldState = UI.TextArea(ID_NameField, inputTheme, pos, inputFieldSize, note.Text, Anchor.Centre, padX / 2, MaxLabelLength, 9, null, true);
+				TextAreaState inputFieldState = UI.TextArea(ID_NameField, inputTheme, pos, inputFieldSize, note.Text, Anchor.Centre, padX / 2, MaxLabelLength, 8, null, true);
 				Bounds2D inputFieldBounds = UI.PrevBounds;
 				string newName = string.Join("", inputFieldState.lines);
 

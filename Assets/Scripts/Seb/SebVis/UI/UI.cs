@@ -541,6 +541,7 @@ namespace Seb.Vis.UI
 		{
 			TextAreaState state = GetTextAreaState(id);
 			state.maxCharsPerLine = lineLength.Length;
+			state.maxLines = maxLines;
 
 			Vector2 centre = CalculateCentre(pos, size, anchor);
 			(Vector2 centre, Vector2 size) ss = UIToScreenSpace(centre, size);
@@ -614,7 +615,7 @@ namespace Seb.Vis.UI
 						{
 							state.Delete(false, validation);
 						}
-						if (InputHelper.IsKeyDownThisFrame(KeyCode.Return) && state.lines.Count < maxLines - 1)
+						if (InputHelper.IsKeyDownThisFrame(KeyCode.Return) && state.lines.Count < maxLines)
 						{
 							state.NewLine();
 						}
@@ -706,7 +707,7 @@ namespace Seb.Vis.UI
 					Color textCol = showDefaultText ? theme.defaultTextCol : theme.textCol;
 					for (int i = 0; i < lines.Length; i++)
 					{
-						Vector2 textPos_ss = textTopLeft_ss + new Vector2(0, -i * theme.fontSize * scale);
+						Vector2 textPos_ss = textTopLeft_ss + new Vector2(0, -i * theme.fontSize * 1.2f * scale);
 						Draw.Text(theme.font, lines[i], fontSize_ss, textPos_ss, Anchor.TextCentreLeft, textCol);
 					}
 
@@ -725,7 +726,7 @@ namespace Seb.Vis.UI
 							if (i < state.cursorLineIndex)
 							{
 								// Add the size of the entire line for lines before the caret's line
-								boundsSizeUpToCaret.y -= theme.fontSize * 1.3f * scale; // Move down by line height
+								boundsSizeUpToCaret.y -= theme.fontSize * 1.2f * scale; // Move down by line height
 							}
 							else
 							{
@@ -786,7 +787,7 @@ namespace Seb.Vis.UI
 									(startX, endX) = (endX, startX);
 								}
 
-								Vector2 c = new((endX + startX) / 2, textTopLeft_ss.y - lineIndex * theme.fontSize * scale);
+								Vector2 c = new((endX + startX) / 2, textTopLeft_ss.y - lineIndex * theme.fontSize * 1.2f * scale);
 								Vector2 s = new(endX - startX, theme.fontSize * 1.2f * scale);
 
 								Draw.Quad(c, s, new Color(0.2f, 0.6f, 1, 0.5f));
@@ -871,7 +872,7 @@ namespace Seb.Vis.UI
 				float x = Draw.CalculateTextBoundsSize(span, fontSize, font).x;
 
 				// Calculate the vertical offset based on the line index
-				float y = state.cursorLineIndex * fontSize;
+				float y = state.cursorLineIndex * 1.2f * fontSize;
 
 				return new Vector2(x, -y);
 			}
