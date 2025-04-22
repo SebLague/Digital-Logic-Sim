@@ -26,10 +26,10 @@ namespace DLS.Simulation
 			ID = -1;
 		}
 
-		public SimChip(ChipDescription desc, int id, uint[] internalState, SimChip[] subChips)
+		public SimChip(ChipDescription desc, SubChipDescription subChipDescription, SimChip[] subChips)
 		{
 			SubChips = subChips;
-			ID = id;
+			ID = subChipDescription.ID;
 			ChipType = desc.ChipType;
 			IsBuiltin = ChipType != ChipType.Custom;
 
@@ -78,10 +78,10 @@ namespace DLS.Simulation
 				}
 			}
 			// Load in serialized persistent state (rom data, etc.)
-			else if (internalState is { Length: > 0 })
+			else if (subChipDescription.InternalData is { Length: > 0 })
 			{
-				InternalState = new uint[internalState.Length];
-				UpdateInternalState(internalState);
+				InternalState = new uint[subChipDescription.InternalData.Length];
+				UpdateInternalState(subChipDescription.InternalData);
 			}
 		}
 

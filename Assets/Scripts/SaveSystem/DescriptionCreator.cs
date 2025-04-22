@@ -54,7 +54,7 @@ namespace DLS.SaveSystem
 		}
 
 
-		public static SubChipDescription CreateSubChipDescription(SubChipInstance subChip)
+		static SubChipDescription CreateSubChipDescription(SubChipInstance subChip)
 		{
 			return new SubChipDescription
 			(
@@ -62,7 +62,7 @@ namespace DLS.SaveSystem
 				subChip.ID,
 				subChip.Label,
 				subChip.Position,
-				// Don't save colour info for bus since it changes based on received input, so would just trigger unnecessary 'unsaved changes' warnings
+				// Don't save colour info for bus since it changes based on received input, so would just trigger unecessary 'unsaved changes' warnings
 				subChip.IsBus ? null : subChip.OutputPins.Select(p => new OutputPinColourInfo(p.Colour, p.Address.PinID)).ToArray(),
 				subChip.InternalData
 			);
@@ -74,7 +74,6 @@ namespace DLS.SaveSystem
 			{
 				ChipType.Rom_256x16 => new uint[256],
 				ChipType.Key => new uint[] { 'K' },
-				ChipType.Pulse => new uint[] { 50, 0, 0 },
 				_ => ChipTypeHelper.IsBusType(type) ? new uint[2] : null
 			};
 
@@ -89,7 +88,7 @@ namespace DLS.SaveSystem
 			);
 		}
 
-		public static void UpdateWireIndicesForDescriptionCreation(DevChipInstance chip)
+		static void UpdateWireIndicesForDescriptionCreation(DevChipInstance chip)
 		{
 			// Store wire's current index in wire for convenient access
 			for (int i = 0; i < chip.Wires.Count; i++)
@@ -99,7 +98,7 @@ namespace DLS.SaveSystem
 		}
 
 		// Note: assumed that all wire indices have been set prior to calling this function
-		public static WireDescription CreateWireDescription(WireInstance wire)
+		static WireDescription CreateWireDescription(WireInstance wire)
 		{
 			// Get wire points
 			Vector2[] wirePoints = new Vector2[wire.WirePointCount];

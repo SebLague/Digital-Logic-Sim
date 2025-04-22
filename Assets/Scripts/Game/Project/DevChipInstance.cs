@@ -10,27 +10,16 @@ namespace DLS.Game
 {
 	public class DevChipInstance
 	{
-		public readonly List<IMoveable> Elements = new();
-		public readonly List<WireInstance> Wires = new();
-
-		public readonly UndoController UndoController;
-
 		// Names of all the chips which contain this chip (either directly, or inside some other subchip)
 		public readonly HashSet<string> AllParentChipNames = new(ChipDescription.NameComparer);
-
-		public ChipDescription LastSavedDescription;
-		DevPinInstance[] inputPins_cached = Array.Empty<DevPinInstance>();
-		bool elementsModifiedSinceLastArrayUpdate;
-
+		public readonly List<IMoveable> Elements = new();
 		public SimChip SimChip;
 		bool hasSimChip;
+		public readonly List<WireInstance> Wires = new();
 
-		public string ChipName => LastSavedDescription == null ? string.Empty : LastSavedDescription.Name;
-
-		public DevChipInstance()
-		{
-			UndoController = new UndoController(this);
-		}
+		bool elementsModifiedSinceLastArrayUpdate;
+		DevPinInstance[] inputPins_cached = Array.Empty<DevPinInstance>();
+		public ChipDescription LastSavedDescription;
 
 		public void SetSimChip(SimChip simChip)
 		{
@@ -45,6 +34,7 @@ namespace DLS.Game
 			SetSimChip(simChip);
 		}
 
+		public string ChipName => LastSavedDescription == null ? string.Empty : LastSavedDescription.Name;
 
 		public DevPinInstance[] GetInputPins()
 		{
@@ -111,78 +101,64 @@ namespace DLS.Game
 			for (int i = 0; i < description.Wires.Length; i++)
 			{
 				WireDescription wireDescription = description.Wires[i];
-				(WireInstance loadedWire, bool failed) = TryLoadWireFromDescription(wireDescription, i, instance, loadedWiresWithOriginalIndices);
+				instance.TryFindPin(wireDescription.SourcePinAddress, out PinInstance sourcePin);
+				instance.TryFindPin(wireDescription.TargetPinAddress, out PinInstance targetPin);
 
-				if (!failed) instance.AddWire(loadedWire, true);
+				if (sourcePin != null && targetPin != null)
+				{
+					WireConnectionType connectionType = wireDescription.ConnectionType;
 
-				loadedWiresWithOriginalIndices[i] = loadedWire;
-				anyElementFailedToLoad |= failed;
+					if (connectionType is WireConnectionType.ToWireSource or WireConnectionType.ToWireTarget)
+					{
+						WireInstance wireConnectTarget = loadedWiresWithOriginalIndices[wireDescription.ConnectedWireIndex];
+						bool wireConnectTargetFailedToLoad = wireConnectTarget == null;
+
+						if (!wireConnectTargetFailedToLoad)
+						{
+							// If wire connection target did load, double check that it connects to the same pin that this wire is expecting
+							// (this should always be the case, but a bug in a previous version could cause save files to contain bad connection data)
+							bool addressMismatch = false;
+							addressMismatch |= connectionType is WireConnectionType.ToWireSource && !PinAddress.Equals(wireConnectTarget.SourcePin.Address, wireDescription.SourcePinAddress);
+							addressMismatch |= connectionType is WireConnectionType.ToWireTarget && !PinAddress.Equals(wireConnectTarget.TargetPin_BusCorrected.Address, wireDescription.TargetPinAddress);
+							wireConnectTargetFailedToLoad = addressMismatch;
+						}
+
+						// If wire is connected to another wire, but the other wire failed to load, then fallback to pin connection type 
+						// (Load failure could be due to a pin could being deleted from a subchip, or the whole subchip being deleted from the library for example)
+						if (wireConnectTargetFailedToLoad)
+						{
+							anyElementFailedToLoad = true;
+							connectionType = WireConnectionType.ToPins;
+						}
+					}
+
+					WireInstance.ConnectionInfo sourceConnection = new()
+					{
+						pin = sourcePin,
+						connectedWire = connectionType == WireConnectionType.ToWireSource ? loadedWiresWithOriginalIndices[wireDescription.ConnectedWireIndex] : null,
+						wireConnectionSegmentIndex = wireDescription.ConnectedWireSegmentIndex
+					};
+
+					WireInstance.ConnectionInfo targetConnection = new()
+					{
+						pin = targetPin,
+						connectedWire = connectionType == WireConnectionType.ToWireTarget ? loadedWiresWithOriginalIndices[wireDescription.ConnectedWireIndex] : null,
+						wireConnectionSegmentIndex = wireDescription.ConnectedWireSegmentIndex
+					};
+
+					WireInstance loadedWire = new(sourceConnection, targetConnection, wireDescription.Points, i);
+					instance.AddWire(loadedWire, true);
+					loadedWiresWithOriginalIndices[i] = loadedWire;
+				}
+				else
+				{
+					anyElementFailedToLoad = true;
+				}
 			}
 
 			instance.RegenerateParentChipNamesHash();
 
 			return (instance, anyElementFailedToLoad);
-		}
-
-		public static (WireInstance loadedWire, bool failed) TryLoadWireFromDescription(WireDescription wireDescription, int wireIndex, DevChipInstance instance, IList<WireInstance> allWires)
-		{
-			bool failedToLoad = false;
-			WireInstance loadedWire = null;
-			WireInstance connectedWire = wireDescription.ConnectedWireIndex >= 0 ? allWires[wireDescription.ConnectedWireIndex] : null;
-
-			instance.TryFindPin(wireDescription.SourcePinAddress, out PinInstance sourcePin);
-			instance.TryFindPin(wireDescription.TargetPinAddress, out PinInstance targetPin);
-
-			if (sourcePin != null && targetPin != null)
-			{
-				WireConnectionType connectionType = wireDescription.ConnectionType;
-
-				if (connectionType is WireConnectionType.ToWireSource or WireConnectionType.ToWireTarget)
-				{
-					WireInstance wireConnectTarget = connectedWire;
-					bool wireConnectTargetFailedToLoad = wireConnectTarget == null;
-
-					if (!wireConnectTargetFailedToLoad)
-					{
-						// If wire connection target did load, double check that it connects to the same pin that this wire is expecting
-						// (this should always be the case, but a bug in a previous version could cause save files to contain bad connection data)
-						bool addressMismatch = false;
-						addressMismatch |= connectionType is WireConnectionType.ToWireSource && !PinAddress.Equals(wireConnectTarget.SourcePin.Address, wireDescription.SourcePinAddress);
-						addressMismatch |= connectionType is WireConnectionType.ToWireTarget && !PinAddress.Equals(wireConnectTarget.TargetPin_BusCorrected.Address, wireDescription.TargetPinAddress);
-						wireConnectTargetFailedToLoad = addressMismatch;
-					}
-
-					// If wire is connected to another wire, but the other wire failed to load, then fallback to pin connection type 
-					// (Load failure could be due to a pin could being deleted from a subchip, or the whole subchip being deleted from the library for example)
-					if (wireConnectTargetFailedToLoad)
-					{
-						failedToLoad = true;
-						connectionType = WireConnectionType.ToPins;
-					}
-				}
-
-				WireInstance.ConnectionInfo sourceConnection = new()
-				{
-					pin = sourcePin,
-					connectedWire = connectionType == WireConnectionType.ToWireSource ? connectedWire : null,
-					wireConnectionSegmentIndex = wireDescription.ConnectedWireSegmentIndex
-				};
-
-				WireInstance.ConnectionInfo targetConnection = new()
-				{
-					pin = targetPin,
-					connectedWire = connectionType == WireConnectionType.ToWireTarget ? connectedWire : null,
-					wireConnectionSegmentIndex = wireDescription.ConnectedWireSegmentIndex
-				};
-
-				loadedWire = new WireInstance(sourceConnection, targetConnection, wireDescription.Points, wireIndex);
-			}
-			else
-			{
-				failedToLoad = true;
-			}
-
-			return (loadedWire, failedToLoad);
 		}
 
 		// Check if subchip can be added
@@ -228,7 +204,7 @@ namespace DLS.Game
 			AddElement(subChip);
 			if (!isLoading)
 			{
-				Simulator.AddSubChip(SimChip, subChip.Description, Project.ActiveProject.chipLibrary, subChip.ID, subChip.InternalData);
+				Simulator.AddSubChip(SimChip, subChip.Description, Project.ActiveProject.chipLibrary, subChip.InitialSubChipDesc);
 			}
 		}
 
@@ -241,12 +217,9 @@ namespace DLS.Game
 			}
 		}
 
-		public void AddWire(WireInstance wire, bool isLoading, int insertIndex = -1)
+		public void AddWire(WireInstance wire, bool isLoading)
 		{
-			bool insert = insertIndex != -1;
-			if (insert) Wires.Insert(insertIndex, wire);
-			else Wires.Add(wire);
-
+			Wires.Add(wire);
 			if (!isLoading)
 			{
 				Simulator.AddConnection(SimChip, wire.SourcePin.Address, wire.TargetPin.Address);
@@ -309,6 +282,14 @@ namespace DLS.Game
 		}
 
 
+		void DeleteWiresAttachedToPins(PinInstance[] pins)
+		{
+			foreach (PinInstance pin in pins)
+			{
+				DeleteWiresAttachedToPin(pin);
+			}
+		}
+
 		void DeleteWiresAttachedToPin(PinInstance pin)
 		{
 			for (int i = Wires.Count - 1; i >= 0; i--)
@@ -322,16 +303,15 @@ namespace DLS.Game
 			}
 		}
 
-
-		public bool DeleteWiresAttachedToPinOfSubChip(int pinID)
+		public bool DeleteWiresAttachedToSubChip(int id)
 		{
 			bool anyDeleted = false;
 
 			for (int i = Wires.Count - 1; i >= 0; i--)
 			{
 				WireInstance wire = Wires[i];
-				bool sourceMatch = wire.SourcePin.parent is SubChipInstance && wire.SourcePin.Address.PinID == pinID;
-				bool targetMatch = wire.TargetPin.parent is SubChipInstance && wire.TargetPin.Address.PinID == pinID;
+				bool sourceMatch = wire.SourcePin.parent is SubChipInstance && wire.SourcePin.Address.PinID == id;
+				bool targetMatch = wire.TargetPin.parent is SubChipInstance && wire.TargetPin.Address.PinID == id;
 
 				if (sourceMatch || targetMatch)
 				{
@@ -343,35 +323,6 @@ namespace DLS.Game
 			return anyDeleted;
 		}
 
-		public void GetWiresAttachedToElement(int elementID, HashSet<WireInstance> set)
-		{
-			foreach (WireInstance wire in Wires)
-			{
-				bool sourceMatch = wire.SourcePin.Address.PinOwnerID == elementID;
-				bool targetMatch = wire.TargetPin.Address.PinOwnerID == elementID;
-
-				if (sourceMatch || targetMatch)
-				{
-					set.Add(wire);
-				}
-			}
-		}
-
-		public void DeleteWiresAttachedToElement(int elementID)
-		{
-			for (int i = Wires.Count - 1; i >= 0; i--)
-			{
-				WireInstance wire = Wires[i];
-				bool sourceMatch = wire.SourcePin.Address.PinOwnerID == elementID;
-				bool targetMatch = wire.TargetPin.Address.PinOwnerID == elementID;
-
-				if (sourceMatch || targetMatch)
-				{
-					DeleteWire(wire);
-				}
-			}
-		}
-
 
 		public void DeleteSubChip(SubChipInstance subChip)
 		{
@@ -379,7 +330,7 @@ namespace DLS.Game
 			// (required for buses, where one end of bus is deleted automatically when other end is deleted; but user may select both ends for deletion)
 			if (!Elements.Contains(subChip)) return;
 
-			DeleteWiresAttachedToElement(subChip.ID);
+			DeleteWiresAttachedToPins(subChip.AllPins);
 			RemoveElement(subChip);
 
 			if (hasSimChip) Simulator.RemoveSubChip(SimChip, subChip.ID);
@@ -401,48 +352,16 @@ namespace DLS.Game
 		}
 
 		// Delete subchip with given id (if it exists)
-		public bool TryDeleteSubChipByID(int id)
+		public void TryDeleteSubChipByID(int id)
 		{
 			for (int i = 0; i < Elements.Count; i++)
 			{
 				if (Elements[i] is SubChipInstance subchip && subchip.ID == id)
 				{
 					DeleteSubChip(subchip);
-					return true;
+					return;
 				}
 			}
-
-			return false;
-		}
-
-		// Delete devpin with given id (if it exists)
-		public bool TryDeleteDevPinByID(int id)
-		{
-			for (int i = 0; i < Elements.Count; i++)
-			{
-				if (Elements[i] is DevPinInstance devPin && devPin.ID == id)
-				{
-					DeleteDevPin(devPin);
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		public bool TryGetSubChipByID(int id, out SubChipInstance subchip)
-		{
-			foreach (IMoveable element in Elements)
-			{
-				if (element.ID == id)
-				{
-					subchip = (SubChipInstance)element;
-					return true;
-				}
-			}
-
-			subchip = null;
-			return false;
 		}
 
 		// Update the currently viewed chip from the state of the corresponding simChip.
@@ -509,7 +428,7 @@ namespace DLS.Game
 		}
 
 		public bool TryFindPin(PinAddress address, out PinInstance pinInstance) => TryFindPin(Elements, address, out pinInstance);
-
+		
 		public static bool TryFindPin(List<IMoveable> elements, PinAddress address, out PinInstance pinInstance)
 		{
 			foreach (IMoveable element in elements)
@@ -539,7 +458,7 @@ namespace DLS.Game
 					break;
 				}
 			}
-
+			
 			pinInstance = null;
 			return false;
 		}

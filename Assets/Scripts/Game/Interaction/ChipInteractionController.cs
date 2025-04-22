@@ -63,15 +63,12 @@ namespace DLS.Game
 			HandleMouseInput();
 		}
 
-		public void Delete(IMoveable element, bool clearSelection = true, bool recordUndo = true)
+		public void Delete(IMoveable element, bool clearSelection = true)
 		{
 			if (!HasControl) return;
-			if (recordUndo) ActiveDevChip.UndoController.RecordDeleteElements(new List<IMoveable>(new[] { element }));
-
 			if (element is SubChipInstance subChip) ActiveDevChip.DeleteSubChip(subChip);
 			if (element is NoteInstance noteInstance) ActiveDevChip.DeleteNote(noteInstance);
-			else if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
-
+			if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
 			if (clearSelection) SelectedElements.Clear();
 		}
 
@@ -132,11 +129,9 @@ namespace DLS.Game
 			// Delete selected subchips/pins
 			if (SelectedElements.Count > 0)
 			{
-				ActiveDevChip.UndoController.RecordDeleteElements(SelectedElements);
-
 				foreach (IMoveable selectedElement in SelectedElements)
 				{
-					Delete(selectedElement, false, false);
+					Delete(selectedElement, false);
 				}
 
 				SelectedElements.Clear();
@@ -172,7 +167,6 @@ namespace DLS.Game
 		{
 			if (HasControl)
 			{
-				ActiveDevChip.UndoController.RecordDeleteWire(wire);
 				ActiveDevChip.DeleteWire(wire);
 			}
 		}
@@ -196,9 +190,6 @@ namespace DLS.Game
 
 			// Ignore shortcuts if don't have control
 			if (!HasControl) return;
-
-			if (KeyboardShortcuts.UndoShortcutTriggered) ActiveDevChip.UndoController.TryUndo();
-			else if (KeyboardShortcuts.RedoShortcutTriggered) ActiveDevChip.UndoController.TryRedo();
 
 			if (KeyboardShortcuts.ToggleGridShortcutTriggered)
 			{
@@ -232,8 +223,7 @@ namespace DLS.Game
 				}
 				else
 				{
-					if (isPlacingNewElements) CancelPlacingItems();
-					else DeleteSelected();
+					DeleteSelected();
 				}
 			}
 
@@ -272,29 +262,6 @@ namespace DLS.Game
 			if (element is SubChipInstance subChip && subChip.IsBus) return false;
 
 			return true;
-		}
-
-		public static void GetElementDescription(IMoveable element)
-		{
-			ChipDescription desc;
-			SubChipDescription subDesc;
-
-			if (element is SubChipInstance subchip)
-			{
-				desc = subchip.Description;
-				subDesc = subchip.InitialSubChipDesc;
-			}
-			else
-			{
-				DevPinInstance devpin = (DevPinInstance)element;
-				ChipType pinType = ChipTypeHelper.GetPinType(devpin.IsInputPin, devpin.BitCount);
-				desc = BuiltinChipCreator.CreateInputOrOutputPin(pinType);
-
-				// Copy pin description from duplicated pin
-				PinDescription pinDesc = DescriptionCreator.CreatePinDescription(devpin);
-				if (devpin.IsInputPin) desc.InputPins[0] = pinDesc;
-				else desc.OutputPins[0] = pinDesc;
-			}
 		}
 
 		void DuplicateSelectedElements()
@@ -571,8 +538,6 @@ namespace DLS.Game
 		void FinishMovingElements()
 		{
 			// -- If any elements are in invalid position, cancel the movement --
-			bool hasMoved = false;
-
 			foreach (IMoveable element in SelectedElements)
 			{
 				if (!element.IsValidMovePos)
@@ -580,11 +545,7 @@ namespace DLS.Game
 					CancelMovingSelectedItems();
 					return;
 				}
-
-				hasMoved |= (element.MoveStartPosition != element.Position);
 			}
-
-			if (hasMoved) ActiveDevChip.UndoController.RecordMoveElements(SelectedElements);
 
 			// -- Apply movement --
 			IsMovingSelection = false;
@@ -618,8 +579,6 @@ namespace DLS.Game
 			{
 				ActiveDevChip.AddWire(wire, false);
 			}
-
-			ActiveDevChip.UndoController.RecordAddElements(SelectedElements);
 
 			DuplicatedWires.Clear();
 
@@ -897,7 +856,6 @@ namespace DLS.Game
 			{
 				WireToPlace.FinishPlacingWire(info);
 				ActiveDevChip.AddWire(WireToPlace, false);
-				ActiveDevChip.UndoController.RecordAddWire(WireToPlace);
 			}
 		}
 

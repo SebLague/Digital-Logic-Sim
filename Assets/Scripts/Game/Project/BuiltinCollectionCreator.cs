@@ -21,7 +21,6 @@ namespace DLS.Game
 				CreateChipCollection("BASIC",
 					ChipType.Nand,
 					ChipType.Clock,
-					ChipType.Pulse,
 					ChipType.Key,
 					ChipType.TriStateBuffer
 				),
