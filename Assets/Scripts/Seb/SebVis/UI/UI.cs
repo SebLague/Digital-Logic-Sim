@@ -703,7 +703,7 @@ namespace Seb.Vis.UI
 					bool showDefaultText = (state.lines.Count == 0 || (state.lines.Count == 1 && string.IsNullOrEmpty(state.lines[0]))) || !Application.isPlaying;
 					string[] lines = showDefaultText ? new[] { "Enter something..." } : state.lines.ToArray();
 					
-					// Debug.Log($"Lines: {string.Join(", ", lines).Replace("\n", "\\n")}");
+					Debug.Log($"Lines: {string.Join(", ", lines).Replace("\n", "\\n")}");
 					Color textCol = showDefaultText ? theme.defaultTextCol : theme.textCol;
 					for (int i = 0; i < lines.Length; i++)
 					{

@@ -497,6 +497,18 @@ namespace Seb.Vis.UI
 
 			string currentLine = lines[cursorLineIndex];
 
+			if (currentLine.Contains("\n"))
+			{
+				// Find the index of the newline character
+				int newlineIndex = currentLine.IndexOf('\n');
+
+				// If the cursor is positioned after the newline, move it before the newline
+				if (cursorBeforeCharIndex > newlineIndex)
+				{
+					cursorBeforeCharIndex = newlineIndex;
+				}
+			}
+
 			// Prevent adding text if maxLines is reached and the cursor is on the last line
 			if (lines.Count == maxLines && cursorLineIndex == lines.Count - 1)
 			{
