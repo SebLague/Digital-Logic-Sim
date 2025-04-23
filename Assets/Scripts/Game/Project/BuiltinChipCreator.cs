@@ -26,6 +26,7 @@ namespace DLS.Game
 				CreateNand(),
 				CreateTristateBuffer(),
 				CreateClock(),
+				CreatePulse(),
 				// ---- Memory ----
 				dev_CreateRAM_8(),
 				CreateROM_8(),
@@ -128,6 +129,16 @@ namespace DLS.Game
 			PinDescription[] outputPins = { CreatePinDescription("CLK", 0) };
 
 			return CreateBuiltinChipDescription(ChipType.Clock, size, col, null, outputPins);
+		}
+
+		static ChipDescription CreatePulse()
+		{
+			Vector2 size = new(GridHelper.SnapToGrid(1), GridSize * 3);
+			Color col = new(0.1f, 0.1f, 0.1f);
+			PinDescription[] inputPins = { CreatePinDescription("IN", 0) };
+			PinDescription[] outputPins = { CreatePinDescription("PULSE", 1) };
+
+			return CreateBuiltinChipDescription(ChipType.Pulse, size, col, inputPins, outputPins);
 		}
 
 		static ChipDescription CreateBitConversionChip(ChipType chipType, PinBitCount bitCountIn, PinBitCount bitCountOut, int numIn, int numOut)
@@ -359,7 +370,7 @@ namespace DLS.Game
 			return CreateBuiltinChipDescription(type, BusChipSize(bitCount), busOrigin.Colour, inputs, hideName: true);
 		}
 
-		
+
 		static ChipDescription CreateBuiltinChipDescription(ChipType type, Vector2 size, Color col, PinDescription[] inputs = null, PinDescription[] outputs = null, DisplayDescription[] displays = null, bool hideName = false)
 		{
 			string name = ChipTypeHelper.GetName(type);

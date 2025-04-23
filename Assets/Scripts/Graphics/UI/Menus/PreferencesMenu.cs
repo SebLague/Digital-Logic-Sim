@@ -65,7 +65,7 @@ namespace DLS.Graphics
 		static readonly UIHandle ID_ClockSpeedInput = new("PREFS_ClockSpeed");
 
 		static readonly string showGridLabel = "Show grid" + UI.CreateColouredText(" (ctrl+G)", new Color(1, 1, 1, 0.35f));
-		static readonly Func<string, bool> integerInputValidator;
+		static readonly Func<string, bool> integerInputValidator = ValidateIntegerInput;
 
 		static double simAvgTicksPerSec_delayedRefreshForUI;
 		static float lastSimAvgTicksPerSecRefreshTime;

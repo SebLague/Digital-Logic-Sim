@@ -226,6 +226,14 @@ namespace DLS.Game
 			simChip.ChangeKeyBinding(newKey);
 		}
 
+		// Chip's pulse width has been changed, so simulation must be updated
+		public void NotifyPulseWidthChanged(SubChipInstance chip, uint widthNew)
+		{
+			chip.InternalData[0] = widthNew;
+			SimChip simChip = rootSimChip.GetSubChipFromID(chip.ID);
+			simChip.InternalState[0] = widthNew;
+		}
+
 		// Rom has been edited, so simulation must be updated
 		public void NotifyRomContentsEdited(SubChipInstance romChip)
 		{
@@ -240,6 +248,13 @@ namespace DLS.Game
 			// potentially expensive for large chips) to hunt down all references within the simulation and remove them. So, for now at least, simply
 			// restart the simulation in this case (this is not ideal though, since state of latches etc will be lost)
 			bool simReloadRequired = ChipContainsSubchipIndirectly(ViewedChip, chipToDeleteName);
+
+			if (ChipContainsSubChipDirectly(ViewedChip, chipToDeleteName))
+			{
+				// if deleted chip is a subchip of the current chip, clear undo history as it may now be invalid
+				// (Todo: maybe handle more gracefully...)
+				ViewedChip.UndoController.Clear();
+			}
 
 
 			UpdateAndSaveAffectedChips(chipLibrary.GetChipDescription(chipToDeleteName), null, true);
@@ -331,6 +346,18 @@ namespace DLS.Game
 			);
 
 			controller.StartPlacingNote(noteDesc);
+
+		bool ChipContainsSubChipDirectly(DevChipInstance chip, string targetName)
+		{
+			foreach (IMoveable element in chip.Elements)
+			{
+				if (element is SubChipInstance s && ChipDescription.NameMatch(s.Description.Name, targetName))
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		// Must be called prior to library being updated with the change
@@ -371,12 +398,12 @@ namespace DLS.Game
 					// Detect deleted dev pins, and remove any connections to the corresponding subchip pins in the affected chip
 					foreach (PinDescription p in root_desc.InputPins)
 					{
-						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToSubChip(p.ID);
+						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToPinOfSubChip(p.ID);
 					}
 
 					foreach (PinDescription p in root_desc.OutputPins)
 					{
-						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToSubChip(p.ID);
+						if (!newDesc_AllDevPinIDs.Contains(p.ID)) anyChanges |= devChip.DeleteWiresAttachedToPinOfSubChip(p.ID);
 					}
 				}
 

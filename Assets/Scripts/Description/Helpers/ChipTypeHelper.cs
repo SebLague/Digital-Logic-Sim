@@ -12,6 +12,7 @@ namespace DLS.Description
 			// ---- Basic Chips ----
 			{ ChipType.Nand, "NAND" },
 			{ ChipType.Clock, "CLOCK" },
+			{ ChipType.Pulse, "PULSE" },
 			{ ChipType.TriStateBuffer, "3-STATE BUFFER" },
 			// ---- Memory ----
 			{ ChipType.dev_Ram_8Bit, "dev.RAM-8" },

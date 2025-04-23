@@ -118,7 +118,7 @@ namespace DLS.Game
 
 		public void ToggleState(int bitIndex)
 		{
-			Pin.State.Toggle(bitIndex);
+			Pin.PlayerInputState.Toggle(bitIndex);
 		}
 
 		public bool PointIsInInteractionBounds(Vector2 point) => PointIsInHandleBounds(point) || PointIsInStateIndicatorBounds(point);
