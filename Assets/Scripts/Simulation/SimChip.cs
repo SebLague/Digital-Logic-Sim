@@ -77,6 +77,14 @@ namespace DLS.Simulation
 					InternalState[i] = BitConverter.ToUInt32(randomBytes);
 				}
 			}
+			else if (ChipType is ChipType.Port_In)
+			{
+				PortRegistry.RegisterInputPort(this);
+			}
+			else if (ChipType is ChipType.Port_Out)
+			{
+				PortRegistry.RegisterOutputPort(this);
+			}
 			// Load in serialized persistent state (rom data, etc.)
 			else if (internalState is { Length: > 0 })
 			{

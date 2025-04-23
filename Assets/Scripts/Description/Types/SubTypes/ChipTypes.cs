@@ -44,7 +44,11 @@ namespace DLS.Description
 		Bus_4Bit,
 		BusTerminus_4Bit,
 		Bus_8Bit,
-		BusTerminus_8Bit
+		BusTerminus_8Bit,
+
+		// ---- Ports ----
+		Port_In,
+		Port_Out
 
 	}
 }

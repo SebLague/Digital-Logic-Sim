@@ -49,7 +49,10 @@ namespace DLS.Game
 				CreateBus(PinBitCount.Bit4),
 				CreateBusTerminus(PinBitCount.Bit4),
 				CreateBus(PinBitCount.Bit8),
-				CreateBusTerminus(PinBitCount.Bit8)
+				CreateBusTerminus(PinBitCount.Bit8),
+				// ---- Ports ----
+				CreatePortIn(),
+				CreatePortOut()
 			};
 		}
 
@@ -370,6 +373,32 @@ namespace DLS.Game
 			return CreateBuiltinChipDescription(type, BusChipSize(bitCount), busOrigin.Colour, inputs, hideName: true);
 		}
 
+
+		static ChipDescription CreatePortIn()
+		{
+			PinDescription[] outputPins = 
+			{
+				CreatePinDescription("IN", 0, PinBitCount.Bit8)
+			};
+
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 10), SubChipInstance.MinChipHeightForPins(null, outputPins) + GridSize * 2);
+			Color col = new(0.32f, 0.75f, 0.39f);
+
+			return CreateBuiltinChipDescription(ChipType.Port_In, size, col, null, outputPins);
+		}
+
+		static ChipDescription CreatePortOut()
+		{
+			PinDescription[] inputPins = 
+			{
+				CreatePinDescription("OUT", 0, PinBitCount.Bit8)
+			};
+
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 10), SubChipInstance.MinChipHeightForPins(inputPins, null) + GridSize * 2);
+			Color col = new(0.32f, 0.75f, 0.39f);
+
+			return CreateBuiltinChipDescription(ChipType.Port_Out, size, col, inputPins, null);
+		}
 
 		static ChipDescription CreateBuiltinChipDescription(ChipType type, Vector2 size, Color col, PinDescription[] inputs = null, PinDescription[] outputs = null, DisplayDescription[] displays = null, bool hideName = false)
 		{

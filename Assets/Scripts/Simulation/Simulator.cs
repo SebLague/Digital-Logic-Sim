@@ -472,6 +472,27 @@ namespace DLS.Simulation
 					chip.OutputPins[1].State = (ushort)(data & ByteMask);
 					break;
 				}
+				case ChipType.Port_In:
+				{
+					int? portIndex = PortRegistry.GetPortIndex(chip);
+					if (portIndex == null) break;
+
+					// Read from external source
+					byte portValue = PortCommunicationManager.ReadInputPort(portIndex.Value);
+					chip.OutputPins[0].State.SetAllBits_NoneDisconnected(portValue);
+					break;
+				}
+				case ChipType.Port_Out:
+				{
+					int? portIndex = PortRegistry.GetPortIndex(chip);
+					if (portIndex == null) break;
+
+					byte portValue = (byte) chip.InputPins[0].State.GetRawBits();
+
+					// Write to port buffer
+					PortCommunicationManager.WriteOutputPort(portIndex.Value, portValue);
+					break;
+				}
 				// ---- Bus types ----
 				default:
 				{

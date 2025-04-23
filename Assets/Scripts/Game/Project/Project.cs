@@ -110,6 +110,8 @@ namespace DLS.Game
 				IsBackground = true
 			};
 			simThread.Start();
+
+			PortCommunicationManager.Initialize();
 		}
 
 		public void EnterViewMode(SubChipInstance subchip)
@@ -478,6 +480,7 @@ namespace DLS.Game
 		public void NotifyExit()
 		{
 			simThreadActive = false;
+			PortCommunicationManager.Shutdown();
 		}
 
 		void SimThread()
