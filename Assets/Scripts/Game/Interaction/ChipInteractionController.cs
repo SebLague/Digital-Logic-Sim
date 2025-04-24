@@ -296,9 +296,9 @@ namespace DLS.Game
 			}
 		}
 
-		void DuplicateSelectedElements()
+		void DuplicateElements(List<IMoveable> elements)
 		{
-			IMoveable[] elementsToDuplicate = SelectedElements.Where(CanDuplicate).ToArray();
+			IMoveable[] elementsToDuplicate = elements.Where(CanDuplicate).ToArray();
 			if (elementsToDuplicate.Length == 0) return;
 
 			List<IMoveable> duplicatedElements = new(elementsToDuplicate.Length);
@@ -324,12 +324,12 @@ namespace DLS.Game
 					else desc.OutputPins[0] = pinDesc;
 				}
 
-
 				IMoveable duplicatedElement = StartPlacing(desc, element.Position, true);
 				duplicatedElement.StraightLineReferencePoint = element.Position;
 				duplicatedElements.Add(duplicatedElement);
 				duplicatedElementIDFromOriginalID.Add(element.ID, duplicatedElement.ID);
 			}
+
 
 			// ---- Duplicate wires ----
 			Dictionary<WireInstance, WireInstance> duplicatedWireFromOriginal = new();
@@ -401,6 +401,11 @@ namespace DLS.Game
 
 			Vector2 offset = InputHelper.MousePosWorld - closestElementPos;
 			moveElementMouseStartPos -= offset;
+		}
+
+		void DuplicateSelectedElements()
+		{
+			DuplicateElements(SelectedElements);
 		}
 
 		public void Select(IMoveable element, bool addToCurrentSelection = true)
@@ -607,67 +612,14 @@ namespace DLS.Game
 			}
 
 			ActiveDevChip.UndoController.RecordAddElements(SelectedElements);
-
 			DuplicatedWires.Clear();
-
-			// When elements are placed, there are two cases where we automatically start placing new elements:
-			// 1) If placing a bus origin, a bus terminus is automatically created to place next
-			// 2) If multi-mode is held, a new copy of each element is made (not including bus elements)
-			List<ChipDescription> busTerminusesToAutoPlac = new();
-			List<Vector2> newElementPositions = new();
-			List<SubChipInstance> newlyPlacedBusOrigins = new();
-
-			foreach (IMoveable elementToPlace in SelectedElements)
-			{
-				ChipDescription autoPlaceElementDesc = null;
-
-				if (elementToPlace is SubChipInstance subchip)
-				{
-					// After placing bus origin, automatically start placing the terminus
-					if (ChipTypeHelper.IsBusType(subchip.Description.ChipType))
-					{
-						if (ChipTypeHelper.IsBusOriginType(subchip.Description.ChipType))
-						{
-							ChipType terminusType = ChipTypeHelper.GetCorrespondingBusTerminusType(subchip.Description.ChipType);
-							newlyPlacedBusOrigins.Add(subchip);
-							//autoPlaceElementDesc = Project.ActiveProject.chipLibrary.GetChipDescription(ChipTypeHelper.GetName(terminusType));
-						}
-					}
-					else if (KeyboardShortcuts.MultiModeHeld) autoPlaceElementDesc = subchip.Description;
-				}
-				else if (elementToPlace is DevPinInstance devPin && KeyboardShortcuts.MultiModeHeld)
-				{
-					ChipType pinType = ChipTypeHelper.GetPinType(devPin.IsInputPin, devPin.BitCount);
-					autoPlaceElementDesc = BuiltinChipCreator.CreateInputOrOutputPin(pinType);
-				}
-
-				if (autoPlaceElementDesc != null)
-				{
-					busTerminusesToAutoPlac.Add(autoPlaceElementDesc);
-					newElementPositions.Add(elementToPlace.Position);
-				}
-			}
-
-
-			// ---- Stop placing the old items, and start placing any new items ----
 			OnFinishedPlacingItems();
 
-			for (int i = 0; i < busTerminusesToAutoPlac.Count; i++)
-			{
-				StartPlacing(busTerminusesToAutoPlac[i], newElementPositions[i], true);
-			}
 
-			/*
-			// Link bus origin and terminus together
-			IMoveable[] busTerminuses = SelectedElements.Where(s => s is SubChipInstance subchip && ChipTypeHelper.IsBusTerminusType(subchip.ChipType)).ToArray();
-			for (int i = 0; i < newlyPlacedBusOrigins.Count; i++)
+			if (KeyboardShortcuts.MultiModeHeld)
 			{
-				SubChipInstance busOrigin = newlyPlacedBusOrigins[i];
-				SubChipInstance busTerminus = busTerminuses[i] as SubChipInstance;
-				busOrigin.SetLinkedBusPair(busTerminus);
-				busTerminus.SetLinkedBusPair(busOrigin);
+				DuplicateElements(newlyPlacedElements);
 			}
-			*/
 		}
 
 		public void EnterWireEditMode(WireInstance wire)
@@ -925,6 +877,7 @@ namespace DLS.Game
 
 			newElementsAreDuplicatedElements = isDuplicating;
 
+
 			// Input/output dev pins are represented as chips for convenience
 			(bool isInput, bool isOutput, PinBitCount numBits) ioPinInfo = ChipTypeHelper.IsInputOrOutputPin(chipDescription.ChipType);
 
@@ -938,6 +891,7 @@ namespace DLS.Game
 
 			IMoveable elementToPlace;
 			int instanceID = IDGenerator.GenerateNewElementID(ActiveDevChip);
+
 
 			// ---- Placing an input/output pin
 			if (ioPinInfo.isInput || ioPinInfo.isOutput)
@@ -954,6 +908,7 @@ namespace DLS.Game
 				SubChipDescription subChipDesc = DescriptionCreator.CreateBuiltinSubChipDescriptionForPlacement(chipDescription.ChipType, chipDescription.Name, instanceID, position);
 				elementToPlace = new SubChipInstance(chipDescription, subChipDesc);
 			}
+
 
 			// Place bus terminus to right of bus origin
 			if (ChipTypeHelper.IsBusTerminusType(chipDescription.ChipType))
@@ -1028,9 +983,8 @@ namespace DLS.Game
 
 		void CancelMovingSelectedItems()
 		{
-			if (IsMovingSelection)
+			if (IsMovingSelection && SelectedElements.Count > 0)
 			{
-				IsMovingSelection = false;
 				foreach (IMoveable moveableElement in SelectedElements)
 				{
 					moveableElement.Position = moveableElement.MoveStartPosition;
@@ -1041,6 +995,8 @@ namespace DLS.Game
 					wire.MoveOffset = Vector2.zero;
 				}
 			}
+
+			IsMovingSelection = false;
 		}
 
 		void OnFinishedPlacingItems() => OnFinishedOrCancelledPlacingItems();
@@ -1068,6 +1024,8 @@ namespace DLS.Game
 		void OnFinishedOrCancelledPlacingItems()
 		{
 			ClearSelection();
+			IsMovingSelection = false;
+
 			isPlacingNewElements = false;
 			newElementsAreDuplicatedElements = false;
 			WireToPlace = null;
