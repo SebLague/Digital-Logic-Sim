@@ -589,10 +589,15 @@ namespace DLS.Game
 				}
 			}
 
+			List<IMoveable> newlyPlacedElements = new(SelectedElements);
+
 			// ---- Add newly placed elements to the chip ----
 			foreach (IMoveable elementToPlace in SelectedElements)
 			{
-				if (elementToPlace is SubChipInstance subchip) ActiveDevChip.AddNewSubChip(subchip, false);
+				if (elementToPlace is SubChipInstance subchip)
+				{
+					ActiveDevChip.AddNewSubChip(subchip, false);
+				}
 				else if (elementToPlace is DevPinInstance devPin) ActiveDevChip.AddNewDevPin(devPin, false);
 			}
 
@@ -608,9 +613,10 @@ namespace DLS.Game
 			// When elements are placed, there are two cases where we automatically start placing new elements:
 			// 1) If placing a bus origin, a bus terminus is automatically created to place next
 			// 2) If multi-mode is held, a new copy of each element is made (not including bus elements)
-			List<ChipDescription> newElementsToStartPlacing = new();
+			List<ChipDescription> busTerminusesToAutoPlac = new();
 			List<Vector2> newElementPositions = new();
 			List<SubChipInstance> newlyPlacedBusOrigins = new();
+
 			foreach (IMoveable elementToPlace in SelectedElements)
 			{
 				ChipDescription autoPlaceElementDesc = null;
@@ -624,7 +630,7 @@ namespace DLS.Game
 						{
 							ChipType terminusType = ChipTypeHelper.GetCorrespondingBusTerminusType(subchip.Description.ChipType);
 							newlyPlacedBusOrigins.Add(subchip);
-							autoPlaceElementDesc = Project.ActiveProject.chipLibrary.GetChipDescription(ChipTypeHelper.GetName(terminusType));
+							//autoPlaceElementDesc = Project.ActiveProject.chipLibrary.GetChipDescription(ChipTypeHelper.GetName(terminusType));
 						}
 					}
 					else if (KeyboardShortcuts.MultiModeHeld) autoPlaceElementDesc = subchip.Description;
@@ -637,7 +643,7 @@ namespace DLS.Game
 
 				if (autoPlaceElementDesc != null)
 				{
-					newElementsToStartPlacing.Add(autoPlaceElementDesc);
+					busTerminusesToAutoPlac.Add(autoPlaceElementDesc);
 					newElementPositions.Add(elementToPlace.Position);
 				}
 			}
@@ -646,11 +652,12 @@ namespace DLS.Game
 			// ---- Stop placing the old items, and start placing any new items ----
 			OnFinishedPlacingItems();
 
-			for (int i = 0; i < newElementsToStartPlacing.Count; i++)
+			for (int i = 0; i < busTerminusesToAutoPlac.Count; i++)
 			{
-				StartPlacing(newElementsToStartPlacing[i], newElementPositions[i], true);
+				StartPlacing(busTerminusesToAutoPlac[i], newElementPositions[i], true);
 			}
 
+			/*
 			// Link bus origin and terminus together
 			IMoveable[] busTerminuses = SelectedElements.Where(s => s is SubChipInstance subchip && ChipTypeHelper.IsBusTerminusType(subchip.ChipType)).ToArray();
 			for (int i = 0; i < newlyPlacedBusOrigins.Count; i++)
@@ -660,6 +667,7 @@ namespace DLS.Game
 				busOrigin.SetLinkedBusPair(busTerminus);
 				busTerminus.SetLinkedBusPair(busOrigin);
 			}
+			*/
 		}
 
 		public void EnterWireEditMode(WireInstance wire)
@@ -744,7 +752,10 @@ namespace DLS.Game
 				for (int i = 0; i < SelectedElements.Count; i++)
 				{
 					IMoveable element = SelectedElements[i];
-					Vector2 totalOffset = moveOffset + Vector2.down * (itemPlacementCurrVerticalSpacing * i);
+					bool isBusTerminus = element is SubChipInstance s && ChipTypeHelper.IsBusTerminusType(s.ChipType);
+					Vector2 multiElementOffset = isBusTerminus ? Vector2.zero : Vector2.down * (itemPlacementCurrVerticalSpacing * i);
+
+					Vector2 totalOffset = moveOffset + multiElementOffset;
 					Vector2 targetPos = element.MoveStartPosition + totalOffset;
 
 					if (snapToGrid)
@@ -761,7 +772,8 @@ namespace DLS.Game
 							Vector2 snapPointStartA = prevElement.MoveStartPosition + (prevElement.SnapPoint - prevElement.Position);
 							Vector2 snapPointStartB = element.MoveStartPosition + (element.SnapPoint - element.Position);
 							// Base curr element's snap pos on prev element, adding the (snapped) difference between their initial snap points
-							Vector2 placementManualOffset = Vector2.down * itemPlacementCurrVerticalSpacing;
+							Vector2 placementManualOffset = isBusTerminus ? Vector2.zero : Vector2.down * itemPlacementCurrVerticalSpacing;
+
 							Vector2 snappedOffset = GridHelper.SnapToGrid(snapPointStartB - snapPointStartA + placementManualOffset, false, true);
 							Vector2 elementSnapPointOffset = element.SnapPoint - element.Position;
 							targetPos = prevElement.SnapPoint + snappedOffset - elementSnapPointOffset;
@@ -941,9 +953,17 @@ namespace DLS.Game
 				elementToPlace = new SubChipInstance(chipDescription, subChipDesc);
 			}
 
+			bool isAutoplacedBusTerminus = ChipTypeHelper.IsBusTerminusType(chipDescription.ChipType);
+			
+			// Place bus terminus to right of bus origin
+			if (isAutoplacedBusTerminus)
+			{
+				elementToPlace.MoveStartPosition = SelectedElements[^1].MoveStartPosition + Vector2.right * 1;
+				elementToPlace.HasReferencePointForStraightLineMovement = false;
+			}
 			// If placing multiple elements simultaneously, place the new element below the previous one
-			// (unless is duplicating elements, in which case their relative positions should be preserved)
-			if (SelectedElements.Count > 0 && !isDuplicating)
+			// (unless duplicating elements, in which case their relative positions should be preserved)
+			else if (SelectedElements.Count > 0 && !isDuplicating)
 			{
 				float spacing = (elementToPlace.SelectionBoundingBox.Size.y + SelectedElements[^1].SelectionBoundingBox.Size.y) / 2;
 				elementToPlace.MoveStartPosition = SelectedElements[^1].MoveStartPosition + Vector2.down * spacing;
@@ -958,6 +978,21 @@ namespace DLS.Game
 			}
 
 			Select(elementToPlace);
+			// Swap bus terminus to come before 
+			if (isAutoplacedBusTerminus) (SelectedElements[^1], SelectedElements[^2]) = (SelectedElements[^2], SelectedElements[^1]);
+
+			// When placing bus, auto-place the corresponding bus terminus
+			if (ChipTypeHelper.IsBusOriginType(chipDescription.ChipType))
+			{
+				ChipType terminusType = ChipTypeHelper.GetCorrespondingBusTerminusType(chipDescription.ChipType);
+				ChipDescription terminusDescription = Project.ActiveProject.chipLibrary.GetChipDescription(ChipTypeHelper.GetName(terminusType));
+				SubChipInstance terminus = (SubChipInstance)StartPlacing(terminusDescription, position, isDuplicating);
+
+				SubChipInstance busOrigin = (SubChipInstance)elementToPlace;
+				busOrigin.SetLinkedBusPair(terminus);
+				terminus.SetLinkedBusPair(busOrigin);
+			}
+
 			return elementToPlace;
 		}
 
