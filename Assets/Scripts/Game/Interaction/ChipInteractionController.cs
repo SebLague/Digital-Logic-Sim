@@ -921,6 +921,8 @@ namespace DLS.Game
 
 		public IMoveable StartPlacing(ChipDescription chipDescription, Vector2 position, bool isDuplicating)
 		{
+			const float busPairSpacing = DrawSettings.GridSize * 8;
+
 			newElementsAreDuplicatedElements = isDuplicating;
 
 			// Input/output dev pins are represented as chips for convenience
@@ -953,12 +955,10 @@ namespace DLS.Game
 				elementToPlace = new SubChipInstance(chipDescription, subChipDesc);
 			}
 
-			bool isAutoplacedBusTerminus = ChipTypeHelper.IsBusTerminusType(chipDescription.ChipType);
-			
 			// Place bus terminus to right of bus origin
-			if (isAutoplacedBusTerminus)
+			if (ChipTypeHelper.IsBusTerminusType(chipDescription.ChipType))
 			{
-				elementToPlace.MoveStartPosition = SelectedElements[^1].MoveStartPosition + Vector2.right * 1;
+				elementToPlace.MoveStartPosition = SelectedElements[^1].MoveStartPosition + Vector2.right * busPairSpacing;
 				elementToPlace.HasReferencePointForStraightLineMovement = false;
 			}
 			// If placing multiple elements simultaneously, place the new element below the previous one
@@ -966,7 +966,15 @@ namespace DLS.Game
 			else if (SelectedElements.Count > 0 && !isDuplicating)
 			{
 				float spacing = (elementToPlace.SelectionBoundingBox.Size.y + SelectedElements[^1].SelectionBoundingBox.Size.y) / 2;
-				elementToPlace.MoveStartPosition = SelectedElements[^1].MoveStartPosition + Vector2.down * spacing;
+
+				Vector2 prevElementPos = SelectedElements[^1].MoveStartPosition;
+				// If prev element was bus terminus, we want the midpoint between the bus origin and terminus pair
+				if (SelectedElements[^1] is SubChipInstance s && ChipTypeHelper.IsBusTerminusType(s.ChipType))
+				{
+					prevElementPos = (prevElementPos + SelectedElements[^2].MoveStartPosition) / 2;
+				}
+
+				elementToPlace.MoveStartPosition = prevElementPos + Vector2.down * spacing;
 				elementToPlace.HasReferencePointForStraightLineMovement = false;
 			}
 			else
@@ -978,12 +986,12 @@ namespace DLS.Game
 			}
 
 			Select(elementToPlace);
-			// Swap bus terminus to come before 
-			if (isAutoplacedBusTerminus) (SelectedElements[^1], SelectedElements[^2]) = (SelectedElements[^2], SelectedElements[^1]);
 
 			// When placing bus, auto-place the corresponding bus terminus
 			if (ChipTypeHelper.IsBusOriginType(chipDescription.ChipType))
 			{
+				elementToPlace.MoveStartPosition -= Vector2.right * busPairSpacing / 2;
+
 				ChipType terminusType = ChipTypeHelper.GetCorrespondingBusTerminusType(chipDescription.ChipType);
 				ChipDescription terminusDescription = Project.ActiveProject.chipLibrary.GetChipDescription(ChipTypeHelper.GetName(terminusType));
 				SubChipInstance terminus = (SubChipInstance)StartPlacing(terminusDescription, position, isDuplicating);
