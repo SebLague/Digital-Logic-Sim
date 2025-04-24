@@ -18,16 +18,20 @@ namespace DLS.Graphics
 		public const int DisplayOffState = 0;
 		public const int DisplayOnState = 1;
 		public const int DisplayHighlightState = 2;
-		static ChipInteractionController controller;
 
 		static readonly List<WireInstance> orderedWires = new();
 		static readonly Comparison<WireInstance> WireComparison = WireOrderCompare;
+
+		// State
+		static ChipInteractionController controller;
+		static bool canEditViewedChip;
 
 		public static void DrawActiveScene()
 		{
 			WorldDrawer.DrawGridIfActive(ActiveTheme.GridCol);
 
 			controller = Project.ActiveProject.controller;
+			canEditViewedChip = Project.ActiveProject.CanEditViewedChip;
 
 			DrawWires();
 			DrawWireEditPoints(controller.wireToEdit);
@@ -223,15 +227,15 @@ namespace DLS.Graphics
 
 			int charCount;
 
- 			if (pin.pinValueDisplayMode != PinValueDisplayMode.HEX)
- 			{
- 				charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
- 			} 
-			
+			if (pin.pinValueDisplayMode != PinValueDisplayMode.HEX)
+			{
+				charCount = StringHelper.CreateIntegerStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+			}
+
 			else
- 			{
- 				charCount = StringHelper.CreateHexStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
- 			}
+			{
+				charCount = StringHelper.CreateHexStringNonAlloc(pin.decimalDisplayCharBuffer, pin.GetStateDecimalDisplayValue());
+			}
 
 			FontType font = FontBold;
 			Bounds2D parentBounds = pin.BoundingBox;
@@ -617,7 +621,7 @@ namespace DLS.Graphics
 			// Toggle state on mouse down
 			bool mouseOverStateIndicator = devPin.PointIsInStateIndicatorBounds(InputHelper.MousePosWorld);
 			bool interactingWithStateDisplay = mouseOverStateIndicator && devPin.IsInputPin && controller.CanInteractWithPinStateDisplay;
-			Color stateCol = devPin.Pin.GetStateCol(0, interactingWithStateDisplay);
+			Color stateCol = devPin.Pin.GetStateCol(0, interactingWithStateDisplay, canEditViewedChip);
 
 			// Highlight on hover and toggle on mouse down
 			if (interactingWithStateDisplay)
@@ -671,7 +675,7 @@ namespace DLS.Graphics
 					// Highlight on hover, toggle on press
 					bool mouseOverStateToggle = InputHelper.MouseInsideBounds_World(pos, squareDisplaySize);
 					bool isInteractingWithStateDisplay = mouseOverStateToggle && isInteractable;
-					Color stateCol = devPin.Pin.GetStateCol(currBitIndex, isInteractingWithStateDisplay);
+					Color stateCol = devPin.Pin.GetStateCol(currBitIndex, isInteractingWithStateDisplay, canEditViewedChip);
 
 					if (isInteractingWithStateDisplay)
 					{
@@ -732,6 +736,7 @@ namespace DLS.Graphics
 				{
 					return controller.CanCompleteWireConnection(wire, out PinInstance _);
 				}
+
 				return true;
 			}
 
