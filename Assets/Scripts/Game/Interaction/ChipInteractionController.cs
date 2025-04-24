@@ -611,7 +611,7 @@ namespace DLS.Game
 				ActiveDevChip.AddWire(wire, false);
 			}
 
-			ActiveDevChip.UndoController.RecordAddElements(SelectedElements);
+			ActiveDevChip.UndoController.RecordAddElements(SelectedElements, DuplicatedWires.Count > 0);
 			DuplicatedWires.Clear();
 			OnFinishedPlacingItems();
 
