@@ -480,11 +480,21 @@ namespace Seb.Vis.UI
 			lastInputTime = Time.time;
 		}
 
-		public void SetText(List<string> newLines, bool focus = true)
+		public void SetText(string text, bool focus = true)
 		{
-			lines = newLines ?? new List<string> { string.Empty };
+			// Clear the current lines
+			lines.Clear();
+			lines.Add(string.Empty); // Ensure there's at least one line to start with
+
+
+			// Reset the cursor position
 			cursorLineIndex = 0;
 			cursorBeforeCharIndex = 0;
+
+			// Insert the entire text using TryInsertText
+			TryInsertText(text);
+			
+			// Set focus if required
 			SetFocus(focus);
 		}
 

@@ -23,9 +23,9 @@ namespace DLS.Graphics
 		{
 			note = (NoteInstance)ContextMenu.interactionContext;
 
-			InputFieldState inputFieldState = UI.GetInputFieldState(ID_NameField);
-			inputFieldState.SetText(note.Text);
-			inputFieldState.SelectAll();
+			TextAreaState textAreaState = UI.GetTextAreaState(ID_NameField);
+			textAreaState.SetText(note.Text);
+			textAreaState.SelectAll();
 		}
 
 		public static void DrawMenu()
