@@ -183,26 +183,12 @@ namespace DLS.Game
 
 		void HandleKeyboardInput()
 		{
-			// Step to next simulation frame when paused
-			// (note: this should work even when viewing other chips, so don't care about having control for this shortcut)
-			if (!UIDrawer.InInputBlockingMenu())
-			{
-				if (KeyboardShortcuts.SimNextStepShortcutTriggered)
-				{
-					project.advanceSingleSimStep = true;
-				}
-			}
-
 			// Ignore shortcuts if don't have control
 			if (!HasControl) return;
 
 			if (KeyboardShortcuts.UndoShortcutTriggered) ActiveDevChip.UndoController.TryUndo();
 			else if (KeyboardShortcuts.RedoShortcutTriggered) ActiveDevChip.UndoController.TryRedo();
-
-			if (KeyboardShortcuts.ToggleGridShortcutTriggered)
-			{
-				project.ToggleGridDisplay();
-			}
+			
 
 			if (!KeyboardShortcuts.StraightLineModeHeld) straightLineMoveState = StraightLineMoveState.None;
 

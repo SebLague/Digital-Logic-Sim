@@ -7,6 +7,7 @@ using DLS.Description;
 using DLS.Graphics;
 using DLS.SaveSystem;
 using DLS.Simulation;
+using Seb.Helpers;
 using UnityEngine;
 
 namespace DLS.Game
@@ -20,51 +21,51 @@ namespace DLS.Game
 			SaveAs
 		}
 
-		public const float SimulationPerformanceTimeWindowSec = 1.5f;
-
 		public static Project ActiveProject;
-		static readonly bool logSimTime = false;
 		public readonly ChipLibrary chipLibrary;
 
+		public ChipInteractionController controller;
+		public ProjectDescription description;
+
+		// ---- Display state ----
+		public bool ShowGrid => description.Prefs_GridDisplayMode == 1;
+		public bool PinNameDisplayIsTabToggledOn;
+
+
+		// ---- Chip view / edit state ----
 		// At the bottom of the stack is the chip that currently is being edited. 
 		// If chips are entered in view mode, they will be placed above on the stack.
 		public readonly Stack<DevChipInstance> chipViewStack = new();
-		public bool advanceSingleSimStep;
 
-		public ChipInteractionController controller;
-
-		public ProjectDescription description;
-
-		// The chip currently being edited. (This is not necessarily the currently viewed chip)
-		DevChipInstance editModeChip;
-
-		DevPinInstance[] inputPins = Array.Empty<DevPinInstance>();
-		int mainThreadFrameCount;
-
-		public bool ShowGrid => description.Prefs_GridDisplayMode == 1;
-		public int simPausedSingleStepCounter;
-
-		bool simThreadActive;
-
-		// String representation of the viewed chips stack for display purposes
-		public string viewedChipsString = string.Empty;
-
-		public SimChip rootSimChip => editModeChip.SimChip;
 		SimChip ViewedSimChip => ViewedChip.SimChip;
 
 		// The chip currently in view. This chip may be in view-only mode.
 		public DevChipInstance ViewedChip => chipViewStack.Peek();
-
 		public bool CanEditViewedChip => chipViewStack.Count == 1;
+		public string ActiveDevChipName => ViewedChip.ChipName;
 
+		public bool ChipHasBeenSavedBefore => ViewedChip.LastSavedDescription != null;
+
+		// String representation of the viewed chips stack for display purposes
+		public string viewedChipsString = string.Empty;
+
+		// The chip currently being edited. (This is not necessarily the currently viewed chip)
+		DevChipInstance editModeChip;
+
+		// ---- Simulation settings and state ----
+		public const float SimulationPerformanceTimeWindowSec = 1.5f;
+		static readonly bool logSimTime = false;
+
+		bool simThreadActive;
+		public bool advanceSingleSimStep;
+		public int simPausedSingleStepCounter;
+		int mainThreadFrameCount;
+		DevPinInstance[] inputPins = Array.Empty<DevPinInstance>();
 		public int targetTicksPerSecond => Mathf.Max(1, description.Prefs_SimTargetStepsPerSecond);
 		public int stepsPerClockTransition => description.Prefs_SimStepsPerClockTick;
 		public bool simPaused => description.Prefs_SimPaused;
 		public double simAvgTicksPerSec { get; private set; }
-
-		public string ActiveDevChipName => ViewedChip.ChipName;
-
-		public bool ChipHasBeenSavedBefore => ViewedChip.LastSavedDescription != null;
+		public SimChip rootSimChip => editModeChip.SimChip;
 
 		public Project(ProjectDescription description, ChipLibrary chipLibrary)
 		{
@@ -74,6 +75,23 @@ namespace DLS.Game
 			SearchPopup.ClearRecentChips();
 		}
 
+		public void Update()
+		{
+			HandleProjectInput();
+
+			if (UIDrawer.ActiveMenu is UIDrawer.MenuType.None or UIDrawer.MenuType.BottomBarMenuPopup)
+			{
+				controller.Update();
+			}
+
+			if (UIDrawer.ActiveMenu == UIDrawer.MenuType.None)
+			{
+				Simulator.UpdateKeyboardInputFromMainThread();
+			}
+
+			inputPins = editModeChip.GetInputPins();
+			mainThreadFrameCount++;
+		}
 
 		public void StartSimulation()
 		{
@@ -110,6 +128,31 @@ namespace DLS.Game
 				controller.CancelEverything();
 				UpdateViewedChipsString();
 			}
+		}
+
+		public bool AlwaysDrawDevPinNames => AlwaysDrawPinNames(description.Prefs_MainPinNamesDisplayMode);
+		public bool AlwaysDrawSubChipPinNames => AlwaysDrawPinNames(description.Prefs_ChipPinNamesDisplayMode);
+
+		bool AlwaysDrawPinNames(int prefIndex) => prefIndex == PreferencesMenu.DisplayMode_Always || (prefIndex == PreferencesMenu.DisplayMode_TabToggle && PinNameDisplayIsTabToggledOn);
+
+		void HandleProjectInput()
+		{
+			if (UIDrawer.ActiveMenu is UIDrawer.MenuType.None)
+			{
+				// Step to next simulation frame when paused
+				if (simPaused && KeyboardShortcuts.SimNextStepShortcutTriggered)
+				{
+					advanceSingleSimStep = true;
+				}
+
+				if (InputHelper.IsKeyDownThisFrame(KeyCode.Tab))
+				{
+					PinNameDisplayIsTabToggledOn = !PinNameDisplayIsTabToggledOn;
+				}
+			}
+
+
+			PreferencesMenu.HandleKeyboardShortcuts();
 		}
 
 		void UpdateViewedChipsString()
@@ -409,21 +452,6 @@ namespace DLS.Game
 			}
 		}
 
-		public void Update()
-		{
-			if (UIDrawer.ActiveMenu is UIDrawer.MenuType.None or UIDrawer.MenuType.BottomBarMenuPopup)
-			{
-				controller.Update();
-			}
-
-			if (UIDrawer.ActiveMenu == UIDrawer.MenuType.None)
-			{
-				Simulator.UpdateKeyboardInputFromMainThread();
-			}
-
-			inputPins = editModeChip.GetInputPins();
-			mainThreadFrameCount++;
-		}
 
 		public void ToggleGridDisplay()
 		{

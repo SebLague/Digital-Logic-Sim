@@ -93,8 +93,9 @@ namespace DLS.Graphics
 			Draw.StartLayer(Vector2.zero, 1, false);
 
 			// -- Draw names of all pins (when mode is set to always). Also draw decimal displays for multi-bit pins --
-			bool drawAllDevPinNames = Project.ActiveProject.description.Prefs_MainPinNamesDisplayMode == PreferencesMenu.DisplayMode_Always;
-			bool drawAllSubchipPinNames = Project.ActiveProject.description.Prefs_ChipPinNamesDisplayMode == PreferencesMenu.DisplayMode_Always;
+			bool drawAllDevPinNames = Project.ActiveProject.AlwaysDrawDevPinNames;
+			bool drawAllSubchipPinNames = Project.ActiveProject.AlwaysDrawSubChipPinNames;
+			
 			foreach (IMoveable element in chip.Elements)
 			{
 				if (element is DevPinInstance devPin)

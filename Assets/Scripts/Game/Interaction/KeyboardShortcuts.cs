@@ -17,7 +17,7 @@ namespace DLS.Game
 		public static bool PreferencesShortcutTriggered => CtrlShortcutTriggered(KeyCode.P);
 		public static bool CreateNewChipShortcutTriggered => CtrlShortcutTriggered(KeyCode.N);
 		public static bool QuitToMainMenuShortcutTriggered => CtrlShortcutTriggered(KeyCode.Q);
-		public static bool SearchShortcutTriggered => CtrlShortcutTriggered(KeyCode.Space) || CtrlShortcutTriggered(KeyCode.F);
+		public static bool SearchShortcutTriggered => CtrlShortcutTriggered(KeyCode.F);
 
 
 		// ---- Misc shortcuts ----
@@ -31,7 +31,8 @@ namespace DLS.Game
 		public static bool CancelShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Escape);
 		public static bool ConfirmShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Return) || InputHelper.IsKeyDownThisFrame(KeyCode.KeypadEnter);
 		public static bool DeleteShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Backspace) || InputHelper.IsKeyDownThisFrame(KeyCode.Delete);
-		public static bool SimNextStepShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Tab);
+		public static bool SimNextStepShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.Space) && !InputHelper.CtrlIsHeld;
+		public static bool SimPauseToggleShortcutTriggered => CtrlShortcutTriggered(KeyCode.Space);
 
 		// ---- Dev shortcuts ----
 		public static bool OpenSaveDataFolderShortcutTriggered => InputHelper.IsKeyDownThisFrame(KeyCode.O) && InputHelper.CtrlIsHeld && InputHelper.ShiftIsHeld && InputHelper.AltIsHeld;
