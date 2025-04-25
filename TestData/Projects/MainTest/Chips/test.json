@@ -149,6 +149,17 @@
     },
     {
       "Name":"OUT",
+      "ID":207378572,
+      "Position":{
+        "x":1.52143,
+        "y":0.90851
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"OUT",
       "ID":1072196870,
       "Position":{
         "x":-0.3623,

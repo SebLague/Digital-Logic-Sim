@@ -55,7 +55,10 @@ namespace DLS.Game
 		{
 			if (Application.isEditor)
 			{
-				//testString = StringHelper.CreateBinaryString(PinState.BitStateMask, removeZeros);
+				uint state = 0;
+				PinState.SetAllDisconnected(ref state);
+				
+				testString = StringHelper.CreateBinaryString(state, removeZeros);
 				//testString2 = StringHelper.CreateBinaryString(PinState.TriStateMask, removeZeros);
 			}
 			
