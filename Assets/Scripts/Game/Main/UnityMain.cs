@@ -1,5 +1,6 @@
 using DLS.Graphics;
 using DLS.Simulation;
+using Seb.Helpers;
 using Seb.Vis;
 using Seb.Vis.UI;
 using UnityEngine;
@@ -27,11 +28,16 @@ namespace DLS.Game
 		public Color testColB;
 		public Color testColC;
 		public Color testColD;
-		public string testString;
-		public string testString2;
 		public ButtonTheme testButtonTheme;
 		public bool testbool;
 		public Anchor testAnchor;
+		
+		
+		public string testString;
+		public string testString2;
+		public uint testUint;
+		public bool removeZeros;
+		public ushort testUshort;
 
 		void Awake()
 		{
@@ -47,6 +53,14 @@ namespace DLS.Game
 
 		void Update()
 		{
+			if (Application.isEditor)
+			{
+				//testString = StringHelper.CreateBinaryString(PinState.BitStateMask, removeZeros);
+				//testString2 = StringHelper.CreateBinaryString(PinState.TriStateMask, removeZeros);
+			}
+			
+			
+
 			Main.Update();
 		}
 

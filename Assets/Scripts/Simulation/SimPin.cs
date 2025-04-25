@@ -1,5 +1,4 @@
 using System;
-using DLS.Description;
 
 namespace DLS.Simulation
 {
@@ -65,13 +64,13 @@ namespace DLS.Simulation
 				// Note: for multi-bit pins, this choice is made identically for all bits, rather than individually. (This is only
 				// because it's easier to track the correct display colour this way, but maybe consider changing to per-bit in the future...)
 
-				uint x = source.State.GetRawBits() | State.GetRawBits();
-				uint y = source.State.GetRawBits() & State.GetRawBits();
-				uint z = Simulator.RandomBool() ? x : y;
-				uint m = source.State.GetTristateFlags() | State.GetTristateFlags();
-				uint c = (z & ~m) | (x & m);
+				ushort x = (ushort)(source.State.GetRawBits() | State.GetRawBits());
+				ushort y = (ushort)(source.State.GetRawBits() & State.GetRawBits());
+				ushort z = (ushort)(Simulator.RandomBool() ? x : y);
+				ushort m = (ushort)(source.State.GetTristateFlags() | State.GetTristateFlags());
+				ushort c = (ushort)((z & ~m) | (x & m));
 				
-				State.SetTristateFlags(source.State.GetTristateFlags() & State.GetTristateFlags());
+				State.SetTristateFlags((ushort)(source.State.GetTristateFlags() & State.GetTristateFlags()));
 				State.SetRawBits(c);
 			}
 			else

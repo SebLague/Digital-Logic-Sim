@@ -3,25 +3,25 @@ namespace DLS.Simulation
 	public class PinState
 	{
 		// Each bit has three possible states (tri-state logic):
-		public const uint LogicLow = 0;
-		public const uint LogicHigh = 1;
-		public const uint LogicDisconnected = 2;
+		public const ushort LogicLow = 0;
+		public const ushort LogicHigh = 1;
+		public const ushort LogicDisconnected = 2;
 		
 
 		// LOW/HIGH state of each bit
-		uint bitStates;
+		ushort bitStates;
 
 		// If flag is set, it means the corresponding bit state is DISCONNECTED
 		// (note: corresponding bit state is expected to be set to LOW in that case)
-		uint tristateFlags;
+		ushort tristateFlags;
 		
 
 		public uint GetRawBits() => bitStates;
 		public uint GetTristateFlags() => tristateFlags;
-		public void SetTristateFlags(uint v) => tristateFlags = v;
-		public void SetRawBits(uint v) => bitStates = v;
+		public void SetTristateFlags(ushort v) => tristateFlags = v;
+		public void SetRawBits(ushort v) => bitStates = v;
 
-		public void SetAllBits_NoneDisconnected(uint newBitStates)
+		public void SetAllBits_NoneDisconnected(ushort newBitStates)
 		{
 			bitStates = newBitStates;
 			tristateFlags = 0;
@@ -29,23 +29,23 @@ namespace DLS.Simulation
 
 		public bool FirstBitHigh() => (bitStates & 1) == LogicHigh;
 
-		public void SetBit(int bitIndex, uint newState)
+		public void SetBit(ushort bitIndex, ushort newState)
 		{
 			// Clear current state
-			uint mask = ~(1u << bitIndex);
+			ushort mask = (ushort)~(1u << bitIndex);
 			bitStates &= mask;
 			tristateFlags &= mask;
 
 			// Set new state
-			bitStates |= (newState & 1) << bitIndex;
-			tristateFlags |= (newState >> 1) << bitIndex;
+			bitStates |= (ushort)((newState & 1) << bitIndex);
+			tristateFlags |= (ushort)((newState >> 1) << bitIndex);
 		}
 
-		public uint GetBit(int bitIndex)
+		public ushort GetBit(int bitIndex)
 		{
-			uint state = (bitStates >> bitIndex) & 1;
-			uint tri = (tristateFlags >> bitIndex) & 1;
-			return state | (tri << 1); // Combine to form tri-stated value: 0 = LOW, 1 = HIGH, 2 = DISCONNECTED
+			ushort state = (ushort)((bitStates >> bitIndex) & 1);
+			ushort tri = (ushort)((tristateFlags >> bitIndex) & 1);
+			return (ushort)(state | (tri << 1)); // Combine to form tri-stated value: 0 = LOW, 1 = HIGH, 2 = DISCONNECTED
 		}
 
 		public void SetFromSource(PinState source)
@@ -58,36 +58,36 @@ namespace DLS.Simulation
 		{
 			if (firstNibble)
 			{
-				const uint mask = 0b1111;
-				bitStates = source8bit.bitStates & mask;
-				tristateFlags = source8bit.tristateFlags & mask;
+				const ushort mask = 0b1111;
+				bitStates = (ushort)(source8bit.bitStates & mask);
+				tristateFlags = (ushort)(source8bit.tristateFlags & mask);
 			}
 			else
 			{
 				const uint mask = 0b11110000;
-				bitStates = (source8bit.bitStates & mask) >> 4;
-				tristateFlags = (source8bit.tristateFlags & mask) >> 4;
+				bitStates = (ushort)((source8bit.bitStates & mask) >> 4);
+				tristateFlags = (ushort)((source8bit.tristateFlags & mask) >> 4);
 			}
 		}
 
 		public void Set8BitFrom4BitSources(PinState a, PinState b)
 		{
-			bitStates = a.bitStates | (b.bitStates << 4);
-			tristateFlags = a.tristateFlags | (b.tristateFlags << 4);
+			bitStates = (ushort)(a.bitStates | (b.bitStates << 4));
+			tristateFlags = (ushort)(a.tristateFlags | (b.tristateFlags << 4));
 		}
 
 		public void Toggle(int bitIndex)
 		{
-			bitStates ^= 1u << bitIndex;
+			bitStates ^= (ushort)(1u << bitIndex);
 
 			// Clear tristate flag (can't be disconnected if toggling)
-			tristateFlags &= ~(1u << bitIndex);
+			tristateFlags &= (ushort)~(1u << bitIndex);
 		}
 
 		public void SetAllDisconnected()
 		{
 			bitStates = 0;
-			tristateFlags = uint.MaxValue;
+			tristateFlags = ushort.MaxValue;
 		}
 	}
 }

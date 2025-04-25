@@ -203,8 +203,8 @@ namespace DLS.Simulation
 				// ---- Process Built-in chips ----
 				case ChipType.Nand:
 				{
-					uint andOp = chip.InputPins[0].State.GetRawBits() & chip.InputPins[1].State.GetRawBits();
-					uint nandOp = ~andOp & 1;
+					ushort andOp = (ushort)(chip.InputPins[0].State.GetRawBits() & chip.InputPins[1].State.GetRawBits());
+					ushort nandOp = (ushort)(~andOp & 1);
 					chip.OutputPins[0].State.SetBit(0, nandOp);
 					break;
 				}
@@ -233,7 +233,7 @@ namespace DLS.Simulation
 						}
 					}
 
-					uint pulseOutput = pulseInputState == PinState.LogicDisconnected ? PinState.LogicDisconnected : PinState.LogicLow;
+					ushort pulseOutput = pulseInputState == PinState.LogicDisconnected ? PinState.LogicDisconnected : PinState.LogicLow;
 					if (pulseTicksRemaining > 0)
 					{
 						chip.InternalState[1]--;
@@ -261,8 +261,8 @@ namespace DLS.Simulation
 
 					for (int i = 0; i < 4; i++)
 					{
-						uint inputState = chip.InputPins[3 - i].State.GetBit(0);
-						out4.State.SetBit(i, inputState);
+						ushort inputState = chip.InputPins[3 - i].State.GetBit(0);
+						out4.State.SetBit((ushort)i, inputState);
 					}
 
 					break;
@@ -270,7 +270,7 @@ namespace DLS.Simulation
 				case ChipType.Merge_1To8Bit:
 					for (int i = 0; i < 8; i++)
 					{
-						chip.OutputPins[0].State.SetBit(i, chip.InputPins[7 - i].State.GetBit(0));
+						chip.OutputPins[0].State.SetBit((ushort)i, chip.InputPins[7 - i].State.GetBit(0));
 					}
 
 					break;
@@ -368,9 +368,9 @@ namespace DLS.Simulation
 
 					// Output current pixel colour
 					uint colData = chip.InternalState[addressPin.GetRawBits()];
-					chip.OutputPins[0].State.SetAllBits_NoneDisconnected((colData >> 0) & 0b1111); // red
-					chip.OutputPins[1].State.SetAllBits_NoneDisconnected((colData >> 4) & 0b1111); // green
-					chip.OutputPins[2].State.SetAllBits_NoneDisconnected((colData >> 8) & 0b1111); // blue
+					chip.OutputPins[0].State.SetAllBits_NoneDisconnected((ushort)((colData >> 0) & 0b1111)); // red
+					chip.OutputPins[1].State.SetAllBits_NoneDisconnected((ushort)((colData >> 4) & 0b1111)); // green
+					chip.OutputPins[2].State.SetAllBits_NoneDisconnected((ushort)((colData >> 8) & 0b1111)); // blue
 
 					break;
 				}
@@ -418,7 +418,7 @@ namespace DLS.Simulation
 					}
 
 					// Output current pixel colour
-					uint pixelState = chip.InternalState[addressPin.GetRawBits()];
+					ushort pixelState = (ushort)chip.InternalState[addressPin.GetRawBits()];
 					chip.OutputPins[0].State.SetAllBits_NoneDisconnected(pixelState);
 
 					break;
@@ -453,7 +453,7 @@ namespace DLS.Simulation
 					}
 
 					// Output data at current address
-					chip.OutputPins[0].State.SetAllBits_NoneDisconnected(chip.InternalState[addressPin.GetRawBits()]);
+					chip.OutputPins[0].State.SetAllBits_NoneDisconnected((ushort)(chip.InternalState[addressPin.GetRawBits()]));
 
 					break;
 				}
@@ -462,8 +462,8 @@ namespace DLS.Simulation
 					const int ByteMask = 0b11111111;
 					uint address = chip.InputPins[0].State.GetRawBits();
 					uint data = chip.InternalState[address];
-					chip.OutputPins[0].State.SetAllBits_NoneDisconnected((data >> 8) & ByteMask);
-					chip.OutputPins[1].State.SetAllBits_NoneDisconnected(data & ByteMask);
+					chip.OutputPins[0].State.SetAllBits_NoneDisconnected((ushort)((data >> 8) & ByteMask));
+					chip.OutputPins[1].State.SetAllBits_NoneDisconnected((ushort)(data & ByteMask));
 					break;
 				}
 				// ---- Bus types ----
