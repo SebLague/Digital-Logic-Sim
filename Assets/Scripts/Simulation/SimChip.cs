@@ -79,11 +79,15 @@ namespace DLS.Simulation
 			}
 			else if (ChipType is ChipType.Port_In)
 			{
-				PortRegistry.RegisterInputPort(this);
+				InternalState = new uint[1];
+				uint index = PortRegistry.RegisterInputPort();
+				InternalState[0] = index;
 			}
 			else if (ChipType is ChipType.Port_Out)
 			{
-				PortRegistry.RegisterOutputPort(this);
+				InternalState = new uint[1];
+				uint index = PortRegistry.RegisterOutputPort();
+				InternalState[0] = index;
 			}
 			// Load in serialized persistent state (rom data, etc.)
 			else if (internalState is { Length: > 0 })
@@ -205,9 +209,13 @@ namespace DLS.Simulation
 			throw new Exception("Failed to find pin with address: " + address.PinID + ", " + address.PinOwnerID);
 		}
 
-
 		public void RemoveSubChip(int id)
 		{
+			SimChip subChip = GetSubChipFromID(id);
+			if (subChip.ChipType == ChipType.Port_In || subChip.ChipType == ChipType.Port_Out)
+			{ 
+				PortRegistry.UnregisterPort(subChip);
+			}
 			SubChips = SubChips.Where(s => s.ID != id).ToArray();
 		}
 

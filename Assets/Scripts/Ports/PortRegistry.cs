@@ -1,69 +1,67 @@
 using System.Collections.Generic;
+using DLS.Description;
 using DLS.Simulation;
 
 public static class PortRegistry
 {
-    private static int nextInputPortIndex = 0;
-    private static int nextOutputPortIndex = 0;
-    private static readonly Dictionary<SimChip, int> inputPortRegistry = new();
-    private static readonly Dictionary<SimChip, int> outputPortRegistry = new();
+    private static readonly SortedSet<int> availableInputIndices = new();
+    private static readonly SortedSet<int> availableOutputIndices = new();
 
-    public static int RegisterInputPort(SimChip chip)
+    public static void Initialize()
     {
-        if (inputPortRegistry.TryGetValue(chip, out int existingIndex))
-            return existingIndex;
-
-        int newIndex = nextInputPortIndex++;
-        inputPortRegistry.Add(chip, newIndex);
-        
-        // Initialize the chip's internal state with the port index
-        if (chip.InternalState == null || chip.InternalState.Length == 0)
+        for (int i = 0; i <= 8; i++)
         {
-            chip.UpdateInternalState(new uint[1] { (uint) newIndex });
+            availableInputIndices.Add(i);
+            availableOutputIndices.Add(i);
         }
-        else
-        {
-            chip.InternalState[0] = (uint)newIndex;
-        }
-        
-        return newIndex;
     }
 
-    public static int RegisterOutputPort(SimChip chip)
+    public static uint RegisterInputPort()
     {
-        if (outputPortRegistry.TryGetValue(chip, out int existingIndex))
-            return existingIndex;
+        if (availableInputIndices.Count == 0)
+            return 9;
+        
+        int index = availableInputIndices.Min;
+        availableInputIndices.Remove(index);
+        
+        return (uint)index;
+    }
 
-        int newIndex = nextOutputPortIndex++;
-        outputPortRegistry.Add(chip, newIndex);
+    public static uint RegisterOutputPort()
+    {
+        if (availableOutputIndices.Count == 0)
+            return 9;
         
-        // Initialize the chip's internal state with the port index
-        if (chip.InternalState == null || chip.InternalState.Length == 0)
-        {
-            chip.UpdateInternalState(new uint[1] { (uint) newIndex });
-        }
-        else
-        {
-            chip.InternalState[0] = (uint)newIndex;
-        }
+        int index = availableOutputIndices.Min;
+        availableOutputIndices.Remove(index);
         
-        return newIndex;
+        return (uint)index;
     }
 
     public static void UnregisterPort(SimChip chip)
     {
-        inputPortRegistry.Remove(chip);
-        outputPortRegistry.Remove(chip);
-        // Note: Not decrementing nextIndex to keep things simple
-        // Port indexes are currently never reused during runtime
+        
+        if (chip.InternalState == null || chip.InternalState.Length == 0)
+        {
+            return;
+        }
+
+        int index = (int)chip.InternalState[0];
+
+        if (chip.ChipType == ChipType.Port_In)
+        {
+            availableInputIndices.Add(index);
+        }
+        else if (chip.ChipType == ChipType.Port_Out)
+        {
+            availableOutputIndices.Add(index);
+        }
     }
 
     public static int? GetPortIndex(SimChip chip)
     {
-        if (inputPortRegistry.TryGetValue(chip, out int inputIndex))
-            return inputIndex;
-        if (outputPortRegistry.TryGetValue(chip, out int outputIndex))
-            return outputIndex;
+        if (chip.InternalState != null && chip.InternalState.Length > 0)
+            return (int)chip.InternalState[0];
         return null;
     }
 }

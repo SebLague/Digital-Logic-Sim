@@ -1,0 +1,59 @@
+{
+  "Name": "testport",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 1.325,
+    "y": 1.125
+  },
+  "Colour": {
+    "r": 0.5414247,
+    "g": 0.390782118,
+    "b": 0.6613721,
+    "a": 1
+  },
+  "InputPins":[],
+  "OutputPins":[
+    {
+      "Name":"OUT",
+      "ID":342855352,
+      "Position":{
+        "x":2.27483,
+        "y":-1.68749
+      },
+      "BitCount":8,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "SubChips":[
+    {
+      "Name":"PORT-IN",
+      "ID":637860104,
+      "Label":"",
+      "Position":{
+        "x":-4.29289,
+        "y":-1.67074
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":0}],
+      "InternalData":null
+    }
+  ],
+  "Wires":[
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":637860104
+      },
+      "TargetPinAddress":{
+        "PinID":0,
+        "PinOwnerID":342855352
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    }
+  ],
+  "Displays": null
+}

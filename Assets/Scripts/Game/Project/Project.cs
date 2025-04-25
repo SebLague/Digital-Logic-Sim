@@ -111,6 +111,7 @@ namespace DLS.Game
 			};
 			simThread.Start();
 
+			PortRegistry.Initialize();
 			PortCommunicationManager.Initialize();
 		}
 

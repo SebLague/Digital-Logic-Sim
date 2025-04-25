@@ -222,6 +222,22 @@ namespace DLS.Graphics
 			Draw.Text(font, text, FontSizePinLabel, centre, Anchor.TextFirstLineCentre, Color.white);
 		}
 
+		public static void DrawPortLabel(SubChipInstance chip, SimChip sim = null)
+		{
+			if (!(chip.ChipType == ChipType.Port_In || chip.ChipType == ChipType.Port_Out) || !string.IsNullOrWhiteSpace(chip.Label) || sim == null) return;
+			string text = sim.InternalState[0] != 9 ? sim.InternalState[0].ToString() : "All ports in use!";
+
+
+			const float offsetY = 0.2f;
+			FontType font = FontBold;
+
+			Vector2 size = Draw.CalculateTextBoundsSize(text, FontSizePinLabel, font) + LabelBackgroundPadding;
+			Vector2 centre = chip.Position + Vector2.down * (chip.Size.y / 2 + offsetY);
+
+			Draw.Quad(centre, size, ActiveTheme.PinLabelCol);
+			Draw.Text(font, text, FontSizePinLabel, centre, Anchor.TextFirstLineCentre, Color.white);
+		}
+
 		public static void DrawPinDecValue(DevPinInstance pin)
 		{
 			if (pin.pinValueDisplayMode == PinValueDisplayMode.Off) return;
@@ -336,6 +352,8 @@ namespace DLS.Graphics
 
 				Draw.Text(FontBold, displayName, FontSizeChipName, textPos, textAnchor, nameTextCol, ChipNameLineSpacing);
 			}
+
+			if (subchip.ChipType == ChipType.Port_In || subchip.ChipType == ChipType.Port_Out) DrawPortLabel(subchip, sim);
 		}
 
 		public static void DrawSubchipDisplays(SubChipInstance subchip, SimChip sim = null, bool outOfBoundsDisplay = false)
