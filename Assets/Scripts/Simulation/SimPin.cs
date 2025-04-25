@@ -34,7 +34,7 @@ namespace DLS.Simulation
 			PinState.SetAllDisconnected(ref State);
 		}
 
-		public bool FirstBitHigh => PinState.GetBit(State, 0) == PinState.LogicHigh;
+		public bool FirstBitHigh => PinState.FirstBitHigh(State);
 
 		public void PropagateSignal()
 		{
@@ -46,7 +46,6 @@ namespace DLS.Simulation
 		}
 
 		public void SetBit(ushort index, ushort value) => PinState.SetBit(ref State, index, value);
-		public ushort GetBit(ushort index) => PinState.GetBit(State, index);
 		
 		public void SetAllBits_NoneDisconnected(ushort val) => PinState.SetAllBits_NoneDisconnected(ref State, val);
 		

@@ -215,12 +215,13 @@ namespace DLS.Simulation
 					break;
 				}
 				case ChipType.Pulse:
+				{
 					const int pulseDurationIndex = 0;
 					const int pulseTicksRemainingIndex = 1;
 					const int pulseInputOldIndex = 2;
 
-					uint pulseInputState = chip.InputPins[0].GetBit(0);
-					bool pulseInputHigh = pulseInputState == PinState.LogicHigh;
+					uint inputState = chip.InputPins[0].State;
+					bool pulseInputHigh = PinState.FirstBitHigh(inputState);
 					uint pulseTicksRemaining = chip.InternalState[pulseTicksRemainingIndex];
 
 					if (pulseTicksRemaining == 0)
@@ -233,17 +234,18 @@ namespace DLS.Simulation
 						}
 					}
 
-					ushort pulseOutput = pulseInputState == PinState.LogicDisconnected ? PinState.LogicDisconnected : PinState.LogicLow;
+					uint outputState = inputState;
 					if (pulseTicksRemaining > 0)
 					{
 						chip.InternalState[1]--;
-						pulseOutput = PinState.LogicHigh;
+						outputState = PinState.LogicHigh;
 					}
 
-					chip.OutputPins[0].SetBit(0, pulseOutput);
+					chip.OutputPins[0].State = outputState;
 					chip.InternalState[pulseInputOldIndex] = pulseInputHigh ? 1u : 0;
 
 					break;
+				}
 				case ChipType.Split_4To1Bit:
 				{
 					uint inState4Bit = chip.InputPins[0].State;
