@@ -234,11 +234,15 @@ namespace DLS.Simulation
 						}
 					}
 
-					uint outputState = inputState;
+					uint outputState = PinState.LogicLow;
 					if (pulseTicksRemaining > 0)
 					{
 						chip.InternalState[1]--;
 						outputState = PinState.LogicHigh;
+					}
+					else if (PinState.GetTristateFlags(inputState) != 0)
+					{
+						PinState.SetAllDisconnected(ref outputState);
 					}
 
 					chip.OutputPins[0].State = outputState;

@@ -65,7 +65,24 @@ namespace DLS.Game
 				if (InteractionState.PinUnderMouse != null)
 				{
 					SimPin simPin = Project.ActiveProject.rootSimChip.GetSimPinFromAddress(InteractionState.PinUnderMouse.Address);
-					Debug.Log($"Pin state: {StringHelper.CreateBinaryString(simPin.State)}");
+					ushort bitData = PinState.GetBitStates(simPin.State);
+					ushort tristateFlags = PinState.GetTristateFlags(simPin.State);
+					string bitString = StringHelper.CreateBinaryString(bitData, true);
+					string triStateString = StringHelper.CreateBinaryString(tristateFlags, true);
+
+					string displayString = "";
+					for (int i = 0; i < bitString.Length; i++)
+					{
+						if (triStateString[i] == '1')
+						{
+							displayString += bitString[i] == '1' ? "?" : "x";
+						}
+						else
+						{
+							displayString += bitString[i];
+						}
+					}
+					Debug.Log($"Pin state: {displayString}");
 				}
 			}
 		}
