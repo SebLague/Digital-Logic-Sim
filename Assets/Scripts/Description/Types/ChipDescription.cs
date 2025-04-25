@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using System.ComponentModel;
+
 
 namespace DLS.Description
 {
@@ -12,6 +14,8 @@ namespace DLS.Description
 		// ---- Data ----
 		public string Name;
 		public NameDisplayLocation NameLocation;
+		[DefaultValue(NameAlignment.Centre)]
+		public NameAlignment NameAlignment;
 		public ChipType ChipType;
 		public Vector2 Size;
 		public Color Colour;
@@ -32,5 +36,12 @@ namespace DLS.Description
 		Centre,
 		Top,
 		Hidden
+	}
+
+	public enum NameAlignment
+	{
+		Centre,
+		Right,
+		Left
 	}
 }

@@ -24,7 +24,7 @@ namespace DLS.SaveSystem
 			PinDescription[] inputPins = OrderPins(chip.GetInputPins()).Select(CreatePinDescription).ToArray();
 			PinDescription[] outputPins = OrderPins(chip.GetOutputPins()).Select(CreatePinDescription).ToArray();
 			SubChipDescription[] subchips = chip.GetSubchips().Select(CreateSubChipDescription).ToArray();
-			Vector2 minChipsSize = SubChipInstance.CalculateMinChipSize(inputPins, outputPins, name);
+			Vector2 minChipsSize = SubChipInstance.CalculateMinChipSize(inputPins, outputPins, name, hasSavedDesc ? descOld.NameAlignment : NameAlignment.Centre);
 			size = Vector2.Max(minChipsSize, size);
 
 			UpdateWireIndicesForDescriptionCreation(chip);
@@ -34,6 +34,7 @@ namespace DLS.SaveSystem
 			{
 				Name = name,
 				NameLocation = hasSavedDesc ? descOld.NameLocation : NameDisplayLocation.Centre,
+				NameAlignment = hasSavedDesc ? descOld.NameAlignment : NameAlignment.Centre,
 				Size = size,
 				Colour = col,
 

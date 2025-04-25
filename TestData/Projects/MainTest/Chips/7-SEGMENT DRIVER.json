@@ -1,8 +1,10 @@
 {
   "Name": "7-SEGMENT DRIVER",
   "NameLocation": 0,
+  "NameAlignment": 1,
+  "ChipType": 0,
   "Size": {
-    "x": 1.7,
+    "x": 2.23443,
     "y": 1.75
   },
   "Colour": {
@@ -809,6 +811,5 @@
       "Points":[{"x":0.0,"y":0.0},{"x":-2.625,"y":1.5},{"x":-2.625,"y":2.375},{"x":0.0,"y":0.0}]
     }
   ],
-  "Displays":[],
-  "ChipType": 0
+  "Displays":[]
 }
