@@ -433,9 +433,8 @@ namespace DLS.Graphics
 			else if (display.DisplayType == ChipType.DisplayLED)
 			{
 				bool simActive = sim != null;
-				bool isDisconnected = (!simActive) || (sim.numConnectedInputs == 0) || (PinState.GetBitTristatedValue(sim.InputPins[0].State, 0) == PinState.LogicDisconnected);
 				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
-				bounds = DrawDisplay_DisplayLED(posWorld, scaleWorld, isDisconnected, isOn);
+				bounds = DrawDisplay_DisplayLED(posWorld, scaleWorld, isOn);
 			}
 
 			display.LastDrawBounds = bounds;
@@ -568,18 +567,16 @@ namespace DLS.Graphics
 			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
 		}
 
-		public static Bounds2D DrawDisplay_DisplayLED(Vector2 centre, float scale, bool isDisconnected, bool isOn)
+		public static Bounds2D DrawDisplay_DisplayLED(Vector2 centre, float scale, bool isOn)
 		{
 			const float pixelSizeT = 0.975f;
+			float pixelSize = scale;
+			
 			// Draw background
 			Draw.Quad(centre, Vector2.one * scale, Color.black);
-			float size = scale;
-
-			float pixelSize = size;
 			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
-
-			Color col = isDisconnected ? ActiveTheme.DisplayLEDCols[0] : (isOn ? ActiveTheme.DisplayLEDCols[2] : ActiveTheme.DisplayLEDCols[1]);
-
+	
+			Color col = isOn ? ActiveTheme.DisplayLEDCols[2] : ActiveTheme.DisplayLEDCols[1];
 			Draw.Quad(centre, pixelDrawSize, col);
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
