@@ -433,7 +433,7 @@ namespace DLS.Graphics
 			else if (display.DisplayType == ChipType.DisplayLED)
 			{
 				bool simActive = sim != null;
-				bool isDisconnected = (!simActive) || (sim.numConnectedInputs == 0) || (sim.InputPins[0].State.GetBit(0) == PinState.LogicDisconnected);
+				bool isDisconnected = (!simActive) || (sim.numConnectedInputs == 0) || (PinState.GetBit(sim.InputPins[0].State, 0) == PinState.LogicDisconnected);
 				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
 				bounds = DrawDisplay_DisplayLED(posWorld, scaleWorld, isDisconnected, isOn);
 			}

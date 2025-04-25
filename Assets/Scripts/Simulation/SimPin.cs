@@ -6,8 +6,8 @@ namespace DLS.Simulation
 	{
 		public readonly int ID;
 		public readonly SimChip parentChip;
-		public readonly PinState State;
 		public readonly bool isInput;
+		public uint State;
 
 		public SimPin[] ConnectedTargetPins = Array.Empty<SimPin>();
 
@@ -31,11 +31,10 @@ namespace DLS.Simulation
 			latestSourceID = -1;
 			latestSourceParentChipID = -1;
 
-			State = new PinState();
-			State.SetAllDisconnected();
+			PinState.SetAllDisconnected(ref State);
 		}
 
-		public bool FirstBitHigh => State.GetBit(0) == PinState.LogicHigh;
+		public bool FirstBitHigh => PinState.GetBit(State, 0) == PinState.LogicHigh;
 
 		public void PropagateSignal()
 		{
@@ -45,6 +44,13 @@ namespace DLS.Simulation
 				ConnectedTargetPins[i].ReceiveInput(this);
 			}
 		}
+
+		public void SetBit(ushort index, ushort value) => PinState.SetBit(ref State, index, value);
+		public ushort GetBit(ushort index) => PinState.GetBit(State, index);
+		
+		public void SetAllBits_NoneDisconnected(ushort val) => PinState.SetAllBits_NoneDisconnected(ref State, val);
+		
+		public ushort GetRawBits() => PinState.GetBitStates(State);
 
 		// Called on sub-chip input pins, or chip dev-pins
 		void ReceiveInput(SimPin source)
@@ -64,19 +70,20 @@ namespace DLS.Simulation
 				// Note: for multi-bit pins, this choice is made identically for all bits, rather than individually. (This is only
 				// because it's easier to track the correct display colour this way, but maybe consider changing to per-bit in the future...)
 
-				ushort x = (ushort)(source.State.GetRawBits() | State.GetRawBits());
-				ushort y = (ushort)(source.State.GetRawBits() & State.GetRawBits());
-				ushort z = (ushort)(Simulator.RandomBool() ? x : y);
-				ushort m = (ushort)(source.State.GetTristateFlags() | State.GetTristateFlags());
-				ushort c = (ushort)((z & ~m) | (x & m));
-				
-				State.SetTristateFlags((ushort)(source.State.GetTristateFlags() & State.GetTristateFlags()));
-				State.SetRawBits(c);
+				uint OR = source.State | State;
+				uint AND = source.State & State;
+				ushort bitsNew = (ushort)(Simulator.RandomBool() ? OR : AND);
+
+
+				ushort mask = (ushort)(OR >> 16);
+				bitsNew = (ushort)((bitsNew & ~mask) | ((ushort)OR & mask));
+
+				PinState.Set(ref State, bitsNew, (ushort)(AND >> 16));
 			}
 			else
 			{
 				// First input source this frame, so accept it.
-				State.SetFromSource(source.State);
+				State = source.State;
 				set = true;
 			}
 

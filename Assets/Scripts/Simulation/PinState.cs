@@ -89,7 +89,10 @@ namespace DLS.Simulation
 		
 		public static void SetAllDisconnected(ref uint state) => Set(ref state, 0, ushort.MaxValue);
 			
-
+		public static void SetAllBits_NoneDisconnected(ref uint state, ushort newBitStates)
+		{
+			Set(ref state, newBitStates, 0);
+		}
 		// ----------- Instance methods
 
 
@@ -98,10 +101,7 @@ namespace DLS.Simulation
 		public void SetTristateFlags(ushort v) => SetTristateFlags(ref state, v);
 		public void SetRawBits(ushort v) => SetBitStates(ref state, v);
 
-		public void SetAllBits_NoneDisconnected(ushort newBitStates)
-		{
-			Set(ref state, newBitStates, 0);
-		}
+		public void SetAllBits_NoneDisconnected(ushort newBitStates) => SetAllBits_NoneDisconnected(ref state, newBitStates);
 
 		public bool FirstBitHigh() => FirstBitHigh(state);
 
@@ -110,6 +110,9 @@ namespace DLS.Simulation
 		public ushort GetBit(int bitIndex) => GetBit(state, bitIndex);
 
 		public void SetFromSource(PinState source) => Set(ref state, source.state);
+		public void SetFromSource(uint source) => Set(ref state, source);
+		
+		
 
 		public void Set4BitFrom8BitSource(PinState source8bit, bool firstNibble) => Set4BitFrom8BitSource(ref state, source8bit.state, firstNibble);
 
