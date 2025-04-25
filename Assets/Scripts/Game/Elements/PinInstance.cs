@@ -31,8 +31,8 @@ namespace DLS.Game
 			Name = desc.Name;
 			Address = address;
 			IsSourcePin = isSourcePin;
-			State = new PinState((int)bitCount);
-			PlayerInputState = new PinState((int)bitCount);
+			State = new PinState();
+			PlayerInputState = new PinState();
 			Colour = desc.Colour;
 
 			IsBusPin = parent is SubChipInstance subchip && subchip.IsBus;

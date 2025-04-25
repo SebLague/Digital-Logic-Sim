@@ -223,7 +223,7 @@ namespace DLS.Simulation
 			}
 		}
 
-		static SimPin CreateSimPinFromDescription(PinDescription desc, bool isInput, SimChip parent) => new(desc.ID, desc.BitCount, isInput, parent);
+		static SimPin CreateSimPinFromDescription(PinDescription desc, bool isInput, SimChip parent) => new(desc.ID, isInput, parent);
 
 		public void RemovePin(int removePinID)
 		{

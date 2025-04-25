@@ -1,6 +1,5 @@
 using System;
 using DLS.Description;
-using UnityEditor.U2D;
 
 namespace DLS.Simulation
 {
@@ -25,7 +24,7 @@ namespace DLS.Simulation
 		public int numInputConnections;
 		public int numInputsReceivedThisFrame;
 
-		public SimPin(int id, PinBitCount bitCount, bool isInput, SimChip parentChip)
+		public SimPin(int id, bool isInput, SimChip parentChip)
 		{
 			this.parentChip = parentChip;
 			this.isInput = isInput;
@@ -33,7 +32,7 @@ namespace DLS.Simulation
 			latestSourceID = -1;
 			latestSourceParentChipID = -1;
 
-			State = new PinState((int)bitCount);
+			State = new PinState();
 			State.SetAllDisconnected();
 		}
 

@@ -517,13 +517,13 @@ namespace DLS.Simulation
 			return simChip;
 		}
 
-		public static void AddPin(SimChip simChip, int pinID, PinBitCount bitCount, bool isInputPin)
+		public static void AddPin(SimChip simChip, int pinID, bool isInputPin)
 		{
 			SimModifyCommand command = new()
 			{
 				type = SimModifyCommand.ModificationType.AddPin,
 				modifyTarget = simChip,
-				simPinToAdd = new SimPin(pinID, bitCount, isInputPin, simChip),
+				simPinToAdd = new SimPin(pinID, isInputPin, simChip),
 				pinIsInputPin = isInputPin
 			};
 			modificationQueue.Enqueue(command);

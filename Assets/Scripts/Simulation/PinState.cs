@@ -14,11 +14,7 @@ namespace DLS.Simulation
 		// If flag is set, it means the corresponding bit state is DISCONNECTED
 		// (note: corresponding bit state is expected to be set to LOW in that case)
 		uint tristateFlags;
-
-		public PinState(int numBits)
-		{
-			//BitCount = numBits;
-		}
+		
 
 		public uint GetRawBits() => bitStates;
 		public uint GetTristateFlags() => tristateFlags;
