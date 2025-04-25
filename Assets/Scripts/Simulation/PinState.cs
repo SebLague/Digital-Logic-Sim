@@ -6,8 +6,7 @@ namespace DLS.Simulation
 		public const uint LogicLow = 0;
 		public const uint LogicHigh = 1;
 		public const uint LogicDisconnected = 2;
-
-		public readonly int BitCount;
+		
 
 		// LOW/HIGH state of each bit
 		uint bitStates;
@@ -18,7 +17,7 @@ namespace DLS.Simulation
 
 		public PinState(int numBits)
 		{
-			BitCount = numBits;
+			//BitCount = numBits;
 		}
 
 		public uint GetRawBits() => bitStates;
@@ -92,7 +91,7 @@ namespace DLS.Simulation
 		public void SetAllDisconnected()
 		{
 			bitStates = 0;
-			tristateFlags = (1u << BitCount) - 1;
+			tristateFlags = uint.MaxValue;
 		}
 	}
 }
