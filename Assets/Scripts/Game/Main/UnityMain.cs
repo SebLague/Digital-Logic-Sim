@@ -31,8 +31,8 @@ namespace DLS.Game
 		public ButtonTheme testButtonTheme;
 		public bool testbool;
 		public Anchor testAnchor;
-		
-		
+
+
 		public string testString;
 		public string testString2;
 		public uint testUint;
@@ -53,18 +53,21 @@ namespace DLS.Game
 
 		void Update()
 		{
-			if (Application.isEditor)
-			{
-				//uint state = 0;
-				//PinState.SetAllDisconnected(ref state);
-				
-				//testString = StringHelper.CreateBinaryString(state, removeZeros);
-				//testString2 = StringHelper.CreateBinaryString(PinState.TriStateMask, removeZeros);
-			}
-			
-			
+			if (Application.isEditor) EditorDebugUpdate();
 
 			Main.Update();
+		}
+
+		void EditorDebugUpdate()
+		{
+			if (InputHelper.AltIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.Return))
+			{
+				if (InteractionState.PinUnderMouse != null)
+				{
+					SimPin simPin = Project.ActiveProject.rootSimChip.GetSimPinFromAddress(InteractionState.PinUnderMouse.Address);
+					Debug.Log($"Pin state: {StringHelper.CreateBinaryString(simPin.State)}");
+				}
+			}
 		}
 
 		void OnDestroy()

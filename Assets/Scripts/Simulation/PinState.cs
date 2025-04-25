@@ -73,7 +73,7 @@ namespace DLS.Simulation
 		public static void Set8BitFrom4BitSources(ref uint state, uint a, uint b)
 		{
 			ushort bitStates = (ushort)(GetBitStates(a) | (GetBitStates(b) << 4));
-			ushort tristateFlags = (ushort)(GetTristateFlags(a) | (GetTristateFlags(b) << 4));
+			ushort tristateFlags = (ushort)((GetTristateFlags(a) & 0b1111) | ((GetTristateFlags(b) & 0b1111) << 4));
 			Set(ref state, bitStates, tristateFlags);
 		}
 
