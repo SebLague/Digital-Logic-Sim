@@ -1,0 +1,98 @@
+{
+  "Name": "Const-3",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 1.175,
+    "y": 0.5
+  },
+  "Colour": {
+    "r": 0.1028393,
+    "g": 0.311909,
+    "b": 0.755625367,
+    "a": 1
+  },
+  "InputPins":[],
+  "OutputPins":[
+    {
+      "Name":"OUT",
+      "ID":1942590100,
+      "Position":{
+        "x":4.25,
+        "y":0.1875
+      },
+      "BitCount":8,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "SubChips":[
+    {
+      "Name":"1-8BIT",
+      "ID":819493985,
+      "Label":"",
+      "Position":{
+        "x":1.0725,
+        "y":0.1875
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":8}],
+      "InternalData":null
+    },
+    {
+      "Name":"NOT",
+      "ID":1631495164,
+      "Label":"",
+      "Position":{
+        "x":-0.89,
+        "y":-0.6875
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":891327831}],
+      "InternalData":null
+    }
+  ],
+  "Wires":[
+    {
+      "SourcePinAddress":{
+        "PinID":8,
+        "PinOwnerID":819493985
+      },
+      "TargetPinAddress":{
+        "PinID":0,
+        "PinOwnerID":1942590100
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":891327831,
+        "PinOwnerID":1631495164
+      },
+      "TargetPinAddress":{
+        "PinID":7,
+        "PinOwnerID":819493985
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":891327831,
+        "PinOwnerID":1631495164
+      },
+      "TargetPinAddress":{
+        "PinID":6,
+        "PinOwnerID":819493985
+      },
+      "ConnectionType":1,
+      "ConnectedWireIndex":1,
+      "ConnectedWireSegmentIndex":0,
+      "Points":[{"x":0.1875,"y":-0.6875},{"x":0.1875,"y":-0.4375},{"x":0.0,"y":0.0}]
+    }
+  ],
+  "Displays":[]
+}

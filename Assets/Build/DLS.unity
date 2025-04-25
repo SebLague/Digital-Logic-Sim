@@ -243,8 +243,8 @@ MonoBehaviour:
   openSaveDirectory: 0
   openInMainMenu: 0
   testProjectName: MainTest
-  openA: 0
-  chipToOpenA: wip2
+  openA: 1
+  chipToOpenA: displaytest
   chipToOpenB: TEST MergeSplit
   testVecA: {x: 0.1, y: 24}
   testVecB: {x: 0, y: 3}
