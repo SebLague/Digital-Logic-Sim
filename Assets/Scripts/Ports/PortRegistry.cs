@@ -15,7 +15,6 @@ public static class PortRegistry
 
         int newIndex = nextInputPortIndex++;
         inputPortRegistry.Add(chip, newIndex);
-        UnityEngine.Debug.Log("Registered new input port index " + newIndex);
         
         // Initialize the chip's internal state with the port index
         if (chip.InternalState == null || chip.InternalState.Length == 0)
@@ -37,7 +36,6 @@ public static class PortRegistry
 
         int newIndex = nextOutputPortIndex++;
         outputPortRegistry.Add(chip, newIndex);
-        UnityEngine.Debug.Log("Registered new output port index " + newIndex);
         
         // Initialize the chip's internal state with the port index
         if (chip.InternalState == null || chip.InternalState.Length == 0)

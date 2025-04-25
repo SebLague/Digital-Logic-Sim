@@ -96,17 +96,17 @@
   "ChipCollections":[
     {
       "Chips":["NAND","AND","NOT","NOR","XOR","OR","KEY","CLOCK","3-STATE BUFFER"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"BASICS"
     },
     {
       "Chips":["IN-1","IN-4","IN-8","OUT-1","OUT-4","OUT-8"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"IN/OUT"
     },
     {
       "Chips":["1-4BIT","1-8BIT","4-8BIT","8-4BIT","8-1BIT","4-1BIT"],
-      "IsToggledOpen":true,
+      "IsToggledOpen":false,
       "Name":"MERGE/SPLIT"
     },
     {
@@ -116,7 +116,7 @@
     },
     {
       "Chips":["BUS-1","BUS-4","BUS-8"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"BUS"
     },
     {
