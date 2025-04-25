@@ -7,6 +7,8 @@ namespace DLS.Simulation
 		public const ushort LogicHigh = 1;
 		public const ushort LogicDisconnected = 2;
 
+		// Mask for single bit value (bit state, and tristate flag)
+		public const uint SingleBitMask = 1 | (1 << 16);
 
 		uint state;
 
@@ -18,14 +20,11 @@ namespace DLS.Simulation
 			state = (uint)(bitStates | (tristateFlags << 16));
 		}
 
-		public static void Set(ref uint state, uint other)
-		{
-			state = other;
-		}
+		public static void Set(ref uint state, uint other) => state = other;
 
 		public static void SetBitStates(ref uint state, ushort bitStates) => Set(ref state, bitStates, GetTristateFlags(state));
 		public static void SetTristateFlags(ref uint state, ushort flags) => Set(ref state, GetBitStates(state), flags);
-
+		
 
 		public static void SetBit(ref uint state, ushort bitIndex, ushort newState)
 		{
@@ -95,32 +94,17 @@ namespace DLS.Simulation
 		}
 		// ----------- Instance methods
 
-
 		public uint GetRawBits() => GetBitStates(state);
-		public uint GetTristateFlags() => GetTristateFlags(state);
-		public void SetTristateFlags(ushort v) => SetTristateFlags(ref state, v);
-		public void SetRawBits(ushort v) => SetBitStates(ref state, v);
-
-		public void SetAllBits_NoneDisconnected(ushort newBitStates) => SetAllBits_NoneDisconnected(ref state, newBitStates);
 
 		public bool FirstBitHigh() => FirstBitHigh(state);
-
-		public void SetBit(ushort bitIndex, ushort newState) => SetBit(ref state, bitIndex, newState);
 
 		public ushort GetBit(int bitIndex) => GetBit(state, bitIndex);
 
 		public void SetFromSource(PinState source) => Set(ref state, source.state);
 		public void SetFromSource(uint source) => Set(ref state, source);
-		
-		
-
-		public void Set4BitFrom8BitSource(PinState source8bit, bool firstNibble) => Set4BitFrom8BitSource(ref state, source8bit.state, firstNibble);
-
-		public void Set8BitFrom4BitSources(PinState a, PinState b) => Set8BitFrom4BitSources(ref state, a.state, b.state);
 
 		public void Toggle(int bitIndex) => Toggle(ref state, bitIndex);
 
-		public void SetAllDisconnected() => SetAllDisconnected(ref state);
 		
 	}
 }

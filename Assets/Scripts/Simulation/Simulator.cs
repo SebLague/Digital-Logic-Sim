@@ -211,7 +211,7 @@ namespace DLS.Simulation
 				case ChipType.Clock:
 				{
 					bool high = stepsPerClockTransition != 0 && ((simulationFrame / stepsPerClockTransition) & 1) == 0;
-					chip.OutputPins[0].SetBit(0, high ? PinState.LogicHigh : PinState.LogicLow);
+					PinState.Set(ref chip.OutputPins[0].State, high ? PinState.LogicHigh : PinState.LogicLow);
 					break;
 				}
 				case ChipType.Pulse:
@@ -246,34 +246,35 @@ namespace DLS.Simulation
 					break;
 				case ChipType.Split_4To1Bit:
 				{
-					SimPin in4 = chip.InputPins[0];
-
-					for (int i = 0; i < 4; i++)
-					{
-						chip.OutputPins[i].SetBit(0, in4.GetBit((ushort)(3 - i)));
-					}
-
+					uint inState4Bit = chip.InputPins[0].State;
+					chip.OutputPins[0].State = (inState4Bit >> 3) & PinState.SingleBitMask;
+					chip.OutputPins[1].State = (inState4Bit >> 2) & PinState.SingleBitMask;
+					chip.OutputPins[2].State = (inState4Bit >> 1) & PinState.SingleBitMask;
+					chip.OutputPins[3].State = (inState4Bit >> 0) & PinState.SingleBitMask;
 					break;
 				}
 				case ChipType.Merge_1To4Bit:
 				{
-					SimPin out4 = chip.OutputPins[0];
-
-					for (int i = 0; i < 4; i++)
-					{
-						ushort inputState = chip.InputPins[3 - i].GetBit(0);
-						out4.SetBit((ushort)i, inputState);
-					}
-
+					uint stateA = chip.InputPins[3].State & PinState.SingleBitMask; // lsb
+					uint stateB = chip.InputPins[2].State & PinState.SingleBitMask;
+					uint stateC = chip.InputPins[1].State & PinState.SingleBitMask;
+					uint stateD = chip.InputPins[0].State & PinState.SingleBitMask;
+					chip.OutputPins[0].State = stateA | stateB << 1 | stateC << 2 | stateD << 3;
 					break;
 				}
 				case ChipType.Merge_1To8Bit:
-					for (int i = 0; i < 8; i++)
-					{
-						chip.OutputPins[0].SetBit((ushort)i, chip.InputPins[7 - i].GetBit(0));
-					}
-
+				{
+					uint stateA = chip.InputPins[7].State & PinState.SingleBitMask; // lsb
+					uint stateB = chip.InputPins[6].State & PinState.SingleBitMask;
+					uint stateC = chip.InputPins[5].State & PinState.SingleBitMask;
+					uint stateD = chip.InputPins[4].State & PinState.SingleBitMask;
+					uint stateE = chip.InputPins[3].State & PinState.SingleBitMask;
+					uint stateF = chip.InputPins[2].State & PinState.SingleBitMask;
+					uint stateG = chip.InputPins[1].State & PinState.SingleBitMask;
+					uint stateH = chip.InputPins[0].State & PinState.SingleBitMask;
+					chip.OutputPins[0].State = stateA | stateB << 1 | stateC << 2 | stateD << 3 | stateE << 4 | stateF << 5 | stateG << 6 | stateH << 7;
 					break;
+				}
 				case ChipType.Merge_4To8Bit:
 				{
 					SimPin in4A = chip.InputPins[0];
@@ -292,12 +293,18 @@ namespace DLS.Simulation
 					break;
 				}
 				case ChipType.Split_8To1Bit:
-					for (int i = 0; i < 8; i++)
-					{
-						chip.OutputPins[i].SetBit(0, chip.InputPins[0].GetBit((ushort)(7 - i)));
-					}
-
+				{
+					uint in8 = chip.InputPins[0].State;
+					chip.OutputPins[0].State = (in8 >> 7) & PinState.SingleBitMask;
+					chip.OutputPins[1].State = (in8 >> 6) & PinState.SingleBitMask;
+					chip.OutputPins[2].State = (in8 >> 5) & PinState.SingleBitMask;
+					chip.OutputPins[3].State = (in8 >> 4) & PinState.SingleBitMask;
+					chip.OutputPins[4].State = (in8 >> 3) & PinState.SingleBitMask;
+					chip.OutputPins[5].State = (in8 >> 2) & PinState.SingleBitMask;
+					chip.OutputPins[6].State = (in8 >> 1) & PinState.SingleBitMask;
+					chip.OutputPins[7].State = (in8 >> 0) & PinState.SingleBitMask;
 					break;
+				}
 				case ChipType.TriStateBuffer:
 				{
 					SimPin dataPin = chip.InputPins[0];
