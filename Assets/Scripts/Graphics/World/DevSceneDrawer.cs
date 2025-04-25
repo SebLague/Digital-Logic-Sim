@@ -269,7 +269,7 @@ namespace DLS.Graphics
 			if (isButton)
 			{
 				// Button changes colour when held down
-				if (subchip.OutputPins[0].State.GetBit(0) == PinState.LogicHigh) chipCol = Color.white;
+				if (subchip.OutputPins[0].State.GetBitTristatedValue(0) == PinState.LogicHigh) chipCol = Color.white;
 			}
 
 			Color outlineCol = GetChipOutlineCol(chipCol);
@@ -433,7 +433,7 @@ namespace DLS.Graphics
 			else if (display.DisplayType == ChipType.DisplayLED)
 			{
 				bool simActive = sim != null;
-				bool isDisconnected = (!simActive) || (sim.numConnectedInputs == 0) || (PinState.GetBit(sim.InputPins[0].State, 0) == PinState.LogicDisconnected);
+				bool isDisconnected = (!simActive) || (sim.numConnectedInputs == 0) || (PinState.GetBitTristatedValue(sim.InputPins[0].State, 0) == PinState.LogicDisconnected);
 				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
 				bounds = DrawDisplay_DisplayLED(posWorld, scaleWorld, isDisconnected, isOn);
 			}
@@ -444,23 +444,6 @@ namespace DLS.Graphics
 
 
 		public static Vector2 CalculateChipNameBounds(string name) => Draw.CalculateTextBoundsSize(name, FontSizeChipName, FontBold, ChipNameLineSpacing);
-
-		public static Bounds2D DrawDisplay_2x2(Vector2 centre, float scale, int A, int B, int C, int D)
-		{
-			float spacing = scale / 76f;
-			float pixelSize = scale / 2 - spacing - spacing / 2;
-			Vector2 offset = Vector2.one * (scale / 4);
-			Color[] cols = ActiveTheme.Display2x2Cols;
-
-			Draw.Quad(centre, Vector2.one * scale, Color.black);
-			Draw.Quad(centre + new Vector2(-offset.x, offset.y), Vector2.one * pixelSize, cols[A]);
-			Draw.Quad(centre + new Vector2(offset.x, offset.y), Vector2.one * pixelSize, cols[B]);
-			Draw.Quad(centre + new Vector2(-offset.x, -offset.y), Vector2.one * pixelSize, cols[C]);
-			Draw.Quad(centre + new Vector2(offset.x, -offset.y), Vector2.one * pixelSize, cols[D]);
-			// Draw.Quad(centre - Vector2.one * (scale/2 + spacing), Vector2.one * pixelSize, Color.red);
-
-			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
-		}
 
 		public static Bounds2D DrawDisplay_RGB(Vector2 centre, float scale, SimChip simSource)
 		{

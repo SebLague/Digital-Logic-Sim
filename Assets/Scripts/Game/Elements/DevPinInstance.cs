@@ -87,7 +87,7 @@ namespace DLS.Game
 
 		public int GetStateDecimalDisplayValue()
 		{
-			uint rawValue = Pin.State.GetRawBits();
+			uint rawValue = Pin.State.GetBitStates();
 			int displayValue = (int)rawValue;
 
 			if (pinValueDisplayMode == PinValueDisplayMode.SignedDecimal)

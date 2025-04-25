@@ -73,7 +73,7 @@ namespace DLS.Game
 		{
 			PinState pinState = (IsSourcePin && canUsePlayerState) ? PlayerInputState : State; // dev input pin uses player state (so it updates even when sim is paused)
 
-			uint state = pinState.GetBit(bitIndex);
+			uint state = pinState.GetBitTristatedValue(bitIndex);
 			int colIndex = (int)Colour;
 
 			return state switch

@@ -10,6 +10,7 @@ namespace DLS.Simulation
 		// Mask for single bit value (bit state, and tristate flag)
 		public const uint SingleBitMask = 1 | (1 << 16);
 
+		// Tristate flags (most significant 16 bits) | Bit states (least significant 16 bits)
 		uint state;
 
 		public static ushort GetBitStates(uint state) => (ushort)state;
@@ -22,28 +23,7 @@ namespace DLS.Simulation
 
 		public static void Set(ref uint state, uint other) => state = other;
 
-		public static void SetBitStates(ref uint state, ushort bitStates) => Set(ref state, bitStates, GetTristateFlags(state));
-		public static void SetTristateFlags(ref uint state, ushort flags) => Set(ref state, GetBitStates(state), flags);
-		
-
-		public static void SetBit(ref uint state, ushort bitIndex, ushort newState)
-		{
-			// Clear current state
-			ushort mask = (ushort)~(1u << bitIndex);
-			ushort bitStates = GetBitStates(state);
-			ushort tristate = GetTristateFlags(state);
-
-			bitStates &= mask;
-			tristate &= mask;
-
-			// Set new state
-			bitStates |= (ushort)((newState & 1) << bitIndex);
-			tristate |= (ushort)((newState >> 1) << bitIndex);
-
-			Set(ref state, bitStates, tristate);
-		}
-
-		public static ushort GetBit(uint state, int bitIndex)
+		public static ushort GetBitTristatedValue(uint state, int bitIndex)
 		{
 			ushort bitState = (ushort)((GetBitStates(state) >> bitIndex) & 1);
 			ushort tri = (ushort)((GetTristateFlags(state) >> bitIndex) & 1);
@@ -68,7 +48,7 @@ namespace DLS.Simulation
 				Set(ref state, (ushort)((sourceBitStates & mask) >> 4), (ushort)((sourceTristateFlags & mask) >> 4));
 			}
 		}
-		
+
 		public static void Set8BitFrom4BitSources(ref uint state, uint a, uint b)
 		{
 			ushort bitStates = (ushort)(GetBitStates(a) | (GetBitStates(b) << 4));
@@ -85,26 +65,20 @@ namespace DLS.Simulation
 			// Clear tristate flags (can't be disconnected if toggling as only input dev pins are allowed)
 			Set(ref state, bitStates, 0);
 		}
-		
+
 		public static void SetAllDisconnected(ref uint state) => Set(ref state, 0, ushort.MaxValue);
-			
-		public static void SetAllBits_NoneDisconnected(ref uint state, ushort newBitStates)
-		{
-			Set(ref state, newBitStates, 0);
-		}
+
 		// ----------- Instance methods
 
-		public uint GetRawBits() => GetBitStates(state);
+		public uint GetBitStates() => GetBitStates(state);
 
 		public bool FirstBitHigh() => FirstBitHigh(state);
 
-		public ushort GetBit(int bitIndex) => GetBit(state, bitIndex);
+		public ushort GetBitTristatedValue(int bitIndex) => GetBitTristatedValue(state, bitIndex);
 
-		public void SetFromSource(PinState source) => Set(ref state, source.state);
-		public void SetFromSource(uint source) => Set(ref state, source);
+		public void Set(PinState source) => Set(ref state, source.state);
+		public void Set(uint source) => Set(ref state, source);
 
 		public void Toggle(int bitIndex) => Toggle(ref state, bitIndex);
-
-		
 	}
 }

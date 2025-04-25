@@ -45,12 +45,6 @@ namespace DLS.Simulation
 			}
 		}
 
-		public void SetBit(ushort index, ushort value) => PinState.SetBit(ref State, index, value);
-		
-		public void SetAllBits_NoneDisconnected(ushort val) => PinState.SetAllBits_NoneDisconnected(ref State, val);
-		
-		public ushort GetRawBits() => PinState.GetBitStates(State);
-
 		// Called on sub-chip input pins, or chip dev-pins
 		void ReceiveInput(SimPin source)
 		{

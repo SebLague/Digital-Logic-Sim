@@ -65,9 +65,9 @@ namespace DLS.Simulation
 				try
 				{
 					SimPin simPin = rootSimChip.GetSimPinFromAddress(input.Pin.Address);
-					PinState.Set(ref simPin.State, input.Pin.PlayerInputState.GetRawBits());
+					PinState.Set(ref simPin.State, input.Pin.PlayerInputState.GetBitStates());
 
-					input.Pin.State.SetFromSource(input.Pin.PlayerInputState);
+					input.Pin.State.Set(input.Pin.PlayerInputState);
 				}
 				catch (Exception)
 				{
@@ -313,21 +313,15 @@ namespace DLS.Simulation
 					SimPin enablePin = chip.InputPins[1];
 					SimPin outputPin = chip.OutputPins[0];
 
-					if (enablePin.FirstBitHigh)
-					{
-						PinState.Set(ref outputPin.State, dataPin.State);
-					}
-					else
-					{
-						outputPin.SetBit(0, PinState.LogicDisconnected);
-					}
+					if (PinState.FirstBitHigh(enablePin.State)) outputPin.State = dataPin.State;
+					else PinState.SetAllDisconnected(ref outputPin.State);
 
 					break;
 				}
 				case ChipType.Key:
 				{
 					bool isHeld = SimKeyboardHelper.KeyIsHeld((char)chip.InternalState[0]);
-					chip.OutputPins[0].SetBit(0, isHeld ? PinState.LogicHigh : PinState.LogicLow);
+					chip.OutputPins[0].State = isHeld ? PinState.LogicHigh : PinState.LogicLow;
 					break;
 				}
 				case ChipType.DisplayRGB:
@@ -377,9 +371,9 @@ namespace DLS.Simulation
 
 					// Output current pixel colour
 					uint colData = chip.InternalState[PinState.GetBitStates(addressPin)];
-					chip.OutputPins[0].SetAllBits_NoneDisconnected((ushort)((colData >> 0) & 0b1111)); // red
-					chip.OutputPins[1].SetAllBits_NoneDisconnected((ushort)((colData >> 4) & 0b1111)); // green
-					chip.OutputPins[2].SetAllBits_NoneDisconnected((ushort)((colData >> 8) & 0b1111)); // blue
+					chip.OutputPins[0].State = (ushort)((colData >> 0) & 0b1111); // red
+					chip.OutputPins[1].State = (ushort)((colData >> 4) & 0b1111); // green
+					chip.OutputPins[2].State = (ushort)((colData >> 8) & 0b1111); // blue
 
 					break;
 				}
@@ -428,7 +422,7 @@ namespace DLS.Simulation
 
 					// Output current pixel colour
 					ushort pixelState = (ushort)chip.InternalState[PinState.GetBitStates(addressPin)];
-					chip.OutputPins[0].SetAllBits_NoneDisconnected(pixelState);
+					chip.OutputPins[0].State = pixelState;
 
 					break;
 				}
@@ -462,17 +456,17 @@ namespace DLS.Simulation
 					}
 
 					// Output data at current address
-					chip.OutputPins[0].SetAllBits_NoneDisconnected((ushort)(chip.InternalState[PinState.GetBitStates(addressPin)]));
+					chip.OutputPins[0].State = (ushort)chip.InternalState[PinState.GetBitStates(addressPin)];
 
 					break;
 				}
 				case ChipType.Rom_256x16:
 				{
 					const int ByteMask = 0b11111111;
-					uint address = chip.InputPins[0].GetRawBits();
+					uint address = PinState.GetBitStates(chip.InputPins[0].State);
 					uint data = chip.InternalState[address];
-					chip.OutputPins[0].SetAllBits_NoneDisconnected((ushort)((data >> 8) & ByteMask));
-					chip.OutputPins[1].SetAllBits_NoneDisconnected((ushort)(data & ByteMask));
+					chip.OutputPins[0].State = (ushort)((data >> 8) & ByteMask);
+					chip.OutputPins[1].State = (ushort)(data & ByteMask);
 					break;
 				}
 				// ---- Bus types ----
