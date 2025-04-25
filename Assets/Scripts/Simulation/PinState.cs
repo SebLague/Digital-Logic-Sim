@@ -22,6 +22,9 @@ namespace DLS.Simulation
 		}
 
 		public uint GetRawBits() => bitStates;
+		public uint GetTristateFlags() => tristateFlags;
+		public void SetTristateFlags(uint v) => tristateFlags = v;
+		public void SetRawBits(uint v) => bitStates = v;
 
 		public void SetAllBits_NoneDisconnected(uint newBitStates)
 		{

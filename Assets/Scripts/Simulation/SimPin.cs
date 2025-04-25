@@ -1,5 +1,6 @@
 using System;
 using DLS.Description;
+using UnityEditor.U2D;
 
 namespace DLS.Simulation
 {
@@ -64,20 +65,15 @@ namespace DLS.Simulation
 				// Has already received input this frame, so choose at random whether to accept conflicting input.
 				// Note: for multi-bit pins, this choice is made identically for all bits, rather than individually. (This is only
 				// because it's easier to track the correct display colour this way, but maybe consider changing to per-bit in the future...)
-				bool acceptConflictingInput = Simulator.RandomBool();
 
-				for (int i = 0; i < State.BitCount; i++)
-				{
-					uint targetLogicLevel = source.State.GetBit(i);
-					uint currentLogicLevel = State.GetBit(i);
-
-					// Ignore disconnected input. Always accept input if current state is disconnected. Otherwise, choose randomly.
-					if (targetLogicLevel != PinState.LogicDisconnected && (currentLogicLevel == PinState.LogicDisconnected || acceptConflictingInput))
-					{
-						State.SetBit(i, targetLogicLevel);
-						set = true;
-					}
-				}
+				uint x = source.State.GetRawBits() | State.GetRawBits();
+				uint y = source.State.GetRawBits() & State.GetRawBits();
+				uint z = Simulator.RandomBool() ? x : y;
+				uint m = source.State.GetTristateFlags() | State.GetTristateFlags();
+				uint c = (z & ~m) | (x & m);
+				
+				State.SetTristateFlags(source.State.GetTristateFlags() & State.GetTristateFlags());
+				State.SetRawBits(c);
 			}
 			else
 			{
