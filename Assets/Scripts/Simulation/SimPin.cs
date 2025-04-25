@@ -60,16 +60,15 @@ namespace DLS.Simulation
 			if (numInputsReceivedThisFrame > 0)
 			{
 				// Has already received input this frame, so choose at random whether to accept conflicting input.
-				// Note: for multi-bit pins, this choice is made identically for all bits, rather than individually. (This is only
-				// because it's easier to track the correct display colour this way, but maybe consider changing to per-bit in the future...)
+				// Note: for multi-bit pins, this choice is made identically for all bits, rather than individually.
+				// Todo: maybe consider changing to per-bit in the future...)
 
 				uint OR = source.State | State;
 				uint AND = source.State & State;
-				ushort bitsNew = (ushort)(Simulator.RandomBool() ? OR : AND);
+				ushort bitsNew = (ushort)(Simulator.RandomBool() ? OR : AND); // randomly accept or reject conflicting state
 
-
-				ushort mask = (ushort)(OR >> 16);
-				bitsNew = (ushort)((bitsNew & ~mask) | ((ushort)OR & mask));
+				ushort mask = (ushort)(OR >> 16); // tristate flags
+				bitsNew = (ushort)((bitsNew & ~mask) | ((ushort)OR & mask)); // can always accept input for tristated bits
 
 				PinState.Set(ref State, bitsNew, (ushort)(AND >> 16));
 			}
