@@ -1,6 +1,7 @@
 {
   "Name": "WIP2",
   "NameLocation": 0,
+  "ChipType": 0,
   "Size": {
     "x": 0.99,
     "y": 5.29
@@ -149,7 +150,7 @@
       "InternalData":null
     },
     {
-      "Name":"ROM 256\u00d716",
+      "Name":"ROM 256×16",
       "ID":917070333,
       "Label":null,
       "Position":{
@@ -266,7 +267,7 @@
         "x":0.00754,
         "y":3.93489
       },
-      "OutputPinColourInfo":[{"PinColour":0,"PinID":1}],
+      "OutputPinColourInfo":null,
       "InternalData":[1275120978]
     },
     {
@@ -277,7 +278,7 @@
         "x":-3.46073,
         "y":-2.69268
       },
-      "OutputPinColourInfo":[],
+      "OutputPinColourInfo":null,
       "InternalData":[76195595]
     },
     {
@@ -1543,6 +1544,5 @@
       "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
     }
   ],
-  "Displays": null,
-  "ChipType": 0
+  "Displays": null
 }
