@@ -66,7 +66,7 @@ namespace DLS.Simulation
 				{
 					SimPin simPin = rootSimChip.GetSimPinFromAddress(input.Pin.Address);
 					PinState.Set(ref simPin.State, input.Pin.PlayerInputState.GetRawBits());
-	
+
 					input.Pin.State.SetFromSource(input.Pin.PlayerInputState);
 				}
 				catch (Exception)
@@ -204,9 +204,8 @@ namespace DLS.Simulation
 				// ---- Process Built-in chips ----
 				case ChipType.Nand:
 				{
-					ushort andOp = (ushort)(chip.InputPins[0].GetRawBits() & chip.InputPins[1].GetRawBits());
-					ushort nandOp = (ushort)(~andOp & 1);
-					chip.OutputPins[0].SetBit(0, nandOp);
+					uint nandOp = 1 ^ (chip.InputPins[0].State & chip.InputPins[1].State);
+					chip.OutputPins[0].State = (ushort)(nandOp & 1);
 					break;
 				}
 				case ChipType.Clock:
@@ -368,7 +367,7 @@ namespace DLS.Simulation
 					}
 
 					// Output current pixel colour
-					uint colData = chip.InternalState[PinState.GetBitStates(addressPin) ];
+					uint colData = chip.InternalState[PinState.GetBitStates(addressPin)];
 					chip.OutputPins[0].SetAllBits_NoneDisconnected((ushort)((colData >> 0) & 0b1111)); // red
 					chip.OutputPins[1].SetAllBits_NoneDisconnected((ushort)((colData >> 4) & 0b1111)); // green
 					chip.OutputPins[2].SetAllBits_NoneDisconnected((ushort)((colData >> 8) & 0b1111)); // blue
