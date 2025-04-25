@@ -1,6 +1,9 @@
 namespace DLS.Simulation
 {
-	public class PinState
+	// Helper class for dealing with pin state.
+	// Pin state is stored as a uint32, with format:
+	// Tristate flags (most significant 16 bits) | Bit states (least significant 16 bits)
+	public static class PinState
 	{
 		// Each bit has three possible states (tri-state logic):
 		public const ushort LogicLow = 0;
@@ -9,10 +12,7 @@ namespace DLS.Simulation
 
 		// Mask for single bit value (bit state, and tristate flag)
 		public const uint SingleBitMask = 1 | (1 << 16);
-
-		// Tristate flags (most significant 16 bits) | Bit states (least significant 16 bits)
-		uint state;
-
+		
 		public static ushort GetBitStates(uint state) => (ushort)state;
 		public static ushort GetTristateFlags(uint state) => (ushort)(state >> 16);
 
@@ -67,18 +67,5 @@ namespace DLS.Simulation
 		}
 
 		public static void SetAllDisconnected(ref uint state) => Set(ref state, 0, ushort.MaxValue);
-
-		// ----------- Instance methods
-
-		public uint GetBitStates() => GetBitStates(state);
-
-		public bool FirstBitHigh() => FirstBitHigh(state);
-
-		public ushort GetBitTristatedValue(int bitIndex) => GetBitTristatedValue(state, bitIndex);
-
-		public void Set(PinState source) => Set(ref state, source.state);
-		public void Set(uint source) => Set(ref state, source);
-
-		public void Toggle(int bitIndex) => Toggle(ref state, bitIndex);
 	}
 }

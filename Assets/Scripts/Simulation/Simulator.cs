@@ -65,9 +65,9 @@ namespace DLS.Simulation
 				try
 				{
 					SimPin simPin = rootSimChip.GetSimPinFromAddress(input.Pin.Address);
-					PinState.Set(ref simPin.State, input.Pin.PlayerInputState.GetBitStates());
+					PinState.Set(ref simPin.State, input.Pin.PlayerInputState);
 
-					input.Pin.State.Set(input.Pin.PlayerInputState);
+					input.Pin.State = input.Pin.PlayerInputState;
 				}
 				catch (Exception)
 				{
