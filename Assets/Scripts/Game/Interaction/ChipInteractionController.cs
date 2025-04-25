@@ -141,7 +141,7 @@ namespace DLS.Game
 				SelectedElements.Clear();
 			}
 			// Delete wire under mouse
-			else if (InteractionState.ElementUnderMouse is WireInstance wire)
+			else if (InteractionState.ElementUnderMouse is WireInstance wire && wire != wireToEdit)
 			{
 				DeleteWire(wire);
 			}
