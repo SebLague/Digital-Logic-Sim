@@ -245,7 +245,7 @@ MonoBehaviour:
   testProjectName: MainTest
   openA: 0
   chipToOpenA: wip2
-  chipToOpenB: test
+  chipToOpenB: TEST MergeSplit
   testVecA: {x: 0.1, y: 24}
   testVecB: {x: 0, y: 3}
   testVecC: {x: 0.35, y: 0.37}
@@ -254,8 +254,6 @@ MonoBehaviour:
   testColB: {r: 1, g: 1, b: 1, a: 1}
   testColC: {r: 0.28118938, g: 0.19335172, b: 0.5188679, a: 1}
   testColD: {r: 1, g: 0.5896226, b: 0.5896226, a: 1}
-  testString: "\u2193\u2191\u232B\xD7xaaa"
-  testString2: 
   testButtonTheme:
     font: 0
     fontSize: 0
@@ -272,6 +270,11 @@ MonoBehaviour:
     paddingScale: {x: 0, y: 0}
   testbool: 1
   testAnchor: 0
+  testString: "\u2193\u2191\u232B\xD7xaaa"
+  testString2: 
+  testUint: 0
+  removeZeros: 0
+  testUshort: 0
 --- !u!4 &1140840880
 Transform:
   m_ObjectHideFlags: 0
