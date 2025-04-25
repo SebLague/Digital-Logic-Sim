@@ -9,6 +9,7 @@ using DLS.SaveSystem;
 using DLS.Simulation;
 using Seb.Helpers;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace DLS.Game
 {
@@ -30,31 +31,26 @@ namespace DLS.Game
 		// ---- Display state ----
 		public bool ShowGrid => description.Prefs_GridDisplayMode == 1;
 		public bool PinNameDisplayIsTabToggledOn;
-
-
+		
 		// ---- Chip view / edit state ----
 		// At the bottom of the stack is the chip that currently is being edited. 
 		// If chips are entered in view mode, they will be placed above on the stack.
 		public readonly Stack<DevChipInstance> chipViewStack = new();
-
 		SimChip ViewedSimChip => ViewedChip.SimChip;
-
 		// The chip currently in view. This chip may be in view-only mode.
 		public DevChipInstance ViewedChip => chipViewStack.Peek();
 		public bool CanEditViewedChip => chipViewStack.Count == 1;
 		public string ActiveDevChipName => ViewedChip.ChipName;
-
 		public bool ChipHasBeenSavedBefore => ViewedChip.LastSavedDescription != null;
-
 		// String representation of the viewed chips stack for display purposes
 		public string viewedChipsString = string.Empty;
-
 		// The chip currently being edited. (This is not necessarily the currently viewed chip)
 		DevChipInstance editModeChip;
 
 		// ---- Simulation settings and state ----
+		static readonly bool debug_logSimTime = false;
+		static readonly bool debug_runSimMainThread = false;
 		public const float SimulationPerformanceTimeWindowSec = 1.5f;
-		static readonly bool logSimTime = false;
 
 		bool simThreadActive;
 		public bool advanceSingleSimStep;
@@ -91,10 +87,21 @@ namespace DLS.Game
 
 			inputPins = editModeChip.GetInputPins();
 			mainThreadFrameCount++;
+
+			if (debug_runSimMainThread)
+			{
+				Debug_RunMainThreadSimStep();
+			}
 		}
 
 		public void StartSimulation()
 		{
+			if (debug_runSimMainThread)
+			{
+				Debug.Log("Simulation will run on main thread");
+				return;
+			}
+
 			simThreadActive = true;
 			Thread simThread = new(SimThread)
 			{
@@ -487,7 +494,7 @@ namespace DLS.Game
 					ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
 
 					// Log sim time
-					if (logSimTime)
+					if (debug_logSimTime)
 					{
 						double elapsedMs = stopwatchTotal.ElapsedTicks * (1000.0 / Stopwatch.Frequency);
 						int frame = Simulator.simulationFrame;
@@ -554,6 +561,14 @@ namespace DLS.Game
 					}
 				}
 			}
+		}
+
+		void Debug_RunMainThreadSimStep()
+		{
+			Simulator.stepsPerClockTransition = stepsPerClockTransition;
+			Simulator.ApplyModifications();
+			Simulator.RunSimulationStep(rootSimChip, inputPins);
+			ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
 		}
 
 		public void UpdateAndSaveProjectDescription()
