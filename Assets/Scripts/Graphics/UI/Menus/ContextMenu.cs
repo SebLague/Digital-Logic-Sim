@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using DLS.Description;
 using DLS.Game;
@@ -46,6 +47,8 @@ namespace DLS.Graphics
 			deleteEntry
 		};
 
+		static readonly MenuEntry[] entries_builtinLED = entries_builtinSubchip.Concat(new[] { dividerMenuEntry }).Concat(pinColEntries).ToArray();
+
 		static readonly MenuEntry[] entries_builtinBus =
 		{
 			new(Format("FLIP"), FlipBus, CanFlipBus),
@@ -66,7 +69,7 @@ namespace DLS.Graphics
 			labelChipEntry,
 			deleteEntry
 		};
-		
+
 		static readonly MenuEntry[] entries_builtinPulseChip =
 		{
 			new(Format("EDIT"), OpenPulseEditMenu, CanEditCurrentChip),
@@ -77,7 +80,7 @@ namespace DLS.Graphics
 
 		static readonly MenuEntry[] entries_subChipOutput = pinColEntries;
 
-		static readonly MenuEntry[] entires_inputDevPin = new[]
+		static readonly MenuEntry[] entries_inputDevPin = new[]
 		{
 			new(Format("EDIT"), OpenPinEditMenu, CanEditCurrentChip),
 			new(Format("DELETE"), Delete, CanDelete),
@@ -86,8 +89,8 @@ namespace DLS.Graphics
 
 		static readonly MenuEntry[] entries_outputDevPin =
 		{
-			entires_inputDevPin[0],
-			entires_inputDevPin[1]
+			entries_inputDevPin[0],
+			entries_inputDevPin[1]
 		};
 
 		static readonly MenuEntry[] entries_wire =
@@ -114,6 +117,7 @@ namespace DLS.Graphics
 
 		public static bool IsOpen { get; private set; }
 		public static IInteractable interactionContext { get; private set; }
+
 
 		static string Format(string s)
 		{
@@ -179,6 +183,7 @@ namespace DLS.Graphics
 							else if (ChipTypeHelper.IsRomType(subChip.ChipType)) activeContextMenuEntries = entries_builtinRomSubchip;
 							else if (subChip.ChipType is ChipType.Pulse) activeContextMenuEntries = entries_builtinPulseChip;
 							else if (ChipTypeHelper.IsBusType(subChip.ChipType)) activeContextMenuEntries = entries_builtinBus;
+							else if (subChip.ChipType == ChipType.DisplayLED) activeContextMenuEntries = entries_builtinLED;
 							else activeContextMenuEntries = entries_builtinSubchip;
 						}
 
@@ -192,7 +197,7 @@ namespace DLS.Graphics
 						headerName = CreatePinHeaderName(activePin.Name);
 						interactionContextName = activePin.Name;
 						Project.ActiveProject.controller.Select(activePin.parent, false);
-						activeContextMenuEntries = activePin.IsSourcePin ? entires_inputDevPin : entries_outputDevPin;
+						activeContextMenuEntries = activePin.IsSourcePin ? entries_inputDevPin : entries_outputDevPin;
 					}
 					else if (openWireContextMenu)
 					{
@@ -336,7 +341,14 @@ namespace DLS.Graphics
 		static bool CanDelete() => Project.ActiveProject.CanEditViewedChip;
 		static bool CanFlipBus() => Project.ActiveProject.CanEditViewedChip;
 
-		static bool CanSetCol() => Project.ActiveProject.CanEditViewedChip && ((PinInstance)interactionContext).IsSourcePin && UIDrawer.ActiveMenu != UIDrawer.MenuType.ChipCustomization;
+		static bool CanSetCol()
+		{
+			if (!Project.ActiveProject.CanEditViewedChip || UIDrawer.ActiveMenu == UIDrawer.MenuType.ChipCustomization) return false;
+			if (interactionContext is PinInstance pin) return pin.IsSourcePin;
+			if (interactionContext is SubChipInstance subchip) return subchip.ChipType == ChipType.DisplayLED;
+
+			return false;
+		}
 
 		static void FlipBus()
 		{
@@ -345,8 +357,15 @@ namespace DLS.Graphics
 
 		static void SetCol(PinColour col)
 		{
-			PinInstance pin = (PinInstance)interactionContext;
-			pin.Colour = col;
+			if (interactionContext is PinInstance pin)
+			{
+				pin.Colour = col;
+			}
+			else if (interactionContext is SubChipInstance subchip)
+			{
+				Project.ActiveProject.NotifyLEDColourChanged(subchip, (uint)col);
+			}
+			
 		}
 
 		static void OpenChipLabelPopup()
@@ -381,7 +400,7 @@ namespace DLS.Graphics
 		}
 
 		static void OpenRomEditMenu() => UIDrawer.SetActiveMenu(UIDrawer.MenuType.RomEdit);
-		
+
 		static void OpenPulseEditMenu() => UIDrawer.SetActiveMenu(UIDrawer.MenuType.PulseEdit);
 
 		static bool CanEditCurrentChip() => Project.ActiveProject.CanEditViewedChip;
