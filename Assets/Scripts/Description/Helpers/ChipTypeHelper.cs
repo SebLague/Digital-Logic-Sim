@@ -30,7 +30,7 @@ namespace DLS.Description
 			{ ChipType.DisplayDot, "DOT DISPLAY" },
 			{ ChipType.SevenSegmentDisplay, "7-SEGMENT" },
 			{ ChipType.DisplayLED, "LED" },
-            { ChipType.FourteenSegmentDisplay, "14-Segment Display" },
+                        { ChipType.SixteenSegmentDisplay, "16-Segment Display" },
 
 			// ---- Not really chips (but convenient to treat them as such anyway) ----
 
