@@ -43,6 +43,7 @@ namespace DLS.Game
 				CreateDisplayRGB(),
 				CreateDisplayDot(),
 				CreateDisplayLED(),
+				CreateFourteenSegmentDisplay(),
 				// ---- Bus ----
 				CreateBus(PinBitCount.Bit1),
 				CreateBusTerminus(PinBitCount.Bit1),
@@ -53,7 +54,45 @@ namespace DLS.Game
 			};
 		}
 
-		static ChipDescription CreateNand()
+        static ChipDescription CreateFourteenSegmentDisplay()
+        {
+            PinDescription[] inputPins =
+            {
+                CreatePinDescription("A", 0),
+                CreatePinDescription("B", 1),
+                CreatePinDescription("C", 2),
+                CreatePinDescription("D", 3),
+                CreatePinDescription("E", 4),
+                CreatePinDescription("F", 5),
+                CreatePinDescription("G", 6),
+                CreatePinDescription("H", 7),
+                CreatePinDescription("I", 8),
+                CreatePinDescription("J", 9),
+                CreatePinDescription("K", 10),
+                CreatePinDescription("L", 11),
+                CreatePinDescription("M", 12),
+                CreatePinDescription("N", 13),
+                CreatePinDescription("COL", 14)
+            };
+
+            Color col = new(0.1f, 0.1f, 0.1f);
+            float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+            Vector2 size = new(GridSize * 13, height);
+            float displayWidth = (float)((size.x*1.5) - (GridSize * 2));
+
+            DisplayDescription[] displays =
+            {
+                new()
+                {
+                    Position = Vector2.right * PinRadius / 3 * 0,
+                    Scale = displayWidth,
+                    SubChipID = -1
+                }
+            };
+            return CreateBuiltinChipDescription(ChipType.FourteenSegmentDisplay, size, col, inputPins, null, displays, true);
+        }
+
+        static ChipDescription CreateNand()
 		{
 			Color col = new(0.73f, 0.26f, 0.26f);
 			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 8), GridSize * 4);

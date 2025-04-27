@@ -19,6 +19,7 @@ namespace DLS.Description
 		DisplayRGB,
 		DisplayDot,
 		DisplayLED,
+		FourteenSegmentDisplay,
 
 		// ---- Merge / Split ----
 		Merge_1To4Bit,
@@ -45,6 +46,5 @@ namespace DLS.Description
 		BusTerminus_4Bit,
 		Bus_8Bit,
 		BusTerminus_8Bit
-
 	}
 }

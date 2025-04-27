@@ -2,8 +2,8 @@
   "ProjectName": "MainTest",
   "DLSVersion_LastSaved": "2.1.4",
   "DLSVersion_EarliestCompatible": "2.0.0",
-  "CreationTime": "2025-03-14T18:23:30.404+01:00",
-  "LastSaveTime": "2025-04-25T17:44:29.842+02:00",
+  "CreationTime": "2025-03-14T13:23:30.404-04:00",
+  "LastSaveTime": "2025-04-26T16:54:16.229-04:00",
   "Prefs_MainPinNamesDisplayMode": 2,
   "Prefs_ChipPinNamesDisplayMode": 1,
   "Prefs_GridDisplayMode": 1,
@@ -61,7 +61,8 @@
     "RAM-256×8 (async)",
     "RAM-sync",
     "TEST MergeSplit",
-    "#"
+    "#",
+    "Test Chip"
   ],
   "StarredList":[
     {
@@ -90,6 +91,18 @@
     },
     {
       "Name":"#",
+      "IsCollection":false
+    },
+    {
+      "Name":"OTHER",
+      "IsCollection":true
+    },
+    {
+      "Name":"DISPLAY",
+      "IsCollection":true
+    },
+    {
+      "Name":"Test Chip",
       "IsCollection":false
     }
   ],
@@ -135,7 +148,7 @@
       "Name":"TEST"
     },
     {
-      "Chips":["PULSE","TEST MergeSplit"],
+      "Chips":["PULSE","TEST MergeSplit","Test Chip","#","14-Segment Display"],
       "IsToggledOpen":true,
       "Name":"OTHER"
     }
