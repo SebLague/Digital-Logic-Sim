@@ -95,7 +95,7 @@ namespace DLS.Graphics
 			// -- Draw names of all pins (when mode is set to always). Also draw decimal displays for multi-bit pins --
 			bool drawAllDevPinNames = Project.ActiveProject.AlwaysDrawDevPinNames;
 			bool drawAllSubchipPinNames = Project.ActiveProject.AlwaysDrawSubChipPinNames;
-			
+
 			foreach (IMoveable element in chip.Elements)
 			{
 				if (element is DevPinInstance devPin)
@@ -264,12 +264,12 @@ namespace DLS.Graphics
 			ChipDescription desc = subchip.Description;
 			Color chipCol = desc.Colour;
 			Vector2 pos = subchip.Position;
-			bool isButton = subchip.ChipType == ChipType.Key;
+			bool isKeyChip = subchip.ChipType == ChipType.Key;
 
-			if (isButton)
+			if (isKeyChip)
 			{
-				// Button changes colour when held down
-				if (subchip.OutputPins[0].State.GetBit(0) == PinState.LogicHigh) chipCol = Color.white;
+				// Key changes colour when pressed down
+				if (PinState.FirstBitHigh(subchip.OutputPins[0].State)) chipCol = Color.white;
 			}
 
 			Color outlineCol = GetChipOutlineCol(chipCol);
@@ -308,16 +308,16 @@ namespace DLS.Graphics
 			}
 
 			// Draw name
-			if (isButton || desc.NameLocation != NameDisplayLocation.Hidden)
+			if (isKeyChip || desc.NameLocation != NameDisplayLocation.Hidden)
 			{
 				// Display on single line if name fits comfortably, otherwise use 'formatted' version (split across multiple lines)
-				string displayName = isButton ? subchip.activationKeyString : subchip.MultiLineName;
+				string displayName = isKeyChip ? subchip.activationKeyString : subchip.MultiLineName;
 				if (Draw.CalculateTextBoundsSize(subchip.Description.Name, FontSizeChipName, FontBold).x < subchip.Size.x - PinRadius * 2.5f)
 				{
 					displayName = subchip.Description.Name;
 				}
 
-				bool nameCentre = desc.NameLocation == NameDisplayLocation.Centre || isButton;
+				bool nameCentre = desc.NameLocation == NameDisplayLocation.Centre || isKeyChip;
 				Anchor textAnchor = nameCentre ? Anchor.TextCentre : Anchor.CentreTop;
 				Vector2 textPos = nameCentre ? pos : pos + Vector2.up * (subchip.Size.y / 2 - GridSize / 2);
 
@@ -433,9 +433,8 @@ namespace DLS.Graphics
 			else if (display.DisplayType == ChipType.DisplayLED)
 			{
 				bool simActive = sim != null;
-				bool isDisconnected = (!simActive) || (sim.numConnectedInputs == 0) || (sim.InputPins[0].State.GetBit(0) == PinState.LogicDisconnected);
 				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
-				bounds = DrawDisplay_DisplayLED(posWorld, scaleWorld, isDisconnected, isOn);
+				bounds = DrawDisplay_DisplayLED(posWorld, scaleWorld, isOn);
 			}
 
 			display.LastDrawBounds = bounds;
@@ -444,23 +443,6 @@ namespace DLS.Graphics
 
 
 		public static Vector2 CalculateChipNameBounds(string name) => Draw.CalculateTextBoundsSize(name, FontSizeChipName, FontBold, ChipNameLineSpacing);
-
-		public static Bounds2D DrawDisplay_2x2(Vector2 centre, float scale, int A, int B, int C, int D)
-		{
-			float spacing = scale / 76f;
-			float pixelSize = scale / 2 - spacing - spacing / 2;
-			Vector2 offset = Vector2.one * (scale / 4);
-			Color[] cols = ActiveTheme.Display2x2Cols;
-
-			Draw.Quad(centre, Vector2.one * scale, Color.black);
-			Draw.Quad(centre + new Vector2(-offset.x, offset.y), Vector2.one * pixelSize, cols[A]);
-			Draw.Quad(centre + new Vector2(offset.x, offset.y), Vector2.one * pixelSize, cols[B]);
-			Draw.Quad(centre + new Vector2(-offset.x, -offset.y), Vector2.one * pixelSize, cols[C]);
-			Draw.Quad(centre + new Vector2(offset.x, -offset.y), Vector2.one * pixelSize, cols[D]);
-			// Draw.Quad(centre - Vector2.one * (scale/2 + spacing), Vector2.one * pixelSize, Color.red);
-
-			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
-		}
 
 		public static Bounds2D DrawDisplay_RGB(Vector2 centre, float scale, SimChip simSource)
 		{
@@ -585,18 +567,16 @@ namespace DLS.Graphics
 			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
 		}
 
-		public static Bounds2D DrawDisplay_DisplayLED(Vector2 centre, float scale, bool isDisconnected, bool isOn)
+		public static Bounds2D DrawDisplay_DisplayLED(Vector2 centre, float scale, bool isOn)
 		{
 			const float pixelSizeT = 0.975f;
+			float pixelSize = scale;
+
 			// Draw background
 			Draw.Quad(centre, Vector2.one * scale, Color.black);
-			float size = scale;
-
-			float pixelSize = size;
 			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
 
-			Color col = isDisconnected ? ActiveTheme.DisplayLEDCols[0] : (isOn ? ActiveTheme.DisplayLEDCols[2] : ActiveTheme.DisplayLEDCols[1]);
-
+			Color col = isOn ? ActiveTheme.DisplayLEDCols[2] : ActiveTheme.DisplayLEDCols[1];
 			Draw.Quad(centre, pixelDrawSize, col);
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
@@ -968,7 +948,7 @@ namespace DLS.Graphics
 			if (wire.IsBusWire) return int.MaxValue - 2;
 
 			// Draw wires carrying high signal above those carrying low signal (for single bit wires)
-			bool wireIsHigh = wire.bitCount == PinBitCount.Bit1 && wire.SourcePin.State.FirstBitHigh();
+			bool wireIsHigh = wire.bitCount == PinBitCount.Bit1 && PinState.FirstBitHigh(wire.SourcePin.State);
 			int drawPriority_signalHigh = wireIsHigh ? 1000 : 0;
 
 			// Draw multi-bit wires above single bit wires

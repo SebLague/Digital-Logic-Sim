@@ -1,95 +1,71 @@
 namespace DLS.Simulation
 {
-	public class PinState
+	// Helper class for dealing with pin state.
+	// Pin state is stored as a uint32, with format:
+	// Tristate flags (most significant 16 bits) | Bit states (least significant 16 bits)
+	public static class PinState
 	{
 		// Each bit has three possible states (tri-state logic):
-		public const uint LogicLow = 0;
-		public const uint LogicHigh = 1;
-		public const uint LogicDisconnected = 2;
+		public const ushort LogicLow = 0;
+		public const ushort LogicHigh = 1;
+		public const ushort LogicDisconnected = 2;
 
-		public readonly int BitCount;
+		// Mask for single bit value (bit state, and tristate flag)
+		public const uint SingleBitMask = 1 | (1 << 16);
+		
+		public static ushort GetBitStates(uint state) => (ushort)state;
+		public static ushort GetTristateFlags(uint state) => (ushort)(state >> 16);
 
-		// LOW/HIGH state of each bit
-		uint bitStates;
-
-		// If flag is set, it means the corresponding bit state is DISCONNECTED
-		// (note: corresponding bit state is expected to be set to LOW in that case)
-		uint tristateFlags;
-
-		public PinState(int numBits)
+		public static void Set(ref uint state, ushort bitStates, ushort tristateFlags)
 		{
-			BitCount = numBits;
+			state = (uint)(bitStates | (tristateFlags << 16));
 		}
 
-		public uint GetRawBits() => bitStates;
+		public static void Set(ref uint state, uint other) => state = other;
 
-		public void SetAllBits_NoneDisconnected(uint newBitStates)
+		public static ushort GetBitTristatedValue(uint state, int bitIndex)
 		{
-			bitStates = newBitStates;
-			tristateFlags = 0;
+			ushort bitState = (ushort)((GetBitStates(state) >> bitIndex) & 1);
+			ushort tri = (ushort)((GetTristateFlags(state) >> bitIndex) & 1);
+			return (ushort)(bitState | (tri << 1)); // Combine to form tri-stated value: 0 = LOW, 1 = HIGH, 2 = DISCONNECTED
 		}
 
-		public bool FirstBitHigh() => (bitStates & 1) == LogicHigh;
+		public static bool FirstBitHigh(uint state) => (state & 1) == LogicHigh;
 
-		public void SetBit(int bitIndex, uint newState)
+		public static void Set4BitFrom8BitSource(ref uint state, uint source8bit, bool firstNibble)
 		{
-			// Clear current state
-			uint mask = ~(1u << bitIndex);
-			bitStates &= mask;
-			tristateFlags &= mask;
+			ushort sourceBitStates = GetBitStates(source8bit);
+			ushort sourceTristateFlags = GetTristateFlags(source8bit);
 
-			// Set new state
-			bitStates |= (newState & 1) << bitIndex;
-			tristateFlags |= (newState >> 1) << bitIndex;
-		}
-
-		public uint GetBit(int bitIndex)
-		{
-			uint state = (bitStates >> bitIndex) & 1;
-			uint tri = (tristateFlags >> bitIndex) & 1;
-			return state | (tri << 1); // Combine to form tri-stated value: 0 = LOW, 1 = HIGH, 2 = DISCONNECTED
-		}
-
-		public void SetFromSource(PinState source)
-		{
-			bitStates = source.bitStates;
-			tristateFlags = source.tristateFlags;
-		}
-
-		public void Set4BitFrom8BitSource(PinState source8bit, bool firstNibble)
-		{
 			if (firstNibble)
 			{
-				const uint mask = 0b1111;
-				bitStates = source8bit.bitStates & mask;
-				tristateFlags = source8bit.tristateFlags & mask;
+				const ushort mask = 0b1111;
+				Set(ref state, (ushort)(sourceBitStates & mask), (ushort)(sourceTristateFlags & mask));
 			}
 			else
 			{
 				const uint mask = 0b11110000;
-				bitStates = (source8bit.bitStates & mask) >> 4;
-				tristateFlags = (source8bit.tristateFlags & mask) >> 4;
+				Set(ref state, (ushort)((sourceBitStates & mask) >> 4), (ushort)((sourceTristateFlags & mask) >> 4));
 			}
 		}
 
-		public void Set8BitFrom4BitSources(PinState a, PinState b)
+		public static void Set8BitFrom4BitSources(ref uint state, uint a, uint b)
 		{
-			bitStates = a.bitStates | (b.bitStates << 4);
-			tristateFlags = a.tristateFlags | (b.tristateFlags << 4);
+			ushort bitStates = (ushort)(GetBitStates(a) | (GetBitStates(b) << 4));
+			ushort tristateFlags = (ushort)((GetTristateFlags(a) & 0b1111) | ((GetTristateFlags(b) & 0b1111) << 4));
+			Set(ref state, bitStates, tristateFlags);
 		}
 
-		public void Toggle(int bitIndex)
-		{
-			bitStates ^= 1u << bitIndex;
 
-			// Clear tristate flag (can't be disconnected if toggling)
-			tristateFlags &= ~(1u << bitIndex);
+		public static void Toggle(ref uint state, int bitIndex)
+		{
+			ushort bitStates = GetBitStates(state);
+			bitStates ^= (ushort)(1u << bitIndex);
+
+			// Clear tristate flags (can't be disconnected if toggling as only input dev pins are allowed)
+			Set(ref state, bitStates, 0);
 		}
 
-		public void SetAllDisconnected()
-		{
-			bitStates = 0;
-			tristateFlags = (1u << BitCount) - 1;
-		}
+		public static void SetAllDisconnected(ref uint state) => Set(ref state, 0, ushort.MaxValue);
 	}
 }

@@ -16,8 +16,8 @@ namespace DLS.Game
 
 		// Pin may be attached to a chip or a devPin as its parent
 		public readonly IMoveable parent;
-		public readonly PinState State; // sim state
-		public PinState PlayerInputState; // dev input pins only
+		public uint State; // sim state
+		public uint PlayerInputState; // dev input pins only
 		public PinColour Colour;
 		bool faceRight;
 		public float LocalPosY;
@@ -31,8 +31,6 @@ namespace DLS.Game
 			Name = desc.Name;
 			Address = address;
 			IsSourcePin = isSourcePin;
-			State = new PinState((int)bitCount);
-			PlayerInputState = new PinState((int)bitCount);
 			Colour = desc.Colour;
 
 			IsBusPin = parent is SubChipInstance subchip && subchip.IsBus;
@@ -71,9 +69,9 @@ namespace DLS.Game
 
 		public Color GetStateCol(int bitIndex, bool hover = false, bool canUsePlayerState = true)
 		{
-			PinState pinState = (IsSourcePin && canUsePlayerState) ? PlayerInputState : State; // dev input pin uses player state (so it updates even when sim is paused)
+			uint pinState = (IsSourcePin && canUsePlayerState) ? PlayerInputState : State; // dev input pin uses player state (so it updates even when sim is paused)
 
-			uint state = pinState.GetBit(bitIndex);
+			uint state = PinState.GetBitTristatedValue(pinState, bitIndex);
 			int colIndex = (int)Colour;
 
 			return state switch

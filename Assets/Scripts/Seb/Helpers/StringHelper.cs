@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Seb.Helpers
 {
@@ -10,6 +12,25 @@ namespace Seb.Helpers
 		{
 			StringSplitOptions options = removeEmptyEntries ? StringSplitOptions.RemoveEmptyEntries : StringSplitOptions.None;
 			return text.Split(newLineStrings, options);
+		}
+
+		public static string CreateBinaryString(uint value, bool removeLeadingZeroes = false)
+		{
+			string binary = Convert.ToString(value, 2);
+			if (!removeLeadingZeroes)
+			{
+				binary = binary.PadLeft(32, '0');
+			}
+			else
+			{
+				int paddedLength = (binary.Length + 7) / 8 * 8;
+				binary = binary.PadLeft(paddedLength, '0');
+			}
+
+			IEnumerable<string> grouped = Enumerable.Range(0, binary.Length / 8)
+				.Select(i => binary.Substring(i * 8, 8));
+
+			return string.Join(" ", grouped);
 		}
 
 		public static int CreateIntegerStringNonAlloc(char[] charArray, int value)
@@ -52,9 +73,8 @@ namespace Seb.Helpers
 
 			for (int i = 0; i < charCount / 2; i++)
 			{
-				char tmp = charArray[i];
-				charArray[i] = charArray[charCount - i - 1];
-				charArray[charCount - i - 1] = tmp;
+				int swapIndex = charCount - i - 1;
+				(charArray[i], charArray[swapIndex]) = (charArray[swapIndex], charArray[i]);
 			}
 
 			return charCount;
