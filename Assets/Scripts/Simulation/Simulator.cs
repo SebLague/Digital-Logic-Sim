@@ -328,6 +328,16 @@ namespace DLS.Simulation
 					chip.OutputPins[0].State = isHeld ? PinState.LogicHigh : PinState.LogicLow;
 					break;
 				}
+				case ChipType.DisplayRGBLED:
+				{
+					uint redPin = chip.InputPins[1].State;
+					uint greenPin = chip.InputPins[2].State;
+					uint bluePin = chip.InputPins[3].State;
+					chip.InternalState[0] = redPin;
+					chip.InternalState[1] = greenPin;
+					chip.InternalState[2] = bluePin;
+					break;
+				}
 				case ChipType.DisplayRGB:
 				{
 					const uint addressSpace = 256;

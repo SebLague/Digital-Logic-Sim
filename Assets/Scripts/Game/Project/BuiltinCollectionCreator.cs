@@ -39,9 +39,15 @@ namespace DLS.Game
 					ChipType.Merge_1To4Bit,
 					ChipType.Merge_1To8Bit,
 					ChipType.Merge_4To8Bit,
+					ChipType.Merge_1To16Bit,
+					ChipType.Merge_4To16Bit,
+					ChipType.Merge_8To16Bit,
 					ChipType.Split_4To1Bit,
 					ChipType.Split_8To4Bit,
-					ChipType.Split_8To1Bit
+					ChipType.Split_8To1Bit,
+					ChipType.Split_16To1Bit,
+					ChipType.Split_16To4Bit,
+					ChipType.Split_16To8Bit
 				),
 				CreateChipCollection("BUS",
 					ChipType.Bus_1Bit,
@@ -53,7 +59,8 @@ namespace DLS.Game
 					ChipType.SevenSegmentDisplay,
 					ChipType.DisplayDot,
 					ChipType.DisplayRGB,
-					ChipType.DisplayLED
+					ChipType.DisplayLED,
+					ChipType.DisplayRGBLED
 				),
 				CreateChipCollection("MEMORY",
 					ChipType.Rom_256x16

@@ -21,15 +21,22 @@ namespace DLS.Description
 			{ ChipType.Split_4To1Bit, "4-1BIT" },
 			{ ChipType.Split_8To1Bit, "8-1BIT" },
 			{ ChipType.Split_8To4Bit, "8-4BIT" },
+			{ ChipType.Split_16To1Bit, "16-1BIT" },
+			{ ChipType.Split_16To4Bit, "16-4BIT" },
+			{ ChipType.Split_16To8Bit, "16-8BIT" },
 			{ ChipType.Merge_4To8Bit, "4-8BIT" },
 			{ ChipType.Merge_1To8Bit, "1-8BIT" },
 			{ ChipType.Merge_1To4Bit, "1-4BIT" },
+			{ ChipType.Merge_1To16Bit, "1-16BIT" },
+			{ ChipType.Merge_4To16Bit, "4-16BIT" },
+			{ ChipType.Merge_8To16Bit, "8-16BIT" },
 
 			// ---- Displays -----
 			{ ChipType.DisplayRGB, "RGB DISPLAY" },
 			{ ChipType.DisplayDot, "DOT DISPLAY" },
 			{ ChipType.SevenSegmentDisplay, "7-SEGMENT" },
 			{ ChipType.DisplayLED, "LED" },
+			{ ChipType.DisplayRGBLED, "RGBLED" },
 
 			// ---- Not really chips (but convenient to treat them as such anyway) ----
 
@@ -58,9 +65,9 @@ namespace DLS.Description
 
 		public static bool IsBusType(ChipType type) => IsBusOriginType(type) || IsBusTerminusType(type);
 
-		public static bool IsBusOriginType(ChipType type) => type is ChipType.Bus_1Bit or ChipType.Bus_4Bit or ChipType.Bus_8Bit;
+		public static bool IsBusOriginType(ChipType type) => type is ChipType.Bus_1Bit or ChipType.Bus_4Bit or ChipType.Bus_8Bit or ChipType.Bus_16Bit;
 
-		public static bool IsBusTerminusType(ChipType type) => type is ChipType.BusTerminus_1Bit or ChipType.BusTerminus_4Bit or ChipType.BusTerminus_8Bit;
+		public static bool IsBusTerminusType(ChipType type) => type is ChipType.BusTerminus_1Bit or ChipType.BusTerminus_4Bit or ChipType.BusTerminus_8Bit or ChipType.BusTerminus_16Bit;
 
 		public static bool IsRomType(ChipType type) => type == ChipType.Rom_256x16;
 
