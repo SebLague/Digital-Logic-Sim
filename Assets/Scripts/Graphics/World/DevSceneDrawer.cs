@@ -423,12 +423,12 @@ namespace DLS.Graphics
 				int G = (simActive && sim.InputPins[6].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[6] ? DisplayHighlightState : DisplayOffState) + colOffset;
 				bounds = DrawDisplay_SevenSegment(posWorld, scaleWorld, A, B, C, D, E, F, G);
 			}
-			else if(display.DisplayType is ChipType.FourteenSegmentDisplay)
+			else if(display.DisplayType is ChipType.SixteenSegmentDisplay)
 			{
                 bool simActive = sim != null;
                 bool hoverActive = rootChip.ChipType == ChipType.SevenSegmentDisplay;
                 PinInstance pin = InteractionState.PinUnderMouse;
-                int colOffset = simActive && sim.InputPins[14].FirstBitHigh ? 3 : 0;
+                int colOffset = simActive && sim.InputPins[16].FirstBitHigh ? 3 : 0;
 
                 int A = (simActive && sim.InputPins[0].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[0] ? DisplayHighlightState : DisplayOffState) + colOffset;
                 int B = (simActive && sim.InputPins[1].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[1] ? DisplayHighlightState : DisplayOffState) + colOffset;
@@ -444,7 +444,9 @@ namespace DLS.Graphics
                 int L = (simActive && sim.InputPins[11].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[11] ? DisplayHighlightState : DisplayOffState) + colOffset;
                 int M = (simActive && sim.InputPins[12].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[12] ? DisplayHighlightState : DisplayOffState) + colOffset;
                 int N = (simActive && sim.InputPins[13].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[13] ? DisplayHighlightState : DisplayOffState) + colOffset;
-                bounds = DrawDisplay_FourteenSegment(posWorld, scaleWorld, A, B, C, D, E, F, G, H, I, J, K, L, M, N);
+                int O = (simActive && sim.InputPins[14].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[14] ? DisplayHighlightState : DisplayOffState) + colOffset;
+                int P = (simActive && sim.InputPins[15].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[15] ? DisplayHighlightState : DisplayOffState) + colOffset;
+                bounds = DrawDisplay_SixteenSegment(posWorld, scaleWorld, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P);
             }
 			else if (display.DisplayType == ChipType.DisplayRGB)
 			{
@@ -591,7 +593,7 @@ namespace DLS.Graphics
 
 			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
 		}
-        public static Bounds2D DrawDisplay_FourteenSegment(Vector2 centre, float scale, int A, int B, int C, int D, int E, int F, int G, int H, int I, int J, int K, int L, int M, int N)
+        public static Bounds2D DrawDisplay_SixteenSegment(Vector2 centre, float scale, int A, int B, int C, int D, int E, int F, int G, int H, int I, int J, int K, int L, int M, int N, int O, int P)
         {
             const float targetHeightAspect = 1.75f;
             const float segmentThicknessFac = 0.165f;
@@ -610,7 +612,7 @@ namespace DLS.Graphics
             float segmentHeight = segmentRegionHeight / 2 - scale * segmentVerticalSpacingFac;
 
             Vector2 segmentSizeVertical = new(segmentThickness/2, segmentHeight);
-            Vector2 segmentSizeHorizontal = new(segmentWidth, segmentThickness/2);
+            Vector2 segmentSizeHorizontal = new(segmentWidth/2, segmentThickness/2);
 			Vector2 segmentSizeDiagonal = new(segmentThickness / 2, (float)Math.Sqrt(((segmentSizeHorizontal.x) * (segmentSizeHorizontal.x)) + ((segmentSizeVertical.y) * (segmentSizeVertical.y))));
             Vector2 offsetX = Vector2.right * segmentWidth / 2;
             Vector2 offsetY = Vector2.up * segmentRegionHeight / 4;
@@ -622,26 +624,29 @@ namespace DLS.Graphics
             Draw.Quad(centre, boundsSize, Color.black);
 
             // Draw horizontal segments
-            Draw.Diamond(centre - (offsetX/2), new Vector2(segmentWidth/2, segmentThickness/2), cols[G]); // mid left
-            Draw.Diamond(centre + (offsetX/2), new Vector2(segmentWidth/2, segmentThickness/2), cols[H]); // mid right
+            Draw.Diamond(centre - (offsetX/2), new Vector2(segmentWidth/2, segmentThickness/2), cols[I]); // mid left
+            Draw.Diamond(centre + (offsetX/2), new Vector2(segmentWidth/2, segmentThickness/2), cols[J]); // mid right
 
-            Draw.Diamond(centre + Vector2.up * segmentRegionHeight / 2, segmentSizeHorizontal, cols[A]); // top
-            Draw.Diamond(centre - Vector2.up * segmentRegionHeight / 2, segmentSizeHorizontal, cols[D]); // bottom
+            Draw.Diamond(centre - new Vector2(.35f, 0) + Vector2.up * segmentRegionHeight / 2, segmentSizeHorizontal, cols[A]); // top left
+            Draw.Diamond(centre + new Vector2(.35f, 0) - Vector2.up * segmentRegionHeight / 2, segmentSizeHorizontal, cols[E]); // bottom right
+
+            Draw.Diamond(centre + new Vector2(.35f, 0) + Vector2.up * segmentRegionHeight / 2, segmentSizeHorizontal, cols[B]); // top right
+            Draw.Diamond(centre - new Vector2(.35f, 0) - Vector2.up * segmentRegionHeight / 2, segmentSizeHorizontal, cols[F]); // bottom left
 
             // Draw vertical segments
-            Draw.Diamond(centre - offsetX + offsetY, segmentSizeVertical, cols[F]); // left top
-            Draw.Diamond(centre - offsetX - offsetY, segmentSizeVertical, cols[E]); // left bottom
-            Draw.Diamond(centre + offsetX + offsetY, segmentSizeVertical, cols[B]); // right top
-            Draw.Diamond(centre + offsetX - offsetY, segmentSizeVertical, cols[C]); // right bottom
+            Draw.Diamond(centre - offsetX + offsetY, segmentSizeVertical, cols[H]); // left top
+            Draw.Diamond(centre - offsetX - offsetY, segmentSizeVertical, cols[G]); // left bottom
+            Draw.Diamond(centre + offsetX + offsetY, segmentSizeVertical, cols[C]); // right top
+            Draw.Diamond(centre + offsetX - offsetY, segmentSizeVertical, cols[D]); // right bottom
 
-            Draw.Diamond(centre + offsetY, segmentSizeVertical, cols[I]); // mid top
-            Draw.Diamond(centre - offsetY, segmentSizeVertical, cols[J]); // mid bottom
+            Draw.Diamond(centre + offsetY, segmentSizeVertical, cols[K]); // mid top
+            Draw.Diamond(centre - offsetY, segmentSizeVertical, cols[L]); // mid bottom
 
 			//Draw Diagonal Segments
-			Draw.Line(centre+new Vector2(-.5f, 1.3f), centre+new Vector2(-.1f, .13f), segmentThickness / 5, cols[K]);
-            Draw.Line(centre+new Vector2(.5f, 1.3f), centre+new Vector2(.1f, .13f), segmentThickness / 5, cols[L]);
-            Draw.Line(centre+new Vector2(.5f, -1.3f), centre+new Vector2(.1f, -.13f), segmentThickness / 5, cols[M]);
-            Draw.Line(centre+new Vector2(-.5f, -1.3f), centre+new Vector2(-.1f, -.13f), segmentThickness / 5, cols[N]);
+			Draw.Line(centre+new Vector2(-.5f, 1.3f), centre+new Vector2(-.1f, .13f), segmentThickness / 5, cols[M]);
+            Draw.Line(centre+new Vector2(.5f, 1.3f), centre+new Vector2(.1f, .13f), segmentThickness / 5, cols[N]);
+            Draw.Line(centre+new Vector2(.5f, -1.3f), centre+new Vector2(.1f, -.13f), segmentThickness / 5, cols[O]);
+            Draw.Line(centre+new Vector2(-.5f, -1.3f), centre+new Vector2(-.1f, -.13f), segmentThickness / 5, cols[P]);
 
             return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
         }
