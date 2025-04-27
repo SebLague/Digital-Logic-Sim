@@ -36,7 +36,7 @@ namespace DLS.Game
 				CreateBitConversionChip(ChipType.Split_4To1Bit, PinBitCount.Bit4, PinBitCount.Bit1, 1, 4),
 				CreateBitConversionChip(ChipType.Split_8To4Bit, PinBitCount.Bit8, PinBitCount.Bit4, 1, 2),
 				CreateBitConversionChip(ChipType.Split_8To1Bit, PinBitCount.Bit8, PinBitCount.Bit1, 1, 8),
-				CreateBitConversionChip(ChipType.Split_16To1Bit, PinBitCount.Bit16, PinBitCount.Bit1, 1, 8),
+				CreateBitConversionChip(ChipType.Split_16To1Bit, PinBitCount.Bit16, PinBitCount.Bit1, 1, 16),
 				CreateBitConversionChip(ChipType.Split_16To4Bit, PinBitCount.Bit16, PinBitCount.Bit4, 1, 4),
 				CreateBitConversionChip(ChipType.Split_16To8Bit, PinBitCount.Bit16, PinBitCount.Bit8, 1, 2),
 

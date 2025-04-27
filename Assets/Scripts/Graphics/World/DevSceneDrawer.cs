@@ -581,10 +581,10 @@ namespace DLS.Graphics
 			// Draw background
 			Draw.Quad(centre, Vector2.one * scale, Color.black);
 			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
-			Color onColor = ActiveTheme.DisplayLEDCols[1]; // default fallback
+			Color onColor;
 			if (sim == null)
 			{
-				onColor = Color.white;
+				onColor = Color.white; // default fallback
 			}
 			else
 			{

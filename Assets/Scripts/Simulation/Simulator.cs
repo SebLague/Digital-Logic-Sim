@@ -289,6 +289,49 @@ namespace DLS.Simulation
 					PinState.Set8BitFrom4BitSources(ref out8.State, in4B.State, in4A.State);
 					break;
 				}
+				case ChipType.Merge_1To16Bit:
+				{
+					uint stateA = chip.InputPins[15].State & PinState.SingleBitMask; // lsb
+					uint stateB = chip.InputPins[14].State & PinState.SingleBitMask;
+					uint stateC = chip.InputPins[13].State & PinState.SingleBitMask;
+					uint stateD = chip.InputPins[12].State & PinState.SingleBitMask;
+					uint stateE = chip.InputPins[11].State & PinState.SingleBitMask;
+					uint stateF = chip.InputPins[10].State & PinState.SingleBitMask;
+					uint stateG = chip.InputPins[9].State & PinState.SingleBitMask;
+					uint stateH = chip.InputPins[8].State & PinState.SingleBitMask;
+					uint stateI = chip.InputPins[7].State & PinState.SingleBitMask;
+					uint stateJ = chip.InputPins[6].State & PinState.SingleBitMask;
+					uint stateK = chip.InputPins[5].State & PinState.SingleBitMask;
+					uint stateL = chip.InputPins[4].State & PinState.SingleBitMask;
+					uint stateM = chip.InputPins[3].State & PinState.SingleBitMask;
+					uint stateN = chip.InputPins[2].State & PinState.SingleBitMask;
+					uint stateO = chip.InputPins[1].State & PinState.SingleBitMask;
+					uint stateP = chip.InputPins[0].State & PinState.SingleBitMask;
+					chip.OutputPins[0].State = stateA | stateB << 1 | stateC << 2
+					 | stateD << 3 | stateE << 4 | stateF << 5 | stateG << 6
+					 | stateH << 7 | stateI << 8 | stateJ << 9 | stateK << 10
+					 | stateL << 11 | stateM << 12 | stateN << 13 | stateO << 14
+					 | stateP << 15;
+					break;
+				}
+				case ChipType.Merge_4To16Bit:
+				{
+					SimPin in4A = chip.InputPins[0];
+					SimPin in4B = chip.InputPins[1];
+					SimPin in4C = chip.InputPins[2];
+					SimPin in4D = chip.InputPins[3];
+					SimPin out16  = chip.OutputPins[0];
+					PinState.Set16BitFrom4BitSources(ref out16.State, in4D.State, in4C.State, in4B.State, in4A.State);
+					break;
+				}
+				case ChipType.Merge_8To16Bit:
+				{
+					SimPin in8A = chip.InputPins[0];
+					SimPin in8B = chip.InputPins[1];
+					SimPin out16  = chip.OutputPins[0];
+					PinState.Set16BitFrom8BitSources(ref out16.State, in8B.State, in8A.State);
+					break;
+				}
 				case ChipType.Split_8To4Bit:
 				{
 					SimPin in8 = chip.InputPins[0];
@@ -309,6 +352,49 @@ namespace DLS.Simulation
 					chip.OutputPins[5].State = (in8 >> 2) & PinState.SingleBitMask;
 					chip.OutputPins[6].State = (in8 >> 1) & PinState.SingleBitMask;
 					chip.OutputPins[7].State = (in8 >> 0) & PinState.SingleBitMask;
+					break;
+				}
+				case ChipType.Split_16To1Bit:
+				{
+					uint in16 = chip.InputPins[0].State;
+					chip.OutputPins[0].State = (in16 >> 15) & PinState.SingleBitMask;
+					chip.OutputPins[1].State = (in16 >> 14) & PinState.SingleBitMask;
+					chip.OutputPins[2].State = (in16 >> 13) & PinState.SingleBitMask;
+					chip.OutputPins[3].State = (in16 >> 12) & PinState.SingleBitMask;
+					chip.OutputPins[4].State = (in16 >> 11) & PinState.SingleBitMask;
+					chip.OutputPins[5].State = (in16 >> 10) & PinState.SingleBitMask;
+					chip.OutputPins[6].State = (in16 >> 9) & PinState.SingleBitMask;
+					chip.OutputPins[7].State = (in16 >> 8) & PinState.SingleBitMask;
+					chip.OutputPins[8].State = (in16 >> 7) & PinState.SingleBitMask;
+					chip.OutputPins[9].State = (in16 >> 6) & PinState.SingleBitMask;
+					chip.OutputPins[10].State = (in16 >> 5) & PinState.SingleBitMask;
+					chip.OutputPins[11].State = (in16 >> 4) & PinState.SingleBitMask;
+					chip.OutputPins[12].State = (in16 >> 3) & PinState.SingleBitMask;
+					chip.OutputPins[13].State = (in16 >> 2) & PinState.SingleBitMask;
+					chip.OutputPins[14].State = (in16 >> 1) & PinState.SingleBitMask;
+					chip.OutputPins[15].State = (in16 >> 0) & PinState.SingleBitMask;
+					break;
+				}
+				case ChipType.Split_16To4Bit:
+				{
+					SimPin in16 = chip.InputPins[0];
+					SimPin out4A = chip.OutputPins[0];
+					SimPin out4B = chip.OutputPins[1];
+					SimPin out4C = chip.OutputPins[2];
+					SimPin out4D = chip.OutputPins[3];
+					PinState.Set4BitFrom16BitSource(ref out4A.State, in16.State, 3);
+					PinState.Set4BitFrom16BitSource(ref out4B.State, in16.State, 2);
+					PinState.Set4BitFrom16BitSource(ref out4C.State, in16.State, 1);
+					PinState.Set4BitFrom16BitSource(ref out4D.State, in16.State, 0);
+					break;
+				}
+				case ChipType.Split_16To8Bit:
+				{
+					SimPin in16 = chip.InputPins[0];
+					SimPin out8A = chip.OutputPins[0];
+					SimPin out8B = chip.OutputPins[1];
+					PinState.Set4BitFrom8BitSource(ref out8A.State, in16.State, false);
+					PinState.Set4BitFrom8BitSource(ref out8B.State, in16.State, true);
 					break;
 				}
 				case ChipType.TriStateBuffer:
