@@ -43,7 +43,7 @@ namespace DLS.Game
 				CreateDisplayRGB(),
 				CreateDisplayDot(),
 				CreateDisplayLED(),
-				CreateFourteenSegmentDisplay(),
+				CreateSixteenSegmentDisplay(),
 				// ---- Bus ----
 				CreateBus(PinBitCount.Bit1),
 				CreateBusTerminus(PinBitCount.Bit1),
@@ -54,7 +54,7 @@ namespace DLS.Game
 			};
 		}
 
-        static ChipDescription CreateFourteenSegmentDisplay()
+        static ChipDescription CreateSixteenSegmentDisplay()
         {
             PinDescription[] inputPins =
             {
@@ -72,7 +72,9 @@ namespace DLS.Game
                 CreatePinDescription("L", 11),
                 CreatePinDescription("M", 12),
                 CreatePinDescription("N", 13),
-                CreatePinDescription("COL", 14)
+                CreatePinDescription("O", 14),
+                CreatePinDescription("P", 15),
+                CreatePinDescription("COL", 16)
             };
 
             Color col = new(0.1f, 0.1f, 0.1f);
@@ -89,7 +91,7 @@ namespace DLS.Game
                     SubChipID = -1
                 }
             };
-            return CreateBuiltinChipDescription(ChipType.FourteenSegmentDisplay, size, col, inputPins, null, displays, true);
+            return CreateBuiltinChipDescription(ChipType.SixteenSegmentDisplay, size, col, inputPins, null, displays, true);
         }
 
         static ChipDescription CreateNand()
