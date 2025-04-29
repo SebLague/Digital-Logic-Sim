@@ -4,206 +4,206 @@ using DLS.Description;
 
 namespace DLS.Game
 {
-    public class ChipLibrary
-    {
-        public readonly List<ChipDescription> allChips = new();
+	public class ChipLibrary
+	{
+		public readonly List<ChipDescription> allChips = new();
 
-        readonly HashSet<string> builtinChipNames = new(ChipDescription.NameComparer);
-        readonly Dictionary<string, ChipDescription> descriptionFromNameLookup = new(ChipDescription.NameComparer);
+		readonly HashSet<string> builtinChipNames = new(ChipDescription.NameComparer);
+		readonly Dictionary<string, ChipDescription> descriptionFromNameLookup = new(ChipDescription.NameComparer);
 
-        readonly List<ChipDescription> hiddenChips = new();
+		readonly List<ChipDescription> hiddenChips = new();
 
-        // Names of chips (built-in or custom) whose logic is purely combinational (static)
-        readonly HashSet<string> staticChips = new(ChipDescription.NameComparer);
+		// Names of chips (built-in or custom) whose logic is purely combinational (static)
+		readonly HashSet<string> staticChips = new(ChipDescription.NameComparer);
 
-        // Built-in chip types that are pure combinational (no internal state)
-        static readonly HashSet<ChipType> pureCombinationalBuiltins = new()
-        {
-            ChipType.Nand,
-            ChipType.Split_4To1Bit,
-            ChipType.Merge_1To4Bit,
-            ChipType.Merge_1To8Bit,
-            ChipType.Merge_4To8Bit,
-            ChipType.Split_8To4Bit,
-            ChipType.Split_8To1Bit,
-            ChipType.TriStateBuffer,
-        };
+		// Built-in chip types that are pure combinational (no internal state)
+		static readonly HashSet<ChipType> pureCombinationalBuiltins = new()
+		{
+			ChipType.Nand,
+			ChipType.Split_4To1Bit,
+			ChipType.Merge_1To4Bit,
+			ChipType.Merge_1To8Bit,
+			ChipType.Merge_4To8Bit,
+			ChipType.Split_8To4Bit,
+			ChipType.Split_8To1Bit,
+			ChipType.TriStateBuffer,
+		};
 
-        public ChipLibrary(ChipDescription[] customChips, ChipDescription[] builtinChips)
-        {
-            // Add built-in chips to list of all chips
-            foreach (ChipDescription chip in builtinChips)
-            {
-                // Bus terminus chip should not be shown to the user (it is created automatically upon placement of a bus start point)
-                bool hidden = ChipTypeHelper.IsBusTerminusType(chip.ChipType) || chip.ChipType == ChipType.dev_Ram_8Bit;
+		public ChipLibrary(ChipDescription[] customChips, ChipDescription[] builtinChips)
+		{
+			// Add built-in chips to list of all chips
+			foreach (ChipDescription chip in builtinChips)
+			{
+				// Bus terminus chip should not be shown to the user (it is created automatically upon placement of a bus start point)
+				bool hidden = ChipTypeHelper.IsBusTerminusType(chip.ChipType) || chip.ChipType == ChipType.dev_Ram_8Bit;
 
-                AddChipToLibrary(chip, hidden);
-                builtinChipNames.Add(chip.Name);
-            }
+				AddChipToLibrary(chip, hidden);
+				builtinChipNames.Add(chip.Name);
+			}
 
-            // Add custom chips to list of all chips
-            foreach (ChipDescription chip in customChips)
-            {
-                AddChipToLibrary(chip);
-            }
+			// Add custom chips to list of all chips
+			foreach (ChipDescription chip in customChips)
+			{
+				AddChipToLibrary(chip);
+			}
 
-            RebuildChipDescriptionLookup();
-            RecomputeStaticChips();
-        }
+			RebuildChipDescriptionLookup();
+			RecomputeStaticChips();
+		}
 
-        void RebuildChipDescriptionLookup()
-        {
-            descriptionFromNameLookup.Clear();
-            foreach (ChipDescription desc in allChips)
-            {
-                descriptionFromNameLookup.Add(desc.Name, desc);
-            }
+		void RebuildChipDescriptionLookup()
+		{
+			descriptionFromNameLookup.Clear();
+			foreach (ChipDescription desc in allChips)
+			{
+				descriptionFromNameLookup.Add(desc.Name, desc);
+			}
 
-            foreach (ChipDescription desc in hiddenChips)
-            {
-                descriptionFromNameLookup.Add(desc.Name, desc);
-            }
-        }
+			foreach (ChipDescription desc in hiddenChips)
+			{
+				descriptionFromNameLookup.Add(desc.Name, desc);
+			}
+		}
 
 
-        public bool IsBuiltinChip(string name) => builtinChipNames.Contains(name);
+		public bool IsBuiltinChip(string name) => builtinChipNames.Contains(name);
 
-        public bool HasChip(string name) => TryGetChipDescription(name, out _);
+		public bool HasChip(string name) => TryGetChipDescription(name, out _);
 
-        public ChipDescription GetChipDescription(string name) => descriptionFromNameLookup[name];
+		public ChipDescription GetChipDescription(string name) => descriptionFromNameLookup[name];
 
-        public bool TryGetChipDescription(string name, out ChipDescription description) =>
-            descriptionFromNameLookup.TryGetValue(name, out description);
+		public bool TryGetChipDescription(string name, out ChipDescription description) =>
+			descriptionFromNameLookup.TryGetValue(name, out description);
 
-        public void RemoveChip(string chipName)
-        {
-            allChips.RemoveAll(c => c.NameMatch(chipName));
-            RebuildChipDescriptionLookup();
-        }
+		public void RemoveChip(string chipName)
+		{
+			allChips.RemoveAll(c => c.NameMatch(chipName));
+			RebuildChipDescriptionLookup();
+		}
 
-        public void NotifyChipSaved(ChipDescription description)
-        {
-            // Replace chip description if already exists
-            bool foundChip = false;
+		public void NotifyChipSaved(ChipDescription description)
+		{
+			// Replace chip description if already exists
+			bool foundChip = false;
 
-            for (int i = 0; i < allChips.Count; i++)
-            {
-                if (allChips[i].NameMatch(description.Name))
-                {
-                    allChips[i] = description;
-                    foundChip = true;
-                    break;
-                }
-            }
+			for (int i = 0; i < allChips.Count; i++)
+			{
+				if (allChips[i].NameMatch(description.Name))
+				{
+					allChips[i] = description;
+					foundChip = true;
+					break;
+				}
+			}
 
-            // Otherwise add as new description
-            if (!foundChip) AddChipToLibrary(description);
+			// Otherwise add as new description
+			if (!foundChip) AddChipToLibrary(description);
 
-            RebuildChipDescriptionLookup();
-            RecomputeStaticChips();
-        }
+			RebuildChipDescriptionLookup();
+			RecomputeStaticChips();
+		}
 
-        public void NotifyChipRenamed(ChipDescription description, string nameOld)
-        {
-            // Replace chip description
-            for (int i = 0; i < allChips.Count; i++)
-            {
-                if (allChips[i].NameMatch(nameOld))
-                {
-                    allChips[i] = description;
-                    break;
-                }
-            }
+		public void NotifyChipRenamed(ChipDescription description, string nameOld)
+		{
+			// Replace chip description
+			for (int i = 0; i < allChips.Count; i++)
+			{
+				if (allChips[i].NameMatch(nameOld))
+				{
+					allChips[i] = description;
+					break;
+				}
+			}
 
-            RebuildChipDescriptionLookup();
-            RecomputeStaticChips();
-        }
+			RebuildChipDescriptionLookup();
+			RecomputeStaticChips();
+		}
 
-        public string[] GetAllCustomChipNames()
-        {
-            List<string> customChipNames = new();
+		public string[] GetAllCustomChipNames()
+		{
+			List<string> customChipNames = new();
 
-            foreach (ChipDescription chip in allChips)
-            {
-                if (!IsBuiltinChip(chip.Name))
-                {
-                    customChipNames.Add(chip.Name);
-                }
-            }
+			foreach (ChipDescription chip in allChips)
+			{
+				if (!IsBuiltinChip(chip.Name))
+				{
+					customChipNames.Add(chip.Name);
+				}
+			}
 
-            return customChipNames.ToArray();
-        }
+			return customChipNames.ToArray();
+		}
 
-        // Returns the descriptions of all chips that use the given chip as a direct subchip
-        public ChipDescription[] GetDirectParentChips(string chipName)
-        {
-            List<ChipDescription> parents = new();
+		// Returns the descriptions of all chips that use the given chip as a direct subchip
+		public ChipDescription[] GetDirectParentChips(string chipName)
+		{
+			List<ChipDescription> parents = new();
 
-            foreach (ChipDescription other in allChips)
-            {
-                if (other.SubChips == null) continue;
-                if (other.SubChips.Any(subchip => ChipDescription.NameMatch(subchip.Name, chipName)))
-                {
-                    parents.Add(other);
-                }
-            }
+			foreach (ChipDescription other in allChips)
+			{
+				if (other.SubChips == null) continue;
+				if (other.SubChips.Any(subchip => ChipDescription.NameMatch(subchip.Name, chipName)))
+				{
+					parents.Add(other);
+				}
+			}
 
-            return parents.ToArray();
-        }
+			return parents.ToArray();
+		}
 
-        void AddChipToLibrary(ChipDescription description, bool hidden = false)
-        {
-            if (hidden) hiddenChips.Add(description);
-            else allChips.Add(description);
-        }
+		void AddChipToLibrary(ChipDescription description, bool hidden = false)
+		{
+			if (hidden) hiddenChips.Add(description);
+			else allChips.Add(description);
+		}
 
-        // Recompute which chips are purely combinational (static) by propagating upwards: builtins first, then custom whose sub chips are all static
-        void RecomputeStaticChips()
-        {
-            staticChips.Clear();
-            bool added;
-            do
-            {
-                added = false;
-                foreach (var chip in allChips)
-                {
-                    if (staticChips.Contains(chip.Name)) continue;
-                    if (IsBuiltinChip(chip.Name))
-                    {
-                        if (pureCombinationalBuiltins.Contains(chip.ChipType))
-                        {
-                            staticChips.Add(chip.Name);
-                            added = true;
-                        }
-                    }
-                    else
-                    {
-                        // custom chip: static if all sub chips are static
-                        bool allStatic = true;
-                        foreach (var sub in chip.SubChips)
-                        {
-                            string subName = sub.Name;
-                            if (!staticChips.Contains(subName))
-                            {
-                                allStatic = false;
-                                break;
-                            }
-                        }
+		// Recompute which chips are purely combinational (static) by propagating upwards: builtins first, then custom whose sub chips are all static
+		void RecomputeStaticChips()
+		{
+			staticChips.Clear();
+			bool added;
+			do
+			{
+				added = false;
+				foreach (var chip in allChips)
+				{
+					if (staticChips.Contains(chip.Name)) continue;
+					if (IsBuiltinChip(chip.Name))
+					{
+						if (pureCombinationalBuiltins.Contains(chip.ChipType))
+						{
+							staticChips.Add(chip.Name);
+							added = true;
+						}
+					}
+					else
+					{
+						// custom chip: static if all sub chips are static
+						bool allStatic = true;
+						foreach (var sub in chip.SubChips)
+						{
+							string subName = sub.Name;
+							if (!staticChips.Contains(subName))
+							{
+								allStatic = false;
+								break;
+							}
+						}
 
-                        if (allStatic)
-                        {
-                            staticChips.Add(chip.Name);
-                            added = true;
-                        }
-                    }
-                }
-            } while (added);
-        }
+						if (allStatic)
+						{
+							staticChips.Add(chip.Name);
+							added = true;
+						}
+					}
+				}
+			} while (added);
+		}
 
-        // Query whether a chip (by name) is static/combinational
-        public bool IsChipStatic(string chipName)
-        {
-            return staticChips.Contains(chipName);
-        }
-    }
+		// Query whether a chip (by name) is static/combinational
+		public bool IsChipStatic(string chipName)
+		{
+			return staticChips.Contains(chipName);
+		}
+	}
 }
