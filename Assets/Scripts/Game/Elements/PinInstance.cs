@@ -70,16 +70,11 @@ namespace DLS.Game
 		public Color GetStateCol(int bitIndex, bool hover = false, bool canUsePlayerState = true)
 		{
 			uint pinState = (IsSourcePin && canUsePlayerState) ? PlayerInputState : State; // dev input pin uses player state (so it updates even when sim is paused)
-
 			uint state = PinState.GetBitTristatedValue(pinState, bitIndex);
-			int colIndex = (int)Colour;
 
-			return state switch
-			{
-				PinState.LogicHigh => DrawSettings.ActiveTheme.StateHighCol[colIndex],
-				PinState.LogicLow => hover ? DrawSettings.ActiveTheme.StateHoverCol[colIndex] : DrawSettings.ActiveTheme.StateLowCol[colIndex],
-				_ => DrawSettings.ActiveTheme.StateDisconnectedCol
-			};
+			if (state == PinState.LogicDisconnected) return DrawSettings.ActiveTheme.StateDisconnectedCol;
+			return DrawSettings.GetStateColour(state == PinState.LogicHigh, (uint)Colour, hover);
+			
 		}
 	}
 }

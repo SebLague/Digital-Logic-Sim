@@ -244,16 +244,16 @@ MonoBehaviour:
   openInMainMenu: 0
   testProjectName: MainTest
   openA: 0
-  chipToOpenA: wip2
+  chipToOpenA: a
   chipToOpenB: TEST MergeSplit
   testVecA: {x: 0.1, y: 24}
   testVecB: {x: 0, y: 3}
   testVecC: {x: 0.35, y: 0.37}
   testVecD: {x: 0.73, y: 0.72}
-  testColA: {r: 0.3584906, g: 0.3092709, b: 0.10653258, a: 1}
-  testColB: {r: 1, g: 1, b: 1, a: 1}
-  testColC: {r: 0.28118938, g: 0.19335172, b: 0.5188679, a: 1}
-  testColD: {r: 1, g: 0.5896226, b: 0.5896226, a: 1}
+  testColA: {r: 0.28235295, g: 0.15216513, b: 0.015686266, a: 1}
+  testColB: {r: 0.9245283, g: 0.44861773, b: 0.11774653, a: 1}
+  testColC: {r: 0.26415092, g: 0.20763719, b: 0.07849768, a: 1}
+  testColD: {r: 1, g: 0.7605649, b: 0.2688679, a: 1}
   testButtonTheme:
     font: 0
     fontSize: 0

@@ -270,17 +270,17 @@ namespace DLS.Game
 		// Key chip has been bound to a different key, so simulation must be updated
 		public void NotifyKeyChipBindingChanged(SubChipInstance keyChip, char newKey)
 		{
-			keyChip.SetKeyChipActivationChar(newKey);
 			SimChip simChip = rootSimChip.GetSubChipFromID(keyChip.ID);
-			simChip.ChangeKeyBinding(newKey);
+			simChip.InternalState[0] = newKey;
+			keyChip.SetKeyChipActivationChar(newKey);
 		}
 
 		// Chip's pulse width has been changed, so simulation must be updated
 		public void NotifyPulseWidthChanged(SubChipInstance chip, uint widthNew)
 		{
-			chip.InternalData[0] = widthNew;
 			SimChip simChip = rootSimChip.GetSubChipFromID(chip.ID);
 			simChip.InternalState[0] = widthNew;
+			chip.InternalData[0] = widthNew;
 		}
 
 		// Rom has been edited, so simulation must be updated
@@ -288,6 +288,13 @@ namespace DLS.Game
 		{
 			SimChip simChip = rootSimChip.GetSubChipFromID(romChip.ID);
 			simChip.UpdateInternalState(romChip.InternalData);
+		}
+
+		public void NotifyLEDColourChanged(SubChipInstance ledChip, uint colIndex)
+		{
+			SimChip simChip = rootSimChip.GetSubChipFromID(ledChip.ID);
+			simChip.InternalState[0] = colIndex;
+			ledChip.InternalData[0] = colIndex;
 		}
 
 		public void DeleteChip(string chipToDeleteName)
