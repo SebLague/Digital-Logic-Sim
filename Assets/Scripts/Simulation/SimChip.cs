@@ -12,7 +12,9 @@ namespace DLS.Simulation
 		// Some builtin chips, such as RAM, require an internal state for memory
 		// (can also be used for other arbitrary chip-specific data)
 		public readonly uint[] InternalState = Array.Empty<uint>();
-		public readonly bool IsBuiltin;
+        public readonly bool IsBuiltin;
+        // True if this chip is purely combinational (static) and can be LUT-cached
+        public bool IsStaticCombinational;
 		public SimPin[] InputPins = Array.Empty<SimPin>();
 		public int numConnectedInputs;
 
