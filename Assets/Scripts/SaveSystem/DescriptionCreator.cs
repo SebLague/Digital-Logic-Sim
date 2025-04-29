@@ -63,7 +63,7 @@ namespace DLS.SaveSystem
 				subChip.Position,
 				// Don't save colour info for bus since it changes based on received input, so would just trigger unnecessary 'unsaved changes' warnings
 				subChip.IsBus ? null : subChip.OutputPins.Select(p => new OutputPinColourInfo(p.Colour, p.Address.PinID)).ToArray(),
-				subChip.InternalData
+				(uint[])subChip.InternalData?.Clone()
 			);
 		}
 
