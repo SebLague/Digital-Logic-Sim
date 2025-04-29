@@ -111,12 +111,7 @@ namespace DLS.Simulation
 		}
 
 		public bool Sim_IsReady() => numInputsReady == numConnectedInputs;
-
-		public void ChangeKeyBinding(char key)
-		{
-			InternalState[0] = key;
-		}
-
+		
 		public (bool success, SimChip chip) TryGetSubChipFromID(int id)
 		{
 			// Todo: address possible errors if accessing from main thread while being modified on sim thread?

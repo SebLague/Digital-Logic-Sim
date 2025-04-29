@@ -433,8 +433,15 @@ namespace DLS.Graphics
 			else if (display.DisplayType == ChipType.DisplayLED)
 			{
 				bool simActive = sim != null;
-				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
-				bounds = DrawDisplay_DisplayLED(posWorld, scaleWorld, isOn);
+				Color col = Color.black;
+				if (simActive)
+				{
+					bool isOn = sim.InputPins[0].FirstBitHigh;
+					uint displayColIndex = sim.InternalState[0];
+					col = GetStateColour(isOn, displayColIndex);
+				}
+
+				bounds = DrawDisplay_LED(posWorld, scaleWorld, col);
 			}
 
 			display.LastDrawBounds = bounds;
@@ -567,7 +574,7 @@ namespace DLS.Graphics
 			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
 		}
 
-		public static Bounds2D DrawDisplay_DisplayLED(Vector2 centre, float scale, bool isOn)
+		public static Bounds2D DrawDisplay_LED(Vector2 centre, float scale, Color col)
 		{
 			const float pixelSizeT = 0.975f;
 			float pixelSize = scale;
@@ -575,8 +582,6 @@ namespace DLS.Graphics
 			// Draw background
 			Draw.Quad(centre, Vector2.one * scale, Color.black);
 			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
-
-			Color col = isOn ? ActiveTheme.DisplayLEDCols[2] : ActiveTheme.DisplayLEDCols[1];
 			Draw.Quad(centre, pixelDrawSize, col);
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}

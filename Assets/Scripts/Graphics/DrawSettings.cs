@@ -8,7 +8,7 @@ namespace DLS.Graphics
 {
 	public static class DrawSettings
 	{
-		// -- World draw settings --
+		// ---- World draw settings ----
 		public const float GridSize = 0.125f;
 		public const float PinHeight1Bit = 0.185f;
 		public const float PinHeight4Bit = 0.3f;
@@ -27,13 +27,12 @@ namespace DLS.Graphics
 		public const float WireThickness = 0.025f;
 		public const float WireHighlightedThickness = WireThickness + 0.012f;
 		public const float GridThickness = 0.0035f;
-		public const float DefaultPinSpacing = GridSize * 2;
 		public const float DevPinStateDisplayRadius = 0.2f;
 		public const float DevPinStateDisplayOutline = 0.0175f;
 		public const float DevPinHandleWidth = DevPinStateDisplayRadius * 0.64f;
 		public const float MultiBitPinStateDisplaySquareSize = 0.21f;
 
-		// -- UI draw settings --
+		// ---- UI draw settings ----
 		public const float PanelUIPadding = 1.15f * 2;
 		public const float SpacingUnitUI = 0.5f;
 		public const float ChipNameLineSpacing = 0.75f;
@@ -46,19 +45,27 @@ namespace DLS.Graphics
 		public const float InfoBarHeight = 3.5f;
 		public static readonly Vector2 LabelBackgroundPadding = new(0.15f, 0.1f);
 
-		// -- Themes --
-		public static ThemeDLS ActiveTheme { get; } = CreateTheme();
+		// ---- Themes ----
+		public static readonly ThemeDLS ActiveTheme = CreateTheme();
+		public static readonly UIThemeDLS ActiveUITheme = CreateUITheme();
 
-		public static UIThemeDLS ActiveUITheme { get; } = CreateUITheme();
+		// ---- Helper functions ----
+		public static Color GetStateColour(bool isHigh, uint index, bool hover = false)
+		{
+			index = (uint)Mathf.Min(index, ActiveTheme.StateHighCol.Length - 1); // clamp just to be safe...
+			if (!isHigh && hover) return ActiveTheme.StateHoverCol[index];
+			return isHigh ? ActiveTheme.StateHighCol[index] : ActiveTheme.StateLowCol[index];
+		}
 
 		static ThemeDLS CreateTheme()
 		{
-			const float whiteLow = 0.4f;
+			const float whiteLow = 0.35f;
 			const float whiteHigh = 0.9f;
 			Color[] stateLow =
 			{
 				new(0.2f, 0.1f, 0.1f),
-				new(0.25f, 0.18f, 0.04f),
+				new(0.28f, 0.15f, 0.01f),
+				new(0.26f, 0.2f, 0.07f),
 				new(0.1f, 0.2f, 0.1f),
 				new(0.1f, 0.14f, 0.35f),
 				new(0.19f, 0.12f, 0.28f),
@@ -69,7 +76,8 @@ namespace DLS.Graphics
 			Color[] stateHigh =
 			{
 				new(0.95f, 0.3f, 0.31f),
-				new(0.92f, 0.7f, 0.25f),
+				new(0.92f, 0.44f, 0.12f),
+				new(0.98f, 0.76f, 0.26f),
 				new(0.25f, 0.66f, 0.31f),
 				new(0.2f, 0.5f, 1f),
 				new(0.6f, 0.4f, 0.98f),
@@ -77,39 +85,33 @@ namespace DLS.Graphics
 				new(whiteHigh, whiteHigh, whiteHigh)
 			};
 
-			Color[] stateHover = stateLow.Select(c => Brighten(c, 0.1f)).ToArray();
+			Color[] stateHover = stateLow.Select(c => Brighten(c, 0.075f)).ToArray();
 
-            return new ThemeDLS
-            {
-                SelectionBoxCol = new Color(1, 1, 1, 0.1f),
-                SelectionBoxMovingCol = new Color(1, 1, 1, 0.125f),
-                SelectionBoxInvalidCol = MakeCol255(243, 81, 75, 120),
-                SelectionBoxOtherIsInvaldCol = MakeCol255(243, 150, 75, 80),
-                StateLowCol = stateLow,
-                StateHighCol = stateHigh,
-                StateHoverCol = stateHover,
-                StateDisconnectedCol = Color.black,
-                DevPinHandle = MakeCol(0.31f),
-                DevPinHandleHighlighted = MakeCol(0.7f),
-                PinCol = Color.black,
-                PinLabelCol = new Color(0, 0, 0, 0.7f),
-                PinHighlightCol = Color.white,
-                PinInvalidCol = MakeCol(0.15f),
-                SevenSegCols = new Color[]
-                {
-                    new(0.1f, 0.09f, 0.09f), new(1, 0.32f, 0.28f), new(0.19f, 0.15f, 0.15f), // Col A: OFF, ON, HIGHLIGHT
+			return new ThemeDLS
+			{
+				SelectionBoxCol = new Color(1, 1, 1, 0.1f),
+				SelectionBoxMovingCol = new Color(1, 1, 1, 0.125f),
+				SelectionBoxInvalidCol = MakeCol255(243, 81, 75, 120),
+				SelectionBoxOtherIsInvaldCol = MakeCol255(243, 150, 75, 80),
+				StateLowCol = stateLow,
+				StateHighCol = stateHigh,
+				StateHoverCol = stateHover,
+				StateDisconnectedCol = Color.black,
+				DevPinHandle = MakeCol(0.31f),
+				DevPinHandleHighlighted = MakeCol(0.7f),
+				PinCol = Color.black,
+				PinLabelCol = new Color(0, 0, 0, 0.7f),
+				PinHighlightCol = Color.white,
+				PinInvalidCol = MakeCol(0.15f),
+				SevenSegCols = new Color[]
+				{
+					new(0.1f, 0.09f, 0.09f), new(1, 0.32f, 0.28f), new(0.19f, 0.15f, 0.15f), // Col A: OFF, ON, HIGHLIGHT
 					new(0.09f, 0.09f, 0.1f), new(0, 0.61f, 1f), new(0.15f, 0.15f, 0.19f) // Col B: OFF, ON, HIGHLIGHT
 				},
-                Display2x2Cols = new[] { MakeCol(0.175f), MakeCol(1), MakeCol(0.275f) }, // OFF, ON, HIGHLIGHT
-                BackgroundCol = MakeCol255(66, 66, 69),
-                GridCol = MakeCol255(49, 49, 51),
-
-				DisplayLEDCols = new Color []
-                {
-					Color.black, new(0.2f, 0.1f, 0.1f), new(1, 0.32f, 0.28f) // Disconnected, OFF, ON
-				}
-            };
-        }
+				BackgroundCol = MakeCol255(66, 66, 69),
+				GridCol = MakeCol255(49, 49, 51),
+			};
+		}
 
 		static UIThemeDLS CreateUITheme()
 		{
@@ -147,9 +149,6 @@ namespace DLS.Graphics
 				MainMenuButtonTheme = MakeButtonTheme(fontRegular, MakeCol255(73, 73, 82), MakeCol255(72, 108, 233), MakeCol255(62, 116, 154), MakeCol255(228, 244, 255), Color.white, Color.white),
 				MenuButtonTheme = MakeButtonTheme(fontRegular, MakeCol255(67, 104, 149), MakeCol255(89, 159, 229), MakeCol255(117, 186, 224), MakeCol255(228, 244, 255), Color.white, Color.white),
 				MenuPopupButtonTheme = MakeButtonThemeFull(fontRegular, Color.white, MakeCol255(130, 190, 245), MakeCol255(145, 215, 245), MakeCol255(200), Color.black, Color.black, Color.black, inactiveTextol),
-				ChipLibraryButtonToggleOff = MakeButtonTheme(fontRegular, chipLibaryButtonOff, Brighten(chipLibaryButtonOff, 0.1f), Brighten(chipLibaryButtonOff, 0.2f), Color.white, Color.white, Color.white),
-				ChipLibraryButtonToggleOn = MakeButtonTheme(fontRegular, chipLibaryButtonOn, Brighten(chipLibaryButtonOn, 0.1f), Brighten(chipLibaryButtonOn, 0.2f), Color.white, Color.white, Color.white),
-
 
 				ChipLibraryCollectionToggleOff = MakeButtonTheme(fontRegular, MakeCol(0.066), MakeCol(0.87), chipLibraryCollectionHighlightCol, Color.white, Color.black, Color.black),
 				ChipLibraryCollectionToggleOn = MakeButtonThemeAuto(fontRegular, chipLibraryCollectionHighlightCol, Color.black),
@@ -157,8 +156,6 @@ namespace DLS.Graphics
 				ChipLibraryChipToggleOn = MakeButtonThemeAuto(fontRegular, chipLibraryChipHighlightCol, Color.black),
 
 				// --- Other stuff ---
-				General = new ThemeCreator(FontRegular).ThemeA,
-
 				ChipNameInputField = new InputFieldTheme
 				{
 					font = fontBold,
@@ -226,7 +223,6 @@ namespace DLS.Graphics
 			public Color BackgroundCol;
 			public Color DevPinHandle;
 			public Color DevPinHandleHighlighted;
-			public Color[] Display2x2Cols; // Off, On, Highlight
 			public Color GridCol;
 			public Color PinCol;
 			public Color PinHighlightCol;
@@ -241,8 +237,6 @@ namespace DLS.Graphics
 			public Color[] StateHighCol;
 			public Color[] StateHoverCol;
 			public Color[] StateLowCol;
-
-			public Color[] DisplayLEDCols; // Disconnected, Off, On
 		}
 
 		public class UIThemeDLS
@@ -251,8 +245,6 @@ namespace DLS.Graphics
 			public CheckboxTheme CheckBoxTheme;
 
 			public ButtonTheme ChipButton; // Bottom bar -> chip buttons
-			public ButtonTheme ChipLibraryButtonToggleOff;
-			public ButtonTheme ChipLibraryButtonToggleOn;
 			public ButtonTheme ChipLibraryChipToggleOff;
 			public ButtonTheme ChipLibraryChipToggleOn;
 			public ButtonTheme ChipLibraryCollectionToggleOff;
@@ -263,7 +255,6 @@ namespace DLS.Graphics
 			public FontType FontRegular;
 			public float FontSizeRegular;
 
-			public UITheme General;
 			public Color InfoBarCol;
 
 			public ButtonTheme MainMenuButtonTheme; // Main menu buttons
