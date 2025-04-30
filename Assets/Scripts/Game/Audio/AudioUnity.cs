@@ -35,8 +35,8 @@ public class AudioUnity : MonoBehaviour
 	{
 		for (int i = 0; i < data.Length; i += numChannels)
 		{
-			//float sample = gain * audioState.Sample(Time);
-			float sample = (float)gain * MathF.Sin((float)Time * MathF.PI * 300);
+			float sample = gain * audioState.Sample(Time);
+			//float sample = (float)gain * MathF.Sin((float)Time * MathF.PI * 300);
 
 			data[i] = sample;
 

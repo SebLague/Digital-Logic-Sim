@@ -63,16 +63,14 @@ public class AudioState
 	public float Sample(double time)
 	{
 		float sum = 0;
-
-		/*
+		
 		for (int i = 0; i < freqsAll.Length; i++)
 		{
 			float amplitude = targetAmplitudesPerFreq[i];
 			double phase = time * 2 * MathF.PI * freqsAll[i];
-			sum += Wave(phase) * amplitude;
+			sum += SquareWave(phase) * amplitude;
 		}
-*/
-		sum = Wave(time * 2 * MathF.PI * freqsAll[0]);
+		
 		return sum;
 	}
 
@@ -81,31 +79,19 @@ public class AudioState
 		return (float)Math.Sin(phase);
 	}
 	
-	static float SquareWave(float t, int numIterations = 10)
+	static float SquareWave(double t, int numIterations = 20)
 	{
-		float sum = 0;
+		double sum = 0;
 		for (int i = 1; i <= numIterations; i++)
 		{
-			float numerator = MathF.Sin((2 * i - 1) * t);
-			float denominator = 2 * i - 1;
+			double numerator = Math.Sin((2 * i - 1) * t);
+			double denominator = 2 * i - 1;
 			sum += numerator / denominator;
 		}
 
-		return sum * (4 / MathF.PI);
+		return (float)sum * (4 / MathF.PI);
 	}
 
-	static float ReverseSmoothSawWave(float t, int numIterations = 10)
-	{
-		float sum = 0;
-		for (int i = 1; i <= numIterations; i++)
-		{
-			float numerator = MathF.Sin((2 * i) * t);
-			float denominator = 2 * i - 1;
-			sum += numerator / denominator;
-		}
-
-		return sum * (4 / MathF.PI);
-	}
 
 
 	static float CalculateFrequency(int numAboveA0)
