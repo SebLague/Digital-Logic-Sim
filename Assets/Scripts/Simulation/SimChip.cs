@@ -111,12 +111,7 @@ namespace DLS.Simulation
 		}
 
 		public bool Sim_IsReady() => numInputsReady == numConnectedInputs;
-
-		public void ChangeKeyBinding(char key)
-		{
-			InternalState[0] = key;
-		}
-
+		
 		public (bool success, SimChip chip) TryGetSubChipFromID(int id)
 		{
 			// Todo: address possible errors if accessing from main thread while being modified on sim thread?
@@ -223,7 +218,7 @@ namespace DLS.Simulation
 			}
 		}
 
-		static SimPin CreateSimPinFromDescription(PinDescription desc, bool isInput, SimChip parent) => new(desc.ID, desc.BitCount, isInput, parent);
+		static SimPin CreateSimPinFromDescription(PinDescription desc, bool isInput, SimChip parent) => new(desc.ID, isInput, parent);
 
 		public void RemovePin(int removePinID)
 		{
@@ -275,7 +270,7 @@ namespace DLS.Simulation
 					removeTargetPin.numInputConnections -= 1;
 					if (removeTargetPin.numInputConnections == 0)
 					{
-						removeTargetPin.State.SetAllDisconnected();
+						PinState.SetAllDisconnected(ref removeTargetPin.State);
 						removeTargetPin.latestSourceID = -1;
 						removeTargetPin.latestSourceParentChipID = -1;
 						if (targetChip != null) removeTargetPin.parentChip.numConnectedInputs--;

@@ -237,7 +237,7 @@ namespace DLS.Game
 			AddElement(pin);
 			if (!isLoadingFromFile)
 			{
-				Simulator.AddPin(SimChip, pin.ID, pin.BitCount, pin.IsInputPin);
+				Simulator.AddPin(SimChip, pin.ID, pin.IsInputPin);
 			}
 		}
 
@@ -266,8 +266,9 @@ namespace DLS.Game
 
 		void RemoveElement(IMoveable element)
 		{
-			Elements.Remove(element);
 			elementsModifiedSinceLastArrayUpdate = true;
+			bool success = Elements.Remove(element);
+			Debug.Assert(success, "Trying to delete element that was already deleted?");
 		}
 
 		public void DeleteDevPin(DevPinInstance devPin)
@@ -375,20 +376,10 @@ namespace DLS.Game
 
 		public void DeleteSubChip(SubChipInstance subChip)
 		{
-			// Ensure subchip exists before deleting
-			// (required for buses, where one end of bus is deleted automatically when other end is deleted; but user may select both ends for deletion)
-			if (!Elements.Contains(subChip)) return;
-
 			DeleteWiresAttachedToElement(subChip.ID);
 			RemoveElement(subChip);
 
 			if (hasSimChip) Simulator.RemoveSubChip(SimChip, subChip.ID);
-
-			// If deleting bus origin/terminus, delete the corresponding terminus/origin
-			if (subChip.IsBus)
-			{
-				TryDeleteSubChipByID(subChip.LinkedBusPairID);
-			}
 		}
 
 		public void DeleteNote(NoteInstance note)
@@ -458,7 +449,7 @@ namespace DLS.Game
 						if (devPin.IsInputPin && !updateInputPins) continue;
 
 						SimPin simPin = simChip.GetSimPinFromAddress(devPin.Pin.Address);
-						devPin.Pin.State.SetFromSource(simPin.State);
+						devPin.Pin.State = simPin.State;
 
 						if (devPin.IsInputPin || simPin.latestSourceID == -1) continue;
 
@@ -469,11 +460,11 @@ namespace DLS.Game
 					// -- Subchip --
 					else if (element is SubChipInstance subChip)
 					{
-						// Update the state of each outpin pin on the subchip to match the state of corresponding pin in the simulation
+						// Update the state of each output pin on the subchip to match the state of corresponding pin in the simulation
 						foreach (PinInstance subChipOutputPin in subChip.OutputPins)
 						{
 							SimPin simPin = simChip.GetSimPinFromAddress(subChipOutputPin.Address);
-							subChipOutputPin.State.SetFromSource(simPin.State);
+							subChipOutputPin.State = simPin.State;
 
 							// If is bus, copy colour from the input source
 							if (ChipTypeHelper.IsBusOriginType(subChip.ChipType))

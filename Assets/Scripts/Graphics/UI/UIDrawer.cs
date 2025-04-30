@@ -12,7 +12,7 @@ namespace DLS.Graphics
 			ChipLibrary,
 			BottomBarMenuPopup,
 			ChipCustomization,
-			Options,
+			Preferences,
 			PinRename,
 			MainMenu,
 			RebindKeyChip,
@@ -61,7 +61,7 @@ namespace DLS.Graphics
 			if (menuToDraw == MenuType.ChipSave) ChipSaveMenu.DrawMenu();
 			else if (menuToDraw == MenuType.ChipLibrary) ChipLibraryMenu.DrawMenu();
 			else if (menuToDraw == MenuType.ChipCustomization) ChipCustomizationMenu.DrawMenu();
-			else if (menuToDraw == MenuType.Options) PreferencesMenu.DrawMenu(project);
+			else if (menuToDraw == MenuType.Preferences) PreferencesMenu.DrawMenu(project);
 			else if (menuToDraw == MenuType.PinRename) PinEditMenu.DrawMenu();
 			else if (menuToDraw == MenuType.RebindKeyChip) RebindKeyChipMenu.DrawMenu();
 			else if (menuToDraw == MenuType.RomEdit) RomEditMenu.DrawMenu();
@@ -93,7 +93,7 @@ namespace DLS.Graphics
 				else if (ActiveMenu == MenuType.ChipLibrary) ChipLibraryMenu.OnMenuOpened();
 				else if (ActiveMenu == MenuType.ChipCustomization) ChipCustomizationMenu.OnMenuOpened();
 				else if (ActiveMenu == MenuType.PinRename) PinEditMenu.OnMenuOpened();
-				else if (ActiveMenu == MenuType.Options) PreferencesMenu.OnMenuOpened();
+				else if (ActiveMenu == MenuType.Preferences) PreferencesMenu.OnMenuOpened();
 				else if (ActiveMenu == MenuType.MainMenu) MainMenu.OnMenuOpened();
 				else if (ActiveMenu == MenuType.RebindKeyChip) RebindKeyChipMenu.OnMenuOpened();
 				else if (ActiveMenu == MenuType.RomEdit) RomEditMenu.OnMenuOpened();

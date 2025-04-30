@@ -1,5 +1,4 @@
 using System;
-using DLS.Description;
 
 namespace DLS.Simulation
 {
@@ -7,8 +6,8 @@ namespace DLS.Simulation
 	{
 		public readonly int ID;
 		public readonly SimChip parentChip;
-		public readonly PinState State;
 		public readonly bool isInput;
+		public uint State;
 
 		public SimPin[] ConnectedTargetPins = Array.Empty<SimPin>();
 
@@ -24,7 +23,7 @@ namespace DLS.Simulation
 		public int numInputConnections;
 		public int numInputsReceivedThisFrame;
 
-		public SimPin(int id, PinBitCount bitCount, bool isInput, SimChip parentChip)
+		public SimPin(int id, bool isInput, SimChip parentChip)
 		{
 			this.parentChip = parentChip;
 			this.isInput = isInput;
@@ -32,11 +31,10 @@ namespace DLS.Simulation
 			latestSourceID = -1;
 			latestSourceParentChipID = -1;
 
-			State = new PinState((int)bitCount);
-			State.SetAllDisconnected();
+			PinState.SetAllDisconnected(ref State);
 		}
 
-		public bool FirstBitHigh => State.GetBit(0) == PinState.LogicHigh;
+		public bool FirstBitHigh => PinState.FirstBitHigh(State);
 
 		public void PropagateSignal()
 		{
@@ -62,27 +60,22 @@ namespace DLS.Simulation
 			if (numInputsReceivedThisFrame > 0)
 			{
 				// Has already received input this frame, so choose at random whether to accept conflicting input.
-				// Note: for multi-bit pins, this choice is made identically for all bits, rather than individually. (This is only
-				// because it's easier to track the correct display colour this way, but maybe consider changing to per-bit in the future...)
-				bool acceptConflictingInput = Simulator.RandomBool();
+				// Note: for multi-bit pins, this choice is made identically for all bits, rather than individually.
+				// Todo: maybe consider changing to per-bit in the future...)
 
-				for (int i = 0; i < State.BitCount; i++)
-				{
-					uint targetLogicLevel = source.State.GetBit(i);
-					uint currentLogicLevel = State.GetBit(i);
+				uint OR = source.State | State;
+				uint AND = source.State & State;
+				ushort bitsNew = (ushort)(Simulator.RandomBool() ? OR : AND); // randomly accept or reject conflicting state
 
-					// Ignore disconnected input. Always accept input if current state is disconnected. Otherwise, choose randomly.
-					if (targetLogicLevel != PinState.LogicDisconnected && (currentLogicLevel == PinState.LogicDisconnected || acceptConflictingInput))
-					{
-						State.SetBit(i, targetLogicLevel);
-						set = true;
-					}
-				}
+				ushort mask = (ushort)(OR >> 16); // tristate flags
+				bitsNew = (ushort)((bitsNew & ~mask) | ((ushort)OR & mask)); // can always accept input for tristated bits
+
+				PinState.Set(ref State, bitsNew, (ushort)(AND >> 16));
 			}
 			else
 			{
 				// First input source this frame, so accept it.
-				State.SetFromSource(source.State);
+				State = source.State;
 				set = true;
 			}
 

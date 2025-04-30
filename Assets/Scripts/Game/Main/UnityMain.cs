@@ -1,5 +1,6 @@
 using DLS.Graphics;
 using DLS.Simulation;
+using Seb.Helpers;
 using Seb.Vis;
 using Seb.Vis.UI;
 using UnityEngine;
@@ -27,11 +28,16 @@ namespace DLS.Game
 		public Color testColB;
 		public Color testColC;
 		public Color testColD;
-		public string testString;
-		public string testString2;
 		public ButtonTheme testButtonTheme;
 		public bool testbool;
 		public Anchor testAnchor;
+
+
+		public string testString;
+		public string testString2;
+		public uint testUint;
+		public bool removeZeros;
+		public ushort testUshort;
 
 		void Awake()
 		{
@@ -47,7 +53,38 @@ namespace DLS.Game
 
 		void Update()
 		{
+			if (Application.isEditor) EditorDebugUpdate();
+
 			Main.Update();
+		}
+
+		void EditorDebugUpdate()
+		{
+			if (InputHelper.AltIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.Return))
+			{
+				if (InteractionState.PinUnderMouse != null)
+				{
+					SimPin simPin = Project.ActiveProject.rootSimChip.GetSimPinFromAddress(InteractionState.PinUnderMouse.Address);
+					ushort bitData = PinState.GetBitStates(simPin.State);
+					ushort tristateFlags = PinState.GetTristateFlags(simPin.State);
+					string bitString = StringHelper.CreateBinaryString(bitData, true);
+					string triStateString = StringHelper.CreateBinaryString(tristateFlags, true);
+
+					string displayString = "";
+					for (int i = 0; i < bitString.Length; i++)
+					{
+						if (triStateString[i] == '1')
+						{
+							displayString += bitString[i] == '1' ? "?" : "x";
+						}
+						else
+						{
+							displayString += bitString[i];
+						}
+					}
+					Debug.Log($"Pin state: {displayString}");
+				}
+			}
 		}
 
 		void OnDestroy()

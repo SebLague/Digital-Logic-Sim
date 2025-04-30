@@ -16,13 +16,13 @@ namespace DLS.Graphics
 
 		public const int DisplayMode_Always = 0;
 		public const int DisplayMode_OnHover = 1;
-		public const int DisplayMode_Never = 2;
+		public const int DisplayMode_TabToggle = 2;
 
 		static readonly string[] PinDisplayOptions =
 		{
 			"Always",
 			"On Hover",
-			"Never"
+			"Tab to Toggle",
 		};
 
 		static readonly string[] GridDisplayOptions =
@@ -64,7 +64,8 @@ namespace DLS.Graphics
 		static readonly UIHandle ID_SimFrequencyField = new("PREFS_SimTickTarget");
 		static readonly UIHandle ID_ClockSpeedInput = new("PREFS_ClockSpeed");
 
-		static readonly string showGridLabel = "Show grid" + UI.CreateColouredText(" (ctrl+G)", new Color(1, 1, 1, 0.35f));
+		static readonly string showGridLabel = "Show grid" + CreateShortcutString("Ctrl+G");
+		static readonly string simStatusLabel = "Sim Status" + CreateShortcutString("Ctrl+Space");
 		static readonly Func<string, bool> integerInputValidator = ValidateIntegerInput;
 
 		static double simAvgTicksPerSec_delayedRefreshForUI;
@@ -77,7 +78,7 @@ namespace DLS.Graphics
 
 		public static void DrawMenu(Project project)
 		{
-			HandleKeyboardShortcuts();
+			//HandleKeyboardShortcuts();
 
 			DrawSettings.UIThemeDLS theme = DrawSettings.ActiveUITheme;
 			MenuHelper.DrawBackgroundOverlay();
@@ -103,7 +104,7 @@ namespace DLS.Graphics
 				int straightWireMode = DrawNextWheel("Straight wires", StraightWireOptions, ID_StraightWires);
 
 				DrawHeader("SIMULATION:");
-				bool pauseSim = MenuHelper.LabeledOptionsWheel("Status", labelCol, labelPosCurr, entrySize, ID_SimStatus, SimulationStatusOptions, settingFieldSize.x, true) == 1;
+				bool pauseSim = MenuHelper.LabeledOptionsWheel(simStatusLabel, labelCol, labelPosCurr, entrySize, ID_SimStatus, SimulationStatusOptions, settingFieldSize.x, true) == 1;
 				AddSpacing();
 				InputFieldState clockSpeedInputFieldState = MenuHelper.LabeledInputField("Steps per clock tick", labelCol, labelPosCurr, entrySize, ID_ClockSpeedInput, integerInputValidator, settingFieldSize.x, true);
 				AddSpacing();
@@ -184,10 +185,21 @@ namespace DLS.Graphics
 
 		public static void OnMenuOpened()
 		{
-			ProjectDescription projDesc = Project.ActiveProject.description;
-			originalProjectDesc = projDesc;
+			originalProjectDesc = Project.ActiveProject.description;
 
-			// Init ui from description
+			UpdateUIFromDescription();
+
+			simAvgTicksPerSec_delayedRefreshForUI = Project.ActiveProject.simAvgTicksPerSec;
+			lastSimAvgTicksPerSecRefreshTime = float.MinValue;
+		}
+
+		static void UpdateUIFromDescription()
+		{
+			// No need to update if not in menu
+			if (UIDrawer.ActiveMenu != UIDrawer.MenuType.Preferences) return;
+
+			ProjectDescription projDesc = Project.ActiveProject.description;
+
 			// -- Wheels
 			UI.GetWheelSelectorState(ID_MainPinNames).index = projDesc.Prefs_MainPinNamesDisplayMode;
 			UI.GetWheelSelectorState(ID_ChipPinNames).index = projDesc.Prefs_ChipPinNamesDisplayMode;
@@ -198,17 +210,29 @@ namespace DLS.Graphics
 			// -- Input fields
 			UI.GetInputFieldState(ID_SimFrequencyField).SetText(projDesc.Prefs_SimTargetStepsPerSecond + "", false);
 			UI.GetInputFieldState(ID_ClockSpeedInput).SetText(projDesc.Prefs_SimStepsPerClockTick + "", false);
-
-			simAvgTicksPerSec_delayedRefreshForUI = Project.ActiveProject.simAvgTicksPerSec;
-			lastSimAvgTicksPerSecRefreshTime = float.MinValue;
 		}
 
-		static void HandleKeyboardShortcuts()
+		public static void HandleKeyboardShortcuts()
 		{
+			bool inPrefsMenu = UIDrawer.ActiveMenu == UIDrawer.MenuType.Preferences;
+			bool anyChange = false;
+
 			if (KeyboardShortcuts.ToggleGridShortcutTriggered)
 			{
 				Project.ActiveProject.ToggleGridDisplay();
-				UI.GetWheelSelectorState(ID_GridDisplay).index = Project.ActiveProject.description.Prefs_GridDisplayMode;
+				anyChange = true;
+			}
+
+			if (KeyboardShortcuts.SimPauseToggleShortcutTriggered)
+			{
+				Project.ActiveProject.description.Prefs_SimPaused = !Project.ActiveProject.description.Prefs_SimPaused;
+				anyChange = true;
+			}
+
+			if (anyChange)
+			{
+				if (inPrefsMenu) UpdateUIFromDescription();
+				else Project.ActiveProject.SaveCurrentProjectDescription();
 			}
 		}
 
@@ -221,7 +245,7 @@ namespace DLS.Graphics
 			const float fastModeRefreshDelay = 0.05f;
 			float refreshDelay = slowModeSimUI ? slowModeRefreshDelay : fastModeRefreshDelay;
 
-			if (Time.time > lastSimAvgTicksPerSecRefreshTime + refreshDelay)
+			if (Time.time > lastSimAvgTicksPerSecRefreshTime + refreshDelay || Project.ActiveProject.simPaused)
 			{
 				simAvgTicksPerSec_delayedRefreshForUI = project.simAvgTicksPerSec;
 				lastSimAvgTicksPerSecRefreshTime = Time.time;
@@ -240,7 +264,12 @@ namespace DLS.Graphics
 		public static Color GetSimFrequencyErrorCol()
 		{
 			Color frequencyErrorCol = new(0.3f, 0.92f, 0.32f);
-			if (!Project.ActiveProject.simPaused)
+
+			if (Project.ActiveProject.simPaused)
+			{
+				frequencyErrorCol = new Color(1, 1, 1, 0.35f);
+			}
+			else
 			{
 				int simFreqError = Mathf.RoundToInt(Project.ActiveProject.targetTicksPerSecond - (float)Project.ActiveProject.simAvgTicksPerSec);
 				if (simFreqError > 10) frequencyErrorCol = new Color(0.95f, 0.25f, 0.13f);
@@ -250,5 +279,7 @@ namespace DLS.Graphics
 
 			return frequencyErrorCol;
 		}
+
+		static string CreateShortcutString(string s) => UI.CreateColouredText("  " +s, new Color(1, 1, 1, 0.3f));
 	}
 }
