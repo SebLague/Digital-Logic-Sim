@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DLS.Game;
 using UnityEngine;
 
 public class AudioState
@@ -45,9 +46,11 @@ public class AudioState
 
 	public void NotifyAllNotesRegistered()
 	{
+		const float smoothSpeed = 35f;
 		for (int i = 0; i < targetAmplitudesPerFreq.Length; i++)
 		{
-			targetAmplitudesPerFreq[i] = targetAmplitudesPerFreq_temp[i];
+			// Crude smoothing to avoid jarring frequency jumps
+			targetAmplitudesPerFreq[i] = Mathf.Lerp(targetAmplitudesPerFreq[i], targetAmplitudesPerFreq_temp[i], Time.deltaTime * smoothSpeed);
 		}
 	}
 
@@ -55,22 +58,23 @@ public class AudioState
 	{
 		int freqIndex = naturalIndex + (isSharp ? 1 : 0);
 		float amplitudeT = MathF.Min(volume / 15f, 1);
-		amplitudeT *= amplitudeT;
-		
+
 		targetAmplitudesPerFreq_temp[freqIndex] += amplitudeT;
 	}
 
 	public float Sample(double time)
 	{
 		float sum = 0;
-		
+
 		for (int i = 0; i < freqsAll.Length; i++)
 		{
 			float amplitude = targetAmplitudesPerFreq[i];
+			if (amplitude < 0.01f) continue;
+
 			double phase = time * 2 * MathF.PI * freqsAll[i];
 			sum += SquareWave(phase) * amplitude;
 		}
-		
+
 		return sum;
 	}
 
@@ -78,7 +82,7 @@ public class AudioState
 	{
 		return (float)Math.Sin(phase);
 	}
-	
+
 	static float SquareWave(double t, int numIterations = 20)
 	{
 		double sum = 0;
@@ -89,9 +93,8 @@ public class AudioState
 			sum += numerator / denominator;
 		}
 
-		return (float)sum * (4 / MathF.PI);
+		return (float)(sum * 4 / MathF.PI);
 	}
-
 
 
 	static float CalculateFrequency(int numAboveA0)

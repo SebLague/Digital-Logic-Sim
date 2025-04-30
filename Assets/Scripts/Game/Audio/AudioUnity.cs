@@ -37,6 +37,7 @@ public class AudioUnity : MonoBehaviour
 		{
 			float sample = gain * audioState.Sample(Time);
 			//float sample = (float)gain * MathF.Sin((float)Time * MathF.PI * 300);
+			if (MathF.Abs(sample) > gainThreshold) sample = gainThreshold * Mathf.Sign(sample);
 
 			data[i] = sample;
 

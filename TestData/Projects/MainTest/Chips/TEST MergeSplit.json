@@ -16,10 +16,10 @@
   "InputPins":[
     {
       "Name":"IN",
-      "ID":1213767703,
+      "ID":623977676,
       "Position":{
-        "x":-7.625,
-        "y":1.25
+        "x":-3.54048,
+        "y":5.20486
       },
       "BitCount":4,
       "Colour":0,
@@ -27,12 +27,34 @@
     },
     {
       "Name":"IN",
-      "ID":1191167134,
+      "ID":438467502,
       "Position":{
-        "x":-8.75,
-        "y":0.8125
+        "x":-4.283,
+        "y":4.64807
       },
-      "BitCount":1,
+      "BitCount":4,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":1213767703,
+      "Position":{
+        "x":-7.73257,
+        "y":1.72811
+      },
+      "BitCount":4,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":626777289,
+      "Position":{
+        "x":-8.47509,
+        "y":1.17132
+      },
+      "BitCount":4,
       "Colour":0,
       "ValueDisplayMode":0
     }
@@ -336,6 +358,39 @@
       },
       "OutputPinColourInfo":[],
       "InternalData":null
+    },
+    {
+      "Name":"KEY",
+      "ID":589470390,
+      "Label":"",
+      "Position":{
+        "x":-8.43923,
+        "y":0.63344
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":0}],
+      "InternalData":[75]
+    },
+    {
+      "Name":"BUZZER",
+      "ID":1345467268,
+      "Label":"",
+      "Position":{
+        "x":-0.93291,
+        "y":4.60175
+      },
+      "OutputPinColourInfo":[],
+      "InternalData":null
+    },
+    {
+      "Name":"KEY",
+      "ID":665530044,
+      "Label":"",
+      "Position":{
+        "x":-4.24714,
+        "y":4.11019
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":0}],
+      "InternalData":[75]
     }
   ],
   "Wires":[
@@ -706,7 +761,7 @@
     {
       "SourcePinAddress":{
         "PinID":0,
-        "PinOwnerID":1191167134
+        "PinOwnerID":626777289
       },
       "TargetPinAddress":{
         "PinID":1,
@@ -715,7 +770,63 @@
       "ConnectionType":0,
       "ConnectedWireIndex":-1,
       "ConnectedWireSegmentIndex":-1,
-      "Points":[{"x":0.0,"y":0.0},{"x":-6.6875,"y":0.8125},{"x":-6.6875,"y":0.9375},{"x":0.0,"y":0.0}]
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":589470390
+      },
+      "TargetPinAddress":{
+        "PinID":2,
+        "PinOwnerID":1010312025
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":-5.85744,"y":0.81273},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":623977676
+      },
+      "TargetPinAddress":{
+        "PinID":0,
+        "PinOwnerID":1345467268
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":438467502
+      },
+      "TargetPinAddress":{
+        "PinID":1,
+        "PinOwnerID":1345467268
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":665530044
+      },
+      "TargetPinAddress":{
+        "PinID":2,
+        "PinOwnerID":1345467268
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":-1.66535,"y":4.28948},{"x":0.0,"y":0.0}]
     }
   ],
   "Displays": null

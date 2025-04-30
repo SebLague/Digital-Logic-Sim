@@ -247,7 +247,7 @@ MonoBehaviour:
   openA: 0
   chipToOpenA: a
   chipToOpenB: TEST MergeSplit
-  testVecA: {x: 0.1, y: 24}
+  testVecA: {x: 1, y: 24}
   testVecB: {x: 0, y: 3}
   testVecC: {x: 0.35, y: 0.37}
   testVecD: {x: 0.73, y: 0.72}
@@ -354,7 +354,7 @@ AudioSource:
   m_GameObject: {fileID: 1623355144}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: 20b4fee45e017ca48be29f0c10025f79, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
@@ -364,7 +364,7 @@ AudioSource:
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 0
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500

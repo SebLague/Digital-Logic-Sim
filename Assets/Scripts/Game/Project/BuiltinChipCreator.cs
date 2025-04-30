@@ -69,9 +69,14 @@ namespace DLS.Game
 		static ChipDescription CreateBuzzer()
 		{
 			Color col = new(0.1f, 0.1f, 0.1f);
-			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 8), GridSize * 5);
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 9), GridSize * 8);
 
-			PinDescription[] inputPins = { CreatePinDescription("NOTE", 0, PinBitCount.Bit4),CreatePinDescription("ENABLE", 1, PinBitCount.Bit1) };
+			PinDescription[] inputPins =
+			{
+				CreatePinDescription("VOLUME", 0, PinBitCount.Bit4),
+				CreatePinDescription("NOTE", 1, PinBitCount.Bit4),
+				CreatePinDescription("SHARP", 2, PinBitCount.Bit1)
+			};
 
 			return CreateBuiltinChipDescription(ChipType.Buzzer, size, col, inputPins, null);
 		}

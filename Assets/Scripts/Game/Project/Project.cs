@@ -109,9 +109,10 @@ namespace DLS.Game
 			foreach (IMoveable element in ViewedChip.Elements)
 			{
 				if (element is not SubChipInstance subChip || subChip.ChipType != ChipType.Buzzer) continue;
-				int freqIndex = PinState.GetBitStates(subChip.InputPins[0].State);
-				bool sharp = PinState.FirstBitHigh(subChip.InputPins[1].State);
-				audioState.RegisterNote(freqIndex, sharp, 10);
+				int volumeIndex = PinState.GetBitStates(subChip.InputPins[0].State);
+				int freqIndex = PinState.GetBitStates(subChip.InputPins[1].State);
+				bool sharp = PinState.FirstBitHigh(subChip.InputPins[2].State);
+				audioState.RegisterNote(freqIndex, sharp, (uint)volumeIndex);
 				//Debug.Log(subChip.InputPins[0].State);
 			}
 
