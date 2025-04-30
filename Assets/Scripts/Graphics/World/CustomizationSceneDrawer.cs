@@ -67,10 +67,7 @@ namespace DLS.Graphics
 
 		static void HandleKeyboardShortcuts()
 		{
-			if (KeyboardShortcuts.ToggleGridShortcutTriggered)
-			{
-				Project.ActiveProject.ToggleGridDisplay();
-			}
+			
 		}
 
 		public static void StartPlacingDisplay(SubChipInstance subChipToDisplay)

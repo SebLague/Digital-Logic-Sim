@@ -101,49 +101,26 @@ namespace DLS.Game
 
 		public void RecordDeleteElements(List<IMoveable> deletedElements)
 		{
-			RecordAddOrDeleteElements(deletedElements, true);
+			bool hasConnectedWires = true; // Todo: test if true so don't backup wire state unnecessarily
+			RecordAddOrDeleteElements(deletedElements, true, hasConnectedWires);
 		}
 
-		public void RecordAddElements(List<IMoveable> addedElements)
+		public void RecordAddElements(List<IMoveable> addedElements, bool hasWires)
 		{
-			RecordAddOrDeleteElements(addedElements, false);
+			RecordAddOrDeleteElements(addedElements, false, hasWires);
 		}
 
-		void RecordAddOrDeleteElements(List<IMoveable> elements, bool delete)
+		void RecordAddOrDeleteElements(List<IMoveable> elements, bool delete, bool hasWires)
 		{
 			List<SubChipInstance> subchips = elements.OfType<SubChipInstance>().ToList();
 			DevPinInstance[] devPins = elements.OfType<DevPinInstance>().ToArray();
 
-			// ---- Bus handling ----
-			if (!delete)
-			{
-				// Ignore bus origin when placing (it's not a 'complete' element on its own, it requires the corresponding bus terminus)
-				subchips = subchips.Where(s => !ChipTypeHelper.IsBusOriginType(s.ChipType)).ToList();
-				if (subchips.Count == 0 && devPins.Length == 0) return;
-			}
-
-			// Ensure that if we have one part of the bus, the linked pair is included as well
-			SubChipInstance[] buses = subchips.Where(s => s.IsBus).ToArray();
-			if (buses.Length > 0)
-			{
-				HashSet<int> busIDsInOriginalList = subchips.Where(s => s.IsBus).Select(b => b.ID).ToHashSet();
-
-				foreach (SubChipInstance bus in buses)
-				{
-					if (busIDsInOriginalList.Contains(bus.LinkedBusPairID)) continue;
-
-					bool foundPair = devChip.TryGetSubChipByID(bus.LinkedBusPairID, out SubChipInstance linkedBus);
-					if (!foundPair) throw new Exception("Failed to find bus pair when creating undo/redo action");
-
-					subchips.Add(linkedBus);
-				}
-			}
-
 			// When deleting elements, store full state of ALL wires, not just those affected by the deletion.
 			// This is because other wires may be connected to the deleted wires (in which case their points are modified),
 			// and we want their original state to be restored as well. It's a bit of a pain to specially handle those, so just do a full state backup.
-			FullWireState wireStateBeforeDelete = null;
-			if (delete)
+			// Note: also store wire state when duplicating elements, as any connected wires are duplicated and placed along with them.
+			FullWireState wireState = null;
+			if (hasWires)
 			{
 				HashSet<WireInstance> wiresThatWillBeDeletedAutomatically = new();
 				foreach (IMoveable element in elements)
@@ -151,7 +128,7 @@ namespace DLS.Game
 					devChip.GetWiresAttachedToElement(element.ID, wiresThatWillBeDeletedAutomatically);
 				}
 
-				wireStateBeforeDelete = CreateFullWireState(devChip, wiresThatWillBeDeletedAutomatically);
+				wireState = CreateFullWireState(devChip, wiresThatWillBeDeletedAutomatically);
 			}
 
 			ElementExistenceAction deleteAction = new()
@@ -160,7 +137,7 @@ namespace DLS.Game
 				subchipDescriptions = subchips.Select(DescriptionCreator.CreateSubChipDescription).ToArray(),
 				pinDescriptions = devPins.Select(DescriptionCreator.CreatePinDescription).ToArray(),
 				pinInInputFlags = devPins.Select(p => p.IsInputPin).ToArray(),
-				wireStateBeforeDelete = wireStateBeforeDelete,
+				wireStateBeforeDelete = wireState,
 				isDeleteAction = delete
 			};
 

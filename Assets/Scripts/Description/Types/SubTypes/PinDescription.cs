@@ -32,6 +32,7 @@ namespace DLS.Description
 	public enum PinColour
 	{
 		Red,
+		Orange,
 		Yellow,
 		Green,
 		Blue,

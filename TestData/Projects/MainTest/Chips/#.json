@@ -1,0 +1,20 @@
+{
+  "Name": "#",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 0.425,
+    "y": 0.375
+  },
+  "Colour": {
+    "r": 1.0,
+    "g": 1.0,
+    "b": 1.0,
+    "a": 1
+  },
+  "InputPins":[],
+  "OutputPins":[],
+  "SubChips":[],
+  "Wires":[],
+  "Displays":[]
+}
