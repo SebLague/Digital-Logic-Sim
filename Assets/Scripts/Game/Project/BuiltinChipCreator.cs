@@ -49,7 +49,9 @@ namespace DLS.Game
 				CreateBus(PinBitCount.Bit4),
 				CreateBusTerminus(PinBitCount.Bit4),
 				CreateBus(PinBitCount.Bit8),
-				CreateBusTerminus(PinBitCount.Bit8)
+				CreateBusTerminus(PinBitCount.Bit8),
+				// ---- Audio ----
+				CreateBuzzer()
 			};
 		}
 
@@ -62,6 +64,16 @@ namespace DLS.Game
 			PinDescription[] outputPins = { CreatePinDescription("OUT", 2) };
 
 			return CreateBuiltinChipDescription(ChipType.Nand, size, col, inputPins, outputPins);
+		}
+
+		static ChipDescription CreateBuzzer()
+		{
+			Color col = new(0.1f, 0.1f, 0.1f);
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 8), GridSize * 5);
+
+			PinDescription[] inputPins = { CreatePinDescription("NOTE", 0, PinBitCount.Bit4),CreatePinDescription("ENABLE", 1, PinBitCount.Bit1) };
+
+			return CreateBuiltinChipDescription(ChipType.Buzzer, size, col, inputPins, null);
 		}
 
 		static ChipDescription dev_CreateRAM_8()

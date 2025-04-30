@@ -1,4 +1,5 @@
 {
+  "DLSVersion": "2.1.5",
   "Name": "TEST MergeSplit",
   "NameLocation": 0,
   "ChipType": 0,
@@ -12,7 +13,30 @@
     "b": 0.6613721,
     "a": 1
   },
-  "InputPins":[],
+  "InputPins":[
+    {
+      "Name":"IN",
+      "ID":1213767703,
+      "Position":{
+        "x":-7.625,
+        "y":1.25
+      },
+      "BitCount":4,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":1191167134,
+      "Position":{
+        "x":-8.75,
+        "y":0.8125
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
   "OutputPins":[
     {
       "Name":"OUT",
@@ -298,6 +322,17 @@
       "Position":{
         "x":-4.10609,
         "y":-2.34271
+      },
+      "OutputPinColourInfo":[],
+      "InternalData":null
+    },
+    {
+      "Name":"BUZZER",
+      "ID":1010312025,
+      "Label":"",
+      "Position":{
+        "x":-5.125,
+        "y":1.125
       },
       "OutputPinColourInfo":[],
       "InternalData":null
@@ -653,6 +688,34 @@
       "ConnectedWireIndex":-1,
       "ConnectedWireSegmentIndex":-1,
       "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":1213767703
+      },
+      "TargetPinAddress":{
+        "PinID":0,
+        "PinOwnerID":1010312025
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":1191167134
+      },
+      "TargetPinAddress":{
+        "PinID":1,
+        "PinOwnerID":1010312025
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":-6.6875,"y":0.8125},{"x":-6.6875,"y":0.9375},{"x":0.0,"y":0.0}]
     }
   ],
   "Displays": null

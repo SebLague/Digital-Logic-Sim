@@ -438,6 +438,12 @@ namespace DLS.Game
 					// -- Subchip --
 					else if (element is SubChipInstance subChip)
 					{
+						foreach (PinInstance subChipInputPin in subChip.InputPins)
+						{
+							SimPin simPin = simChip.GetSimPinFromAddress(subChipInputPin.Address);
+							subChipInputPin.State = simPin.State;
+						}
+
 						// Update the state of each output pin on the subchip to match the state of corresponding pin in the simulation
 						foreach (PinInstance subChipOutputPin in subChip.OutputPins)
 						{

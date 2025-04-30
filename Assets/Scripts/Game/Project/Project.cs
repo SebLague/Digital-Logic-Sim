@@ -31,19 +31,24 @@ namespace DLS.Game
 		// ---- Display state ----
 		public bool ShowGrid => description.Prefs_GridDisplayMode == 1;
 		public bool PinNameDisplayIsTabToggledOn;
-		
+
 		// ---- Chip view / edit state ----
 		// At the bottom of the stack is the chip that currently is being edited. 
 		// If chips are entered in view mode, they will be placed above on the stack.
 		public readonly Stack<DevChipInstance> chipViewStack = new();
+
 		SimChip ViewedSimChip => ViewedChip.SimChip;
+
 		// The chip currently in view. This chip may be in view-only mode.
 		public DevChipInstance ViewedChip => chipViewStack.Peek();
 		public bool CanEditViewedChip => chipViewStack.Count == 1;
 		public string ActiveDevChipName => ViewedChip.ChipName;
+
 		public bool ChipHasBeenSavedBefore => ViewedChip.LastSavedDescription != null;
+
 		// String representation of the viewed chips stack for display purposes
 		public string viewedChipsString = string.Empty;
+
 		// The chip currently being edited. (This is not necessarily the currently viewed chip)
 		DevChipInstance editModeChip;
 
@@ -91,6 +96,17 @@ namespace DLS.Game
 			if (debug_runSimMainThread)
 			{
 				Debug_RunMainThreadSimStep();
+			}
+
+			UpdateAudio();
+		}
+
+		void UpdateAudio()
+		{
+			foreach (IMoveable element in ViewedChip.Elements)
+			{
+				if (element is not SubChipInstance subChip || subChip.ChipType != ChipType.Buzzer) continue;
+				Debug.Log(subChip.InputPins[0].State);
 			}
 		}
 
