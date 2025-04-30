@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace DLS.Description
@@ -21,6 +22,9 @@ namespace DLS.Description
 		public SubChipDescription[] SubChips;
 		public WireDescription[] Wires;
 		public DisplayDescription[] Displays;
+		// Manual override for combinational caching: cached if true, uncached if false
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+		public bool? ForceStaticCombinational;
 
 		// ---- Convenience Functions ----
 		public bool HasDisplay() => Displays != null && Displays.Length > 0;

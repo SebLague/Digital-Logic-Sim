@@ -43,7 +43,10 @@ namespace DLS.SaveSystem
 				OutputPins = outputPins,
 				Wires = chip.Wires.Select(CreateWireDescription).ToArray(),
 				Displays = displays,
-				ChipType = ChipType.Custom
+				ChipType = ChipType.Custom,
+				// Preserve manual static/dynamic override for combinational caching
+				// Default to dynamic caching for new chips; preserve any existing user choice
+				ForceStaticCombinational = descOld?.ForceStaticCombinational ?? false
 			};
 		}
 

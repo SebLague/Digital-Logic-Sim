@@ -157,47 +157,24 @@ namespace DLS.Game
 			else allChips.Add(description);
 		}
 
-		// Recompute which chips are purely combinational (static) by propagating upwards: builtins first, then custom whose sub chips are all static
+		// Recompute which chips are purely combinational (static) based solely on user override for custom chips and default pure builtins
 		void RecomputeStaticChips()
 		{
 			staticChips.Clear();
-			bool added;
-			do
+			foreach (var chip in allChips)
 			{
-				added = false;
-				foreach (var chip in allChips)
+				// Custom chips honor user setting only
+				if (chip.ForceStaticCombinational.HasValue)
 				{
-					if (staticChips.Contains(chip.Name)) continue;
-					if (IsBuiltinChip(chip.Name))
-					{
-						if (pureCombinationalBuiltins.Contains(chip.ChipType))
-						{
-							staticChips.Add(chip.Name);
-							added = true;
-						}
-					}
-					else
-					{
-						// custom chip: static if all sub chips are static
-						bool allStatic = true;
-						foreach (var sub in chip.SubChips)
-						{
-							string subName = sub.Name;
-							if (!staticChips.Contains(subName))
-							{
-								allStatic = false;
-								break;
-							}
-						}
-
-						if (allStatic)
-						{
-							staticChips.Add(chip.Name);
-							added = true;
-						}
-					}
+					if (chip.ForceStaticCombinational.Value)
+						staticChips.Add(chip.Name);
 				}
-			} while (added);
+				// Pure combinational builtins are cached by default
+				else if (IsBuiltinChip(chip.Name) && pureCombinationalBuiltins.Contains(chip.ChipType))
+				{
+					staticChips.Add(chip.Name);
+				}
+			}
 		}
 
 		// Query whether a chip (by name) is static/combinational
