@@ -834,7 +834,7 @@ namespace Seb.Vis.UI
 				Vector2 mousePos = InputHelper.MousePos;
 
 				// Calculate the line index based on the vertical mouse position
-				float lineHeight = theme.fontSize * scale; // Line height with scaling
+				float lineHeight = theme.fontSize * 1.2f * scale; // Line height with scaling
 				float adjustedTextTop = textTop + lineHeight / 3; // Adjust for the center of the first line
 				int lineIndex = Mathf.FloorToInt((adjustedTextTop - mousePos.y) / lineHeight);
 				lineIndex = Mathf.Clamp(lineIndex, 0, state.lines.Count - 1); // Clamp to valid line range

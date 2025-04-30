@@ -484,16 +484,30 @@ namespace Seb.Vis.UI
 		{
 			// Clear the current lines
 			lines.Clear();
-			lines.Add(string.Empty); // Ensure there's at least one line to start with
 
+			// Split the input text into lines based on newline characters
+			string[] splitLines = text.Split('\n');
 
 			// Reset the cursor position
 			cursorLineIndex = 0;
 			cursorBeforeCharIndex = 0;
 
-			// Insert the entire text using TryInsertText
-			TryInsertText(text);
-			
+			lines.Add(string.Empty); // Add an empty line to start
+
+			// Add each line to the lines list
+			foreach (string line in splitLines)
+			{
+				TryInsertText(line);
+				NewLine();
+			}
+
+			// Remove the extra new line added after the last line
+			if (lines.Count > 0 && string.IsNullOrEmpty(lines[^1]))
+			{
+				lines.RemoveAt(lines.Count - 1);
+			}
+
+
 			// Set focus if required
 			SetFocus(focus);
 		}
