@@ -11,6 +11,7 @@ namespace DLS.Game
 	{
 		public static UnityMain instance;
 		public bool openSaveDirectory;
+		public AudioUnity audioUnity;
 
 		[Header("Dev Settings (editor only)")]
 		public bool openInMainMenu;
@@ -44,8 +45,11 @@ namespace DLS.Game
 			instance = this;
 			ResetStatics();
 
+			AudioState audioState = new();
+			audioUnity.audioState = audioState;
 
-			Main.Init();
+			Main.Init(audioState);
+			
 
 			if (openInMainMenu || !Application.isEditor) Main.LoadMainMenu();
 			else Main.CreateOrLoadProject(testProjectName, openA ? chipToOpenA : chipToOpenB);

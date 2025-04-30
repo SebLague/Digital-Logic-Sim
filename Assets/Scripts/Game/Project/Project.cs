@@ -51,6 +51,7 @@ namespace DLS.Game
 
 		// The chip currently being edited. (This is not necessarily the currently viewed chip)
 		DevChipInstance editModeChip;
+		public AudioState audioState;
 
 		// ---- Simulation settings and state ----
 		static readonly bool debug_logSimTime = false;
@@ -103,11 +104,18 @@ namespace DLS.Game
 
 		void UpdateAudio()
 		{
+			audioState.InitFrame();
+
 			foreach (IMoveable element in ViewedChip.Elements)
 			{
 				if (element is not SubChipInstance subChip || subChip.ChipType != ChipType.Buzzer) continue;
-				Debug.Log(subChip.InputPins[0].State);
+				int freqIndex = PinState.GetBitStates(subChip.InputPins[0].State);
+				bool sharp = PinState.FirstBitHigh(subChip.InputPins[1].State);
+				audioState.RegisterNote(freqIndex, sharp, 10);
+				//Debug.Log(subChip.InputPins[0].State);
 			}
+
+			audioState.NotifyAllNotesRegistered();
 		}
 
 		public void StartSimulation()

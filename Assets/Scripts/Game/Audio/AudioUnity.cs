@@ -1,16 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using static System.Math;
 
-//[RequireComponent(typeof(AudioSource))]
 public class AudioUnity : MonoBehaviour
 {
-	public double gain = 0.2;
-	public float[] data { get; private set; }
+	public float gain = 0.05f;
+	public float gainThreshold = 0.15f;
 
 	[Header("Info")]
 	public int sampleRate;
+
 	public int numChannels;
 	public int bufferLength;
 	public int numBuffers;
@@ -20,15 +18,8 @@ public class AudioUnity : MonoBehaviour
 
 	double samplesPerMillisecond;
 
-	System.Func<double, double> sampler;
-	bool hasSampler;
-	public event System.Action OnRead;
+	public AudioState audioState;
 
-	public void SetSampler(System.Func<double, double> sampler)
-	{
-		this.sampler = sampler;
-		hasSampler = true;
-	}
 
 	void Awake()
 	{
@@ -40,32 +31,22 @@ public class AudioUnity : MonoBehaviour
 
 		samplesPerMillisecond = sampleRate / 1000;
 	}
-
 	void OnAudioFilterRead(float[] data, int numChannels)
 	{
 		for (int i = 0; i < data.Length; i += numChannels)
 		{
-			if (hasSampler)
-			{
-				data[i] = (float)(gain * sampler(Time));
-			}
-			else
-			{
-				data[i] = 0;
-			}
+			//float sample = gain * audioState.Sample(Time);
+			float sample = (float)gain * MathF.Sin((float)Time * MathF.PI * 300);
+
+			data[i] = sample;
 
 			// Copy data to second channel (if stereo)
-			if (numChannels == 2)
-			{
-				data[i + 1] = data[i];
-			}
+			if (numChannels == 2) data[i + 1] = sample;
 
 			numTicks++;
 		}
 
-		this.data = data;
 		audioTime = ((int)(Time * 1000)) / 1000.0;
-		OnRead?.Invoke();
 	}
 
 	public double Time
@@ -75,6 +56,4 @@ public class AudioUnity : MonoBehaviour
 			return numTicks / (double)sampleRate;
 		}
 	}
-
-
 }

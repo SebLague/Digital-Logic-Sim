@@ -1,73 +1,116 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AudioState
 {
-	public class Note
+	const int freqCount = 28; // 16 naturals (4bit input) + their sharps
+	const int C3_StartIndex = 27; // relative to A0
+
+	readonly int[] naturalToAllMap = new int[16];
+	readonly float[] freqsAll;
+
+	readonly float[] targetAmplitudesPerFreq_temp = new float[freqCount];
+	readonly float[] targetAmplitudesPerFreq = new float[freqCount];
+
+	public AudioState()
 	{
-		public readonly double frequency;
-		public double attackDuration = 20 / 1000.0;
-		public double releaseDuration = 40 / 1000.0;
+		freqsAll = new float[freqCount];
 
-		public double notePressedTime;
-		public double noteReleasedTime;
-		public bool noteIsHeldDown;
-
-		double amplitudeAtRelease;
-
-		public bool playing;
-		double velocity;
-
-		public Note(double frequency)
+		for (int i = 0; i < freqsAll.Length; i++)
 		{
-			this.frequency = frequency;
+			freqsAll[i] = CalculateFrequency(C3_StartIndex + i);
 		}
 
-		public void PressNote(double time, double velocity = 1)
-		{
-			notePressedTime = time;
-			noteIsHeldDown = true;
-			playing = true;
-			this.velocity = velocity;
-		}
+		int naturalCount = 0;
 
-		public void ReleaseNote(double time)
+		for (int i = 0; i < freqsAll.Length; i++)
 		{
-			amplitudeAtRelease = CalculateAttackAmplitude(time);
-			noteReleasedTime = time;
-			noteIsHeldDown = false;
-		}
-
-		public double GetAmplitude(double time)
-		{
-			if (noteIsHeldDown)
+			bool isNatural = (i % 12) is 0 or 2 or 4 or 5 or 7 or 9 or 11;
+			if (isNatural)
 			{
-				return CalculateAttackAmplitude(time) * velocity;
-			}
-			else
-			{
-				double a = CalculateReleaseAmplitude(time) * velocity;
-				playing = a > 0;
-				return a;
+				naturalToAllMap[naturalCount] = i;
+				naturalCount++;
 			}
 		}
+	}
 
-		double CalculateAttackAmplitude(double time)
+	public void InitFrame()
+	{
+		for (int i = 0; i < targetAmplitudesPerFreq_temp.Length; i++)
 		{
-			double timeSinceNotePressed = time - notePressedTime;
-			return Clamp01(timeSinceNotePressed / attackDuration);
+			targetAmplitudesPerFreq_temp[i] = 0;
+		}
+	}
+
+	public void NotifyAllNotesRegistered()
+	{
+		for (int i = 0; i < targetAmplitudesPerFreq.Length; i++)
+		{
+			targetAmplitudesPerFreq[i] = targetAmplitudesPerFreq_temp[i];
+		}
+	}
+
+	public void RegisterNote(int naturalIndex, bool isSharp, uint volume = 1)
+	{
+		int freqIndex = naturalIndex + (isSharp ? 1 : 0);
+		float amplitudeT = MathF.Min(volume / 15f, 1);
+		amplitudeT *= amplitudeT;
+		
+		targetAmplitudesPerFreq_temp[freqIndex] += amplitudeT;
+	}
+
+	public float Sample(double time)
+	{
+		float sum = 0;
+
+		/*
+		for (int i = 0; i < freqsAll.Length; i++)
+		{
+			float amplitude = targetAmplitudesPerFreq[i];
+			double phase = time * 2 * MathF.PI * freqsAll[i];
+			sum += Wave(phase) * amplitude;
+		}
+*/
+		sum = Wave(time * 2 * MathF.PI * freqsAll[0]);
+		return sum;
+	}
+
+	static float Wave(double phase)
+	{
+		return (float)Math.Sin(phase);
+	}
+	
+	static float SquareWave(float t, int numIterations = 10)
+	{
+		float sum = 0;
+		for (int i = 1; i <= numIterations; i++)
+		{
+			float numerator = MathF.Sin((2 * i - 1) * t);
+			float denominator = 2 * i - 1;
+			sum += numerator / denominator;
 		}
 
-		double CalculateReleaseAmplitude(double time)
+		return sum * (4 / MathF.PI);
+	}
+
+	static float ReverseSmoothSawWave(float t, int numIterations = 10)
+	{
+		float sum = 0;
+		for (int i = 1; i <= numIterations; i++)
 		{
-			double timeSinceNoteReleased = time - noteReleasedTime;
-			double releaseT = Clamp01(timeSinceNoteReleased / releaseDuration);
-			return amplitudeAtRelease * (1 - releaseT);
+			float numerator = MathF.Sin((2 * i) * t);
+			float denominator = 2 * i - 1;
+			sum += numerator / denominator;
 		}
 
-		double Clamp01(double x)
-		{
-			return Math.Clamp(x, 0, 1);
-		}
+		return sum * (4 / MathF.PI);
+	}
+
+
+	static float CalculateFrequency(int numAboveA0)
+	{
+		const double A0Frequency = 27.5;
+		return (float)(A0Frequency * Math.Pow(1.059463094359, numAboveA0));
 	}
 }
