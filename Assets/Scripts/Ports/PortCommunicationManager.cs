@@ -120,7 +120,10 @@ public static class PortCommunicationManager
     private static void UnixSocketThread()
     {
         string socketPath = "/tmp/dls.sock";
-        if(System.IO.File.Exists(socketPath)) System.IO.File.Delete(socketPath);
+        if(System.IO.File.Exists(socketPath))
+        {
+            System.IO.File.Delete(socketPath);
+        }
 
         using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
         var endPoint = new UnixDomainSocketEndPoint(socketPath);
@@ -138,7 +141,7 @@ public static class PortCommunicationManager
                 if (client.Receive(tempBuffer) > 0)
                 {
                     // Copy to inactive buffer
-                        Buffer.BlockCopy(tempBuffer, 0, inputBuffers[1 - activeInputBuffer], 0, BUFFER_SIZE);
+                    Buffer.BlockCopy(tempBuffer, 0, inputBuffers[1 - activeInputBuffer], 0, BUFFER_SIZE);
 
                     // Flip the buffers
                     activeInputBuffer = 1 - activeInputBuffer;
