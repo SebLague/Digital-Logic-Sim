@@ -1,9 +1,9 @@
 {
   "ProjectName": "MainTest",
-  "DLSVersion_LastSaved": "2.1.4",
+  "DLSVersion_LastSaved": "2.1.5",
   "DLSVersion_EarliestCompatible": "2.0.0",
-  "CreationTime": "2025-03-14T18:23:30.404+01:00",
-  "LastSaveTime": "2025-04-25T17:44:29.842+02:00",
+  "CreationTime": "2025-03-14T17:23:30.404+00:00",
+  "LastSaveTime": "2025-05-01T16:18:36.386+01:00",
   "Prefs_MainPinNamesDisplayMode": 2,
   "Prefs_ChipPinNamesDisplayMode": 1,
   "Prefs_GridDisplayMode": 1,
@@ -12,6 +12,8 @@
   "Prefs_SimPaused": false,
   "Prefs_SimTargetStepsPerSecond": 50000,
   "Prefs_SimStepsPerClockTick": 6,
+  "Prefs_PortInterfaceType": 0,
+  "Prefs_PortInterface_PortNumber": 0,
   "AllCustomChipNames":[
     "AND",
     "D-LATCH",
@@ -58,7 +60,6 @@
     "XNOR",
     "EQUALS-8",
     "DECODER-2",
-    "RAM-256×8 (async)",
     "RAM-sync",
     "TEST MergeSplit",
     "#"
@@ -125,7 +126,7 @@
       "Name":"MEMORY"
     },
     {
-      "Chips":["D-LATCH","FLIP-FLOP","OR-8","MEM-1","NOT-8","AND(8,1)","MUX-8","PC","BUF-8","ALU-8","DECODE-3","AND-3","CONTROL UNIT","TOGGLE","FLAGS","DISP-7","demo","7-SEGMENT DRIVER","DABBLE","LSB","LSHIFT-8","DOUBLE DABBLE","ALU","BUS BUFFER","MEM-256","REGISTER-8","XNOR","EQUALS-8","ADDER-4","DECODER-2","ADDER-8","ADDER","MEM-16","REGISTER-1","AND-8","RAM-256×8 (async)","ROM 256×16"],
+      "Chips":["D-LATCH","FLIP-FLOP","OR-8","MEM-1","NOT-8","AND(8,1)","MUX-8","PC","BUF-8","ALU-8","DECODE-3","AND-3","CONTROL UNIT","TOGGLE","FLAGS","DISP-7","demo","7-SEGMENT DRIVER","DABBLE","LSB","LSHIFT-8","DOUBLE DABBLE","ALU","BUS BUFFER","MEM-256","REGISTER-8","XNOR","EQUALS-8","ADDER-4","DECODER-2","ADDER-8","ADDER","MEM-16","REGISTER-1","AND-8","ROM 256×16"],
       "IsToggledOpen":false,
       "Name":"KEEP"
     },
@@ -135,7 +136,7 @@
       "Name":"TEST"
     },
     {
-      "Chips":["PULSE","TEST MergeSplit","PORT-IN","PORT-OUT"],
+      "Chips":["PULSE","TEST MergeSplit","PORT-IN","PORT-OUT","#"],
       "IsToggledOpen":true,
       "Name":"OTHER"
     }

@@ -94,7 +94,6 @@ namespace DLS.Ports {
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
         private static void WindowsPipeThread()
         {
-            UnityEngine.Debug.Log("named pipe");
             var pipe = new NamedPipeServerStream(
                 "dls_pipe",
                 PipeDirection.InOut,
@@ -167,7 +166,6 @@ namespace DLS.Ports {
 
         private static void TCPThread(int port)
         {
-            UnityEngine.Debug.Log("tcp");
             using var tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             var tcpEndPoint = new IPEndPoint(IPAddress.Any, port);
             tcpSocket.Bind(tcpEndPoint);
@@ -187,7 +185,6 @@ namespace DLS.Ports {
 
         private static void UDPThread(int port)
         {
-            UnityEngine.Debug.Log("udp");
             using var udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             var udpEndPoint = new IPEndPoint(IPAddress.Any, port);
             udpSocket.Bind(udpEndPoint);
@@ -244,7 +241,6 @@ namespace DLS.Ports {
                 // 2. Write output
                 client.Send(outputBuffer);
             }
-            UnityEngine.Debug.Log("close");
             client.Close();
         }
 

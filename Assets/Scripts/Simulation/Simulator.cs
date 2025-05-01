@@ -480,7 +480,7 @@ namespace DLS.Simulation
 
 					// Read from external source
 					byte portValue = PortCommunicationManager.ReadInputPort(portIndex.Value);
-					chip.OutputPins[0].State.SetAllBits_NoneDisconnected(portValue);
+					PinState.Set(ref chip.OutputPins[0].State, portValue);
 					break;
 				}
 				case ChipType.Port_Out:
@@ -488,7 +488,7 @@ namespace DLS.Simulation
 					int? portIndex = PortRegistry.GetPortIndex(chip);
 					if (portIndex == null) break;
 
-					byte portValue = (byte) chip.InputPins[0].State.GetRawBits();
+					byte portValue = (byte) PinState.GetBitStates(chip.InputPins[0].State);
 
 					// Write to port buffer
 					PortCommunicationManager.WriteOutputPort(portIndex.Value, portValue);
