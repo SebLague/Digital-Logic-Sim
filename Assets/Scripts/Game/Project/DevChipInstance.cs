@@ -421,6 +421,20 @@ namespace DLS.Game
 			return false;
 		}
 
+		public bool TryDeleteNoteByID(int id)
+		{
+			for (int i = 0; i < Elements.Count; i++)
+			{
+				if (Elements[i] is NoteInstance note && note.ID == id)
+				{
+					DeleteNote(note);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		public bool TryGetSubChipByID(int id, out SubChipInstance subchip)
 		{
 			foreach (IMoveable element in Elements)
@@ -548,6 +562,10 @@ namespace DLS.Game
 
 		public IEnumerable<SubChipInstance> GetSubchips() => Elements.OfType<SubChipInstance>();
 		public IEnumerable<NoteInstance> GetNotes() => Elements.OfType<NoteInstance>();
+		public NoteInstance GetNoteByID(int id)
+		{
+			return Elements.OfType<NoteInstance>().FirstOrDefault(n => n.ID == id);
+		}
 
 		public IEnumerable<DevPinInstance> GetOutputPins()
 		{

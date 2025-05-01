@@ -67,7 +67,6 @@ namespace DLS.Game
 		{
 			if (!HasControl) return;
 			if (recordUndo) ActiveDevChip.UndoController.RecordDeleteElements(new List<IMoveable>(new[] { element }));
-
 			if (element is SubChipInstance subChip) ActiveDevChip.DeleteSubChip(subChip);
 			if (element is NoteInstance noteInstance) ActiveDevChip.DeleteNote(noteInstance);
 			else if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
@@ -364,7 +363,6 @@ namespace DLS.Game
 					else desc.OutputPins[0] = pinDesc;
 				}
 
-				IMoveable duplicatedElement = StartPlacing(desc, element.Position, true);
 				IMoveable duplicatedElement = CreateElementFromDuplicationSource(element);
 				StartPlacing(duplicatedElement, element.Position, true);
 				duplicatedElement.StraightLineReferencePoint = element.Position;
@@ -655,7 +653,9 @@ namespace DLS.Game
 				ActiveDevChip.AddWire(wire, false);
 			}
 
+			
 			ActiveDevChip.UndoController.RecordAddElements(SelectedElements, DuplicatedWires.Count > 0);
+
 			DuplicatedWires.Clear();
 			OnFinishedPlacingItems();
 
@@ -1051,7 +1051,7 @@ namespace DLS.Game
 
 			Select(elementToPlace);
 			return elementToPlace;
-    }
+    	}
     
 		IMoveable CreateElementFromDuplicationSource(IMoveable duplicationSource)
 		{
