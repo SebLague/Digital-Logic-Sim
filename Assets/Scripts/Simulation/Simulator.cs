@@ -476,7 +476,7 @@ namespace DLS.Simulation
 				case ChipType.Port_In:
 				{
 					int? portIndex = PortRegistry.GetPortIndex(chip);
-					if (portIndex == null) throw new Exception("QLKIjdsflajl");
+					if (portIndex == null) break;
 
 					// Read from external source
 					byte portValue = PortCommunicationManager.ReadInputPort(portIndex.Value);

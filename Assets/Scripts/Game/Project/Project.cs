@@ -593,7 +593,7 @@ namespace DLS.Game
 		public void UpdateAndSaveProjectDescription(ProjectDescription editedProjectDesc)
 		{
 			description = editedProjectDesc;
-			SaveCurrentProjectDescription();	
+			SaveCurrentProjectDescription();
 		}
 
 		public void ReloadPorts()

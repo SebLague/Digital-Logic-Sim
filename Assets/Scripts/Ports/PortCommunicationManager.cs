@@ -247,12 +247,12 @@ namespace DLS.Ports {
 
         public static void Shutdown()
         {
+            running = false;
+            commThread?.Join(50);
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             winPipe?.Close();
 #endif
             currentSock?.Close();
-            running = false;
-            commThread?.Join(50);
             commThread = null;
         }
     }

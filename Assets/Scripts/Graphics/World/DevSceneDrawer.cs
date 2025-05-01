@@ -224,7 +224,14 @@ namespace DLS.Graphics
 
 		public static void DrawPortLabel(SubChipInstance chip, SimChip sim = null)
 		{
-			if (!(chip.ChipType == ChipType.Port_In || chip.ChipType == ChipType.Port_Out) || !string.IsNullOrWhiteSpace(chip.Label) || sim == null) return;
+			if (sim == null || !string.IsNullOrWhiteSpace(chip.Label))
+			{
+				return;
+			}
+			if (chip.ChipType != ChipType.Port_In && chip.ChipType != ChipType.Port_Out)
+			{
+				return;
+			}
 			string text = sim.InternalState[0] != 9 ? sim.InternalState[0].ToString() : "All ports in use!";
 
 
@@ -353,7 +360,10 @@ namespace DLS.Graphics
 				Draw.Text(FontBold, displayName, FontSizeChipName, textPos, textAnchor, nameTextCol, ChipNameLineSpacing);
 			}
 
-			if (subchip.ChipType == ChipType.Port_In || subchip.ChipType == ChipType.Port_Out) DrawPortLabel(subchip, sim);
+			if (subchip.ChipType == ChipType.Port_In || subchip.ChipType == ChipType.Port_Out)
+			{
+				DrawPortLabel(subchip, sim);
+			}
 		}
 
 		public static void DrawSubchipDisplays(SubChipInstance subchip, SimChip sim = null, bool outOfBoundsDisplay = false)
