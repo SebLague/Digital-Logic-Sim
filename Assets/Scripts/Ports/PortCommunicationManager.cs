@@ -98,8 +98,7 @@ namespace DLS.Ports {
                 "dls_pipe",
                 PipeDirection.InOut,
                 1,
-                PipeTransmissionMode.Byte,
-                PipeOptions.Asynchronous
+                PipeTransmissionMode.Byte
             );
 
             winPipe = pipe;
@@ -110,6 +109,8 @@ namespace DLS.Ports {
             catch
             {
                 // Thread stopped before connection
+                running = false;
+                return;
             }
             
             byte[] tempBuffer = new byte[BUFFER_SIZE];
