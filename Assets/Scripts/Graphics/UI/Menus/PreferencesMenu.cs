@@ -12,11 +12,15 @@ namespace DLS.Graphics
 	{
 		const float entrySpacing = 0.5f;
 		const float menuWidth = 55;
-		const float verticalOffset = 22;
+		const float verticalOffset = 27.5f;
 
 		public const int DisplayMode_Always = 0;
 		public const int DisplayMode_OnHover = 1;
 		public const int DisplayMode_TabToggle = 2;
+
+		public const int PortMode_PipeOrSocket = 0;
+		public const int PortMode_TCP = 1;
+		public const int PortMode_UDP = 2;
 
 		static readonly string[] PinDisplayOptions =
 		{
@@ -51,6 +55,13 @@ namespace DLS.Graphics
 			"Paused"
 		};
 
+		static readonly string[] PortInterfaceTypeOptions =
+		{
+			"Default",
+			"TCP",
+			"UDP"
+		};
+
 		static readonly Vector2 entrySize = new(menuWidth, DrawSettings.SelectorWheelHeight);
 		public static readonly Vector2 settingFieldSize = new(entrySize.x / 3, entrySize.y);
 
@@ -63,9 +74,12 @@ namespace DLS.Graphics
 		static readonly UIHandle ID_SimStatus = new("PREFS_SimStatus");
 		static readonly UIHandle ID_SimFrequencyField = new("PREFS_SimTickTarget");
 		static readonly UIHandle ID_ClockSpeedInput = new("PREFS_ClockSpeed");
+		static readonly UIHandle ID_PortInterfaceType = new("Prefs_PortInterfaceType");
+		static readonly UIHandle ID_PortInterface_PortNumber = new("Prefs_PortInterface_PortNumber");
 
 		static readonly string showGridLabel = "Show grid" + CreateShortcutString("Ctrl+G");
 		static readonly string simStatusLabel = "Sim Status" + CreateShortcutString("Ctrl+Space");
+		static readonly string portLabel = "Port" + CreateShortcutString("TCP/UDP only");
 		static readonly Func<string, bool> integerInputValidator = ValidateIntegerInput;
 
 		static double simAvgTicksPerSec_delayedRefreshForUI;
@@ -114,6 +128,23 @@ namespace DLS.Graphics
 				Vector2 tickLabelRight = MenuHelper.DrawLabelSectionOfLabelInputPair(labelPosCurr, entrySize, "Steps per second (current)", labelCol * 0.75f, true);
 				UI.DrawPanel(tickLabelRight, settingFieldSize, new Color(0.18f, 0.18f, 0.18f), Anchor.CentreRight);
 				UI.DrawText(currentSimSpeedString, theme.FontBold, theme.FontSizeRegular, tickLabelRight + new Vector2(inputTextPad - settingFieldSize.x, 0), Anchor.TextCentreLeft, currentSimSpeedStringColour);
+				AddSpacing();
+
+				DrawHeader("EXTERNAL INTERFACING:");
+				int portInterfaceType = DrawNextWheel("Protocol", PortInterfaceTypeOptions, ID_PortInterfaceType);
+				InputFieldState portInputFieldState = new();
+				portInputFieldState.SetText(project.description.Prefs_PortInterface_PortNumber + "");
+				if (portInterfaceType != 0)
+				{
+					portInputFieldState = MenuHelper.LabeledInputField(portLabel, labelCol, labelPosCurr, entrySize, ID_PortInterface_PortNumber, integerInputValidator, settingFieldSize.x, true);
+				}
+				else
+				{
+					Vector2 portLabelRight = MenuHelper.DrawLabelSectionOfLabelInputPair(labelPosCurr, entrySize, portLabel, labelCol * 0.75f, true);
+					UI.DrawPanel(portLabelRight, settingFieldSize, new Color(0.18f, 0.18f, 0.18f), Anchor.CentreRight);
+					UI.DrawText(project.description.Prefs_PortInterface_PortNumber + "", theme.FontBold, theme.FontSizeRegular, portLabelRight + new Vector2(inputTextPad - settingFieldSize.x, 0), Anchor.TextCentreLeft, labelCol * 0.75f);
+					UI.OverridePreviousBounds(Bounds2D.CreateFromTopLeftAndSize(labelPosCurr, entrySize));
+				}
 
 				// Draw cancel/confirm buttons
 				Vector2 buttonTopLeft = new(labelPosCurr.x, UI.PrevBounds.Bottom);
@@ -131,6 +162,9 @@ namespace DLS.Graphics
 				targetSimTicksPerSecond = Mathf.Max(1, targetSimTicksPerSecond);
 				if (project.targetTicksPerSecond != targetSimTicksPerSecond || project.simPaused != pauseSim) lastSimTickRateSetTime = Time.time;
 
+				// Parse TCP/UDP port number
+				int.TryParse(portInputFieldState.text, out int portNumber);
+
 				// Assign changes immediately so can see them take effect in background
 				project.description.Prefs_MainPinNamesDisplayMode = mainPinNamesMode;
 				project.description.Prefs_ChipPinNamesDisplayMode = chipPinNamesMode;
@@ -140,6 +174,8 @@ namespace DLS.Graphics
 				project.description.Prefs_SimTargetStepsPerSecond = targetSimTicksPerSecond;
 				project.description.Prefs_SimStepsPerClockTick = clockSpeed;
 				project.description.Prefs_SimPaused = pauseSim;
+				project.description.Prefs_PortInterfaceType = portInterfaceType;
+				project.description.Prefs_PortInterface_PortNumber = portNumber;
 
 				// Cancel / Confirm
 				if (result == MenuHelper.CancelConfirmResult.Cancel)
@@ -152,6 +188,7 @@ namespace DLS.Graphics
 				{
 					// Save changes
 					project.UpdateAndSaveProjectDescription(project.description);
+					project.ReloadPorts();
 					UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 				}
 			}
@@ -207,9 +244,11 @@ namespace DLS.Graphics
 			UI.GetWheelSelectorState(ID_Snapping).index = projDesc.Prefs_Snapping;
 			UI.GetWheelSelectorState(ID_StraightWires).index = projDesc.Prefs_StraightWires;
 			UI.GetWheelSelectorState(ID_SimStatus).index = projDesc.Prefs_SimPaused ? 1 : 0;
+			UI.GetWheelSelectorState(ID_PortInterfaceType).index = projDesc.Prefs_PortInterfaceType;
 			// -- Input fields
 			UI.GetInputFieldState(ID_SimFrequencyField).SetText(projDesc.Prefs_SimTargetStepsPerSecond + "", false);
 			UI.GetInputFieldState(ID_ClockSpeedInput).SetText(projDesc.Prefs_SimStepsPerClockTick + "", false);
+			UI.GetInputFieldState(ID_PortInterface_PortNumber).SetText(projDesc.Prefs_PortInterface_PortNumber + "", false);
 		}
 
 		public static void HandleKeyboardShortcuts()

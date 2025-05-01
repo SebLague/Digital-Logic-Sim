@@ -5,6 +5,7 @@ using System.Linq;
 using DLS.Description;
 using DLS.Graphics;
 using DLS.SaveSystem;
+using DLS.Ports;
 using UnityEngine;
 
 namespace DLS.Game
@@ -83,6 +84,8 @@ namespace DLS.Game
 				Prefs_SimTargetStepsPerSecond = 1000,
 				Prefs_SimStepsPerClockTick = 250,
 				Prefs_SimPaused = false,
+				Prefs_PortInterfaceType = (int) PortInterfaceType.PipeOrSocket,
+				Prefs_PortInterface_PortNumber = 9000,
 				AllCustomChipNames = Array.Empty<string>(),
 				StarredList = BuiltinCollectionCreator.GetDefaultStarredList().ToList(),
 				ChipCollections = new List<ChipCollection>(BuiltinCollectionCreator.CreateDefaultChipCollections())
