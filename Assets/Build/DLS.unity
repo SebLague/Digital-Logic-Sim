@@ -247,13 +247,13 @@ MonoBehaviour:
   openA: 0
   chipToOpenA: a
   chipToOpenB: TEST MergeSplit
-  testVecA: {x: 1, y: 24}
-  testVecB: {x: 0, y: 3}
-  testVecC: {x: 0.35, y: 0.37}
-  testVecD: {x: 0.73, y: 0.72}
-  testColA: {r: 0.28235295, g: 0.15216513, b: 0.015686266, a: 1}
-  testColB: {r: 0.9245283, g: 0.44861773, b: 0.11774653, a: 1}
-  testColC: {r: 0.26415092, g: 0.20763719, b: 0.07849768, a: 1}
+  testVecA: {x: 10, y: 0.5333334}
+  testVecB: {x: 1.71, y: 0.0025}
+  testVecC: {x: 0.99, y: 5}
+  testVecD: {x: 0.02, y: 0.015}
+  testColA: {r: 0.05660379, g: 0.05660379, b: 0.05660379, a: 1}
+  testColB: {r: 0.09433961, g: 0.09389461, b: 0.09389461, a: 1}
+  testColC: {r: 0.15686275, g: 0.8784314, b: 0.42745098, a: 1}
   testColD: {r: 1, g: 0.7605649, b: 0.2688679, a: 1}
   testButtonTheme:
     font: 0
@@ -273,7 +273,8 @@ MonoBehaviour:
   testAnchor: 0
   testString: "\u2193\u2191\u232B\xD7xaaa"
   testString2: 
-  testUint: 0
+  testUint: 8
+  testUint2: 10
   removeZeros: 0
   testUshort: 0
 --- !u!4 &1140840880

@@ -37,6 +37,7 @@ namespace DLS.Game
 		public string testString;
 		public string testString2;
 		public uint testUint;
+		public uint testUint2;
 		public bool removeZeros;
 		public ushort testUshort;
 

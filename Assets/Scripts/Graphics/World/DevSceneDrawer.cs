@@ -150,9 +150,7 @@ namespace DLS.Graphics
 							break;
 						case SubChipInstance subchip:
 						{
-							// Get sim representation of this subchip (note: if the subchip has not yet been placed, this will be null)
-							SimChip sim = chip.SimChip.TryGetSubChipFromID(subchip.ID).chip;
-							DrawSubChip(subchip, sim);
+							DrawSubChip(subchip);
 							break;
 						}
 					}
@@ -259,7 +257,7 @@ namespace DLS.Graphics
 			return useBlackText ? ColHelper.Darken(chipCol, a) : ColHelper.Brighten(chipCol, a);
 		}
 
-		public static void DrawSubChip(SubChipInstance subchip, SimChip sim = null)
+		public static void DrawSubChip(SubChipInstance subchip)
 		{
 			ChipDescription desc = subchip.Description;
 			Color chipCol = desc.Colour;
@@ -429,7 +427,6 @@ namespace DLS.Graphics
 			{
 				bounds = DrawDisplay_Dot(posWorld, scaleWorld, sim);
 			}
-
 			else if (display.DisplayType == ChipType.DisplayLED)
 			{
 				bool simActive = sim != null;
@@ -442,6 +439,18 @@ namespace DLS.Graphics
 				}
 
 				bounds = DrawDisplay_LED(posWorld, scaleWorld, col);
+			}
+			else if (display.DisplayType == ChipType.Buzzer)
+			{
+				float frequency = 0;
+				float amplitude = 0;
+				if (sim != null)
+				{
+					amplitude = PinState.GetBitStates(sim.InputPins[0].State) / 15f;
+					frequency = PinState.GetBitStates(sim.InputPins[1].State) / 15f;
+				}
+
+				bounds = DrawDisplay_Buzzer(posWorld, scaleWorld, frequency, amplitude);
 			}
 
 			display.LastDrawBounds = bounds;
@@ -584,6 +593,86 @@ namespace DLS.Graphics
 			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
 			Draw.Quad(centre, pixelDrawSize, col);
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+		}
+
+		public static Bounds2D DrawDisplay_Buzzer(Vector2 centre, float scale, float frequency, float amplitude)
+		{
+			Vector2 size = new(scale, scale * 0.5f * UnityMain.instance.testVecC.x);
+			Draw.Quad(centre, size, UnityMain.instance.testColA);
+
+			float startX = centre.x - size.x / 2;
+			float width = size.x;
+
+			int resolution = (int)UnityMain.instance.testUint;
+			float freqFactor = UnityMain.instance.testVecA.x;
+			float ampFactor = UnityMain.instance.testVecA.y;
+			float thick = UnityMain.instance.testVecB.y;
+			Color col = UnityMain.instance.testColA;
+			Vector2 pPrev = GetPoint(0);
+
+			int nx = (int)UnityMain.instance.testUint;
+			int ny = (int)UnityMain.instance.testUint2;
+			float sx = UnityMain.instance.testVecD.x;
+			float sy = UnityMain.instance.testVecD.y;
+			float blockW = (width - sx * (nx - 1)) / nx;
+			float blockH = (size.y - sy * (ny - 1)) / ny;
+			Vector2 blockSize = new Vector2(blockW, blockH);
+			//Debug.Log(blockSize);
+
+			Vector2 curr_bottomLeft = centre - size / 2;
+			for (int y = 0; y < ny; y++)
+			{
+				for (int x = 0; x < nx; x++)
+				{
+					float t = x / (nx - 1f);
+					bool on = (GetSin(t)+1) * ampFactor * amplitude <= y / (ny - 1f);
+
+					Draw.Quad(curr_bottomLeft + blockSize / 2, blockSize, on ? UnityMain.instance.testColB : UnityMain.instance.testColC);
+					curr_bottomLeft.x += blockSize.x + sx;
+				}
+
+				curr_bottomLeft.y += blockSize.y + sy;
+				curr_bottomLeft.x = centre.x - size.x / 2;
+			}
+
+			/*
+			for (int i = 1; i < resolution; i++)
+			{
+				float t = i / (resolution - 1f);
+				Vector2 pCurr = GetPoint(t);
+			//	Draw.Line(pPrev, pCurr, thick, col);
+
+				float px = (pPrev.x + pCurr.x) * 0.5f;
+				float h = ((Mathf.Abs(pPrev.y- centre.y) + Mathf.Abs(pCurr.y- centre.y)) * 0.5f ) * UnityMain.instance.testVecC.x;
+				h = (((pPrev.y- centre.y) +(pCurr.y- centre.y)) * 0.5f ) * UnityMain.instance.testVecC.x;
+				h = Mathf.Max(UnityMain.instance.testVecC.y, h);
+				Draw.Quad(new Vector2(px, centre.y - size.y/2 + h/2), new Vector2(pCurr.x-pPrev.x,h), UnityMain.instance.testColB);
+				pPrev = pCurr;
+			}
+			
+			pPrev = GetPoint(0);
+			for (int i = 1; i < resolution; i++)
+			{
+				float t = i / (resolution - 1f);
+				Vector2 pCurr = GetPoint(t);
+				Draw.Line(pPrev, pCurr, thick, col);
+
+
+				pPrev = pCurr;
+			}
+*/
+			//Draw.DataLine();
+
+			return Bounds2D.CreateFromCentreAndSize(centre, size);
+
+			float GetSin(float t) => MathF.Sin(frequency * t * freqFactor + Time.time * UnityMain.instance.testVecC.y);
+			float GetH(float t) => GetSin(t) * 1 * size.y * ampFactor;
+
+			Vector2 GetPoint(float t)
+			{
+				float y = GetH(t);
+				return new Vector2(startX + t * width, centre.y + y);
+			}
 		}
 
 		public static void DrawDevPin(DevPinInstance devPin)
