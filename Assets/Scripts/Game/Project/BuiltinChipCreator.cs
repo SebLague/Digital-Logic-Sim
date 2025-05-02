@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DLS.Description;
 using UnityEngine;
 using static DLS.Graphics.DrawSettings;
@@ -9,6 +10,7 @@ namespace DLS.Game
 	public static class BuiltinChipCreator
 	{
 		static readonly Color ChipCol_SplitMerge = new(0.1f, 0.1f, 0.1f); //new(0.8f, 0.8f, 0.8f);
+		public static List<ChipDescription> ModdedChips = new();
 
 		public static ChipDescription[] CreateAllBuiltinChipDescriptions()
 		{
@@ -49,9 +51,12 @@ namespace DLS.Game
 				CreateBus(PinBitCount.Bit4),
 				CreateBusTerminus(PinBitCount.Bit4),
 				CreateBus(PinBitCount.Bit8),
-				CreateBusTerminus(PinBitCount.Bit8)
-			};
+				CreateBusTerminus(PinBitCount.Bit8),
+				// ---- Modded Chips ----
+			}.Concat(ModdedChips.ToArray()).ToArray();
 		}
+
+		
 
 		static ChipDescription CreateNand()
 		{
@@ -371,7 +376,7 @@ namespace DLS.Game
 		}
 
 
-		static ChipDescription CreateBuiltinChipDescription(ChipType type, Vector2 size, Color col, PinDescription[] inputs = null, PinDescription[] outputs = null, DisplayDescription[] displays = null, bool hideName = false)
+		public static ChipDescription CreateBuiltinChipDescription(ChipType type, Vector2 size, Color col, PinDescription[] inputs = null, PinDescription[] outputs = null, DisplayDescription[] displays = null, bool hideName = false)
 		{
 			string name = ChipTypeHelper.GetName(type);
 			ValidatePinIDs(inputs, outputs, name);

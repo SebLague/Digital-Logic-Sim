@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DLS.Description
 {
@@ -59,6 +60,13 @@ namespace DLS.Description
 		public static bool IsBusTerminusType(ChipType type) => type is ChipType.BusTerminus_1Bit or ChipType.BusTerminus_4Bit or ChipType.BusTerminus_8Bit;
 
 		public static bool IsRomType(ChipType type) => type == ChipType.Rom_256x16;
+
+		public static ChipType AddNewModded(string name)
+		{
+			ChipType type = (ChipType)(Names.Count + 30); // Hacky...
+			Names.Add(type, name);
+			return type;
+		}
 
 		public static ChipType GetCorrespondingBusTerminusType(ChipType type)
 		{

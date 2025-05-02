@@ -1,0 +1,19 @@
+{
+    "name": "DLSModdingAPI",
+    "references": [
+      "UnityEngine.CoreModule",
+      "DLS.Description",
+      "DLS"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+      "UnityEngine.CoreModule.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

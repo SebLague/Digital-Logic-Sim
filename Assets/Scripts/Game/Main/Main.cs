@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DLS.Description;
 using DLS.Graphics;
+using DLS.Mods;
 using DLS.SaveSystem;
 using UnityEngine;
 
@@ -23,6 +24,8 @@ namespace DLS.Game
 		public static void Init()
 		{
 			SavePaths.EnsureDirectoryExists(SavePaths.ProjectsPath);
+			SavePaths.EnsureDirectoryExists(SavePaths.ModsPath);
+			ModLoader.LoadMods(SavePaths.ModsPath);
 			SaveAndApplyAppSettings(Loader.LoadAppSettings());
 		}
 
