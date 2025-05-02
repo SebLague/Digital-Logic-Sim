@@ -19,7 +19,7 @@ namespace DLS.Game
 		public static Project ActiveProject { get; private set; }
 
 		public static Vector2Int FullScreenResolution => new(Display.main.systemWidth, Display.main.systemHeight);
-		static AudioState audioState;
+		public static AudioState audioState;
 
 		public static void Init(AudioState audioState)
 		{

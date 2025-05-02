@@ -447,7 +447,10 @@ namespace DLS.Graphics
 				if (sim != null)
 				{
 					amplitude = PinState.GetBitStates(sim.InputPins[0].State) / 15f;
-					frequency = PinState.GetBitStates(sim.InputPins[1].State) / 15f;
+					int noteIndex = PinState.GetBitStates(sim.InputPins[1].State);
+					bool isSharp = PinState.FirstBitHigh(sim.InputPins[2].State);
+					int freqIndex = Main.audioState.GetFrequencyIndex(noteIndex, isSharp);
+					frequency = (freqIndex + 1f) / (AudioState.freqCount);
 				}
 
 				bounds = DrawDisplay_Buzzer(posWorld, scaleWorld, frequency, amplitude);
@@ -594,7 +597,7 @@ namespace DLS.Graphics
 			Draw.Quad(centre, pixelDrawSize, col);
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
-        /*
+		/*
 public static Bounds2D DrawDisplay_Buzzer(Vector2 centre, float scale, float frequency, float amplitude)
 		{
 			Vector2 size = new(scale, scale * 1.2f);
@@ -618,14 +621,14 @@ public static Bounds2D DrawDisplay_Buzzer(Vector2 centre, float scale, float fre
 			float blockH = (size.y - sy * (ny - 1)) / ny;
 			Vector2 blockSize = new Vector2(blockW, blockH);
 			Vector2 curr_bottomLeft = centre - size / 2;
-            
-            for (int x = 0; x < nx; x++)
-            {
-                float t = x / (nx - 1f);
-                float ampCompareLevel = (GetSin(t)+1) * ampFactor * amplitude;
-                
-			    for (int y = 0; y < ny; y++)
-			    {
+
+		    for (int x = 0; x < nx; x++)
+		    {
+		        float t = x / (nx - 1f);
+		        float ampCompareLevel = (GetSin(t)+1) * ampFactor * amplitude;
+
+				for (int y = 0; y < ny; y++)
+				{
 					bool on = ampCompareLevel <= y / (ny - 1f);
 
 					Draw.Quad(curr_bottomLeft + blockSize / 2, blockSize, on ? UnityMain.instance.testColB : UnityMain.instance.testColC);
@@ -647,86 +650,49 @@ public static Bounds2D DrawDisplay_Buzzer(Vector2 centre, float scale, float fre
 				return new Vector2(startX + t * width, centre.y + y);
 			}
 		}
-        */
-        
+		*/
+
 		public static Bounds2D DrawDisplay_Buzzer(Vector2 centre, float scale, float frequency, float amplitude)
 		{
+			const float freqFactor = 8;
+			const float ampFactor = 0.533333f;
+			const float speed = 8;
+
+			const int nx = 8;
+			const int ny = 10;
+			const float sx = 0.03f;
+			const float sy = 0.02f;
+			
 			Vector2 size = new(scale, scale * 0.7f);
-			Draw.Quad(centre, size, UnityMain.instance.testColA);
-
-			float startX = centre.x - size.x / 2;
 			float width = size.x;
-
-			int resolution = (int)UnityMain.instance.testUint;
-			float freqFactor = UnityMain.instance.testVecA.x;
-			float ampFactor = UnityMain.instance.testVecA.y;
-			float thick = UnityMain.instance.testVecB.y;
-			Color col = UnityMain.instance.testColA;
-			Vector2 pPrev = GetPoint(0);
-
-			int nx = (int)UnityMain.instance.testUint;
-			int ny = (int)UnityMain.instance.testUint2;
-			float sx = UnityMain.instance.testVecD.x;
-			float sy = UnityMain.instance.testVecD.y;
+			float currGameTime = Time.time;
 			float blockW = (width - sx * (nx - 1)) / nx;
 			float blockH = (size.y - sy * (ny - 1)) / ny;
-			Vector2 blockSize = new Vector2(blockW, blockH);
-			//Debug.Log(blockSize);
-
+			Vector2 blockSize = new(blockW, blockH);
 			Vector2 curr_bottomLeft = centre - size / 2;
-			for (int y = 0; y < ny; y++)
+			
+			Draw.Quad(centre, size, UnityMain.instance.testColA);
+
+			for (int x = 0; x < nx; x++)
 			{
-				for (int x = 0; x < nx; x++)
+				float t = x / (nx - 1f);
+				float v = (GetSin(t) + 1) * ampFactor * amplitude;
+
+				for (int y = 0; y < ny; y++)
 				{
-					float t = x / (nx - 1f);
-					bool on = (GetSin(t)+1) * ampFactor * amplitude <= y / (ny - 1f);
+					bool on = v <= y / (ny - 1f);
 
 					Draw.Quad(curr_bottomLeft + blockSize / 2, blockSize, on ? UnityMain.instance.testColB : UnityMain.instance.testColC);
-					curr_bottomLeft.x += blockSize.x + sx;
+					curr_bottomLeft.y += blockSize.y + sy;
 				}
 
-				curr_bottomLeft.y += blockSize.y + sy;
-				curr_bottomLeft.x = centre.x - size.x / 2;
-			}
-
-			/*
-			for (int i = 1; i < resolution; i++)
-			{
-				float t = i / (resolution - 1f);
-				Vector2 pCurr = GetPoint(t);
-			//	Draw.Line(pPrev, pCurr, thick, col);
-
-				float px = (pPrev.x + pCurr.x) * 0.5f;
-				float h = ((Mathf.Abs(pPrev.y- centre.y) + Mathf.Abs(pCurr.y- centre.y)) * 0.5f ) * UnityMain.instance.testVecC.x;
-				h = (((pPrev.y- centre.y) +(pCurr.y- centre.y)) * 0.5f ) * UnityMain.instance.testVecC.x;
-				h = Mathf.Max(UnityMain.instance.testVecC.y, h);
-				Draw.Quad(new Vector2(px, centre.y - size.y/2 + h/2), new Vector2(pCurr.x-pPrev.x,h), UnityMain.instance.testColB);
-				pPrev = pCurr;
+				curr_bottomLeft.x += blockSize.x + sx;
+				curr_bottomLeft.y = centre.y - size.y / 2;
 			}
 			
-			pPrev = GetPoint(0);
-			for (int i = 1; i < resolution; i++)
-			{
-				float t = i / (resolution - 1f);
-				Vector2 pCurr = GetPoint(t);
-				Draw.Line(pPrev, pCurr, thick, col);
-
-
-				pPrev = pCurr;
-			}
-*/
-			//Draw.DataLine();
-
 			return Bounds2D.CreateFromCentreAndSize(centre, size);
 
-			float GetSin(float t) => MathF.Sin(frequency * t * freqFactor + Time.time * UnityMain.instance.testVecC.y);
-			float GetH(float t) => GetSin(t) * 1 * size.y * ampFactor;
-
-			Vector2 GetPoint(float t)
-			{
-				float y = GetH(t);
-				return new Vector2(startX + t * width, centre.y + y);
-			}
+			float GetSin(float t) => MathF.Sin(frequency * t * freqFactor + currGameTime * speed);
 		}
 
 		public static void DrawDevPin(DevPinInstance devPin)

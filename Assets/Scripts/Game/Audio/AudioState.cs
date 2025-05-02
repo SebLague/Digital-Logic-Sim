@@ -10,7 +10,7 @@ public class AudioState
 	public WaveType waveType = WaveType.Square;
 	public int waveIterations = 20;
 	
-	const int freqCount = 28; // 16 naturals (4bit input) + their sharps
+	public const int freqCount = 28; // 16 naturals (4bit input) + their sharps
 	const int C3_StartIndex = 27; // relative to A0
 
 	readonly int[] naturalToAllMap = new int[16];

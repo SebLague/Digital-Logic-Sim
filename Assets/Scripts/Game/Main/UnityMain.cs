@@ -9,11 +9,8 @@ namespace DLS.Game
 {
 	public class UnityMain : MonoBehaviour
 	{
-		public static UnityMain instance;
-		public bool openSaveDirectory;
-		public AudioUnity audioUnity;
-
 		[Header("Dev Settings (editor only)")]
+		public bool openSaveDirectory;
 		public bool openInMainMenu;
 
 		public string testProjectName;
@@ -32,7 +29,7 @@ namespace DLS.Game
 		public ButtonTheme testButtonTheme;
 		public bool testbool;
 		public Anchor testAnchor;
-		
+
 
 		public string testString;
 		public string testString2;
@@ -51,19 +48,15 @@ namespace DLS.Game
 		public bool songTestMode;
 		public NoteTest[] notes;
 		float time = -0.2f;
-
-		[System.Serializable]
-		public struct NoteTest
-		{
-			public int noteIndex;
-			public bool isSharp;
-			public float delay;
-			public float duration;
-		}
+		
+		// References
+		public static UnityMain instance;
+		AudioUnity audioUnity;
 
 		void Awake()
 		{
 			instance = this;
+			audioUnity = FindFirstObjectByType<AudioUnity>();
 			ResetStatics();
 
 			AudioState audioState = new();
@@ -95,6 +88,7 @@ namespace DLS.Game
 				restart = false;
 				time = -0.2f;
 			}
+
 			float playT = 0;
 			time += Time.deltaTime * speed;
 			int i = 0;
@@ -167,6 +161,15 @@ namespace DLS.Game
 			InteractionState.Reset();
 			CameraController.Reset();
 			WorldDrawer.Reset();
+		}
+
+		[System.Serializable]
+		public struct NoteTest
+		{
+			public int noteIndex;
+			public bool isSharp;
+			public float delay;
+			public float duration;
 		}
 	}
 }

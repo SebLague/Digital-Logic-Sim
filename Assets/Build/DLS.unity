@@ -42,7 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -240,15 +241,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   openSaveDirectory: 0
-  audioUnity: {fileID: 1623355146}
   openInMainMenu: 0
   testProjectName: MainTest
-  openA: 0
-  chipToOpenA: a
+  openA: 1
+  chipToOpenA: BuzzTest
   chipToOpenB: TEST MergeSplit
-  testVecA: {x: 10, y: 0.5333334}
+  testVecA: {x: 8, y: 0.5333334}
   testVecB: {x: 1.71, y: 0.0025}
-  testVecC: {x: 1.4, y: 5}
+  testVecC: {x: 1.4, y: 8}
   testVecD: {x: 0.03, y: 0.02}
   testColA: {r: 0.02002492, g: 0.09433961, b: 0.07632393, a: 1}
   testColB: {r: 0.04085083, g: 0.16981131, b: 0.13611066, a: 1}
@@ -384,14 +384,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d43d8f4a12d48154f8cca0bbca859875, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gain: 0.03
+  gain: 0.025
   clipThreshold: 0.1
   sampleRate: 0
   numChannels: 0
   bufferLength: 0
   numBuffers: 0
   batchesPerSecond: 0
-  maxSampleLastBatch: 0
+  maxRawSampleLastBatch: 0
+  maxProcessedSampleLastBatch: 0
   audioTime: 0
 --- !u!4 &1623355147
 Transform:
