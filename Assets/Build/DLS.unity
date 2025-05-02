@@ -277,6 +277,16 @@ MonoBehaviour:
   testUint2: 10
   removeZeros: 0
   testUshort: 0
+  waveType: 2
+  waveIts: 6
+  songTestMode: 1
+  overtoneWeight: 0
+  overtones:
+  - 1
+  - 0.4
+  - 0.1
+  noteIndex: 0
+  notes: []
 --- !u!4 &1140840880
 Transform:
   m_ObjectHideFlags: 0

@@ -41,6 +41,24 @@ namespace DLS.Game
 		public bool removeZeros;
 		public ushort testUshort;
 
+		[Header("Audio test")]
+		public AudioState.WaveType waveType;
+		public int waveIts = 20;
+		public bool songTestMode;
+		public float overtoneWeight = 1;
+		public float[] overtones;
+		public int noteIndex;
+		public NoteTest[] notes;
+
+		[System.Serializable]
+		public struct NoteTest
+		{
+			public int noteIndex;
+			public bool isSharp;
+			public float delay;
+			public float duration;
+		}
+
 		void Awake()
 		{
 			instance = this;
@@ -50,7 +68,7 @@ namespace DLS.Game
 			audioUnity.audioState = audioState;
 
 			Main.Init(audioState);
-			
+
 
 			if (openInMainMenu || !Application.isEditor) Main.LoadMainMenu();
 			else Main.CreateOrLoadProject(testProjectName, openA ? chipToOpenA : chipToOpenB);
@@ -60,7 +78,23 @@ namespace DLS.Game
 		{
 			if (Application.isEditor) EditorDebugUpdate();
 
-			Main.Update();
+			if (songTestMode) SongTest();
+			else Main.Update();
+		}
+
+		void SongTest()
+		{
+			audioUnity.audioState.waveIterations = waveIts;
+			audioUnity.audioState.waveType = waveType;
+			audioUnity.audioState.InitFrame();
+
+			audioUnity.audioState.RegisterNote(noteIndex, false, 15);
+			for (int i = 0; i < overtones.Length; i++)
+			{
+				audioUnity.audioState.RegisterOvertone(6, false, i + 1, overtones[i] * overtoneWeight);
+			}
+
+			audioUnity.audioState.NotifyAllNotesRegistered();
 		}
 
 		void EditorDebugUpdate()
@@ -87,6 +121,7 @@ namespace DLS.Game
 							displayString += bitString[i];
 						}
 					}
+
 					Debug.Log($"Pin state: {displayString}");
 				}
 			}

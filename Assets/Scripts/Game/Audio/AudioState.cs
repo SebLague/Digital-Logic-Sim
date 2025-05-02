@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class AudioState
 {
+	public enum WaveType {Sin, Square, Saw}
+
+	public WaveType waveType;
+	public int waveIterations = 20;
+	
 	const int freqCount = 28; // 16 naturals (4bit input) + their sharps
 	const int C3_StartIndex = 27; // relative to A0
 
@@ -13,6 +18,8 @@ public class AudioState
 
 	readonly float[] targetAmplitudesPerFreq_temp = new float[freqCount];
 	readonly float[] targetAmplitudesPerFreq = new float[freqCount];
+	readonly List<Vector2> overtones = new();
+	Vector2[] overtonesArr = new[] { Vector2.zero };
 
 	public AudioState()
 	{
@@ -42,6 +49,7 @@ public class AudioState
 		{
 			targetAmplitudesPerFreq_temp[i] = 0;
 		}
+		overtones.Clear();
 	}
 
 	public void NotifyAllNotesRegistered()
@@ -52,14 +60,23 @@ public class AudioState
 			// Crude smoothing to avoid jarring frequency jumps
 			targetAmplitudesPerFreq[i] = Mathf.Lerp(targetAmplitudesPerFreq[i], targetAmplitudesPerFreq_temp[i], Time.deltaTime * smoothSpeed);
 		}
+
+		overtonesArr = overtones.ToArray();
 	}
 
 	public void RegisterNote(int naturalIndex, bool isSharp, uint volume = 1)
 	{
-		int freqIndex = naturalIndex + (isSharp ? 1 : 0);
+		int freqIndex = naturalToAllMap[naturalIndex] + (isSharp ? 1 : 0);
 		float amplitudeT = MathF.Min(volume / 15f, 1);
 
 		targetAmplitudesPerFreq_temp[freqIndex] += amplitudeT;
+	}
+	
+	public void RegisterOvertone(int naturalIndex, bool isSharp, int overtoneIndex, float weight)
+	{
+		int freqIndex = naturalToAllMap[naturalIndex] + (isSharp ? 1 : 0);
+		float freq = freqsAll[freqIndex];
+		overtones.Add(new Vector2(freq * (1+overtoneIndex), weight));
 	}
 
 	public float Sample(double time)
@@ -72,15 +89,48 @@ public class AudioState
 			if (amplitude < 0.01f) continue;
 
 			double phase = time * 2 * MathF.PI * freqsAll[i];
-			sum += SquareWave(phase) * amplitude;
+			sum += Wave(phase) * amplitude;
+		}
+
+		foreach (var overtone in overtonesArr)
+		{
+			double phase = time * 2 * MathF.PI * overtone.x;
+			sum += Wave(phase) * overtone.y;
 		}
 
 		return sum;
 	}
 
-	static float Wave(double phase)
+	 float Wave(double phase)
+	 {
+		 return waveType switch
+		 {
+			 WaveType.Sin => SinWave(phase),
+			 WaveType.Square => SquareWave(phase, waveIterations),
+			 WaveType.Saw => SawtoothWave(phase, waveIterations),
+			 _ => throw new NotImplementedException()
+		 };
+		//return SinWave(phase);
+		//return SquareWave(phase);
+		return SawtoothWave(phase);
+	}
+	
+	static float SinWave(double phase)
 	{
 		return (float)Math.Sin(phase);
+	}
+	
+	static float SawtoothWave(double t, int numIterations = 20)
+	{
+		double sum = 0;
+		for (int i = 1; i <= numIterations; i++)
+		{
+			double numerator = Math.Sin(2 * i * t);
+			double denominator = i;
+			sum += numerator / denominator;
+		}
+
+		return (float)(sum * 4 / MathF.PI);
 	}
 
 	static float SquareWave(double t, int numIterations = 20)
