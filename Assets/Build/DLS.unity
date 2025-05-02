@@ -277,8 +277,11 @@ MonoBehaviour:
   testUint2: 10
   removeZeros: 0
   testUshort: 0
-  waveType: 2
-  waveIts: 6
+  waveType: 1
+  restart: 0
+  speed: 4
+  staccatoDelay: 0.15
+  waveIts: 20
   songTestMode: 1
   overtoneWeight: 0
   overtones:
@@ -286,7 +289,63 @@ MonoBehaviour:
   - 0.4
   - 0.1
   noteIndex: 0
-  notes: []
+  notes:
+  - noteIndex: 11
+    isSharp: 0
+    delay: 0
+    duration: 1
+  - noteIndex: 10
+    isSharp: 1
+    delay: 0
+    duration: 1
+  - noteIndex: 9
+    isSharp: 0
+    delay: 0
+    duration: 1
+  - noteIndex: 9
+    isSharp: 0
+    delay: 0
+    duration: 1
+  - noteIndex: 10
+    isSharp: 1
+    delay: 0
+    duration: 2
+  - noteIndex: 5
+    isSharp: 0
+    delay: 4
+    duration: 1
+  - noteIndex: 11
+    isSharp: 0
+    delay: 0
+    duration: 1
+  - noteIndex: 10
+    isSharp: 1
+    delay: 0
+    duration: 1
+  - noteIndex: 9
+    isSharp: 0
+    delay: 0
+    duration: 1
+  - noteIndex: 9
+    isSharp: 0
+    delay: 0
+    duration: 1
+  - noteIndex: 10
+    isSharp: 1
+    delay: 0
+    duration: 2.5
+  - noteIndex: 8
+    isSharp: 0
+    delay: 0
+    duration: 2
+  - noteIndex: 9
+    isSharp: 0
+    delay: 0
+    duration: 1
+  - noteIndex: 5
+    isSharp: 0
+    delay: 0
+    duration: 1
 --- !u!4 &1140840880
 Transform:
   m_ObjectHideFlags: 0

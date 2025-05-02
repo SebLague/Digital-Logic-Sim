@@ -32,7 +32,7 @@ namespace DLS.Game
 		public ButtonTheme testButtonTheme;
 		public bool testbool;
 		public Anchor testAnchor;
-
+		
 
 		public string testString;
 		public string testString2;
@@ -43,12 +43,17 @@ namespace DLS.Game
 
 		[Header("Audio test")]
 		public AudioState.WaveType waveType;
+
+		public bool restart;
+		public float speed = 1;
+		public float staccatoDelay;
 		public int waveIts = 20;
 		public bool songTestMode;
 		public float overtoneWeight = 1;
 		public float[] overtones;
 		public int noteIndex;
 		public NoteTest[] notes;
+		float time = -0.2f;
 
 		[System.Serializable]
 		public struct NoteTest
@@ -88,11 +93,33 @@ namespace DLS.Game
 			audioUnity.audioState.waveType = waveType;
 			audioUnity.audioState.InitFrame();
 
-			audioUnity.audioState.RegisterNote(noteIndex, false, 15);
+			if (restart)
+			{
+				restart = false;
+				time = -0.2f;
+			}
+			float playT = 0;
+			time += Time.deltaTime * speed;
+			int i = 0;
+			foreach (NoteTest n in notes)
+			{
+				float startTime = playT + n.delay + staccatoDelay;
+				float endTime = startTime + n.duration;
+				if (time > startTime && time < endTime)
+				{
+					audioUnity.audioState.RegisterNote(n.noteIndex, n.isSharp, 15);
+					Debug.Log(i + ": " + n.noteIndex + (n.isSharp ? " Sharp " : "Natural") + $"  Freq = {audioUnity.audioState.GetFreq(n.noteIndex, n.isSharp):0.00}");
+				}
+
+				i++;
+				playT = endTime;
+			}
+			/*
 			for (int i = 0; i < overtones.Length; i++)
 			{
 				audioUnity.audioState.RegisterOvertone(6, false, i + 1, overtones[i] * overtoneWeight);
 			}
+			*/
 
 			audioUnity.audioState.NotifyAllNotesRegistered();
 		}

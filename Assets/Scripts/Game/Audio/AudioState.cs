@@ -101,6 +101,12 @@ public class AudioState
 		return sum;
 	}
 
+	public float GetFreq(int naturalIndex, bool isSharp)
+	{
+		int freqIndex = naturalToAllMap[naturalIndex] + (isSharp ? 1 : 0);
+		return freqsAll[freqIndex];
+	}
+
 	 float Wave(double phase)
 	 {
 		 return waveType switch
