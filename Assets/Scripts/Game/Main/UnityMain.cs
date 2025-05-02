@@ -49,9 +49,6 @@ namespace DLS.Game
 		public float staccatoDelay;
 		public int waveIts = 20;
 		public bool songTestMode;
-		public float overtoneWeight = 1;
-		public float[] overtones;
-		public int noteIndex;
 		public NoteTest[] notes;
 		float time = -0.2f;
 
@@ -108,18 +105,12 @@ namespace DLS.Game
 				if (time > startTime && time < endTime)
 				{
 					audioUnity.audioState.RegisterNote(n.noteIndex, n.isSharp, 15);
-					Debug.Log(i + ": " + n.noteIndex + (n.isSharp ? " Sharp " : "Natural") + $"  Freq = {audioUnity.audioState.GetFreq(n.noteIndex, n.isSharp):0.00}");
+					Debug.Log(i + ": " + n.noteIndex + (n.isSharp ? " Sharp " : "Natural") + $"  Freq = {audioUnity.audioState.GetFrequency(n.noteIndex, n.isSharp):0.00}");
 				}
 
 				i++;
 				playT = endTime;
 			}
-			/*
-			for (int i = 0; i < overtones.Length; i++)
-			{
-				audioUnity.audioState.RegisterOvertone(6, false, i + 1, overtones[i] * overtoneWeight);
-			}
-			*/
 
 			audioUnity.audioState.NotifyAllNotesRegistered();
 		}

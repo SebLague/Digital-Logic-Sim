@@ -594,10 +594,64 @@ namespace DLS.Graphics
 			Draw.Quad(centre, pixelDrawSize, col);
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
+        /*
+public static Bounds2D DrawDisplay_Buzzer(Vector2 centre, float scale, float frequency, float amplitude)
+		{
+			Vector2 size = new(scale, scale * 1.2f);
+			Draw.Quad(centre, size, new Color(5/255f,24/255f,19/255f));
 
+			float startX = centre.x - size.x / 2;
+			float width = size.x;
+
+			int resolution = (int)UnityMain.instance.testUint;
+			float freqFactor = UnityMain.instance.testVecA.x;
+			float ampFactor = UnityMain.instance.testVecA.y;
+			float thick = UnityMain.instance.testVecB.y;
+			Color col = UnityMain.instance.testColA;
+			Vector2 pPrev = GetPoint(0);
+
+			const int nx = 8;
+			const int ny = 10;
+			const float sx = 0.03f;
+			const float sy = 0.02f;
+			float blockW = (width - sx * (nx - 1)) / nx;
+			float blockH = (size.y - sy * (ny - 1)) / ny;
+			Vector2 blockSize = new Vector2(blockW, blockH);
+			Vector2 curr_bottomLeft = centre - size / 2;
+            
+            for (int x = 0; x < nx; x++)
+            {
+                float t = x / (nx - 1f);
+                float ampCompareLevel = (GetSin(t)+1) * ampFactor * amplitude;
+                
+			    for (int y = 0; y < ny; y++)
+			    {
+					bool on = ampCompareLevel <= y / (ny - 1f);
+
+					Draw.Quad(curr_bottomLeft + blockSize / 2, blockSize, on ? UnityMain.instance.testColB : UnityMain.instance.testColC);
+					curr_bottomLeft.x += blockSize.x + sx;
+				}
+
+				curr_bottomLeft.y += blockSize.y + sy;
+				curr_bottomLeft.x = centre.x - size.x / 2;
+			}
+
+			return Bounds2D.CreateFromCentreAndSize(centre, size);
+
+			float GetSin(float t) => MathF.Sin(frequency * t * freqFactor + Time.time * UnityMain.instance.testVecC.y);
+			float GetH(float t) => GetSin(t) * 1 * size.y * ampFactor;
+
+			Vector2 GetPoint(float t)
+			{
+				float y = GetH(t);
+				return new Vector2(startX + t * width, centre.y + y);
+			}
+		}
+        */
+        
 		public static Bounds2D DrawDisplay_Buzzer(Vector2 centre, float scale, float frequency, float amplitude)
 		{
-			Vector2 size = new(scale, scale * 0.5f * UnityMain.instance.testVecC.x);
+			Vector2 size = new(scale, scale * 0.7f);
 			Draw.Quad(centre, size, UnityMain.instance.testColA);
 
 			float startX = centre.x - size.x / 2;

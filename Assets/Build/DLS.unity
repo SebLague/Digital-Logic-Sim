@@ -42,8 +42,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 13
-  m_BakeOnSceneLoad: 0
+  serializedVersion: 12
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -249,12 +248,12 @@ MonoBehaviour:
   chipToOpenB: TEST MergeSplit
   testVecA: {x: 10, y: 0.5333334}
   testVecB: {x: 1.71, y: 0.0025}
-  testVecC: {x: 0.99, y: 5}
-  testVecD: {x: 0.02, y: 0.015}
-  testColA: {r: 0.05660379, g: 0.05660379, b: 0.05660379, a: 1}
-  testColB: {r: 0.09433961, g: 0.09389461, b: 0.09389461, a: 1}
+  testVecC: {x: 1.4, y: 5}
+  testVecD: {x: 0.03, y: 0.02}
+  testColA: {r: 0.02002492, g: 0.09433961, b: 0.07632393, a: 1}
+  testColB: {r: 0.04085083, g: 0.16981131, b: 0.13611066, a: 1}
   testColC: {r: 0.15686275, g: 0.8784314, b: 0.42745098, a: 1}
-  testColD: {r: 1, g: 0.7605649, b: 0.2688679, a: 1}
+  testColD: {r: 0.003070489, g: 0.028301895, b: 0.018150996, a: 1}
   testButtonTheme:
     font: 0
     fontSize: 0
@@ -282,13 +281,7 @@ MonoBehaviour:
   speed: 4
   staccatoDelay: 0.15
   waveIts: 20
-  songTestMode: 1
-  overtoneWeight: 0
-  overtones:
-  - 1
-  - 0.4
-  - 0.1
-  noteIndex: 0
+  songTestMode: 0
   notes:
   - noteIndex: 11
     isSharp: 0
@@ -392,13 +385,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gain: 0.03
-  gainThreshold: 0.1
+  clipThreshold: 0.1
   sampleRate: 0
   numChannels: 0
   bufferLength: 0
   numBuffers: 0
   batchesPerSecond: 0
-  numTicks: 0
+  maxSampleLastBatch: 0
   audioTime: 0
 --- !u!4 &1623355147
 Transform:

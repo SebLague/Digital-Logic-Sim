@@ -7,7 +7,7 @@ public class AudioState
 {
 	public enum WaveType {Sin, Square, Saw}
 
-	public WaveType waveType;
+	public WaveType waveType = WaveType.Square;
 	public int waveIterations = 20;
 	
 	const int freqCount = 28; // 16 naturals (4bit input) + their sharps
@@ -18,8 +18,6 @@ public class AudioState
 
 	readonly float[] targetAmplitudesPerFreq_temp = new float[freqCount];
 	readonly float[] targetAmplitudesPerFreq = new float[freqCount];
-	readonly List<Vector2> overtones = new();
-	Vector2[] overtonesArr = new[] { Vector2.zero };
 
 	public AudioState()
 	{
@@ -49,7 +47,6 @@ public class AudioState
 		{
 			targetAmplitudesPerFreq_temp[i] = 0;
 		}
-		overtones.Clear();
 	}
 
 	public void NotifyAllNotesRegistered()
@@ -60,24 +57,26 @@ public class AudioState
 			// Crude smoothing to avoid jarring frequency jumps
 			targetAmplitudesPerFreq[i] = Mathf.Lerp(targetAmplitudesPerFreq[i], targetAmplitudesPerFreq_temp[i], Time.deltaTime * smoothSpeed);
 		}
-
-		overtonesArr = overtones.ToArray();
 	}
 
 	public void RegisterNote(int naturalIndex, bool isSharp, uint volume = 1)
 	{
-		int freqIndex = naturalToAllMap[naturalIndex] + (isSharp ? 1 : 0);
+		int freqIndex = GetFrequencyIndex(naturalIndex, isSharp);
 		float amplitudeT = MathF.Min(volume / 15f, 1);
 
 		targetAmplitudesPerFreq_temp[freqIndex] += amplitudeT;
 	}
+    
+    public int GetFrequencyIndex(int naturalIndex, bool isSharp)
+    {
+        int freqIndex = naturalToAllMap[naturalIndex] + (isSharp ? 1 : 0);
+        return freqIndex;
+    }
 	
-	public void RegisterOvertone(int naturalIndex, bool isSharp, int overtoneIndex, float weight)
-	{
-		int freqIndex = naturalToAllMap[naturalIndex] + (isSharp ? 1 : 0);
-		float freq = freqsAll[freqIndex];
-		overtones.Add(new Vector2(freq * (1+overtoneIndex), weight));
-	}
+    public float GetFrequency(int naturalIndex, bool isSharp)
+    {
+        return freqsAll[GetFrequencyIndex(naturalIndex, isSharp)];
+    }
 
 	public float Sample(double time)
 	{
@@ -86,26 +85,15 @@ public class AudioState
 		for (int i = 0; i < freqsAll.Length; i++)
 		{
 			float amplitude = targetAmplitudesPerFreq[i];
-			if (amplitude < 0.01f) continue;
+			if (amplitude < 0.001f) continue;
 
 			double phase = time * 2 * MathF.PI * freqsAll[i];
 			sum += Wave(phase) * amplitude;
 		}
 
-		foreach (var overtone in overtonesArr)
-		{
-			double phase = time * 2 * MathF.PI * overtone.x;
-			sum += Wave(phase) * overtone.y;
-		}
-
 		return sum;
 	}
 
-	public float GetFreq(int naturalIndex, bool isSharp)
-	{
-		int freqIndex = naturalToAllMap[naturalIndex] + (isSharp ? 1 : 0);
-		return freqsAll[freqIndex];
-	}
 
 	 float Wave(double phase)
 	 {
@@ -116,9 +104,6 @@ public class AudioState
 			 WaveType.Saw => SawtoothWave(phase, waveIterations),
 			 _ => throw new NotImplementedException()
 		 };
-		//return SinWave(phase);
-		//return SquareWave(phase);
-		return SawtoothWave(phase);
 	}
 	
 	static float SinWave(double phase)
@@ -135,7 +120,7 @@ public class AudioState
 			double denominator = i;
 			sum += numerator / denominator;
 		}
-
+        
 		return (float)(sum * 4 / MathF.PI);
 	}
 
