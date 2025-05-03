@@ -246,7 +246,7 @@ MonoBehaviour:
   openA: 1
   chipToOpenA: BuzzTest
   chipToOpenB: TEST MergeSplit
-  testVecA: {x: 8, y: 0.5333334}
+  testVecA: {x: 100, y: 0.5333334}
   testVecB: {x: 1.71, y: 0.0025}
   testVecC: {x: 1.4, y: 8}
   testVecD: {x: 0.03, y: 0.02}
@@ -276,6 +276,9 @@ MonoBehaviour:
   testUint2: 10
   removeZeros: 0
   testUshort: 0
+  noteIndex: 0
+  numNoteDivisions: 1
+  noteFreq: 0
   waveType: 1
   restart: 0
   speed: 4

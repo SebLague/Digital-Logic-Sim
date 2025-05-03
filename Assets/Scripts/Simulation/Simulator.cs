@@ -501,10 +501,9 @@ namespace DLS.Simulation
 				}
 				case ChipType.Buzzer:
 				{
-					int volumeIndex = PinState.GetBitStates(chip.InputPins[0].State);
-					int freqIndex = PinState.GetBitStates(chip.InputPins[1].State);
-					bool sharp = PinState.FirstBitHigh(chip.InputPins[2].State);
-					audioState.RegisterNote(freqIndex, sharp, (uint)volumeIndex);
+					int freqIndex = PinState.GetBitStates(chip.InputPins[0].State);
+					int volumeIndex = PinState.GetBitStates(chip.InputPins[1].State);
+					audioState.RegisterNote(freqIndex, (uint)volumeIndex);
 					break;
 				}
 				// ---- Bus types ----

@@ -1,4 +1,5 @@
 using System;
+using DLS.Game;
 using DLS.Simulation;
 using UnityEngine;
 
@@ -24,6 +25,14 @@ public class AudioState
 			sum += Wave(phase) * amplitude;
 		}
 
+		/*
+		if (UnityMain.instance.useRef)
+		{
+			sum += Wave(time * 2 * Math.PI * UnityMain.instance.refNoteFreq) * 1;
+		}
+		else sum += Wave(time * 2 * Math.PI * UnityMain.instance.noteFreq) * UnityMain.instance.perceptualGain;
+		*/
+		
 		return sum;
 	}
 

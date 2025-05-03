@@ -16,34 +16,23 @@
   "InputPins":[
     {
       "Name":"IN",
+      "ID":141095185,
+      "Position":{
+        "x":-3.76235,
+        "y":0.65436
+      },
+      "BitCount":8,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
       "ID":893919584,
       "Position":{
-        "x":-3.80357,
-        "y":0.39286
+        "x":-3.84573,
+        "y":-0.12514
       },
       "BitCount":4,
-      "Colour":0,
-      "ValueDisplayMode":0
-    },
-    {
-      "Name":"IN",
-      "ID":862112585,
-      "Position":{
-        "x":-3.83929,
-        "y":-0.17857
-      },
-      "BitCount":4,
-      "Colour":0,
-      "ValueDisplayMode":0
-    },
-    {
-      "Name":"IN",
-      "ID":57674483,
-      "Position":{
-        "x":-3.89881,
-        "y":-1.0119
-      },
-      "BitCount":1,
       "Colour":0,
       "ValueDisplayMode":0
     }
@@ -80,24 +69,10 @@
     {
       "SourcePinAddress":{
         "PinID":0,
-        "PinOwnerID":862112585
+        "PinOwnerID":141095185
       },
       "TargetPinAddress":{
         "PinID":1,
-        "PinOwnerID":2106109642
-      },
-      "ConnectionType":0,
-      "ConnectedWireIndex":-1,
-      "ConnectedWireSegmentIndex":-1,
-      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
-    },
-    {
-      "SourcePinAddress":{
-        "PinID":0,
-        "PinOwnerID":57674483
-      },
-      "TargetPinAddress":{
-        "PinID":2,
         "PinOwnerID":2106109642
       },
       "ConnectionType":0,

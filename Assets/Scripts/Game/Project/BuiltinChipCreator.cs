@@ -72,9 +72,8 @@ namespace DLS.Game
 
 			PinDescription[] inputPins =
 			{
+				CreatePinDescription("PITCH", 1, PinBitCount.Bit8),
 				CreatePinDescription("VOLUME", 0, PinBitCount.Bit4),
-				CreatePinDescription("TONE", 1, PinBitCount.Bit4),
-				CreatePinDescription("SEMITONE", 2, PinBitCount.Bit1)
 			};
 
 			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);

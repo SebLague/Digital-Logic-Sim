@@ -39,6 +39,14 @@ namespace DLS.Game
 		public ushort testUshort;
 
 		[Header("Audio test")]
+		[Range(0,255)]public int noteIndex;
+		public int numNoteDivisions;
+		public double noteFreq;
+		public double refNoteFreq;
+		public bool useRef;
+		public int refIndex;
+		public float perceptualGain;
+		
 		public AudioState.WaveType waveType;
 
 		public bool restart;
@@ -66,10 +74,13 @@ namespace DLS.Game
 
 			if (openInMainMenu || !Application.isEditor) Main.LoadMainMenu();
 			else Main.CreateOrLoadProject(testProjectName, openA ? chipToOpenA : chipToOpenB);
+
 		}
 
 		void Update()
 		{
+			noteFreq = SimAudio.CalculateFrequency(noteIndex / (double)numNoteDivisions);
+			refNoteFreq = SimAudio.CalculateFrequency(refIndex / (double)numNoteDivisions);
 			if (Application.isEditor) EditorDebugUpdate();
 
 			if (songTestMode) SongTest();
