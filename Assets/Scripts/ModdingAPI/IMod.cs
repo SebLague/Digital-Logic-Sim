@@ -1,5 +1,3 @@
-using DLS.Game;
-
 namespace DLS.ModdingAPI
 {
     public interface IMod

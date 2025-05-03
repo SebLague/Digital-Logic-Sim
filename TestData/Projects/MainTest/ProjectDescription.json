@@ -3,7 +3,7 @@
   "DLSVersion_LastSaved": "2.1.5",
   "DLSVersion_EarliestCompatible": "2.0.0",
   "CreationTime": "2025-03-14T17:23:30.404+00:00",
-  "LastSaveTime": "2025-05-03T21:25:00.452+01:00",
+  "LastSaveTime": "2025-05-03T22:51:12.178+01:00",
   "Prefs_MainPinNamesDisplayMode": 2,
   "Prefs_ChipPinNamesDisplayMode": 1,
   "Prefs_GridDisplayMode": 1,
@@ -135,7 +135,7 @@
       "Name":"TEST"
     },
     {
-      "Chips":["PULSE","TEST MergeSplit","#","hi","girl bye :sob:"],
+      "Chips":["PULSE","TEST MergeSplit","#","This little chippy went to market","This little chippy stayed home"],
       "IsToggledOpen":true,
       "Name":"OTHER"
     }

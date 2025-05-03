@@ -339,6 +339,31 @@ namespace DLS.Game
 			}
 		}
 
+		public void DeleteModdedChip(ChipDescription chipToDelete)
+		{
+			bool simReloadRequired = ChipContainsSubchipIndirectly(ViewedChip, chipToDelete.Name);
+
+			if (ChipContainsSubChipDirectly(ViewedChip, chipToDelete.Name))
+			{
+				ViewedChip.UndoController.Clear();
+			}
+
+			BuiltinChipCreator.ModdedChips.RemoveAll(chip => ChipDescription.NameMatch(chip.Name, chipToDelete.Name));
+
+			// Delete chip save file, remove from library, and update project description
+			UpdateAndSaveAffectedChips(chipToDelete, null, true);
+			chipLibrary.RemoveChip(chipToDelete.Name); 
+			SetStarred(chipToDelete.Name, false, false, false); // ensure removed from starred list
+			UpdateAndSaveProjectDescription();
+
+			// Remove any instances of the deleted chip from the active chip
+			ViewedChip.DeleteSubchipsByName(chipToDelete.Name);
+			if (simReloadRequired)
+			{
+				ViewedChip.RebuildSimulation();
+			}
+		}
+
 		// Test if chip's subchips (or any of their subchips, etc...) contain the target subchip
 		bool ChipContainsSubchipIndirectly(DevChipInstance devChip, string targetSubchip)
 		{
@@ -478,6 +503,13 @@ namespace DLS.Game
 		public void NotifyExit()
 		{
 			simThreadActive = false;
+
+			List<ChipDescription> moddedChipsCopy = new(BuiltinChipCreator.ModdedChips);
+
+			foreach (ChipDescription chip in moddedChipsCopy)
+			{
+				DeleteModdedChip(chip);
+			}
 		}
 
 		void SimThread()

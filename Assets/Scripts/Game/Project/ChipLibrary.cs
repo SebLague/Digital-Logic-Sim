@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DLS.Description;
+using UnityEngine;
 
 namespace DLS.Game
 {
@@ -9,7 +10,7 @@ namespace DLS.Game
 		public readonly List<ChipDescription> allChips = new();
 
 		readonly HashSet<string> builtinChipNames = new(ChipDescription.NameComparer);
-		readonly Dictionary<string, ChipDescription> descriptionFromNameLookup = new(ChipDescription.NameComparer);
+		Dictionary<string, ChipDescription> descriptionFromNameLookup = new(ChipDescription.NameComparer);
 
 		readonly List<ChipDescription> hiddenChips = new();
 
