@@ -47,7 +47,6 @@ namespace DLS.Game
 		public int waveIts = 20;
 		public bool songTestMode;
 		public NoteTest[] notes;
-		float time = -0.2f;
 		
 		// References
 		public static UnityMain instance;
@@ -79,6 +78,7 @@ namespace DLS.Game
 
 		void SongTest()
 		{
+			/*
 			audioUnity.audioState.waveIterations = waveIts;
 			audioUnity.audioState.waveType = waveType;
 			audioUnity.audioState.InitFrame();
@@ -107,6 +107,7 @@ namespace DLS.Game
 			}
 
 			audioUnity.audioState.NotifyAllNotesRegistered();
+			*/
 		}
 
 		void EditorDebugUpdate()

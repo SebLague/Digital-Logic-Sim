@@ -98,25 +98,6 @@ namespace DLS.Game
 			{
 				Debug_RunMainThreadSimStep();
 			}
-
-			UpdateAudio();
-		}
-
-		void UpdateAudio()
-		{
-			audioState.InitFrame();
-
-			foreach (IMoveable element in ViewedChip.Elements)
-			{
-				if (element is not SubChipInstance subChip || subChip.ChipType != ChipType.Buzzer) continue;
-				int volumeIndex = PinState.GetBitStates(subChip.InputPins[0].State);
-				int freqIndex = PinState.GetBitStates(subChip.InputPins[1].State);
-				bool sharp = PinState.FirstBitHigh(subChip.InputPins[2].State);
-				audioState.RegisterNote(freqIndex, sharp, (uint)volumeIndex);
-				//Debug.Log(subChip.InputPins[0].State);
-			}
-
-			audioState.NotifyAllNotesRegistered();
 		}
 
 		public void StartSimulation()
@@ -558,7 +539,7 @@ namespace DLS.Game
 				Simulator.stepsPerClockTransition = stepsPerClockTransition;
 				SimChip simChip = rootSimChip;
 				if (simChip == null) continue; // Could potentially be null for a frame when switching between chips
-				Simulator.RunSimulationStep(simChip, inputPins);
+				Simulator.RunSimulationStep(simChip, inputPins, audioState.simAudio);
 
 				// ---- Wait some amount of time (if needed) to try to hit the target ticks per second ----
 				while (true)
@@ -599,7 +580,7 @@ namespace DLS.Game
 		{
 			Simulator.stepsPerClockTransition = stepsPerClockTransition;
 			Simulator.ApplyModifications();
-			Simulator.RunSimulationStep(rootSimChip, inputPins);
+			Simulator.RunSimulationStep(rootSimChip, inputPins, audioState.simAudio);
 			ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
 		}
 

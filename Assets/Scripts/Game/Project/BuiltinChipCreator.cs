@@ -68,7 +68,7 @@ namespace DLS.Game
 
 		static ChipDescription CreateBuzzer()
 		{
-			Color col = new(1/255f, 7/255f, 5/255f);
+			Color col = new(0, 0, 0);
 
 			PinDescription[] inputPins =
 			{
@@ -77,20 +77,10 @@ namespace DLS.Game
 				CreatePinDescription("SEMITONE", 2, PinBitCount.Bit1)
 			};
 
-			DisplayDescription[] displays =
-			{
-				new()
-				{
-					Position = Vector2.down * GridSize * 1.15f,
-					Scale = GridSize * 7,
-					SubChipID = -1
-				}
-			};
-            
-            float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
-            Vector2 size = new(CalculateGridSnappedWidth(GridSize * 8), height);
+			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 9), height);
 
-			return CreateBuiltinChipDescription(ChipType.Buzzer, size, col, inputPins, null, displays, NameDisplayLocation.Top);
+			return CreateBuiltinChipDescription(ChipType.Buzzer, size, col, inputPins, null, null);
 		}
 
 		static ChipDescription dev_CreateRAM_8()
