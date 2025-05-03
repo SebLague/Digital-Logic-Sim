@@ -73,8 +73,8 @@ namespace DLS.Game
 			PinDescription[] inputPins =
 			{
 				CreatePinDescription("VOLUME", 0, PinBitCount.Bit4),
-				CreatePinDescription("NOTE", 1, PinBitCount.Bit4),
-				CreatePinDescription("SHARP", 2, PinBitCount.Bit1)
+				CreatePinDescription("TONE", 1, PinBitCount.Bit4),
+				CreatePinDescription("SEMITONE", 2, PinBitCount.Bit1)
 			};
 
 			DisplayDescription[] displays =
