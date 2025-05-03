@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DLS.Description;
 using DLS.Game;
+using DLS.Mods;
 
 namespace DLS.SaveSystem
 {
@@ -23,6 +24,7 @@ namespace DLS.SaveSystem
 		public static Project LoadProject(string projectName)
 		{
 			ProjectDescription projectDescription = LoadProjectDescription(projectName);
+			ModLoader.InvokeModsOnProjectLoad();
 			ChipLibrary chipLibrary = LoadChipLibrary(projectDescription);
 			return new Project(projectDescription, chipLibrary);
 		}

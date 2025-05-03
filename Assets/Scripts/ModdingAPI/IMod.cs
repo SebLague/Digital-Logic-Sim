@@ -1,3 +1,5 @@
+using DLS.Game;
+
 namespace DLS.ModdingAPI
 {
     public interface IMod
@@ -5,5 +7,6 @@ namespace DLS.ModdingAPI
         string Name { get; }
         string Version { get; }
         void Initialize();
+        void OnProjectLoad();
     }
 }

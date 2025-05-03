@@ -8,7 +8,6 @@ namespace DLS.Game
         public static void RegisterChip(ChipType type, Vector2 size, Color col, PinDescription[] inputs = null, PinDescription[] outputs = null, DisplayDescription[] displays = null, bool hideName = false)
 		{
 			ChipDescription chipDescription = BuiltinChipCreator.CreateBuiltinChipDescription(type, size, col, inputs, outputs, displays, hideName);
-
 			BuiltinChipCreator.ModdedChips.Add(chipDescription);
 		}
 

@@ -25,7 +25,7 @@ namespace DLS.Game
 		{
 			SavePaths.EnsureDirectoryExists(SavePaths.ProjectsPath);
 			SavePaths.EnsureDirectoryExists(SavePaths.ModsPath);
-			ModLoader.LoadMods(SavePaths.ModsPath);
+			ModLoader.InitializeMods(SavePaths.ModsPath);
 			SaveAndApplyAppSettings(Loader.LoadAppSettings());
 		}
 
@@ -69,6 +69,7 @@ namespace DLS.Game
 			else ActiveProject = CreateProject(projectName);
 
 			ActiveProject.LoadDevChipOrCreateNewIfDoesntExist(startupChipName);
+
 			ActiveProject.StartSimulation();
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 		}

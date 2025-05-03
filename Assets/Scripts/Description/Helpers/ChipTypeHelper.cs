@@ -63,7 +63,7 @@ namespace DLS.Description
 
 		public static ChipType AddNewModded(string name)
 		{
-			ChipType type = (ChipType)(Names.Count + 30); // Hacky...
+			ChipType type = (ChipType)(Names.Count + 1);
 			Names.Add(type, name);
 			return type;
 		}
