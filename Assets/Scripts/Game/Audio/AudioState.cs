@@ -1,15 +1,18 @@
 using System;
-using DLS.Game;
 using DLS.Simulation;
-using UnityEngine;
 
 public class AudioState
 {
-	public enum WaveType {Sin, Square, Saw}
+	public enum WaveType
+	{
+		Sin,
+		Square,
+		Saw
+	}
 
 	const WaveType waveType = WaveType.Square;
 	const int waveIterations = 20;
-	
+
 	public readonly SimAudio simAudio = new();
 
 	public float Sample(double time)
@@ -30,28 +33,35 @@ public class AudioState
 		{
 			sum += Wave(time * 2 * Math.PI * UnityMain.instance.refNoteFreq) * 1;
 		}
-		else sum += Wave(time * 2 * Math.PI * UnityMain.instance.noteFreq) * UnityMain.instance.perceptualGain;
+		else
+		{
+			float nt = UnityMain.instance.noteIndex / 255f;
+			float omnt = 1 - nt;
+			//UnityMain.instance.perceptualGain = Maths.EaseCubeInOut(Mathf.Pow(omnt, 1.1f)) + 1;
+			UnityMain.instance.perceptualGain = Mathf.Lerp(2,0.5f, Maths.EaseQuadInOut(nt));
+			sum += Wave(time * 2 * Math.PI * UnityMain.instance.noteFreq) * UnityMain.instance.perceptualGain;
+		}
 		*/
-		
+
 		return sum;
 	}
 
 	static float Wave(double phase)
-	 {
-		 return waveType switch
-		 {
-			 WaveType.Sin => SinWave(phase),
-			 WaveType.Square => SquareWave(phase, waveIterations),
-			 WaveType.Saw => SawtoothWave(phase, waveIterations),
-			 _ => throw new NotImplementedException()
-		 };
+	{
+		return waveType switch
+		{
+			WaveType.Sin => SinWave(phase),
+			WaveType.Square => SquareWave(phase, waveIterations),
+			WaveType.Saw => SawtoothWave(phase, waveIterations),
+			_ => throw new NotImplementedException()
+		};
 	}
-	
+
 	static float SinWave(double phase)
 	{
 		return (float)Math.Sin(phase);
 	}
-	
+
 	static float SawtoothWave(double t, int numIterations = 20)
 	{
 		double sum = 0;
@@ -61,7 +71,7 @@ public class AudioState
 			double denominator = i;
 			sum += numerator / denominator;
 		}
-        
+
 		return (float)(sum * 4 / MathF.PI);
 	}
 

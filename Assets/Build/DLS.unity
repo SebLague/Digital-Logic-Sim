@@ -277,8 +277,12 @@ MonoBehaviour:
   removeZeros: 0
   testUshort: 0
   noteIndex: 0
-  numNoteDivisions: 1
+  numNoteDivisions: 4
   noteFreq: 0
+  refNoteFreq: 0
+  useRef: 0
+  refIndex: 0
+  perceptualGain: 0
   waveType: 1
   restart: 0
   speed: 4
@@ -387,7 +391,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d43d8f4a12d48154f8cca0bbca859875, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gain: 0.025
+  gain: 0.015
   clipThreshold: 0.1
   sampleRate: 0
   numChannels: 0
