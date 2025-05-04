@@ -37,16 +37,15 @@ namespace DLS.Mods
                         var nameProperty = type.GetProperty("Name");
                         var versionProperty = type.GetProperty("Version");
                         var initializeMethod = type.GetMethod("Initialize");
-                        var onProjectLoadMethod = type.GetMethod("OnProjectLoad");
 
-                        if (nameProperty != null && versionProperty != null && initializeMethod != null && onProjectLoadMethod != null)
+                        if (nameProperty != null && versionProperty != null && initializeMethod != null)
                         {
                             // Ugly, but ModLoader.IMod would not be the same as ModdingAPI.IMod
                             object modInstance = Activator.CreateInstance(type);
 
                             string name = (string) nameProperty.GetValue(modInstance);
                             string version = (string) versionProperty.GetValue(modInstance);
-                            LoadedMod mod = new(name, version, modInstance, initializeMethod, onProjectLoadMethod);
+                            LoadedMod mod = new(name, version, modInstance, initializeMethod);
                             loadedMods.Add(mod);
                             mod.Initialize();
                         }
@@ -62,12 +61,5 @@ namespace DLS.Mods
             }
         }
 
-        public static void InvokeModsOnProjectLoad()
-        {
-            foreach (LoadedMod mod in loadedMods)
-            {
-                mod.OnProjectLoad();
-            }
-        }
     }
 }

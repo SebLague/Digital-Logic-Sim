@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using UnityEngine;
 using DLS.Description;
 using DLS.Game;
 using Random = System.Random;
@@ -472,6 +473,19 @@ namespace DLS.Simulation
 					chip.OutputPins[1].State = (ushort)(data & ByteMask);
 					break;
 				}
+				case ChipType.Modded:
+                {
+                    if (ModdedChipCreator.TryGetSimulationFunction(chip.Description, out var simulationFunction))
+                    {
+                        // Call the modded chip's simulation function
+                        simulationFunction(chip.InputPins, chip.OutputPins);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"No simulation function registered for modded chip: {chip.Description.Name}");
+                    }
+                    break;
+                }
 				// ---- Bus types ----
 				default:
 				{

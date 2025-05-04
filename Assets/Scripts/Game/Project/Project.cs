@@ -348,11 +348,12 @@ namespace DLS.Game
 				ViewedChip.UndoController.Clear();
 			}
 
-			BuiltinChipCreator.ModdedChips.RemoveAll(chip => ChipDescription.NameMatch(chip.Name, chipToDelete.Name));
+			ModdedChipCreator.ModdedChips.RemoveAll(chip => ChipDescription.NameMatch(chip.Name, chipToDelete.Name));
 
 			// Delete chip save file, remove from library, and update project description
 			UpdateAndSaveAffectedChips(chipToDelete, null, true);
 			chipLibrary.RemoveChip(chipToDelete.Name); 
+			EnsureChipRemovedFromCollections(chipToDelete.Name);
 			SetStarred(chipToDelete.Name, false, false, false); // ensure removed from starred list
 			UpdateAndSaveProjectDescription();
 
@@ -504,7 +505,7 @@ namespace DLS.Game
 		{
 			simThreadActive = false;
 
-			List<ChipDescription> moddedChipsCopy = new(BuiltinChipCreator.ModdedChips);
+			List<ChipDescription> moddedChipsCopy = new(ModdedChipCreator.ModdedChips);
 
 			foreach (ChipDescription chip in moddedChipsCopy)
 			{

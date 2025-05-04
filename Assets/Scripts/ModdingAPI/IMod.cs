@@ -5,6 +5,5 @@ namespace DLS.ModdingAPI
         string Name { get; }
         string Version { get; }
         void Initialize();
-        void OnProjectLoad();
     }
 }

@@ -48,7 +48,7 @@ namespace DLS.Description
 			{ ChipType.Bus_8Bit, "BUS-8" },
 			{ ChipType.BusTerminus_1Bit, "BUS-TERMINUS-1" },
 			{ ChipType.BusTerminus_4Bit, "BUS-TERMINUS-4" },
-			{ ChipType.BusTerminus_8Bit, "BUS-TERMINUS-8" }
+			{ ChipType.BusTerminus_8Bit, "BUS-TERMINUS-8" },
 		};
 
 		public static string GetName(ChipType type) => Names[type];
@@ -60,13 +60,6 @@ namespace DLS.Description
 		public static bool IsBusTerminusType(ChipType type) => type is ChipType.BusTerminus_1Bit or ChipType.BusTerminus_4Bit or ChipType.BusTerminus_8Bit;
 
 		public static bool IsRomType(ChipType type) => type == ChipType.Rom_256x16;
-
-		public static ChipType AddNewModded(string name)
-		{
-			ChipType type = (ChipType)(Names.Count + 2);
-			Names.Add(type, name);
-			return type;
-		}
 
 		public static ChipType GetCorrespondingBusTerminusType(ChipType type)
 		{

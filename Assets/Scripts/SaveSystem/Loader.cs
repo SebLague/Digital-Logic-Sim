@@ -24,7 +24,6 @@ namespace DLS.SaveSystem
 		public static Project LoadProject(string projectName)
 		{
 			ProjectDescription projectDescription = LoadProjectDescription(projectName);
-			ModLoader.InvokeModsOnProjectLoad();
 			ChipLibrary chipLibrary = LoadChipLibrary(projectDescription);
 			return new Project(projectDescription, chipLibrary);
 		}
@@ -90,6 +89,8 @@ namespace DLS.SaveSystem
 			ChipDescription[] builtinChips = BuiltinChipCreator.CreateAllBuiltinChipDescriptions();
 			HashSet<string> customChipNameHashset = new(ChipDescription.NameComparer);
 
+			ChipDescription[] moddedChips = ModdedChipCreator.CreateAllModdedChipDescriptions();
+
 			for (int i = 0; i < loadedChips.Length; i++)
 			{
 				string chipPath = Path.Combine(chipDirectoryPath, projectDescription.AllCustomChipNames[i] + ".json");
@@ -106,7 +107,7 @@ namespace DLS.SaveSystem
 			builtinChips = builtinChips.Where(b => !customChipNameHashset.Contains(b.Name)).ToArray();
 
 			UpgradeHelper.ApplyVersionChanges(loadedChips, builtinChips);
-			return new ChipLibrary(loadedChips, builtinChips);
+			return new ChipLibrary(loadedChips, builtinChips, moddedChips);
 		}
 	}
 }

@@ -20,6 +20,8 @@ namespace DLS.Simulation
 		public SimPin[] OutputPins = Array.Empty<SimPin>();
 		public SimChip[] SubChips = Array.Empty<SimChip>();
 
+		public ChipDescription Description {get; private set;}
+
 
 		public SimChip()
 		{
@@ -32,6 +34,7 @@ namespace DLS.Simulation
 			ID = id;
 			ChipType = desc.ChipType;
 			IsBuiltin = ChipType != ChipType.Custom;
+			Description = desc;
 
 			// ---- Create pins (don't allocate unnecessarily as very many sim chips maybe created!) ----
 			if (desc.InputPins.Length > 0)

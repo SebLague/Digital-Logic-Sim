@@ -10,11 +10,12 @@ namespace DLS.Game
 		public readonly List<ChipDescription> allChips = new();
 
 		readonly HashSet<string> builtinChipNames = new(ChipDescription.NameComparer);
-		Dictionary<string, ChipDescription> descriptionFromNameLookup = new(ChipDescription.NameComparer);
+		readonly HashSet<string> moddedChipNames = new(ChipDescription.NameComparer);
+		readonly Dictionary<string, ChipDescription> descriptionFromNameLookup = new(ChipDescription.NameComparer);
 
 		readonly List<ChipDescription> hiddenChips = new();
 
-		public ChipLibrary(ChipDescription[] customChips, ChipDescription[] builtinChips)
+		public ChipLibrary(ChipDescription[] customChips, ChipDescription[] builtinChips, ChipDescription[] moddedChips)
 		{
 			// Add built-in chips to list of all chips
 			foreach (ChipDescription chip in builtinChips)
@@ -24,6 +25,13 @@ namespace DLS.Game
 
 				AddChipToLibrary(chip, hidden);
 				builtinChipNames.Add(chip.Name);
+			}
+
+			// Add modded chips to list of all chips
+			foreach (ChipDescription chip in moddedChips)
+			{
+				AddChipToLibrary(chip);
+				moddedChipNames.Add(chip.Name);
 			}
 
 			// Add custom chips to list of all chips
@@ -106,7 +114,7 @@ namespace DLS.Game
 
 			foreach (ChipDescription chip in allChips)
 			{
-				if (!IsBuiltinChip(chip.Name))
+				if (!IsBuiltinChip(chip.Name) && !(chip.ChipType == ChipType.Modded))
 				{
 					customChipNames.Add(chip.Name);
 				}
