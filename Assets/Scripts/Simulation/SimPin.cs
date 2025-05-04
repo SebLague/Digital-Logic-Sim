@@ -55,7 +55,7 @@ namespace DLS.Simulation
 				numInputsReceivedThisFrame = 0;
 			}
 
-			bool set = false;
+			bool set;
 
 			if (numInputsReceivedThisFrame > 0)
 			{
@@ -70,7 +70,10 @@ namespace DLS.Simulation
 				ushort mask = (ushort)(OR >> 16); // tristate flags
 				bitsNew = (ushort)((bitsNew & ~mask) | ((ushort)OR & mask)); // can always accept input for tristated bits
 
-				PinState.Set(ref State, bitsNew, (ushort)(AND >> 16));
+				ushort tristateNew = (ushort)(AND >> 16);
+				uint stateNew = (uint)(bitsNew | (tristateNew << 16));
+				set = stateNew != State;
+				State = stateNew;
 			}
 			else
 			{

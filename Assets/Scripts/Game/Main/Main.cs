@@ -19,11 +19,13 @@ namespace DLS.Game
 		public static Project ActiveProject { get; private set; }
 
 		public static Vector2Int FullScreenResolution => new(Display.main.systemWidth, Display.main.systemHeight);
+		public static AudioState audioState;
 
-		public static void Init()
+		public static void Init(AudioState audioState)
 		{
 			SavePaths.EnsureDirectoryExists(SavePaths.ProjectsPath);
 			SaveAndApplyAppSettings(Loader.LoadAppSettings());
+			Main.audioState = audioState;
 		}
 
 		public static void Update()
@@ -67,6 +69,7 @@ namespace DLS.Game
 
 			ActiveProject.LoadDevChipOrCreateNewIfDoesntExist(startupChipName);
 			ActiveProject.StartSimulation();
+			ActiveProject.audioState = audioState;
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 		}
 

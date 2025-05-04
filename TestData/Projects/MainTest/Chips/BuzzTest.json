@@ -1,0 +1,85 @@
+{
+  "DLSVersion": "2.1.5",
+  "Name": "BuzzTest",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 1.325,
+    "y": 1.0
+  },
+  "Colour": {
+    "r": 0.214282215,
+    "g": 0.17916204,
+    "b": 0.250567675,
+    "a": 1
+  },
+  "InputPins":[
+    {
+      "Name":"IN",
+      "ID":141095185,
+      "Position":{
+        "x":-3.76235,
+        "y":0.65436
+      },
+      "BitCount":8,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":893919584,
+      "Position":{
+        "x":-3.84573,
+        "y":-0.12514
+      },
+      "BitCount":4,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "OutputPins":[],
+  "SubChips":[
+    {
+      "Name":"BUZZER",
+      "ID":2106109642,
+      "Label":"",
+      "Position":{
+        "x":-0.375,
+        "y":-0.04762
+      },
+      "OutputPinColourInfo":[],
+      "InternalData":null
+    }
+  ],
+  "Wires":[
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":893919584
+      },
+      "TargetPinAddress":{
+        "PinID":0,
+        "PinOwnerID":2106109642
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":141095185
+      },
+      "TargetPinAddress":{
+        "PinID":1,
+        "PinOwnerID":2106109642
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    }
+  ],
+  "Displays": null
+}

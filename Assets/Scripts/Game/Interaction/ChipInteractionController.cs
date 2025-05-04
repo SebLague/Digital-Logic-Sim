@@ -605,6 +605,7 @@ namespace DLS.Game
 			foreach (WireInstance wire in DuplicatedWires)
 			{
 				ActiveDevChip.AddWire(wire, false);
+				wire.ApplyMoveOffset();
 			}
 
 			ActiveDevChip.UndoController.RecordAddElements(SelectedElements, DuplicatedWires.Count > 0);
@@ -753,7 +754,7 @@ namespace DLS.Game
 					bool legal = true;
 					foreach (IMoveable obstacle in Obstacles)
 					{
-						if (element.SelectionBoundingBox.Overlaps(obstacle.BoundingBox))
+						if (element.BoundingBox.Overlaps(obstacle.BoundingBox))
 						{
 							legal = false;
 							break;
