@@ -605,6 +605,7 @@ namespace DLS.Game
 			foreach (WireInstance wire in DuplicatedWires)
 			{
 				ActiveDevChip.AddWire(wire, false);
+				wire.ApplyMoveOffset();
 			}
 
 			ActiveDevChip.UndoController.RecordAddElements(SelectedElements, DuplicatedWires.Count > 0);
