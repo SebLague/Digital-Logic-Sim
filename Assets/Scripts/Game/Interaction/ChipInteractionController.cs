@@ -985,8 +985,8 @@ namespace DLS.Game
 
 		public void CancelEverything()
 		{
-			CancelPlacingItems();
 			CancelMovingSelectedItems();
+			CancelPlacingItems();
 			ClearSelection();
 			IsCreatingSelectionBox = false;
 			isPlacingNewElements = false;
