@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using DLS.Description;
 using DLS.Game;
 using Random = System.Random;
+using System.Collections.Generic;
 
 namespace DLS.Simulation
 {
@@ -24,6 +25,24 @@ namespace DLS.Simulation
 		// Modifications to the sim are made from the main thread, but only applied on the sim thread to avoid conflicts
 		static readonly ConcurrentQueue<SimModifyCommand> modificationQueue = new();
 
+		// ---- Combinational cache for stateless built-in chips ----
+		static readonly HashSet<ChipType> pureCombinationalTypes = new()
+		{
+			ChipType.Nand,
+			ChipType.Split_4To1Bit,
+			ChipType.Merge_1To4Bit,
+			ChipType.Merge_1To8Bit,
+			ChipType.Merge_4To8Bit,
+			ChipType.Split_8To4Bit,
+			ChipType.Split_8To1Bit,
+			ChipType.TriStateBuffer,
+		};
+
+		// Cache: ChipType -> (inputKey -> outputStates[])
+		static readonly Dictionary<ChipType, Dictionary<byte, ushort[]>> combinationalCache =
+			new Dictionary<ChipType, Dictionary<byte, ushort[]>>();
+
+
 		public static void UpdateKeyboardInputFromMainThread()
 		{
 			SimKeyboardHelper.RefreshInputState();
@@ -42,6 +61,7 @@ namespace DLS.Simulation
 		//
 		// Optimization ideas (todo):
 		// * Compute lookup table for combinational chips
+		//   ^^ this is implemented, but needs improvement
 		// * Ignore chip if inputs are same as last frame, and no internal pins changed state last frame.
 		//   (would have to make exception for chips containing things like clock or key chip, which can activate 'spontaneously')
 		// * Create simplified connections network allowing only builtin chips to be processed during simulation
@@ -111,7 +131,8 @@ namespace DLS.Simulation
 					}
 				}
 
-				if (nextSubChip.IsBuiltin) ProcessBuiltinChip(nextSubChip); // We've reached a built-in chip, so process it directly
+				if (nextSubChip.IsBuiltin)
+					ProcessBuiltinChip(nextSubChip); // We've reached a built-in chip, so process it directly
 				else StepChip(nextSubChip); // Recursively process custom chip
 
 				// Step 3) Forward the outputs of the processed subchip to connected pins
@@ -137,11 +158,13 @@ namespace DLS.Simulation
 				// "Remove" the chosen subchip from remaining sub chips.
 				// This is done by moving it to the end of the array and reducing the length of the span by one.
 				// This also places the subchip into (reverse) order, so that the traversal order need to be determined again on the next pass.
-				(subChips[nextSubChipIndex], subChips[numRemaining - 1]) = (subChips[numRemaining - 1], subChips[nextSubChipIndex]);
+				(subChips[nextSubChipIndex], subChips[numRemaining - 1]) =
+					(subChips[numRemaining - 1], subChips[nextSubChipIndex]);
 				numRemaining--;
 
 				// Process chosen subchip
-				if (nextSubChip.ChipType == ChipType.Custom) StepChipReorder(nextSubChip); // Recursively process custom chip
+				if (nextSubChip.ChipType == ChipType.Custom)
+					StepChipReorder(nextSubChip); // Recursively process custom chip
 				else ProcessBuiltinChip(nextSubChip); // We've reached a built-in chip, so process it directly 
 
 				// Step 3) Forward the outputs of the processed subchip to connected pins
@@ -196,7 +219,64 @@ namespace DLS.Simulation
 			return result < uint.MaxValue / 2;
 		}
 
+		// Cached combinational chip processing wrapper
 		static void ProcessBuiltinChip(SimChip chip)
+		{
+			// If the chip is a pure combinational built-in, use lookup cache
+			if (pureCombinationalTypes.Contains(chip.ChipType))
+			{
+				if (!combinationalCache.TryGetValue(chip.ChipType, out var table))
+					BuildCombinationalCache(chip);
+				// Build key from the first-bit of each input pin
+				byte key = 0;
+				for (int i = 0; i < chip.InputPins.Length; i++)
+					if (PinState.FirstBitHigh(chip.InputPins[i].State))
+						key |= (byte)(1 << i);
+				var outs = combinationalCache[chip.ChipType][key];
+				for (int j = 0; j < outs.Length; j++)
+					chip.OutputPins[j].State = outs[j];
+				return;
+			}
+
+			// Otherwise, fallback to the original logic
+			ProcessBuiltinChip_Original(chip);
+		}
+
+		// Build lookup table for a combinational chip (no internal state)
+		static void BuildCombinationalCache(SimChip chip)
+		{
+			int n = chip.InputPins.Length;
+			int m = chip.OutputPins.Length;
+			var table = new Dictionary<byte, ushort[]>(1 << n);
+			// Save original input states
+			var origStates = new uint[n];
+			for (int i = 0; i < n; i++) origStates[i] = chip.InputPins[i].State;
+			// List all input combinations
+			for (int k = 0; k < (1 << n); k++)
+			{
+				// Set inputs
+				for (int i = 0; i < n; i++)
+				{
+					ushort bit = (ushort)(((k >> i) & 1) == 1 ? PinState.LogicHigh : PinState.LogicLow);
+					PinState.Set(ref chip.InputPins[i].State, bit, 0);
+				}
+
+				// Compute outputs using original logic
+				ProcessBuiltinChip_Original(chip);
+				// Collect outputs
+				var outs = new ushort[m];
+				for (int j = 0; j < m; j++) outs[j] = (ushort)chip.OutputPins[j].State;
+				table[(byte)k] = outs;
+			}
+
+			// Restore original inputs
+			for (int i = 0; i < n; i++)
+				PinState.Set(ref chip.InputPins[i].State, (ushort)origStates[i], (ushort)(origStates[i] >> 16));
+			combinationalCache[chip.ChipType] = table;
+		}
+
+		// Original built-in chip processing logic
+		static void ProcessBuiltinChip_Original(SimChip chip)
 		{
 			switch (chip.ChipType)
 			{
@@ -277,7 +357,8 @@ namespace DLS.Simulation
 					uint stateF = chip.InputPins[2].State & PinState.SingleBitMask;
 					uint stateG = chip.InputPins[1].State & PinState.SingleBitMask;
 					uint stateH = chip.InputPins[0].State & PinState.SingleBitMask;
-					chip.OutputPins[0].State = stateA | stateB << 1 | stateC << 2 | stateD << 3 | stateE << 4 | stateF << 5 | stateG << 6 | stateH << 7;
+					chip.OutputPins[0].State = stateA | stateB << 1 | stateC << 2 | stateD << 3 | stateE << 4 |
+					                           stateF << 5 | stateG << 6 | stateH << 7;
 					break;
 				}
 				case ChipType.Merge_4To8Bit:
@@ -358,7 +439,8 @@ namespace DLS.Simulation
 						else if (PinState.FirstBitHigh(writePin))
 						{
 							uint addressIndex = PinState.GetBitStates(addressPin) + addressSpace;
-							uint data = (uint)(PinState.GetBitStates(redPin) | (PinState.GetBitStates(greenPin) << 4) | (PinState.GetBitStates(bluePin) << 8));
+							uint data = (uint)(PinState.GetBitStates(redPin) | (PinState.GetBitStates(greenPin) << 4) |
+							                   (PinState.GetBitStates(bluePin) << 8));
 							chip.InternalState[addressIndex] = data;
 						}
 
@@ -491,27 +573,34 @@ namespace DLS.Simulation
 			return BuildSimChip(chipDesc, library, -1, null);
 		}
 
-		public static SimChip BuildSimChip(ChipDescription chipDesc, ChipLibrary library, int subChipID, uint[] internalState)
+		public static SimChip BuildSimChip(ChipDescription chipDesc, ChipLibrary library, int subChipID,
+			uint[] internalState)
 		{
 			SimChip simChip = BuildSimChipRecursive(chipDesc, library, subChipID, internalState);
 			return simChip;
 		}
 
 		// Recursively build full representation of chip from its description for simulation.
-		static SimChip BuildSimChipRecursive(ChipDescription chipDesc, ChipLibrary library, int subChipID, uint[] internalState)
+		static SimChip BuildSimChipRecursive(ChipDescription chipDesc, ChipLibrary library, int subChipID,
+			uint[] internalState)
 		{
 			// Recursively create subchips
-			SimChip[] subchips = chipDesc.SubChips.Length == 0 ? Array.Empty<SimChip>() : new SimChip[chipDesc.SubChips.Length];
+			SimChip[] subchips = chipDesc.SubChips.Length == 0
+				? Array.Empty<SimChip>()
+				: new SimChip[chipDesc.SubChips.Length];
 
 			for (int i = 0; i < chipDesc.SubChips.Length; i++)
 			{
 				SubChipDescription subchipDesc = chipDesc.SubChips[i];
 				ChipDescription subchipFullDesc = library.GetChipDescription(subchipDesc.Name);
-				SimChip subChip = BuildSimChipRecursive(subchipFullDesc, library, subchipDesc.ID, subchipDesc.InternalData);
+				SimChip subChip =
+					BuildSimChipRecursive(subchipFullDesc, library, subchipDesc.ID, subchipDesc.InternalData);
 				subchips[i] = subChip;
 			}
 
 			SimChip simChip = new(chipDesc, subChipID, internalState, subchips);
+			// Mark static/combinational chips (built-in or composite) for LUT caching
+			simChip.IsStaticCombinational = library.IsChipStatic(chipDesc.Name);
 
 
 			// Create connections
@@ -546,7 +635,8 @@ namespace DLS.Simulation
 			modificationQueue.Enqueue(command);
 		}
 
-		public static void AddSubChip(SimChip simChip, ChipDescription desc, ChipLibrary chipLibrary, int subChipID, uint[] subChipInternalData)
+		public static void AddSubChip(SimChip simChip, ChipDescription desc, ChipLibrary chipLibrary, int subChipID,
+			uint[] subChipInternalData)
 		{
 			SimModifyCommand command = new()
 			{
@@ -606,7 +696,8 @@ namespace DLS.Simulation
 				{
 					if (cmd.type == SimModifyCommand.ModificationType.AddSubchip)
 					{
-						SimChip newSubChip = BuildSimChip(cmd.chipDesc, cmd.lib, cmd.subChipID, cmd.subChipInternalData);
+						SimChip newSubChip =
+							BuildSimChip(cmd.chipDesc, cmd.lib, cmd.subChipID, cmd.subChipInternalData);
 						cmd.modifyTarget.AddSubChip(newSubChip);
 					}
 					else if (cmd.type == SimModifyCommand.ModificationType.RemoveSubChip)

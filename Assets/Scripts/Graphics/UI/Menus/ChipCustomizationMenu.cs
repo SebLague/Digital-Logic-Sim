@@ -29,6 +29,7 @@ namespace DLS.Graphics
 		static readonly UIHandle ID_ColourPicker = new("CustomizeMenu_ChipCol");
 		static readonly UIHandle ID_ColourHexInput = new("CustomizeMenu_ChipColHexInput");
 		static readonly UIHandle ID_NameDisplayOptions = new("CustomizeMenu_NameDisplayOptions");
+		static readonly UIHandle ID_CacheOptions = new("CustomizeMenu_CacheOptions");
 		static readonly UI.ScrollViewDrawElementFunc drawDisplayScrollEntry = DrawDisplayScroll;
 		static readonly Func<string, bool> hexStringInputValidator = ValidateHexStringInput;
 
@@ -76,6 +77,19 @@ namespace DLS.Graphics
 			else if (colHexCodeString != hexColInput.text)
 			{
 				UpdateChipColFromHexString(hexColInput.text);
+			}
+
+			// ---- Caching Mode ----
+			// User option: Cached or Uncached
+			{
+				string[] cacheOptions =
+				{
+					"Cached",
+					"Uncached"
+				};
+				int cacheMode = UI.WheelSelector(ID_CacheOptions, cacheOptions, NextPos(), new Vector2(pw, DrawSettings.ButtonHeight), theme.OptionsWheel, Anchor.TopLeft);
+				// Set user choice for combinational caching
+				ChipSaveMenu.ActiveCustomizeDescription.ForceStaticCombinational = (cacheMode == 0);
 			}
 
 			// ---- Displays UI ----
@@ -151,6 +165,9 @@ namespace DLS.Graphics
 			// Init name display mode
 			WheelSelectorState nameDisplayWheelState = UI.GetWheelSelectorState(ID_NameDisplayOptions);
 			nameDisplayWheelState.index = (int)ChipSaveMenu.ActiveCustomizeDescription.NameLocation;
+			// Init caching mode
+			WheelSelectorState cacheState = UI.GetWheelSelectorState(ID_CacheOptions);
+			cacheState.index = ChipSaveMenu.ActiveCustomizeDescription.ForceStaticCombinational == true ? 0 : 1;
 		}
 
 		static void UpdateCustomizeDescription()

@@ -12,7 +12,11 @@ namespace DLS.Simulation
 		// Some builtin chips, such as RAM, require an internal state for memory
 		// (can also be used for other arbitrary chip-specific data)
 		public readonly uint[] InternalState = Array.Empty<uint>();
+
 		public readonly bool IsBuiltin;
+
+		// True if this chip is purely combinational (static) and can be LUT-cached
+		public bool IsStaticCombinational;
 		public SimPin[] InputPins = Array.Empty<SimPin>();
 		public int numConnectedInputs;
 
@@ -111,7 +115,7 @@ namespace DLS.Simulation
 		}
 
 		public bool Sim_IsReady() => numInputsReady == numConnectedInputs;
-		
+
 		public (bool success, SimChip chip) TryGetSubChipFromID(int id)
 		{
 			// Todo: address possible errors if accessing from main thread while being modified on sim thread?
@@ -218,7 +222,8 @@ namespace DLS.Simulation
 			}
 		}
 
-		static SimPin CreateSimPinFromDescription(PinDescription desc, bool isInput, SimChip parent) => new(desc.ID, isInput, parent);
+		static SimPin CreateSimPinFromDescription(PinDescription desc, bool isInput, SimChip parent) =>
+			new(desc.ID, isInput, parent);
 
 		public void RemovePin(int removePinID)
 		{
@@ -264,7 +269,8 @@ namespace DLS.Simulation
 				{
 					SimPin[] newArray = new SimPin[sourcePin.ConnectedTargetPins.Length - 1];
 					Array.Copy(sourcePin.ConnectedTargetPins, 0, newArray, 0, i);
-					Array.Copy(sourcePin.ConnectedTargetPins, i + 1, newArray, i, sourcePin.ConnectedTargetPins.Length - i - 1);
+					Array.Copy(sourcePin.ConnectedTargetPins, i + 1, newArray, i,
+						sourcePin.ConnectedTargetPins.Length - i - 1);
 					sourcePin.ConnectedTargetPins = newArray;
 
 					removeTargetPin.numInputConnections -= 1;

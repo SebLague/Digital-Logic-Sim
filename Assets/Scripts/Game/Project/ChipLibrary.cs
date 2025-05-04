@@ -13,6 +13,22 @@ namespace DLS.Game
 
 		readonly List<ChipDescription> hiddenChips = new();
 
+		// Names of chips (built-in or custom) whose logic is purely combinational (static)
+		readonly HashSet<string> staticChips = new(ChipDescription.NameComparer);
+
+		// Built-in chip types that are pure combinational (no internal state)
+		static readonly HashSet<ChipType> pureCombinationalBuiltins = new()
+		{
+			ChipType.Nand,
+			ChipType.Split_4To1Bit,
+			ChipType.Merge_1To4Bit,
+			ChipType.Merge_1To8Bit,
+			ChipType.Merge_4To8Bit,
+			ChipType.Split_8To4Bit,
+			ChipType.Split_8To1Bit,
+			ChipType.TriStateBuffer,
+		};
+
 		public ChipLibrary(ChipDescription[] customChips, ChipDescription[] builtinChips)
 		{
 			// Add built-in chips to list of all chips
@@ -32,6 +48,7 @@ namespace DLS.Game
 			}
 
 			RebuildChipDescriptionLookup();
+			RecomputeStaticChips();
 		}
 
 		void RebuildChipDescriptionLookup()
@@ -55,7 +72,8 @@ namespace DLS.Game
 
 		public ChipDescription GetChipDescription(string name) => descriptionFromNameLookup[name];
 
-		public bool TryGetChipDescription(string name, out ChipDescription description) => descriptionFromNameLookup.TryGetValue(name, out description);
+		public bool TryGetChipDescription(string name, out ChipDescription description) =>
+			descriptionFromNameLookup.TryGetValue(name, out description);
 
 		public void RemoveChip(string chipName)
 		{
@@ -82,6 +100,7 @@ namespace DLS.Game
 			if (!foundChip) AddChipToLibrary(description);
 
 			RebuildChipDescriptionLookup();
+			RecomputeStaticChips();
 		}
 
 		public void NotifyChipRenamed(ChipDescription description, string nameOld)
@@ -97,6 +116,7 @@ namespace DLS.Game
 			}
 
 			RebuildChipDescriptionLookup();
+			RecomputeStaticChips();
 		}
 
 		public string[] GetAllCustomChipNames()
@@ -135,6 +155,32 @@ namespace DLS.Game
 		{
 			if (hidden) hiddenChips.Add(description);
 			else allChips.Add(description);
+		}
+
+		// Recompute which chips are purely combinational (static) based solely on user override for custom chips and default pure builtins
+		void RecomputeStaticChips()
+		{
+			staticChips.Clear();
+			foreach (var chip in allChips)
+			{
+				// Custom chips honor user setting only
+				if (chip.ForceStaticCombinational.HasValue)
+				{
+					if (chip.ForceStaticCombinational.Value)
+						staticChips.Add(chip.Name);
+				}
+				// Pure combinational builtins are cached by default
+				else if (IsBuiltinChip(chip.Name) && pureCombinationalBuiltins.Contains(chip.ChipType))
+				{
+					staticChips.Add(chip.Name);
+				}
+			}
+		}
+
+		// Query whether a chip (by name) is static/combinational
+		public bool IsChipStatic(string chipName)
+		{
+			return staticChips.Contains(chipName);
 		}
 	}
 }
