@@ -60,16 +60,6 @@ namespace DLS.Game
         {
             return ModdedChipFunctions.TryGetValue(chipDescription, out simulationFunction);
         }
-
-        public static PinDescription CreatePinDescription(string name, int id, PinBitCount bitCount = PinBitCount.Bit1) =>
-            new(
-                name,
-                id,
-                Vector2.zero,
-                bitCount,
-                PinColour.Red,
-                PinValueDisplayMode.Off
-            );
 		
 		static void ValidatePinIDs(PinDescription[] inputs, PinDescription[] outputs, string chipName)
 		{

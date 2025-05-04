@@ -1,21 +1,24 @@
-using System;
-using DLS.Description;
+using System.Linq;
 using DLS.Game;
-using DLS.Simulation;
-using UnityEngine;
 
-public static class Registry
+namespace DLS.ModdingAPI
 {
-    public static void RegisterChip(
-        string name,
-        Vector2 size,
-        Color col,
-        PinDescription[] inputs = null,
-        PinDescription[] outputs = null,
-        DisplayDescription[] displays = null,
-        bool hideName = false,
-        Action<SimPin[], SimPin[]> simulationFunction = null)
+    public static class Registry
     {
-        ModdedChipCreator.RegisterChip(name, size, col, inputs, outputs, displays, hideName, simulationFunction);
+        public static void RegisterChips(params ChipBuilder[] chips)
+        {
+            foreach (ChipBuilder chip in chips)
+            {
+                ModdedChipCreator.RegisterChip(chip.name, chip.size, chip.color, chip.inputs, chip.outputs, chip.displays, chip.hideName, chip.simulationFunction);
+            }
+        }
+
+        public static void RegisterCollections(params CollectionBuilder[] collections)
+        {
+            foreach(CollectionBuilder collection in collections)
+            {
+                ModdedCollectionCreator.RegisterCollection(collection.name, collection.chips.Select(chip => chip.name).ToArray());
+            }
+        }
     }
 }

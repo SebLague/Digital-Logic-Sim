@@ -643,6 +643,22 @@ namespace DLS.Graphics
 			project.SaveCurrentProjectDescription();
 		}
 
+		public static void DeleteCollection(ChipCollection collectionToDelete)
+		{
+			Debug.Log("Deleting collection");
+			ChipCollection defaultCollection = GetDefaultCollection();
+
+			foreach (string chipName in collectionToDelete.Chips)
+			{
+				defaultCollection.Chips.Add(chipName);
+			}
+
+			project.SetStarred(collectionToDelete.Name, false, true, false);
+			collections.Remove(collectionToDelete);
+
+			project.SaveCurrentProjectDescription();
+		}
+
 		static ChipCollection GetDefaultCollection() => collections.FirstOrDefault(c => ChipDescription.NameMatch(c.Name, defaultOtherChipsCollectionName));
 
 		static bool ValidateCollectionNameInput(string name)
