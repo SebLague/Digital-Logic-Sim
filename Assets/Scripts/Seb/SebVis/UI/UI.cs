@@ -591,6 +591,8 @@ namespace Seb.Vis.UI
 						bool invalidChar = char.IsControl(c) || char.IsSurrogate(c) || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.Format || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.PrivateUse;
 						if (invalidChar) continue;
 						state.TryInsertText(c + "", validation);
+						state.UpdateLastInputTime(); // Reset caret blink timer
+
 					}
 
 					// Paste from clipboard
@@ -628,8 +630,12 @@ namespace Seb.Vis.UI
 						bool downArrow = CanTrigger(ref state.arrowKeyTrigger, KeyCode.DownArrow);
 						bool jumpToPrevWordStart = InputHelper.CtrlIsHeld && leftArrow;
 						bool jumpToNextWordEnd = InputHelper.CtrlIsHeld && rightArrow;
+						bool jumpToStart = (state.isSelecting && leftArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.UpArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.PageUp) || InputHelper.IsKeyDownThisFrame(KeyCode.Home) || (jumpToPrevWordStart && InputHelper.AltIsHeld);
+						bool jumpToEnd = (state.isSelecting && rightArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.DownArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.PageDown) || InputHelper.IsKeyDownThisFrame(KeyCode.End) || (jumpToNextWordEnd && InputHelper.AltIsHeld);
 
-						if (jumpToNextWordEnd) state.SetCursorIndex(state.NextWordEndIndex(), state.cursorLineIndex, select);
+						if (jumpToStart) state.SetCursorIndex(0, 0, select);
+						else if (jumpToEnd) state.SetCursorIndex(state.lines[state.lines.Count - 1].Length, state.lines.Count, select);
+						else if (jumpToNextWordEnd) state.SetCursorIndex(state.NextWordEndIndex(), state.cursorLineIndex, select);
 						else if (jumpToPrevWordStart) state.SetCursorIndex(state.PrevWordIndex(), state.cursorLineIndex, select);
 						else if (leftArrow) state.DecrementCursor(select);
 						else if (rightArrow) state.IncrementCursor(select);
@@ -697,7 +703,7 @@ namespace Seb.Vis.UI
 					float fontSize_ss = theme.fontSize * scale;
 					bool showDefaultText = (state.lines.Count == 0 || (state.lines.Count == 1 && string.IsNullOrEmpty(state.lines[0]))) || !Application.isPlaying;
 					string[] lines = showDefaultText ? new[] { "Enter something..." } : state.lines.ToArray();
-
+					Debug.Log($"{String.Join(", ", lines).Replace("\n", "\\n")}");
 					Color textCol = showDefaultText ? theme.defaultTextCol : theme.textCol;
 					for (int i = 0; i < lines.Length; i++)
 					{

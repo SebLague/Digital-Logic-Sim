@@ -498,7 +498,7 @@ namespace Seb.Vis.UI
 			foreach (string line in splitLines)
 			{
 				TryInsertText(line);
-				NewLine();
+				// NewLine();
 			}
 
 			// Remove the extra new line added after the last line
@@ -506,7 +506,6 @@ namespace Seb.Vis.UI
 			{
 				lines.RemoveAt(lines.Count - 1);
 			}
-
 
 			// Set focus if required
 			SetFocus(focus);
