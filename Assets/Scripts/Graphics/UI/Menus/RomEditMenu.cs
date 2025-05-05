@@ -263,7 +263,7 @@ namespace DLS.Graphics
 			}catch (Exception e){
 				Debug.Log(e);
 				if (stringFormat is DataDisplayMode.Binary){
-					uintVal =(uint) ((ulong) (Convert.ToInt64(displayString, 2))& 0b11111111111111111111111111111111);
+					uintVal =(uint) ((ulong) (Convert.ToInt64(displayString, 2))& 0xFFFFFFFF);
 				}
 				uintVal = 0;
 				case DataDisplayMode.DecimalUnsigned:
