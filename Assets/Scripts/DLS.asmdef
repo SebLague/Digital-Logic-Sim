@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "Assembly-Seb",
-        "DLS.Description"
+        "DLS.Description",
+        "DLSModdingAPI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

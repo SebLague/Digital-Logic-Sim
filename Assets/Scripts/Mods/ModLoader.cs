@@ -8,29 +8,16 @@ namespace DLS.Mods
 {    
     public static class ModLoader
     {
-        static readonly List<LoadedMod> loadedMods = new();
-        static ModLoader()
-        {
-            AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
-        }
-
-        private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
-        {
-            if (args.Name.StartsWith("DLSModdingAPI"))
-            {
-                return Assembly.GetExecutingAssembly();
-            }
-
-            return null; // Let the default resolver handle other assemblies
-        }
+        public static readonly List<LoadedMod> loadedMods = new();
         public static void InitializeMods(string modsDirectory)
         {
             UnityEngine.Debug.Log("Loading mods...");
             foreach (string dllPath in Directory.GetFiles(modsDirectory, "*.dls"))
             {
-                Assembly modAssembly = Assembly.LoadFrom(dllPath);
                 try
                 {
+                    Assembly modAssembly = Assembly.LoadFrom(dllPath);
+                
                     foreach (Type type in modAssembly.GetTypes().Where(t => !t.IsAbstract))
                     {
                         // Check if the type has the same structure as IMod
@@ -57,6 +44,10 @@ namespace DLS.Mods
                     {
                         UnityEngine.Debug.LogError(inner.Message);
                     }
+                }
+                catch (FileLoadException ex)
+                {
+                    UnityEngine.Debug.LogError(ex.Message);
                 }
             }
         }

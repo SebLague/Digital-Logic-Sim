@@ -7,7 +7,6 @@ public class LoadedMod
     readonly string version;
     readonly object instance;
     readonly MethodInfo initializeMethod;
-    readonly MethodInfo onProjectLoadMethod;
 
     public LoadedMod(string name, string version, object instance, MethodInfo initMethod)
     {

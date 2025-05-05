@@ -1,22 +1,30 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DLS.Description;
-using DLS.Simulation;
+using DLS.ModdingAPI;
 using UnityEngine;
+using PinDescription = DLS.Description.PinDescription;
 
 namespace DLS.Game
 {
     public static class ModdedChipCreator
     {
+		static List<ChipBuilder> unbuiltChips = new();
 		public static List<ChipDescription> ModdedChips = new();
-        private static readonly Dictionary<ChipDescription, Action<SimPin[], SimPin[]>> ModdedChipFunctions = new();
+        private static readonly Dictionary<ChipDescription, Action<uint[], uint[]>> ModdedChipFunctions = new();
 
 		public static ChipDescription[] CreateAllModdedChipDescriptions()
 		{
+			unbuiltChips = Registry.moddedChips;
+			foreach (ChipBuilder chip in unbuiltChips)
+			{
+				RegisterChip(chip.name, chip.size, chip.color, ConvertToDescriptionPins(chip.inputs), ConvertToDescriptionPins(chip.outputs), null, chip.hideName, chip.simulationFunction); //TODO: IMPLEMENT DISPLAYS
+			}
 			return ModdedChips.ToArray();
 		}
 
-        public static void RegisterChip(
+        static void RegisterChip(
 			string name,
             Vector2 size,
             Color col,
@@ -24,7 +32,7 @@ namespace DLS.Game
             PinDescription[] outputs = null,
             DisplayDescription[] displays = null,
             bool hideName = false,
-            Action<SimPin[], SimPin[]> simulationFunction = null)
+            Action<uint[], uint[]> simulationFunction = null)
         {
             // Register the chip description
             ChipDescription chipDescription = CreateModdedChipDescription(name, ChipType.Modded, size, col, inputs, outputs, displays, hideName);
@@ -56,7 +64,21 @@ namespace DLS.Game
 			};
 		}
 
-        public static bool TryGetSimulationFunction(ChipDescription chipDescription, out Action<SimPin[], SimPin[]> simulationFunction)
+		static PinDescription[] ConvertToDescriptionPins(ModdingAPI.PinDescription[] moddingPins)
+		{
+			if (moddingPins == null) return null;
+
+			return moddingPins.Select(pin => new PinDescription(
+				pin.Name,
+				pin.ID,
+				pin.Position,
+                (Description.PinBitCount) pin.BitCount,
+                (Description.PinColour) pin.Colour,
+                (Description.PinValueDisplayMode) pin.ValueDisplayMode
+            )).ToArray();
+		}
+
+        public static bool TryGetSimulationFunction(ChipDescription chipDescription, out Action<uint[], uint[]> simulationFunction)
         {
             return ModdedChipFunctions.TryGetValue(chipDescription, out simulationFunction);
         }

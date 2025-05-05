@@ -1,6 +1,4 @@
 using System;
-using DLS.Description;
-using DLS.Simulation;
 using UnityEngine;
 
 namespace DLS.ModdingAPI
@@ -12,9 +10,9 @@ namespace DLS.ModdingAPI
         public Color color = Color.white;
         public PinDescription[] inputs = null;
         public PinDescription[] outputs = null;
-        public DisplayDescription[] displays = null;
+        public DisplayBuilder[] displays = null;
         public bool hideName = false;
-        public Action<SimPin[], SimPin[]> simulationFunction = null;
+        public Action<uint[], uint[]> simulationFunction = null;
 
         public ChipBuilder(string name)
         {
@@ -45,7 +43,7 @@ namespace DLS.ModdingAPI
             return this;
         }
 
-        public ChipBuilder SetDisplays(DisplayDescription[] displays)
+        public ChipBuilder SetDisplays(DisplayBuilder[] displays)
         {
             this.displays = displays;
             return this;
@@ -57,7 +55,7 @@ namespace DLS.ModdingAPI
             return this;
         }
 
-        public ChipBuilder SetSimulationFunction(Action<SimPin[], SimPin[]> simulationFunction)
+        public ChipBuilder SetSimulationFunction(Action<uint[], uint[]> simulationFunction)
         {
             this.simulationFunction = simulationFunction;
             return this;

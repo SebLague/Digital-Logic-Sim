@@ -3,7 +3,7 @@
   "DLSVersion_LastSaved": "2.1.5",
   "DLSVersion_EarliestCompatible": "2.0.0",
   "CreationTime": "2025-03-14T17:23:30.404+00:00",
-  "LastSaveTime": "2025-05-04T23:44:36.627+01:00",
+  "LastSaveTime": "2025-05-05T14:47:18.999+01:00",
   "Prefs_MainPinNamesDisplayMode": 2,
   "Prefs_ChipPinNamesDisplayMode": 1,
   "Prefs_GridDisplayMode": 1,
@@ -131,7 +131,7 @@
     },
     {
       "Chips":["WIP2","RAM-sync"],
-      "IsToggledOpen":true,
+      "IsToggledOpen":false,
       "Name":"TEST"
     },
     {

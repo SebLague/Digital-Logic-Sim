@@ -718,7 +718,7 @@ PlayerSettings:
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
-    Standalone: 1
+    Standalone: 0
   il2cppCompilerConfiguration:
     Standalone: 1
   il2cppCodeGeneration:
@@ -733,7 +733,7 @@ PlayerSettings:
     PS4: 1
     PS5: 1
     Stadia: 1
-    Standalone: 2
+    Standalone: 4
     WebGL: 1
     Windows Store Apps: 1
     XboxOne: 1
@@ -748,7 +748,7 @@ PlayerSettings:
   gcIncremental: 0
   gcWBarrierValidation: 0
   apiCompatibilityLevelPerPlatform: {}
-  editorAssembliesCompatibilityLevel: 1
+  editorAssembliesCompatibilityLevel: 2
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
   metroPackageName: 2D_BuiltInRenderer

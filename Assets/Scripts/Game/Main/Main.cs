@@ -68,10 +68,6 @@ namespace DLS.Game
 			if (Loader.ProjectExists(projectName)) ActiveProject = LoadProject(projectName);
 			else ActiveProject = CreateProject(projectName);
 
-			foreach(var coll in ActiveProject.description.ChipCollections)
-				Debug.Log(coll.Name);
-			ActiveProject.description.ChipCollections.AddRange(ModdedCollectionCreator.CreateModdedChipCollections()); // Todo: This seems to be inconsistent
-
 			ActiveProject.LoadDevChipOrCreateNewIfDoesntExist(startupChipName);
 
 			ActiveProject.StartSimulation();

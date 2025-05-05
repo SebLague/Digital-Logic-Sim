@@ -509,13 +509,7 @@ namespace DLS.Game
 			foreach (ChipDescription chip in moddedChipsCopy)
 			{
 				DeleteModdedChip(chip);
-			}
-
-			List<ChipCollection> moddedCollectionsCopy = new(ModdedCollectionCreator.ModdedCollections);
-			foreach (ChipCollection collection in moddedCollectionsCopy)
-			{
-				ChipLibraryMenu.DeleteCollection(collection);
-			}
+			}			
 		}
 
 		void SimThread()

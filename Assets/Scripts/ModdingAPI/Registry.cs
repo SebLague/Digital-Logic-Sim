@@ -1,15 +1,16 @@
-using System.Linq;
-using DLS.Game;
+using System.Collections.Generic;
 
 namespace DLS.ModdingAPI
 {
     public static class Registry
     {
+        public static List<ChipBuilder> moddedChips = new();
+        public static List<CollectionBuilder> moddedCollections = new();
         public static void RegisterChips(params ChipBuilder[] chips)
         {
             foreach (ChipBuilder chip in chips)
             {
-                ModdedChipCreator.RegisterChip(chip.name, chip.size, chip.color, chip.inputs, chip.outputs, chip.displays, chip.hideName, chip.simulationFunction);
+                moddedChips.Add(chip);
             }
         }
 
@@ -17,7 +18,7 @@ namespace DLS.ModdingAPI
         {
             foreach(CollectionBuilder collection in collections)
             {
-                ModdedCollectionCreator.RegisterCollection(collection.name, collection.chips.Select(chip => chip.name).ToArray());
+                moddedCollections.Add(collection);
             }
         }
     }

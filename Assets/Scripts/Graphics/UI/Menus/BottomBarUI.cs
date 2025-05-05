@@ -365,6 +365,14 @@ namespace DLS.Graphics
 				}
 			}
 
+			foreach (ChipCollection c in ModdedCollectionCreator.ModdedCollections)
+			{
+				if (ChipDescription.NameMatch(c.Name, name))
+				{
+					return c;
+				}
+			}
+
 			throw new Exception("Failed to find collection with name: " + name);
 		}
 

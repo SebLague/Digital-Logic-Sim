@@ -4,6 +4,7 @@ using UnityEngine;
 using DLS.Description;
 using DLS.Game;
 using Random = System.Random;
+using System.Linq;
 
 namespace DLS.Simulation
 {
@@ -477,8 +478,16 @@ namespace DLS.Simulation
                 {
                     if (ModdedChipCreator.TryGetSimulationFunction(chip.Description, out var simulationFunction))
                     {
+						uint[] inputStates = chip.InputPins.Select(pin => pin.State).ToArray();
+        				uint[] outputStates = chip.OutputPins.Select(pin => pin.State).ToArray();
+
                         // Call the modded chip's simulation function
-                        simulationFunction(chip.InputPins, chip.OutputPins);
+                        simulationFunction(inputStates, outputStates);
+
+						for (int i = 0; i < chip.OutputPins.Length; i++)
+						{
+							chip.OutputPins[i].State = outputStates[i];
+						}
                     }
                     else
                     {

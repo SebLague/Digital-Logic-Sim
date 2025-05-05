@@ -61,8 +61,14 @@ namespace DLS.Graphics
 		static ChipCollection lastAutoOpenedCollection;
 
 		static List<ChipCollection> collections => project.description.ChipCollections;
+		static List<ChipCollection> moddedCollections => ModdedCollectionCreator.ModdedCollections;
 
 		static Project project => Project.ActiveProject;
+
+		static ChipCollection GetCollectionAtIndex(int index)
+		{
+			return index < collections.Count ? collections[index] : moddedCollections[index - collections.Count];
+		}
 
 		public static void DrawMenu()
 		{
@@ -160,13 +166,13 @@ namespace DLS.Graphics
 			Bounds2D panelBoundsMinusHeader = Bounds2D.CreateFromTopLeftAndSize(UI.PrevBounds.BottomLeft, new Vector2(size.x, size.y - UI.PrevBounds.Height));
 			Bounds2D panelContentBounds = Bounds2D.Shrink(panelBoundsMinusHeader, PanelUIPadding);
 
-			UI.DrawScrollView(ID_CollectionsScrollbar, panelContentBounds.TopLeft, panelContentBounds.Size, UILayoutHelper.DefaultSpacing, Anchor.TopLeft, ActiveUITheme.ScrollTheme, drawCollectionEntry, collections.Count);
+			UI.DrawScrollView(ID_CollectionsScrollbar, panelContentBounds.TopLeft, panelContentBounds.Size, UILayoutHelper.DefaultSpacing, Anchor.TopLeft, ActiveUITheme.ScrollTheme, drawCollectionEntry, collections.Count + moddedCollections.Count);
 			MenuHelper.DrawReservedMenuPanel(panelID, panelBounds, false);
 		}
 
 		static void DrawCollectionEntry(Vector2 topLeft, float width, int collectionIndex, bool isLayoutPass)
 		{
-			ChipCollection collection = collections[collectionIndex];
+			ChipCollection collection = GetCollectionAtIndex(collectionIndex);
 			string label = collection.GetDisplayString();
 
 			bool collectionHighlighted = collectionIndex == selectedCollectionIndex;
@@ -230,7 +236,7 @@ namespace DLS.Graphics
 					if (hasChipSelected)
 					{
 						// ---- Draw ----
-						ChipCollection collection = collections[selectedCollectionIndex];
+						ChipCollection collection = GetCollectionAtIndex(selectedCollectionIndex);
 						string selectedChipName = collection.Chips[selectedChipInCollectionIndex];
 						bool canStepUpInCollection = selectedChipInCollectionIndex > 0;
 						bool canStepDownInCollection = selectedChipInCollectionIndex < collection.Chips.Count - 1;
@@ -297,18 +303,19 @@ namespace DLS.Graphics
 					else if (hasCollectionSelected)
 					{
 						// ---- Draw ----
-						ChipCollection collection = collections[selectedCollectionIndex];
+						ChipCollection collection = GetCollectionAtIndex(selectedCollectionIndex);
 						ButtonTheme colSource = GetButtonTheme(true, true);
 						DrawHeader(collection.Name, colSource.buttonCols.normal, colSource.textCols.normal, ref topLeft, panelContentBounds.Width);
 
 						bool isStarred = project.description.IsStarred(collection.Name, true);
-						bool toggleStarred = DrawHorizontalButtonGroup(buttonName_starUnstar[isStarred ? 1 : 0], null, ref topLeft, panelContentBounds.Width) == 0;
+						bool[] canStar = new[] {!moddedCollections.Contains(collection)};
+						bool toggleStarred = DrawHorizontalButtonGroup(buttonName_starUnstar[isStarred ? 1 : 0], canStar, ref topLeft, panelContentBounds.Width) == 0;
 
-						interactableStates_move[0] = selectedCollectionIndex > 0;
-						interactableStates_move[1] = selectedCollectionIndex < collections.Count - 1;
+						interactableStates_move[0] = selectedCollectionIndex > 0 && !moddedCollections.Contains(collection);
+						interactableStates_move[1] = selectedCollectionIndex < collections.Count - 1 && !moddedCollections.Contains(collection);
 						int buttonIndexOrganize = DrawHorizontalButtonGroup(buttonNames_moveSingleStep, interactableStates_move, ref topLeft, panelContentBounds.Width);
 
-						bool canRenameOrDelete = !ChipDescription.NameMatch(collection.Name, defaultOtherChipsCollectionName);
+						bool canRenameOrDelete = !ChipDescription.NameMatch(collection.Name, defaultOtherChipsCollectionName) && !moddedCollections.Contains(collection);
 						interactableStates_renameDelete[0] = canRenameOrDelete;
 						interactableStates_renameDelete[1] = canRenameOrDelete;
 						int buttonIndexEditCollection = DrawHorizontalButtonGroup(buttonNames_collectionRenameOrDelete, interactableStates_renameDelete, ref topLeft, panelContentBounds.Width);
@@ -342,7 +349,7 @@ namespace DLS.Graphics
 							int indexEnd = selectedCollectionIndex - 1;
 							(collections[indexStart], collections[indexEnd]) = (collections[indexEnd], collections[indexStart]);
 							selectedCollectionIndex = indexEnd;
-							collection = collections[selectedCollectionIndex];
+							collection = GetCollectionAtIndex(selectedCollectionIndex);
 						}
 						else if (buttonIndexOrganize == 1) // Move collection down
 						{
@@ -350,7 +357,7 @@ namespace DLS.Graphics
 							int indexEnd = selectedCollectionIndex + 1;
 							(collections[indexStart], collections[indexEnd]) = (collections[indexEnd], collections[indexStart]);
 							selectedCollectionIndex = indexEnd;
-							collection = collections[selectedCollectionIndex];
+							collection = GetCollectionAtIndex(selectedCollectionIndex);
 						}
 					}
 					else if (hasStarredItemSelected)
@@ -639,22 +646,6 @@ namespace DLS.Graphics
 			project.SetStarred(collectionToDelete.Name, false, true, false);
 			collections.RemoveAt(selectedCollectionIndex);
 			selectedCollectionIndex = Mathf.Max(0, selectedCollectionIndex - 1);
-
-			project.SaveCurrentProjectDescription();
-		}
-
-		public static void DeleteCollection(ChipCollection collectionToDelete)
-		{
-			Debug.Log("Deleting collection");
-			ChipCollection defaultCollection = GetDefaultCollection();
-
-			foreach (string chipName in collectionToDelete.Chips)
-			{
-				defaultCollection.Chips.Add(chipName);
-			}
-
-			project.SetStarred(collectionToDelete.Name, false, true, false);
-			collections.Remove(collectionToDelete);
 
 			project.SaveCurrentProjectDescription();
 		}
