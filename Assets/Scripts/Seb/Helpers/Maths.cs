@@ -706,6 +706,11 @@ namespace Seb.Helpers
 
 		#region #Miscellaneous
 
+		public static float Lerp(float a, float b, float t)
+		{
+			return a * (1 - t) + b * t;
+		}
+
 		public static float AbsoluteMax(float a, float b) => Mathf.Abs(a) > Mathf.Abs(b) ? a : b;
 
 		public static (Vector2 centre, Vector2 size) BoundingBox(Vector2[] points)

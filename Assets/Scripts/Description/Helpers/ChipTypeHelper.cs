@@ -40,6 +40,8 @@ namespace DLS.Description
 			{ ChipType.DisplayLED, "LED" },
 			{ ChipType.DisplayRGBLED, "RGBLED" },
 
+			{ ChipType.Buzzer, "BUZZER" },
+
 			// ---- Not really chips (but convenient to treat them as such anyway) ----
 
 			// ---- Inputs/Outputs ----

@@ -66,22 +66,10 @@ namespace DLS.Graphics
 
 					if (jumpToRowIndex >= 0 && jumpToRowIndex < RowCount)
 					{
+						OnFieldLostFocus(focusedRowIndex);
 						int nextFocusedRowIndex = focusedRowIndex + (goPrevLine ? -1 : 1);
-						InputFieldState inputFieldOld = UI.GetInputFieldState(IDS_inputRow[focusedRowIndex]);
-						inputFieldOld.SetText(AutoFormatInputString(inputFieldOld.text), false);
-
 						UI.GetInputFieldState(IDS_inputRow[nextFocusedRowIndex]).SetFocus(true);
 						focusedRowIndex = nextFocusedRowIndex;
-					}
-				}
-				// Test if currently focused field has just lost focus (in which case we want to auto-format it)
-				else
-				{
-					InputFieldState focusedInputField = UI.GetInputFieldState(IDS_inputRow[focusedRowIndex]);
-					if (!focusedInputField.focused)
-					{
-						focusedRowIndex = -1;
-						focusedInputField.SetText(AutoFormatInputString(focusedInputField.text), false);
 					}
 				}
 			}
@@ -128,6 +116,14 @@ namespace DLS.Graphics
 					dataDisplayMode = modeNew;
 				}
 			}
+		}
+
+		static void OnFieldLostFocus(int rowIndex)
+		{
+			if (rowIndex < 0) return;
+
+			InputFieldState inputFieldOld = UI.GetInputFieldState(IDS_inputRow[rowIndex]);
+			inputFieldOld.SetText(AutoFormatInputString(inputFieldOld.text), focus: false);
 		}
 
 		static string AutoFormatInputString(string input)
@@ -270,6 +266,15 @@ namespace DLS.Graphics
 					uintVal =(uint) ((ulong) (Convert.ToInt64(displayString, 2))& 0b11111111111111111111111111111111);
 				}
 				uintVal = 0;
+				case DataDisplayMode.DecimalUnsigned:
+					uintVal = uint.Parse(displayString);
+					break;
+				case DataDisplayMode.HEX:
+					int value = Convert.ToInt32(displayString, 16);
+					uintVal = (uint)value;
+					break;
+				default:
+					throw new NotImplementedException("Unsupported display format: " + stringFormat);
 			}
 			Debug.Log(uintVal);
 			return uintVal;
@@ -319,7 +324,12 @@ namespace DLS.Graphics
 				// Highlight row if it has focus
 				if (inputFieldState.focused)
 				{
-					focusedRowIndex = index;
+					if (focusedRowIndex != index)
+					{
+						OnFieldLostFocus(focusedRowIndex);
+						focusedRowIndex = index;
+					}
+
 					col = new Color(0.33f, 0.55f, 0.34f);
 				}
 

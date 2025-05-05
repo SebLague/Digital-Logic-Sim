@@ -31,21 +31,27 @@ namespace DLS.Game
 		// ---- Display state ----
 		public bool ShowGrid => description.Prefs_GridDisplayMode == 1;
 		public bool PinNameDisplayIsTabToggledOn;
-		
+
 		// ---- Chip view / edit state ----
 		// At the bottom of the stack is the chip that currently is being edited. 
 		// If chips are entered in view mode, they will be placed above on the stack.
 		public readonly Stack<DevChipInstance> chipViewStack = new();
+
 		SimChip ViewedSimChip => ViewedChip.SimChip;
+
 		// The chip currently in view. This chip may be in view-only mode.
 		public DevChipInstance ViewedChip => chipViewStack.Peek();
 		public bool CanEditViewedChip => chipViewStack.Count == 1;
 		public string ActiveDevChipName => ViewedChip.ChipName;
+
 		public bool ChipHasBeenSavedBefore => ViewedChip.LastSavedDescription != null;
+
 		// String representation of the viewed chips stack for display purposes
 		public string viewedChipsString = string.Empty;
+
 		// The chip currently being edited. (This is not necessarily the currently viewed chip)
 		DevChipInstance editModeChip;
+		public AudioState audioState;
 
 		// ---- Simulation settings and state ----
 		static readonly bool debug_logSimTime = false;
@@ -270,17 +276,17 @@ namespace DLS.Game
 		// Key chip has been bound to a different key, so simulation must be updated
 		public void NotifyKeyChipBindingChanged(SubChipInstance keyChip, char newKey)
 		{
-			keyChip.SetKeyChipActivationChar(newKey);
 			SimChip simChip = rootSimChip.GetSubChipFromID(keyChip.ID);
-			simChip.ChangeKeyBinding(newKey);
+			simChip.InternalState[0] = newKey;
+			keyChip.SetKeyChipActivationChar(newKey);
 		}
 
 		// Chip's pulse width has been changed, so simulation must be updated
 		public void NotifyPulseWidthChanged(SubChipInstance chip, uint widthNew)
 		{
-			chip.InternalData[0] = widthNew;
 			SimChip simChip = rootSimChip.GetSubChipFromID(chip.ID);
 			simChip.InternalState[0] = widthNew;
+			chip.InternalData[0] = widthNew;
 		}
 
 		// Rom has been edited, so simulation must be updated
@@ -288,6 +294,13 @@ namespace DLS.Game
 		{
 			SimChip simChip = rootSimChip.GetSubChipFromID(romChip.ID);
 			simChip.UpdateInternalState(romChip.InternalData);
+		}
+
+		public void NotifyLEDColourChanged(SubChipInstance ledChip, uint colIndex)
+		{
+			SimChip simChip = rootSimChip.GetSubChipFromID(ledChip.ID);
+			simChip.InternalState[0] = colIndex;
+			ledChip.InternalData[0] = colIndex;
 		}
 
 		public void DeleteChip(string chipToDeleteName)
@@ -506,6 +519,7 @@ namespace DLS.Game
 				// Also handle advancing a single step
 				if (simPaused && !advanceSingleSimStep)
 				{
+					Simulator.UpdateInPausedState();
 					stopwatchTotal.Stop();
 					Thread.Sleep(10);
 					continue;
@@ -526,7 +540,7 @@ namespace DLS.Game
 				Simulator.stepsPerClockTransition = stepsPerClockTransition;
 				SimChip simChip = rootSimChip;
 				if (simChip == null) continue; // Could potentially be null for a frame when switching between chips
-				Simulator.RunSimulationStep(simChip, inputPins);
+				Simulator.RunSimulationStep(simChip, inputPins, audioState.simAudio);
 
 				// ---- Wait some amount of time (if needed) to try to hit the target ticks per second ----
 				while (true)
@@ -567,7 +581,7 @@ namespace DLS.Game
 		{
 			Simulator.stepsPerClockTransition = stepsPerClockTransition;
 			Simulator.ApplyModifications();
-			Simulator.RunSimulationStep(rootSimChip, inputPins);
+			Simulator.RunSimulationStep(rootSimChip, inputPins, audioState.simAudio);
 			ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
 		}
 

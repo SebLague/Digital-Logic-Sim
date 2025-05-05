@@ -252,8 +252,9 @@ namespace DLS.Game
 
 		void RemoveElement(IMoveable element)
 		{
-			Elements.Remove(element);
 			elementsModifiedSinceLastArrayUpdate = true;
+			bool success = Elements.Remove(element);
+			Debug.Assert(success, "Trying to delete element that was already deleted?");
 		}
 
 
@@ -362,20 +363,10 @@ namespace DLS.Game
 
 		public void DeleteSubChip(SubChipInstance subChip)
 		{
-			// Ensure subchip exists before deleting
-			// (required for buses, where one end of bus is deleted automatically when other end is deleted; but user may select both ends for deletion)
-			if (!Elements.Contains(subChip)) return;
-
 			DeleteWiresAttachedToElement(subChip.ID);
 			RemoveElement(subChip);
 
 			if (hasSimChip) Simulator.RemoveSubChip(SimChip, subChip.ID);
-
-			// If deleting bus origin/terminus, delete the corresponding terminus/origin
-			if (subChip.IsBus)
-			{
-				TryDeleteSubChipByID(subChip.LinkedBusPairID);
-			}
 		}
 
 		// Delete subchip with given id (if it exists)
