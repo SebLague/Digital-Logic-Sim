@@ -1,5 +1,6 @@
 using System;
 using Seb.Helpers;
+using UnityEngine;
 
 namespace DLS.Simulation
 {
@@ -22,7 +23,7 @@ namespace DLS.Simulation
 		{
 			for (int i = 0; i < freqsAll.Length; i++)
 			{
-				freqsAll[i] = CalculateFrequency(i / 4.0);
+				freqsAll[i] = CalculateFrequency(i / 3.0);
 				float freqT = i / 255f;
 				perceptualGainCorrection[i] = Maths.Lerp(2, 0.35f, Maths.EaseQuadInOut(freqT));
 			}
