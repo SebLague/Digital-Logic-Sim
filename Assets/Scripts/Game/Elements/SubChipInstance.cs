@@ -233,11 +233,13 @@ namespace DLS.Game
 
 		static DisplayInstance CreateDisplayInstance(DisplayDescription displayDesc, ChipDescription chipDesc)
 		{
-			DisplayInstance instance = new();
-			instance.Desc = displayDesc;
-			instance.DisplayType = chipDesc.ChipType;
+            DisplayInstance instance = new()
+            {
+                Desc = displayDesc,
+                DisplayType = chipDesc.ChipType
+            };
 
-			if (chipDesc.ChipType == ChipType.Custom)
+            if (chipDesc.ChipType == ChipType.Custom)
 			{
 				ChipDescription childDesc = GetDescriptionOfDisplayedSubChip(chipDesc, displayDesc.SubChipID);
 				instance.ChildDisplays = CreateDisplayInstances(childDesc);

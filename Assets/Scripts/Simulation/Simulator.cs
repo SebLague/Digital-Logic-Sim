@@ -478,8 +478,8 @@ namespace DLS.Simulation
                 {
                     if (ModdedChipCreator.TryGetSimulationFunction(chip.Description, out var simulationFunction))
                     {
-						uint[] inputStates = chip.InputPins.Select(pin => pin.State).ToArray();
-        				uint[] outputStates = chip.OutputPins.Select(pin => pin.State).ToArray();
+						uint[] inputStates = chip.InputPins.Select(pin => (uint) PinState.GetBitStates(pin.State)).ToArray();
+						uint[] outputStates = chip.OutputPins.Select(pin => (uint) PinState.GetBitStates(pin.State)).ToArray();
 
                         // Call the modded chip's simulation function
                         simulationFunction(inputStates, outputStates);
@@ -488,10 +488,6 @@ namespace DLS.Simulation
 						{
 							chip.OutputPins[i].State = outputStates[i];
 						}
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"No simulation function registered for modded chip: {chip.Description.Name}");
                     }
                     break;
                 }
