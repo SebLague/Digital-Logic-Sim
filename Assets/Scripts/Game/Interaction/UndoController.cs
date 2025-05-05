@@ -89,6 +89,7 @@ namespace DLS.Game
 			}
 
 			// Wire move offsets
+			
 			int wireCount = devChip.Wires.Count;
 			moveUndoAction.wireMoveOffsets = new Vector2[wireCount];
 			for (int i = 0; i < wireCount; i++)
@@ -113,6 +114,7 @@ namespace DLS.Game
 		void RecordAddOrDeleteElements(List<IMoveable> elements, bool delete, bool hasWires)
 		{
 			List<SubChipInstance> subchips = elements.OfType<SubChipInstance>().ToList();
+			List<NoteInstance> notes = elements.OfType<NoteInstance>().ToList();
 			DevPinInstance[] devPins = elements.OfType<DevPinInstance>().ToArray();
 
 			// When deleting elements, store full state of ALL wires, not just those affected by the deletion.
@@ -130,11 +132,12 @@ namespace DLS.Game
 
 				wireState = CreateFullWireState(devChip, wiresThatWillBeDeletedAutomatically);
 			}
-
 			ElementExistenceAction deleteAction = new()
 			{
 				chipNames = subchips.Select(s => s.Description.Name).ToArray(),
+				noteIDs = notes.Select(s => s.Description.ID).ToArray(),
 				subchipDescriptions = subchips.Select(DescriptionCreator.CreateSubChipDescription).ToArray(),
+				noteDescriptions = notes.Select(DescriptionCreator.CreateNoteDescription).ToArray(),
 				pinDescriptions = devPins.Select(DescriptionCreator.CreatePinDescription).ToArray(),
 				pinInInputFlags = devPins.Select(p => p.IsInputPin).ToArray(),
 				wireStateBeforeDelete = wireState,
@@ -284,7 +287,9 @@ namespace DLS.Game
 		class ElementExistenceAction : UndoAction
 		{
 			public string[] chipNames;
+			public int[] noteIDs;
 			public SubChipDescription[] subchipDescriptions;
+			public NoteDescription[] noteDescriptions;
 
 			public PinDescription[] pinDescriptions;
 			public bool[] pinInInputFlags;
@@ -330,6 +335,22 @@ namespace DLS.Game
 					else
 					{
 						if (!devChip.TryDeleteDevPinByID(pinDescription.ID)) throw new Exception("Failed to delete dev pin");
+					}
+				}
+
+				// ---- Handle notes ----
+				for (int i = 0; i < noteIDs.Length; i++)
+				{
+					NoteDescription description = Project.ActiveProject.ViewedChip.GetNoteByID(noteIDs[i]).Description;
+
+					if (addElement)
+					{
+						NoteInstance note = new(description);
+						devChip.AddNote(note, false);
+						Project.ActiveProject.controller.Select(note, true);
+					}
+					else if (!devChip.TryDeleteNoteByID(noteDescriptions[i].ID))
+					{
 					}
 				}
 

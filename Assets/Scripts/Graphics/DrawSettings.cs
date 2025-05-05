@@ -20,6 +20,7 @@ namespace DLS.Graphics
 
 		public const float FontSizeChipName = 0.25f;
 		public const float FontSizePinLabel = 0.2f;
+		public const float FontSizeNoteText = 0.2f;
 
 		public const float SubChipPinInset = 0.015f;
 		public const float SelectionBoundsPadding = 0.08f;
@@ -85,27 +86,40 @@ namespace DLS.Graphics
 				new(whiteHigh, whiteHigh, whiteHigh)
 			};
 
-			Color[] stateHover = stateLow.Select(c => Brighten(c, 0.075f)).ToArray();
-
-			return new ThemeDLS
+			Color[] note =
 			{
-				SelectionBoxCol = new Color(1, 1, 1, 0.1f),
-				SelectionBoxMovingCol = new Color(1, 1, 1, 0.125f),
-				SelectionBoxInvalidCol = MakeCol255(243, 81, 75, 120),
-				SelectionBoxOtherIsInvaldCol = MakeCol255(243, 150, 75, 80),
-				StateLowCol = stateLow,
-				StateHighCol = stateHigh,
-				StateHoverCol = stateHover,
-				StateDisconnectedCol = Color.black,
-				DevPinHandle = MakeCol(0.31f),
-				DevPinHandleHighlighted = MakeCol(0.7f),
-				PinCol = Color.black,
-				PinLabelCol = new Color(0, 0, 0, 0.7f),
-				PinHighlightCol = Color.white,
-				PinInvalidCol = MakeCol(0.15f),
-				SevenSegCols = new Color[]
-				{
-					new(0.1f, 0.09f, 0.09f), new(1, 0.32f, 0.28f), new(0.19f, 0.15f, 0.15f), // Col A: OFF, ON, HIGHLIGHT
+				new Color(0.4f, 0.3f, 0.3f),
+				new Color(0.45f, 0.34f, 0.14f),
+				new Color(0.3f, 0.4f, 0.3f),
+				new Color(0.3f, 0.34f, 0.5f),
+				new Color(0.39f, 0.28f, 0.38f),
+				new Color(0.45f, 0.2f, 0.45f),
+				new Color(0.6f, 0.6f, 0.6f)
+			};
+
+
+			Color[] stateHover = stateLow.Select(c => Brighten(c, 0.1f)).ToArray();
+
+      return new ThemeDLS
+      {
+        SelectionBoxCol = new Color(1, 1, 1, 0.1f),
+        SelectionBoxMovingCol = new Color(1, 1, 1, 0.125f),
+        SelectionBoxInvalidCol = MakeCol255(243, 81, 75, 120),
+        SelectionBoxOtherIsInvaldCol = MakeCol255(243, 150, 75, 80),
+        StateLowCol = stateLow,
+        StateHighCol = stateHigh,
+				NoteCol = note,
+        StateHoverCol = stateHover,
+        StateDisconnectedCol = Color.black,
+        DevPinHandle = MakeCol(0.31f),
+        DevPinHandleHighlighted = MakeCol(0.7f),
+        PinCol = Color.black,
+        PinLabelCol = new Color(0, 0, 0, 0.7f),
+        PinHighlightCol = Color.white,
+        PinInvalidCol = MakeCol(0.15f),
+        SevenSegCols = new Color[]
+        {
+          new(0.1f, 0.09f, 0.09f), new(1, 0.32f, 0.28f), new(0.19f, 0.15f, 0.15f), // Col A: OFF, ON, HIGHLIGHT
 					new(0.09f, 0.09f, 0.1f), new(0, 0.61f, 1f), new(0.15f, 0.15f, 0.19f) // Col B: OFF, ON, HIGHLIGHT
 				},
 				BackgroundCol = MakeCol255(66, 66, 69),
@@ -237,6 +251,9 @@ namespace DLS.Graphics
 			public Color[] StateHighCol;
 			public Color[] StateHoverCol;
 			public Color[] StateLowCol;
+			public Color[] NoteCol;
+
+			public Color[] DisplayLEDCols; // Disconnected, Off, On
 		}
 
 		public class UIThemeDLS

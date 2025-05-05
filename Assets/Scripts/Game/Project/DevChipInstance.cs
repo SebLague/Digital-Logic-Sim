@@ -67,6 +67,7 @@ namespace DLS.Game
 			description.InputPins ??= Array.Empty<PinDescription>();
 			description.OutputPins ??= Array.Empty<PinDescription>();
 			description.Wires ??= Array.Empty<WireDescription>();
+			description.Notes ??= Array.Empty<NoteDescription>();
 
 			bool anyElementFailedToLoad = false;
 
@@ -92,6 +93,14 @@ namespace DLS.Game
 			{
 				PinDescription pinDescription = description.OutputPins[i];
 				instance.AddNewDevPin(new DevPinInstance(pinDescription, false), true);
+			}
+
+			// Load notes
+			for (int i = 0; i < description.Notes.Length; i++)
+			{
+				NoteDescription noteDescription = description.Notes[i];
+				NoteInstance note = new(noteDescription);
+				instance.AddNote(note, true);
 			}
 
 			// ---- Load wires ----
@@ -244,6 +253,11 @@ namespace DLS.Game
 			}
 		}
 
+		public void AddNote(NoteInstance note, bool isLoading)
+		{
+			AddElement(note);
+		}
+
 		void AddElement(IMoveable element)
 		{
 			Elements.Add(element);
@@ -256,7 +270,6 @@ namespace DLS.Game
 			bool success = Elements.Remove(element);
 			Debug.Assert(success, "Trying to delete element that was already deleted?");
 		}
-
 
 		public void DeleteDevPin(DevPinInstance devPin)
 		{
@@ -369,6 +382,15 @@ namespace DLS.Game
 			if (hasSimChip) Simulator.RemoveSubChip(SimChip, subChip.ID);
 		}
 
+		public void DeleteNote(NoteInstance note)
+		{
+			// Ensure subchip exists before deleting
+			// (required for buses, where one end of bus is deleted automatically when other end is deleted; but user may select both ends for deletion)
+			if (!Elements.Contains(note)) return;
+
+			RemoveElement(note);
+		}
+
 		// Delete subchip with given id (if it exists)
 		public bool TryDeleteSubChipByID(int id)
 		{
@@ -392,6 +414,20 @@ namespace DLS.Game
 				if (Elements[i] is DevPinInstance devPin && devPin.ID == id)
 				{
 					DeleteDevPin(devPin);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public bool TryDeleteNoteByID(int id)
+		{
+			for (int i = 0; i < Elements.Count; i++)
+			{
+				if (Elements[i] is NoteInstance note && note.ID == id)
+				{
+					DeleteNote(note);
 					return true;
 				}
 			}
@@ -525,6 +561,11 @@ namespace DLS.Game
 		}
 
 		public IEnumerable<SubChipInstance> GetSubchips() => Elements.OfType<SubChipInstance>();
+		public IEnumerable<NoteInstance> GetNotes() => Elements.OfType<NoteInstance>();
+		public NoteInstance GetNoteByID(int id)
+		{
+			return Elements.OfType<NoteInstance>().FirstOrDefault(n => n.ID == id);
+		}
 
 		public IEnumerable<DevPinInstance> GetOutputPins()
 		{

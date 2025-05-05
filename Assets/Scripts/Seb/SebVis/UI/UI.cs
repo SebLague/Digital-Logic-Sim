@@ -26,6 +26,7 @@ namespace Seb.Vis.UI
 
 		// -- State lookups --
 		static readonly Dictionary<UIHandle, InputFieldState> inputFieldStates = new();
+		static readonly Dictionary<UIHandle, TextAreaState> textAreaStates = new();
 		static readonly Dictionary<UIHandle, ButtonState> buttonStates = new();
 		static readonly Dictionary<UIHandle, ColourPickerState> colPickerStates = new();
 		static readonly Dictionary<UIHandle, ScrollBarState> scrollbarStates = new();
@@ -533,6 +534,347 @@ namespace Seb.Vis.UI
 				float textRight = textLeft + textBoundsWidth * scale;
 				float t = Mathf.InverseLerp(textLeft, textRight, InputHelper.MousePos.x);
 				return Mathf.RoundToInt(t * state.text.Length);
+			}
+		}
+
+		public static TextAreaState TextArea(UIHandle id, InputFieldTheme theme, Vector2 pos, Vector2 size, string defaultText, Anchor anchor, float textPad, string lineLength, int maxLines, Func<string, bool> validation = null, bool forceFocus = false)
+		{
+			TextAreaState state = GetTextAreaState(id);
+			state.maxCharsPerLine = lineLength.Length;
+			state.maxLines = maxLines;
+
+			Vector2 centre = CalculateCentre(pos, size, anchor);
+			(Vector2 centre, Vector2 size) ss = UIToScreenSpace(centre, size);
+
+			if (IsRendering)
+			{
+				Vector2 textTopLeft_ss = ss.centre - new Vector2(ss.size.x / 2 - textPad * scale, -ss.size.y / 2 + textPad * 2 * scale);
+				Draw.Quad(ss.centre, ss.size, theme.bgCol);
+
+				// Focus input
+				bool mouseInBounds = InputHelper.MouseInBounds_ScreenSpace(ss.centre, ss.size);
+
+				if (InputHelper.IsMouseDownThisFrame(MouseButton.Left))
+				{
+					state.SetFocus(mouseInBounds);
+					state.isMouseDownInBounds = mouseInBounds;
+
+					// Set caret pos based on mouse position
+					if (mouseInBounds) 
+					{
+						Vector2Int newCaretPos = CharIndexBeforeMouse(textTopLeft_ss.x, textTopLeft_ss.y);
+						state.SetCursorIndex(newCaretPos.x, newCaretPos.y, InputHelper.ShiftIsHeld);
+					}
+				}
+
+				// Hold-drag left mouse to select
+				if (state.focused && InputHelper.IsMouseHeld(MouseButton.Left) && state.isMouseDownInBounds)
+				{
+					Vector2Int newCaretPos = CharIndexBeforeMouse(textTopLeft_ss.x, textTopLeft_ss.y);
+					state.SetCursorIndex(newCaretPos.x, newCaretPos.y, true);
+				}
+
+				if (forceFocus && !state.focused)
+				{
+					state.SetFocus(true);
+				}
+
+				// Draw focus outline and update text
+				if (state.focused)
+				{
+					// state.EnforceTextLimit(lineLength.Length, maxLines);
+					const float outlineWidth = 0.05f;
+					Draw.QuadOutline(ss.centre, ss.size, outlineWidth * scale, theme.focusBorderCol);
+					foreach (char c in InputHelper.InputStringThisFrame)
+					{
+						// if (maxLines <= state.CountLines()) continue;
+						bool invalidChar = char.IsControl(c) || char.IsSurrogate(c) || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.Format || char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.PrivateUse;
+						if (invalidChar) continue;
+						state.TryInsertText(c + "", validation);
+						state.UpdateLastInputTime(); // Reset caret blink timer
+
+					}
+
+					// Paste from clipboard
+					if (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.V))
+					{
+						string sanitizedText = InputHelper.GetClipboardContents().Replace("\n", "");
+						state.TryInsertText(sanitizedText, validation);
+					}
+
+					if (state.lines.Count > 0)
+					{
+						// Backspace / delete
+						if (CanTrigger(ref state.backspaceTrigger, KeyCode.Backspace))
+						{
+							int charDeleteCount = InputHelper.CtrlIsHeld ? state.lines[state.cursorLineIndex].Length : 1; // delete all if ctrl is held
+							for (int i = 0; i < charDeleteCount; i++)
+							{
+								state.Delete(true, validation);
+							}
+						}
+						else if (CanTrigger(ref state.deleteTrigger, KeyCode.Delete))
+						{
+							state.Delete(false, validation);
+						}
+						if (InputHelper.IsKeyDownThisFrame(KeyCode.Return) && state.lines.Count < maxLines)
+						{
+							state.NewLine();
+						}
+
+						// Arrow keys
+						bool select = InputHelper.ShiftIsHeld;
+						bool leftArrow = CanTrigger(ref state.arrowKeyTrigger, KeyCode.LeftArrow);
+						bool rightArrow = CanTrigger(ref state.arrowKeyTrigger, KeyCode.RightArrow);
+						bool upArrow = CanTrigger(ref state.arrowKeyTrigger, KeyCode.UpArrow);
+						bool downArrow = CanTrigger(ref state.arrowKeyTrigger, KeyCode.DownArrow);
+						bool jumpToPrevWordStart = InputHelper.CtrlIsHeld && leftArrow;
+						bool jumpToNextWordEnd = InputHelper.CtrlIsHeld && rightArrow;
+						bool jumpToStart = (state.isSelecting && leftArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.UpArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.PageUp) || InputHelper.IsKeyDownThisFrame(KeyCode.Home) || (jumpToPrevWordStart && InputHelper.AltIsHeld);
+						bool jumpToEnd = (state.isSelecting && rightArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.DownArrow) || InputHelper.IsKeyDownThisFrame(KeyCode.PageDown) || InputHelper.IsKeyDownThisFrame(KeyCode.End) || (jumpToNextWordEnd && InputHelper.AltIsHeld);
+
+						if (jumpToStart) state.SetCursorIndex(0, 0, select);
+						else if (jumpToEnd) state.SetCursorIndex(state.lines[state.lines.Count - 1].Length, state.lines.Count, select);
+						else if (jumpToNextWordEnd) state.SetCursorIndex(state.NextWordEndIndex(), state.cursorLineIndex, select);
+						else if (jumpToPrevWordStart) state.SetCursorIndex(state.PrevWordIndex(), state.cursorLineIndex, select);
+						else if (leftArrow) state.DecrementCursor(select);
+						else if (rightArrow) state.IncrementCursor(select);
+						else if (upArrow) state.DecrementLine(select);
+						else if (downArrow) state.IncrementLine(select);
+
+						bool copyTriggered = InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.C);
+						bool cutTriggered = InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.X);
+
+						// Copy selected text (or all text if nothing selected)
+						if (copyTriggered || cutTriggered)
+						{
+							string copyText;
+
+							if (state.isSelecting)
+							{
+								int startLine = Mathf.Min(state.cursorLineIndex, state.selectionStartIndex / state.maxCharsPerLine);
+								int endLine = Mathf.Max(state.cursorLineIndex, state.selectionStartIndex / state.maxCharsPerLine);
+
+								int startChar = Mathf.Min(state.cursorBeforeCharIndex, state.selectionStartIndex % state.maxCharsPerLine);
+								int endChar = Mathf.Max(state.cursorBeforeCharIndex, state.selectionStartIndex % state.maxCharsPerLine);
+
+								if (startLine == endLine)
+								{
+									// Single-line selection
+									copyText = state.lines[startLine].Substring(startChar, endChar - startChar);
+								}
+								else
+								{
+									// Multi-line selection
+									StringBuilder sb = new();
+									sb.AppendLine(state.lines[startLine].Substring(startChar));
+									for (int i = startLine + 1; i < endLine; i++)
+									{
+										sb.AppendLine(state.lines[i]);
+									}
+									sb.Append(state.lines[endLine].Substring(0, endChar));
+									copyText = sb.ToString();
+								}
+							}
+							else
+							{
+								// No selection, copy the entire text
+								copyText = string.Join("\n", state.lines);
+							}
+
+							InputHelper.CopyToClipboard(copyText);
+
+							if (cutTriggered)
+							{
+								if (state.isSelecting) state.Delete(true, validation);
+								else state.ClearText();
+
+							}
+						}
+
+						// Select all
+						if (InputHelper.CtrlIsHeld && InputHelper.IsKeyDownThisFrame(KeyCode.A)) state.SelectAll();
+					}
+				}
+
+				// Draw text
+				using (CreateMaskScope(centre, size))
+				{
+					float fontSize_ss = theme.fontSize * scale;
+					bool showDefaultText = (state.lines.Count == 0 || (state.lines.Count == 1 && string.IsNullOrEmpty(state.lines[0]))) || !Application.isPlaying;
+					string[] lines = showDefaultText ? new[] { "Enter something..." } : state.lines.ToArray();
+					Debug.Log($"{String.Join(", ", lines).Replace("\n", "\\n")}");
+					Color textCol = showDefaultText ? theme.defaultTextCol : theme.textCol;
+					for (int i = 0; i < lines.Length; i++)
+					{
+						Vector2 textPos_ss = textTopLeft_ss + new Vector2(0, -i * theme.fontSize * 1.2f * scale);
+						Draw.Text(theme.font, lines[i], fontSize_ss, textPos_ss, Anchor.TextCentreLeft, textCol);
+					}
+
+					if (Application.isPlaying)
+					{
+						Vector2 boundsSizeUpToCaret = Vector2.zero;
+						for (int i = 0; i <= state.cursorLineIndex; i++)
+						{
+							if (state.lines.Count == 0)
+							{
+								state.lines.Add(string.Empty); // Ensure there is at least one line
+							}
+
+							i = Mathf.Clamp(i, 0, state.lines.Count - 1); // Clamp lineIndex to valid range
+							string line = state.lines[i]; // Safely access the line
+							if (i < state.cursorLineIndex)
+							{
+								// Add the size of the entire line for lines before the caret's line
+								boundsSizeUpToCaret.y -= theme.fontSize * 1.2f * scale; // Move down by line height
+							}
+							else
+							{
+								// Calculate the size up to the caret's position in the current line
+								boundsSizeUpToCaret.x = Draw.CalculateTextBoundsSize(line.AsSpan(0, state.cursorBeforeCharIndex), theme.fontSize, theme.font).x;
+							}
+						}
+
+						if (state.isSelecting)
+						{
+							// Calculate global start and end indices dynamically
+							int startGlobalIndex = 0;
+							int endGlobalIndex = 0;
+
+							// Calculate the global index for the cursor and selection start
+							for (int i = 0; i < state.lines.Count; i++)
+							{
+								if (i < state.cursorLineIndex)
+								{
+									startGlobalIndex += state.lines[i].Length;
+								}
+								if (i < state.selectionStartIndex / state.maxCharsPerLine)
+								{
+									endGlobalIndex += state.lines[i].Length;
+								}
+							}
+
+							startGlobalIndex += state.cursorBeforeCharIndex;
+							endGlobalIndex += state.selectionStartIndex % state.maxCharsPerLine;
+
+							// Ensure startGlobalIndex is less than or equal to endGlobalIndex
+							if (startGlobalIndex > endGlobalIndex)
+							{
+								(startGlobalIndex, endGlobalIndex) = (endGlobalIndex, startGlobalIndex);
+							}
+
+							int currentGlobalIndex = 0;
+
+							for (int lineIndex = 0; lineIndex < state.lines.Count; lineIndex++)
+							{
+								string line = state.lines[lineIndex];
+								int lineStartIndex = currentGlobalIndex;
+								int lineEndIndex = lineStartIndex + line.Length;
+
+								// Determine the selection range for this line using global indices
+								int selectionStartInLine = Mathf.Clamp(startGlobalIndex - lineStartIndex, 0, line.Length);
+								int selectionEndInLine = Mathf.Clamp(endGlobalIndex - lineStartIndex, 0, line.Length);
+
+								// Draw the selection box for the current line
+								Vector2 boundsSizeUpToStart = Draw.CalculateTextBoundsSize(line.AsSpan(0, selectionStartInLine), theme.fontSize, theme.font);
+								Vector2 boundsSizeUpToEnd = Draw.CalculateTextBoundsSize(line.AsSpan(0, selectionEndInLine), theme.fontSize, theme.font);
+
+								float startX = textTopLeft_ss.x + boundsSizeUpToStart.x * scale;
+								float endX = textTopLeft_ss.x + boundsSizeUpToEnd.x * scale;
+
+								if (startX > endX)
+								{
+									(startX, endX) = (endX, startX);
+								}
+
+								Vector2 c = new((endX + startX) / 2, textTopLeft_ss.y - lineIndex * theme.fontSize * 1.2f * scale);
+								Vector2 s = new(endX - startX, theme.fontSize * 1.2f * scale);
+
+								Draw.Quad(c, s, new Color(0.2f, 0.6f, 1, 0.5f));
+
+								currentGlobalIndex += line.Length;
+							}
+						}
+
+						// Draw caret
+						const float blinkDuration = 0.5f;
+						if (state.focused && (int)((Time.time - state.lastInputTime) / blinkDuration) % 2 == 0)
+						{
+							Vector2 caretTextBoundsTest = Draw.CalculateTextBoundsSize("Mj", theme.fontSize, theme.font);
+							Vector2 caretOffset = GetCaretOffset(theme.fontSize, theme.font);
+							Vector2 caretPos_ss = textTopLeft_ss + caretOffset * scale;
+							Vector2 caretSize = new(0.125f * theme.fontSize, caretTextBoundsTest.y * 1.2f);
+							Draw.Quad(caretPos_ss, caretSize * scale, theme.textCol);
+						}
+					}
+				}
+			}
+
+			OnFinishedDrawingUIElement(centre, size);
+			return state;
+
+			static bool CanTrigger(ref TextAreaState.TriggerState triggerState, KeyCode key)
+			{
+				if (InputHelper.IsKeyDownThisFrame(key)) triggerState.lastManualTime = Time.time;
+
+				if (InputHelper.IsKeyDownThisFrame(key) || (InputHelper.IsKeyHeld(key) && CanAutoTrigger(triggerState)))
+				{
+					triggerState.lastAutoTiggerTime = Time.time;
+					return true;
+				}
+
+				return false;
+			}
+
+			static bool CanAutoTrigger(TextAreaState.TriggerState triggerState)
+			{
+				const float autoTriggerStartDelay = 0.5f;
+				const float autoTriggerRepeatDelay = 0.04f;
+				bool initialDelayOver = Time.time - triggerState.lastManualTime > autoTriggerStartDelay;
+				bool canRepeat = Time.time - triggerState.lastAutoTiggerTime > autoTriggerRepeatDelay;
+				return initialDelayOver && canRepeat;
+			}
+
+			Vector2Int CharIndexBeforeMouse(float textLeft, float textTop)
+			{
+				Vector2 mousePos = InputHelper.MousePos;
+
+				// Calculate the line index based on the vertical mouse position
+				float lineHeight = theme.fontSize * 1.2f * scale; // Line height with scaling
+				float adjustedTextTop = textTop + lineHeight / 3; // Adjust for the center of the first line
+				int lineIndex = Mathf.FloorToInt((adjustedTextTop - mousePos.y) / lineHeight);
+				lineIndex = Mathf.Clamp(lineIndex, 0, state.lines.Count - 1); // Clamp to valid line range
+
+				// Get the line of text at the calculated line index
+				string line = state.lines[lineIndex];
+				float lineWidth = Draw.CalculateTextBoundsSize(line.AsSpan(), theme.fontSize, theme.font).x;
+				float lineLeft = textLeft;
+				float lineRight = lineLeft + lineWidth * scale;
+
+				// Calculate the character index within the line based on the clamped mouse position
+				float t = Mathf.InverseLerp(lineLeft, lineRight, mousePos.x);
+				int charIndexInLine = Mathf.RoundToInt(t * line.Length);
+				charIndexInLine = Mathf.Clamp(charIndexInLine, 0, line.Length);
+
+				return new Vector2Int(charIndexInLine, lineIndex);
+			}
+
+			Vector2 GetCaretOffset(float fontSize, FontType font)
+			{
+				// Ensure cursor index is within bounds for the current line
+				int cursorIndex = Mathf.Clamp(state.cursorBeforeCharIndex, 0, state.lines[state.cursorLineIndex].Length);
+
+				// Get the current line of text
+				string line = state.lines[state.cursorLineIndex];
+
+				// Calculate the width of the text up to the caret position
+				ReadOnlySpan<char> span = line.AsSpan(0, cursorIndex);
+				float x = Draw.CalculateTextBoundsSize(span, fontSize, font).x;
+
+				// Calculate the vertical offset based on the line index
+				float y = state.cursorLineIndex * 1.2f * fontSize;
+
+				return new Vector2(x, -y);
 			}
 		}
 
@@ -1118,6 +1460,7 @@ namespace Seb.Vis.UI
 		public static ColourPickerState GetColourPickerState(UIHandle id) => GetOrCreateState(id, colPickerStates);
 
 		public static InputFieldState GetInputFieldState(UIHandle id) => GetOrCreateState(id, inputFieldStates);
+		public static TextAreaState GetTextAreaState(UIHandle id) => GetOrCreateState(id, textAreaStates);
 
 		public static ButtonState GetButtonState(UIHandle id) => GetOrCreateState(id, buttonStates);
 
@@ -1128,6 +1471,7 @@ namespace Seb.Vis.UI
 		public static void ResetAllStates()
 		{
 			inputFieldStates.Clear();
+			textAreaStates.Clear();
 			colPickerStates.Clear();
 			buttonStates.Clear();
 			scrollbarStates.Clear();

@@ -63,6 +63,17 @@ namespace DLS.Game
 			HandleMouseInput();
 		}
 
+		public void Delete(IMoveable element, bool clearSelection = true, bool recordUndo = true)
+		{
+			if (!HasControl) return;
+			if (recordUndo) ActiveDevChip.UndoController.RecordDeleteElements(new List<IMoveable>(new[] { element }));
+			if (element is SubChipInstance subChip) ActiveDevChip.DeleteSubChip(subChip);
+			if (element is NoteInstance noteInstance) ActiveDevChip.DeleteNote(noteInstance);
+			else if (element is DevPinInstance devPin) ActiveDevChip.DeleteDevPin(devPin);
+
+			if (clearSelection) SelectedElements.Clear();
+		}
+
 		// Don't allow interaction with wire that's currently being placed (this would allow it to try to connect to itself for example...)
 		public bool CanInteractWithWire(WireInstance wire) => CanInteract && wire != WireToPlace;
 
@@ -318,6 +329,40 @@ namespace DLS.Game
 			// Get description of each element, and start placing a copy of it
 			foreach (IMoveable element in elementsToDuplicate)
 			{
+				ChipDescription desc;
+
+				if (element is SubChipInstance subchip)
+				{
+					desc = subchip.Description;
+				}
+				else if (element is NoteInstance note)
+				{
+					// Create a new NoteDescription for the duplicated note
+					NoteDescription noteDesc = new NoteDescription(
+						IDGenerator.GenerateNewElementID(ActiveDevChip),
+						note.Colour,
+						note.Text,
+						note.Position
+					);
+
+					// Create a new NoteInstance and add it to the duplicated elements
+					IMoveable duplicatedNote = StartPlacingNote(noteDesc, note.Position, true);
+					duplicatedElements.Add(duplicatedNote);
+					duplicatedElementIDFromOriginalID.Add(note.ID, duplicatedNote.ID);
+					continue;
+				}
+				else
+				{
+					DevPinInstance devpin = (DevPinInstance)element;
+					ChipType pinType = ChipTypeHelper.GetPinType(devpin.IsInputPin, devpin.BitCount);
+					desc = BuiltinChipCreator.CreateInputOrOutputPin(pinType);
+
+					// Copy pin description from duplicated pin
+					PinDescription pinDesc = DescriptionCreator.CreatePinDescription(devpin);
+					if (devpin.IsInputPin) desc.InputPins[0] = pinDesc;
+					else desc.OutputPins[0] = pinDesc;
+				}
+
 				IMoveable duplicatedElement = CreateElementFromDuplicationSource(element);
 				StartPlacing(duplicatedElement, element.Position, true);
 				duplicatedElement.StraightLineReferencePoint = element.Position;
@@ -600,6 +645,7 @@ namespace DLS.Game
 					ActiveDevChip.AddNewSubChip(subchip, false);
 				}
 				else if (elementToPlace is DevPinInstance devPin) ActiveDevChip.AddNewDevPin(devPin, false);
+				else if (elementToPlace is NoteInstance note) ActiveDevChip.AddNote(note, false);
 			}
 
 			foreach (WireInstance wire in DuplicatedWires)
@@ -608,7 +654,9 @@ namespace DLS.Game
 				wire.ApplyMoveOffset();
 			}
 
+			
 			ActiveDevChip.UndoController.RecordAddElements(SelectedElements, DuplicatedWires.Count > 0);
+
 			DuplicatedWires.Clear();
 			OnFinishedPlacingItems();
 
@@ -962,7 +1010,50 @@ namespace DLS.Game
 
 			return elementToPlace;
 		}
+    
+		public void StartPlacingNote(NoteDescription noteDescription)
+		{
+			StartPlacingNote(noteDescription, InputHelper.MousePosWorld, false);
+		}
 
+		public IMoveable StartPlacingNote(NoteDescription noteDescription, Vector2 position, bool isDuplicating)
+		{
+			newElementsAreDuplicatedElements = isDuplicating;
+
+			if (!isPlacingNewElements)
+			{
+				CancelEverything();
+				isPlacingNewElements = true;
+				hasExittedMultiModeSincePlacementStart = false;
+				StartMovingSelectedItems();
+			}
+
+			IMoveable elementToPlace;
+			int instanceID = IDGenerator.GenerateNewElementID(ActiveDevChip);
+			
+			NoteDescription noteDesc = DescriptionCreator.CreateNoteDescriptionForPlacing(instanceID, noteDescription.Colour, noteDescription.Text, position);
+			elementToPlace = new NoteInstance(noteDesc);
+
+			// If placing multiple elements simultaneously, place the new element below the previous one
+			// (unless is duplicating elements, in which case their relative positions should be preserved)
+			if (SelectedElements.Count > 0 && !isDuplicating)
+			{
+				float spacing = (elementToPlace.SelectionBoundingBox.Size.y + SelectedElements[^1].SelectionBoundingBox.Size.y) / 2;
+				elementToPlace.MoveStartPosition = SelectedElements[^1].MoveStartPosition + Vector2.down * spacing;
+				elementToPlace.HasReferencePointForStraightLineMovement = false;
+			}
+			else
+			{
+				moveElementMouseStartPos = InputHelper.MousePosWorld + elementToPlace.SelectionBoundingBox.Size / 2;;
+				elementToPlace.MoveStartPosition = position;
+				elementToPlace.StraightLineReferencePoint = position;
+				elementToPlace.HasReferencePointForStraightLineMovement = isDuplicating;
+			}
+
+			Select(elementToPlace);
+			return elementToPlace;
+    	}
+    
 		IMoveable CreateElementFromDuplicationSource(IMoveable duplicationSource)
 		{
 			IMoveable element;

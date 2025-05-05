@@ -20,12 +20,13 @@ namespace DLS.SaveSystem
 			string name = hasSavedDesc ? descOld.Name : string.Empty;
 			DisplayDescription[] displays = hasSavedDesc ? descOld.Displays : null;
 
-			// Create pin and subchip descriptions
+			// Create pin, subchip and notes descriptions
 			PinDescription[] inputPins = OrderPins(chip.GetInputPins()).Select(CreatePinDescription).ToArray();
 			PinDescription[] outputPins = OrderPins(chip.GetOutputPins()).Select(CreatePinDescription).ToArray();
 			SubChipDescription[] subchips = chip.GetSubchips().Select(CreateSubChipDescription).ToArray();
 			Vector2 minChipsSize = SubChipInstance.CalculateMinChipSize(inputPins, outputPins, name);
 			size = Vector2.Max(minChipsSize, size);
+			NoteDescription[] notes = chip.GetNotes().Select(CreateNoteDescription).ToArray();
 
 			UpdateWireIndicesForDescriptionCreation(chip);
 
@@ -42,6 +43,7 @@ namespace DLS.SaveSystem
 				InputPins = inputPins,
 				OutputPins = outputPins,
 				Wires = chip.Wires.Select(CreateWireDescription).ToArray(),
+				Notes = notes,
 				Displays = displays,
 				ChipType = ChipType.Custom
 			};
@@ -159,6 +161,22 @@ namespace DLS.SaveSystem
 				// Don't save colour info for output pin since it changes based on received input, so would just trigger unecessary 'unsaved changes' warnings
 				devPin.IsInputPin ? devPin.Pin.Colour : default,
 				devPin.pinValueDisplayMode
+			);
+
+		public static NoteDescription CreateNoteDescription(NoteInstance note) =>
+			new(
+				note.ID,
+				note.Colour,
+				note.Text,
+				note.Position
+			);
+		
+		public static NoteDescription CreateNoteDescriptionForPlacing(int id, NoteColour colour, string text, Vector2 pos) =>
+			new(
+				id,
+				colour,
+				text,
+				pos
 			);
 
 		static Color RandomInitialChipColour()
