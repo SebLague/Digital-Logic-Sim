@@ -12,10 +12,11 @@ namespace DLS.Description
 
 		// ---- Memory ----
 		dev_Ram_8Bit,
+		Rom_256x2x8,
 		Rom_256x16,
+		Rom_256x32,
 
 		// ---- Displays ----
-		//TODO: Make all displays use 0 to 255 for RGB, and make sure you duplicate them first so only if needed overide them, also make the RGBLED
 		SevenSegmentDisplay,
 		DisplayRGB,
 		DisplayDot,
@@ -23,7 +24,6 @@ namespace DLS.Description
 		DisplayRGBLED,
 
 		// ---- Merge / Split ----
-		//TODO: Make the 16 MERGES AND SPLITS atcually work
 		Merge_1To4Bit,
 		Merge_1To8Bit,
 		Merge_4To8Bit,

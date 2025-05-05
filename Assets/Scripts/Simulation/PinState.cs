@@ -84,12 +84,12 @@ namespace DLS.Simulation
 			else if (section == 2)
 			{
 				const uint mask = 0b111100000000;
-				Set(ref state, (ushort)((sourceBitStates & mask) >> 4), (ushort)((sourceTristateFlags & mask) >> 8));
+				Set(ref state, (ushort)((sourceBitStates & mask) >> 8), (ushort)((sourceTristateFlags & mask) >> 8));
 			}
 			else if (section == 3)
 			{
 				const uint mask = 0b1111000000000000;
-				Set(ref state, (ushort)((sourceBitStates & mask) >> 4), (ushort)((sourceTristateFlags & mask) >> 12));
+				Set(ref state, (ushort)((sourceBitStates & mask) >> 12), (ushort)((sourceTristateFlags & mask) >> 12));
 			}
 		}
 

@@ -16,7 +16,9 @@ namespace DLS.Description
 			{ ChipType.TriStateBuffer, "3-STATE BUFFER" },
 			// ---- Memory ----
 			{ ChipType.dev_Ram_8Bit, "dev.RAM-8" },
+			{ ChipType.Rom_256x2x8, $"ROM 256{mulSymbol}x2x8" },
 			{ ChipType.Rom_256x16, $"ROM 256{mulSymbol}16" },
+			{ ChipType.Rom_256x32, $"ROM 256{mulSymbol}32" },
 			// ---- Split / Merge ----
 			{ ChipType.Split_4To1Bit, "4-1BIT" },
 			{ ChipType.Split_8To1Bit, "8-1BIT" },
@@ -69,7 +71,7 @@ namespace DLS.Description
 
 		public static bool IsBusTerminusType(ChipType type) => type is ChipType.BusTerminus_1Bit or ChipType.BusTerminus_4Bit or ChipType.BusTerminus_8Bit or ChipType.BusTerminus_16Bit;
 
-		public static bool IsRomType(ChipType type) => type == ChipType.Rom_256x16;
+		public static bool IsRomType(ChipType type) => type is ChipType.Rom_256x2x8 or ChipType.Rom_256x16 or ChipType.Rom_256x32;
 
 		public static ChipType GetCorrespondingBusTerminusType(ChipType type)
 		{
