@@ -1,0 +1,34 @@
+name: Build and Deploy Unity WebGL
+
+on:
+  push:
+    branches:
+      - main  # or change to your main branch name
+
+jobs:
+  build:
+    name: Build WebGL
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Cache Unity
+        uses: actions/cache@v3
+        with:
+          path: ~/.unity3d
+          key: ${{ runner.os }}-unity
+
+      - name: Build WebGL
+        uses: game-ci/unity-builder@v2
+        with:
+          targetPlatform: WebGL
+          buildName: WebGL
+          buildPath: build/WebGL
+
+      - name: Upload WebGL to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/WebGL
