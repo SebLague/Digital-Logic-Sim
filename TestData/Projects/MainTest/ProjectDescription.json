@@ -101,32 +101,32 @@
   "ChipCollections":[
     {
       "Chips":["NAND","AND","NOT","NOR","XOR","OR","KEY","CLOCK","3-STATE BUFFER"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"BASICS"
     },
     {
       "Chips":["IN-1","IN-4","IN-8","OUT-1","OUT-4","OUT-8"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"IN/OUT"
     },
     {
       "Chips":["1-4BIT","1-8BIT","4-8BIT","8-4BIT","8-1BIT","4-1BIT"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"MERGE/SPLIT"
     },
     {
       "Chips":["7-SEGMENT","DECIMAL-4","DECIMAL-8","DOT DISPLAY","RGB DISPLAY","LED"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"DISPLAY"
     },
     {
       "Chips":["BUS-1","BUS-4","BUS-8"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"BUS"
     },
     {
       "Chips":["REGISTER-4","REG-8"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"MEMORY"
     },
     {
@@ -136,11 +136,11 @@
     },
     {
       "Chips":["WIP2","RAM-sync"],
-      "IsToggledOpen":false,
+      "IsToggledOpen":true,
       "Name":"TEST"
     },
     {
-      "Chips":["PULSE","TEST MergeSplit"],
+      "Chips":["PULSE","TEST MergeSplit","IN-16","OUT-16","16-1BIT","16-4BIT","16-8BIT","1-16BIT","4-16BIT","8-16BIT","RGBLED","BUS-16","#","ROM 256×x2x8","ROM 256×32"],
       "IsToggledOpen":true,
       "Name":"OTHER"
     }

@@ -3,7 +3,7 @@
   "NameLocation": 0,
   "ChipType": 0,
   "Size": {
-    "x": 1.625,
+    "x": 5.01262,
     "y": 6.625
   },
   "Colour": {
@@ -300,6 +300,17 @@
         "y":-2.34271
       },
       "OutputPinColourInfo":[],
+      "InternalData":null
+    },
+    {
+      "Name":"RGB DISPLAY",
+      "ID":297331123,
+      "Label":"",
+      "Position":{
+        "x":-19.89548,
+        "y":22.16219
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":8},{"PinColour":0,"PinID":9},{"PinColour":0,"PinID":10}],
       "InternalData":null
     }
   ],
@@ -655,5 +666,14 @@
       "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
     }
   ],
-  "Displays": null
+  "Displays":[
+    {
+      "SubChipID":297331123,
+      "Position":{
+        "x":-0.15201,
+        "y":-0.33116
+      },
+      "Scale":1.0
+    }
+  ]
 }

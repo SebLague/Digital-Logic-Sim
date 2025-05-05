@@ -42,6 +42,7 @@ namespace DLS.Game
 				PinBitCount.Bit1 => new Vector2Int(1, 1),
 				PinBitCount.Bit4 => new Vector2Int(2, 2),
 				PinBitCount.Bit8 => new Vector2Int(4, 2),
+				PinBitCount.Bit16 => new Vector2Int(4, 4),
 				_ => throw new Exception("Bit count not implemented")
 			};
 			StateGridSize = BitCount switch
