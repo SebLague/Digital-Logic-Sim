@@ -2,9 +2,13 @@ using System.Collections.Generic;
 using System.Linq;
 using DLS.Description;
 using DLS.Graphics;
+using DLS.ModdingAPI;
+using DLS.Mods;
 using DLS.SaveSystem;
 using Seb.Helpers;
 using UnityEngine;
+using PinBitCount = DLS.Description.PinBitCount;
+using PinDescription = DLS.Description.PinDescription;
 
 namespace DLS.Game
 {
@@ -239,9 +243,25 @@ namespace DLS.Game
 			if (HasControl) UpdatePositionsToMouse();
 
 			// --- Mouse button input ---
-			if (InputHelper.IsMouseDownThisFrame(MouseButton.Left)) HandleLeftMouseDown();
+			if (InputHelper.IsMouseDownThisFrame(MouseButton.Left))
+			{
+				ModLoader.NotifyMods((mod, args) => mod.OnMouseClick(args), new IMod.InputEventArgs
+				{
+					Position = InputHelper.MousePosWorld,
+					Button = IMod.MouseButton.Left
+				});
+				HandleLeftMouseDown();
+			}
 			if (InputHelper.IsMouseUpThisFrame(MouseButton.Left)) HandleLeftMouseUp();
-			if (InputHelper.IsMouseDownThisFrame(MouseButton.Right)) HandleRightMouseDown();
+			if (InputHelper.IsMouseDownThisFrame(MouseButton.Right))
+			{
+				ModLoader.NotifyMods((mod, args) => mod.OnMouseClick(args), new IMod.InputEventArgs
+				{
+					Position = InputHelper.MousePosWorld,
+					Button = IMod.MouseButton.Right
+				});
+				HandleRightMouseDown();
+			}
 
 			// Shift + scroll to increase vertical spacing between elements when placing multiple at a time
 			// (disabled if elements were duplicated since then we want to preserve relative positions)
@@ -565,7 +585,16 @@ namespace DLS.Game
 					return;
 				}
 
-				hasMoved |= (element.MoveStartPosition != element.Position);
+				hasMoved |= element.MoveStartPosition != element.Position;
+
+				if (hasMoved)
+				{
+					ModLoader.NotifyMods((mod, args) => mod.OnMoveChip(args, element.Position), new IMod.ChipEventArgs
+					{
+						ChipName = element is SubChipInstance subchip ? subchip.Description.Name : string.Empty,
+						Position = element.MoveStartPosition
+					});
+				}
 			}
 
 			if (hasMoved) ActiveDevChip.UndoController.RecordMoveElements(SelectedElements);
@@ -598,8 +627,16 @@ namespace DLS.Game
 				if (elementToPlace is SubChipInstance subchip)
 				{
 					ActiveDevChip.AddNewSubChip(subchip, false);
+					ModLoader.NotifyMods((mod, args) => mod.OnPlaceChip(args), new IMod.ChipEventArgs
+					{
+						ChipName = subchip.Description.Name,
+						Position = subchip.Position
+					});
 				}
-				else if (elementToPlace is DevPinInstance devPin) ActiveDevChip.AddNewDevPin(devPin, false);
+				else if (elementToPlace is DevPinInstance devPin)
+				{
+					ActiveDevChip.AddNewDevPin(devPin, false);
+				}
 			}
 
 			foreach (WireInstance wire in DuplicatedWires)
@@ -629,6 +666,12 @@ namespace DLS.Game
 			if (wireToEdit != null && isMovingWireEditPoint)
 			{
 				wireToEdit.SetWirePoint(wireEditPointOld, wireEditPointSelectedIndex);
+				    ModLoader.NotifyMods((mod, args) => mod.OnEditWire(args), new IMod.WireEventArgs
+					{
+						SourcePinName = wireToEdit.SourcePin.Name,
+						TargetPinName = wireToEdit.TargetPin.Name,
+						BitCount = (int) wireToEdit.bitCount
+					});
 			}
 
 			wireToEdit = null;
@@ -840,6 +883,12 @@ namespace DLS.Game
 				WireToPlace.FinishPlacingWire(info);
 				ActiveDevChip.AddWire(WireToPlace, false);
 				ActiveDevChip.UndoController.RecordAddWire(WireToPlace);
+				ModLoader.NotifyMods((mod, args) => mod.OnPlaceWire(args), new IMod.WireEventArgs
+				{
+					SourcePinName = WireToPlace.SourcePin.Name,
+					TargetPinName = WireToPlace.TargetPin.Name,
+					BitCount = (int) WireToPlace.bitCount
+                });
 			}
 		}
 

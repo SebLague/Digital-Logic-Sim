@@ -5,11 +5,14 @@ using System.Linq;
 using System.Threading;
 using DLS.Description;
 using DLS.Graphics;
+using DLS.ModdingAPI;
+using DLS.Mods;
 using DLS.SaveSystem;
 using DLS.Simulation;
 using Seb.Helpers;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using PinDescription = DLS.Description.PinDescription;
 
 namespace DLS.Game
 {
@@ -252,6 +255,11 @@ namespace DLS.Game
 			{
 				CreateBlankDevChip();
 			}
+
+			ModLoader.NotifyMods((mod, args) => mod.OnProjectLoad(args), new IMod.ProjectEventArgs
+			{
+				ProjectName = this.description.ProjectName
+			});
 		}
 
 		void SetNewActiveDevChip(DevChipInstance devChip)
@@ -503,6 +511,11 @@ namespace DLS.Game
 
 		public void NotifyExit()
 		{
+			ModLoader.NotifyMods((mod, args) => mod.OnProjectUnload(args), new IMod.ProjectEventArgs
+			{
+				ProjectName = description.ProjectName
+			});
+
 			simThreadActive = false;
 
 			List<ChipDescription> moddedChipsCopy = new(ModdedChipCreator.ModdedChips);
