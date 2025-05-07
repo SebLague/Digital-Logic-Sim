@@ -611,6 +611,8 @@ namespace DLS.Simulation
 					uint data = chip.InternalState[address];
 					chip.OutputPins[0].State = (ushort)((data >> 16) & ByteMask);
 					chip.OutputPins[1].State = (ushort)(data & ByteMask);
+					break;
+				}
 				case ChipType.Buzzer:
 				{
 					int freqIndex = PinState.GetBitStates(chip.InputPins[0].State);

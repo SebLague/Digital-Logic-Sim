@@ -55,6 +55,7 @@ namespace DLS.Game
 				CreateDisplayDot(),
 				CreateDisplayLED(),
 				CreateDisplayRGBLED(),
+				CreateDisplayAscii8Bit(),
 				// ---- Bus ----
 				CreateBus(PinBitCount.Bit1),
 				CreateBusTerminus(PinBitCount.Bit1),
@@ -434,13 +435,41 @@ namespace DLS.Game
 			{
 				new()
 				{
-					Position = Vector2.right * PinRadius / 3 * 0,
-					Scale = GridSize * 1,
+					Position = Vector2.zero,
+					Scale = displayWidth,
 					SubChipID = -1
 				}
 			};
 
-			return CreateBuiltinChipDescription(ChipType.DisplayRGBLED, size, col, inputPins, null, displays, true);
+			return CreateBuiltinChipDescription(ChipType.DisplayRGBLED, size, col, inputPins, null, displays, NameDisplayLocation.Hidden);
+		}
+
+		static ChipDescription CreateDisplayAscii8Bit()
+		{
+			PinDescription[] inputPins =
+			{
+				CreatePinDescription("ON", 0),
+				CreatePinDescription("Letter", 1, PinBitCount.Bit8)
+			};
+			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			float width = height;
+			float displayWidth = height - GridSize * 0.5f;
+
+			Color col = new(0f, 0f, 0f);
+			Vector2 size = new(width, height);
+
+
+			DisplayDescription[] displays =
+			{
+				new()
+				{
+					Position = Vector2.zero,
+					Scale = displayWidth,
+					SubChipID = -1
+				}
+			};
+
+			return CreateBuiltinChipDescription(ChipType.DisplayAscii_8Bit, size, col, inputPins, null, displays, NameDisplayLocation.Centre);
 		}
 		static ChipDescription CreateDisplayLED()
 		{
