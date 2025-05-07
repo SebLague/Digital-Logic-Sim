@@ -1,0 +1,1565 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=us-ascii">
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Helvetica;
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:Courier;
+	panose-1:2 7 4 9 2 2 5 2 4 4;}
+@font-face
+	{font-family:"Tms Rmn";
+	panose-1:2 2 6 3 4 5 5 2 3 4;}
+@font-face
+	{font-family:Helv;
+	panose-1:2 11 6 4 2 2 2 3 2 4;}
+@font-face
+	{font-family:"New York";
+	panose-1:2 4 5 3 6 5 6 2 3 4;}
+@font-face
+	{font-family:System;
+	panose-1:0 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;}
+@font-face
+	{font-family:Batang;
+	panose-1:2 3 6 0 0 1 1 1 1 1;}
+@font-face
+	{font-family:SimSun;
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:PMingLiU;
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"MS Gothic";
+	panose-1:2 11 6 9 7 2 5 8 2 4;}
+@font-face
+	{font-family:Dotum;
+	panose-1:2 11 6 0 0 1 1 1 1 1;}
+@font-face
+	{font-family:SimHei;
+	panose-1:2 1 6 9 6 1 1 1 1 1;}
+@font-face
+	{font-family:MingLiU;
+	panose-1:2 2 5 9 0 0 0 0 0 0;}
+@font-face
+	{font-family:Mincho;
+	panose-1:2 2 6 9 4 3 5 8 3 5;}
+@font-face
+	{font-family:Gulim;
+	panose-1:2 11 6 0 0 1 1 1 1 1;}
+@font-face
+	{font-family:Century;
+	panose-1:2 4 6 4 5 5 5 2 3 4;}
+@font-face
+	{font-family:"Angsana New";
+	panose-1:2 2 6 3 5 4 5 2 3 4;}
+@font-face
+	{font-family:"Cordia New";
+	panose-1:2 11 3 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:Mangal;
+	panose-1:2 4 5 3 5 2 3 3 2 2;}
+@font-face
+	{font-family:Latha;
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:Sylfaen;
+	panose-1:1 10 5 2 5 3 6 3 3 3;}
+@font-face
+	{font-family:Vrinda;
+	panose-1:1 1 6 0 1 1 1 1 1 1;}
+@font-face
+	{font-family:Raavi;
+	panose-1:2 0 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Shruti;
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:Sendnya;
+	panose-1:0 0 4 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Gautami;
+	panose-1:2 0 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Tunga;
+	panose-1:0 0 4 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Estrangelo Edessa";
+	panose-1:3 8 6 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:"Arial Unicode MS";
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:Cambria;
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Aegean;
+	panose-1:5 7 1 2 1 7 7 7 7 7;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:Consolas;
+	panose-1:2 11 6 9 2 2 4 3 2 4;}
+@font-face
+	{font-family:Symbola;
+	panose-1:5 2 1 2 1 7 7 7 7 7;}
+@font-face
+	{font-family:"\@MS Gothic";
+	panose-1:2 11 6 9 7 2 5 8 2 4;}
+@font-face
+	{font-family:Marlett;
+	panose-1:0 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"\@Batang";
+	panose-1:2 3 6 0 0 1 1 1 1 1;}
+@font-face
+	{font-family:BatangChe;
+	panose-1:2 3 6 9 0 1 1 1 1 1;}
+@font-face
+	{font-family:"\@BatangChe";
+	panose-1:2 3 6 9 0 1 1 1 1 1;}
+@font-face
+	{font-family:Gungsuh;
+	panose-1:2 3 6 0 0 1 1 1 1 1;}
+@font-face
+	{font-family:"\@Gungsuh";
+	panose-1:2 3 6 0 0 1 1 1 1 1;}
+@font-face
+	{font-family:GungsuhChe;
+	panose-1:2 3 6 9 0 1 1 1 1 1;}
+@font-face
+	{font-family:"\@GungsuhChe";
+	panose-1:2 3 6 9 0 1 1 1 1 1;}
+@font-face
+	{font-family:DaunPenh;
+	panose-1:1 1 1 1 1 1 1 1 1 1;}
+@font-face
+	{font-family:DokChampa;
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:Euphemia;
+	panose-1:2 11 5 3 4 1 2 2 1 4;}
+@font-face
+	{font-family:"\@Gulim";
+	panose-1:2 11 6 0 0 1 1 1 1 1;}
+@font-face
+	{font-family:GulimChe;
+	panose-1:2 11 6 9 0 1 1 1 1 1;}
+@font-face
+	{font-family:"\@GulimChe";
+	panose-1:2 11 6 9 0 1 1 1 1 1;}
+@font-face
+	{font-family:"\@Dotum";
+	panose-1:2 11 6 0 0 1 1 1 1 1;}
+@font-face
+	{font-family:DotumChe;
+	panose-1:2 11 6 9 0 1 1 1 1 1;}
+@font-face
+	{font-family:"\@DotumChe";
+	panose-1:2 11 6 9 0 1 1 1 1 1;}
+@font-face
+	{font-family:Impact;
+	panose-1:2 11 8 6 3 9 2 5 2 4;}
+@font-face
+	{font-family:"Iskoola Pota";
+	panose-1:2 2 6 3 5 4 5 3 3 4;}
+@font-face
+	{font-family:Kalinga;
+	panose-1:2 0 6 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Kartika;
+	panose-1:2 2 5 3 3 4 4 6 2 3;}
+@font-face
+	{font-family:"Lucida Console";
+	panose-1:2 11 6 9 4 5 4 2 2 4;}
+@font-face
+	{font-family:"Malgun Gothic";
+	panose-1:2 11 5 3 2 0 0 2 0 4;}
+@font-face
+	{font-family:"\@Malgun Gothic";
+	panose-1:2 11 5 3 2 0 0 2 0 4;}
+@font-face
+	{font-family:"Microsoft Himalaya";
+	panose-1:1 1 1 0 1 1 1 1 1 1;}
+@font-face
+	{font-family:"Microsoft JhengHei";
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"\@Microsoft JhengHei";
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"Microsoft YaHei";
+	panose-1:2 11 5 3 2 2 4 2 2 4;}
+@font-face
+	{font-family:"\@Microsoft YaHei";
+	panose-1:2 11 5 3 2 2 4 2 2 4;}
+@font-face
+	{font-family:"\@MingLiU";
+	panose-1:2 2 5 9 0 0 0 0 0 0;}
+@font-face
+	{font-family:"\@PMingLiU";
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:MingLiU_HKSCS;
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"\@MingLiU_HKSCS";
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:MingLiU-ExtB;
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"\@MingLiU-ExtB";
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:PMingLiU-ExtB;
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"\@PMingLiU-ExtB";
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:MingLiU_HKSCS-ExtB;
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"\@MingLiU_HKSCS-ExtB";
+	panose-1:2 2 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Mongolian Baiti";
+	panose-1:3 0 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"MS PGothic";
+	panose-1:2 11 6 0 7 2 5 8 2 4;}
+@font-face
+	{font-family:"\@MS PGothic";
+	panose-1:2 11 6 0 7 2 5 8 2 4;}
+@font-face
+	{font-family:"MS UI Gothic";
+	panose-1:2 11 6 0 7 2 5 8 2 4;}
+@font-face
+	{font-family:"\@MS UI Gothic";
+	panose-1:2 11 6 0 7 2 5 8 2 4;}
+@font-face
+	{font-family:"\@MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;}
+@font-face
+	{font-family:"MS PMincho";
+	panose-1:2 2 6 0 4 2 5 8 3 4;}
+@font-face
+	{font-family:"\@MS PMincho";
+	panose-1:2 2 6 0 4 2 5 8 3 4;}
+@font-face
+	{font-family:"MV Boli";
+	panose-1:2 0 5 0 3 2 0 9 0 0;}
+@font-face
+	{font-family:Nyala;
+	panose-1:2 0 5 4 7 3 0 2 0 3;}
+@font-face
+	{font-family:"Plantagenet Cherokee";
+	panose-1:2 2 6 2 7 1 0 0 0 0;}
+@font-face
+	{font-family:"Segoe Script";
+	panose-1:2 11 5 4 2 0 0 0 0 3;}
+@font-face
+	{font-family:"Segoe UI";
+	panose-1:2 11 5 2 4 2 4 2 2 3;}
+@font-face
+	{font-family:"\@SimSun";
+	panose-1:2 1 6 0 3 1 1 1 1 1;}
+@font-face
+	{font-family:NSimSun;
+	panose-1:2 1 6 9 3 1 1 1 1 1;}
+@font-face
+	{font-family:"\@NSimSun";
+	panose-1:2 1 6 9 3 1 1 1 1 1;}
+@font-face
+	{font-family:SimSun-ExtB;
+	panose-1:2 1 6 9 6 1 1 1 1 1;}
+@font-face
+	{font-family:"\@SimSun-ExtB";
+	panose-1:2 1 6 9 6 1 1 1 1 1;}
+@font-face
+	{font-family:"Microsoft Yi Baiti";
+	panose-1:3 0 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Microsoft Sans Serif";
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:Gisha;
+	panose-1:2 11 5 2 4 2 4 2 2 3;}
+@font-face
+	{font-family:Leelawadee;
+	panose-1:2 11 5 2 4 2 4 2 2 3;}
+@font-face
+	{font-family:"Microsoft Uighur";
+	panose-1:2 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:MoolBoran;
+	panose-1:2 11 1 0 1 1 1 1 1 1;}
+@font-face
+	{font-family:Andalus;
+	panose-1:2 1 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Arabic Typesetting";
+	panose-1:3 2 4 2 4 4 6 3 2 3;}
+@font-face
+	{font-family:"Simplified Arabic";
+	panose-1:2 1 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Simplified Arabic Fixed";
+	panose-1:2 1 0 9 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Traditional Arabic";
+	panose-1:2 1 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Aharoni;
+	panose-1:2 1 8 3 2 1 4 3 2 3;}
+@font-face
+	{font-family:David;
+	panose-1:2 14 5 2 6 4 1 1 1 1;}
+@font-face
+	{font-family:FrankRuehl;
+	panose-1:2 14 5 3 6 1 1 1 1 1;}
+@font-face
+	{font-family:"Levenim MT";
+	panose-1:2 1 5 2 6 1 1 1 1 1;}
+@font-face
+	{font-family:Miriam;
+	panose-1:2 11 5 2 5 1 1 1 1 1;}
+@font-face
+	{font-family:"Miriam Fixed";
+	panose-1:2 11 5 9 5 1 1 1 1 1;}
+@font-face
+	{font-family:Narkisim;
+	panose-1:2 14 5 2 5 1 1 1 1 1;}
+@font-face
+	{font-family:Rod;
+	panose-1:2 3 5 9 5 1 1 1 1 1;}
+@font-face
+	{font-family:FangSong;
+	panose-1:2 1 6 9 6 1 1 1 1 1;}
+@font-face
+	{font-family:"\@FangSong";
+	panose-1:2 1 6 9 6 1 1 1 1 1;}
+@font-face
+	{font-family:"\@SimHei";
+	panose-1:2 1 6 9 6 1 1 1 1 1;}
+@font-face
+	{font-family:KaiTi;
+	panose-1:2 1 6 9 6 1 1 1 1 1;}
+@font-face
+	{font-family:"\@KaiTi";
+	panose-1:2 1 6 9 6 1 1 1 1 1;}
+@font-face
+	{font-family:AngsanaUPC;
+	panose-1:2 2 6 3 5 4 5 2 3 4;}
+@font-face
+	{font-family:"Browallia New";
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:BrowalliaUPC;
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:CordiaUPC;
+	panose-1:2 11 3 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:DilleniaUPC;
+	panose-1:2 2 6 3 5 4 5 2 3 4;}
+@font-face
+	{font-family:EucrosiaUPC;
+	panose-1:2 2 6 3 5 4 5 2 3 4;}
+@font-face
+	{font-family:FreesiaUPC;
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:IrisUPC;
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:JasmineUPC;
+	panose-1:2 2 6 3 5 4 5 2 3 4;}
+@font-face
+	{font-family:KodchiangUPC;
+	panose-1:2 2 6 3 5 4 5 2 3 4;}
+@font-face
+	{font-family:LilyUPC;
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:DFKai-SB;
+	panose-1:3 0 5 9 0 0 0 0 0 0;}
+@font-face
+	{font-family:"\@DFKai-SB";
+	panose-1:3 0 5 9 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Lucida Sans Unicode";
+	panose-1:2 11 6 2 3 5 4 2 2 4;}
+@font-face
+	{font-family:"Arial Black";
+	panose-1:2 11 10 4 2 1 2 2 2 4;}
+@font-face
+	{font-family:Candara;
+	panose-1:2 14 5 2 3 3 3 2 2 4;}
+@font-face
+	{font-family:"Comic Sans MS";
+	panose-1:3 15 7 2 3 3 2 2 2 4;}
+@font-face
+	{font-family:Constantia;
+	panose-1:2 3 6 2 5 3 6 3 3 3;}
+@font-face
+	{font-family:Corbel;
+	panose-1:2 11 5 3 2 2 4 2 2 4;}
+@font-face
+	{font-family:"Franklin Gothic Medium";
+	panose-1:2 11 6 3 2 1 2 2 2 4;}
+@font-face
+	{font-family:Georgia;
+	panose-1:2 4 5 2 5 4 5 2 3 3;}
+@font-face
+	{font-family:"Palatino Linotype";
+	panose-1:2 4 5 2 5 5 5 3 3 4;}
+@font-face
+	{font-family:"Segoe Print";
+	panose-1:2 0 6 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Trebuchet MS";
+	panose-1:2 11 6 3 2 2 2 2 2 4;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:Webdings;
+	panose-1:5 3 1 2 1 5 9 6 7 3;}
+@font-face
+	{font-family:Haettenschweiler;
+	panose-1:2 11 7 6 4 9 2 6 2 4;}
+@font-face
+	{font-family:"MS Outlook";
+	panose-1:5 1 1 0 1 0 0 0 0 0;}
+@font-face
+	{font-family:"Book Antiqua";
+	panose-1:2 4 6 2 5 3 5 3 3 4;}
+@font-face
+	{font-family:"Century Gothic";
+	panose-1:2 11 5 2 2 2 2 2 2 4;}
+@font-face
+	{font-family:"Bookshelf Symbol 7";
+	panose-1:5 1 1 1 1 1 1 1 1 1;}
+@font-face
+	{font-family:"MS Reference Sans Serif";
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"MS Reference Specialty";
+	panose-1:5 0 5 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Garamond;
+	panose-1:2 2 4 4 3 3 1 1 8 3;}
+@font-face
+	{font-family:"Monotype Corsiva";
+	panose-1:3 1 1 1 1 2 1 1 1 1;}
+@font-face
+	{font-family:"Agency FB";
+	panose-1:2 11 5 3 2 2 2 2 2 4;}
+@font-face
+	{font-family:"Arial Rounded MT Bold";
+	panose-1:2 15 7 4 3 5 4 3 2 4;}
+@font-face
+	{font-family:"Blackadder ITC";
+	panose-1:4 2 5 5 5 16 7 2 13 2;}
+@font-face
+	{font-family:"Bodoni MT";
+	panose-1:2 7 6 3 8 6 6 2 2 3;}
+@font-face
+	{font-family:"Bodoni MT Black";
+	panose-1:2 7 10 3 8 6 6 2 2 3;}
+@font-face
+	{font-family:"Bodoni MT Condensed";
+	panose-1:2 7 6 6 8 6 6 2 2 3;}
+@font-face
+	{font-family:"Bookman Old Style";
+	panose-1:2 5 6 4 5 5 5 2 2 4;}
+@font-face
+	{font-family:"Bradley Hand ITC";
+	panose-1:3 7 4 2 5 3 2 3 2 3;}
+@font-face
+	{font-family:"Calisto MT";
+	panose-1:2 4 6 3 5 5 5 3 3 4;}
+@font-face
+	{font-family:Castellar;
+	panose-1:2 10 4 2 6 4 6 1 3 1;}
+@font-face
+	{font-family:"Century Schoolbook";
+	panose-1:2 4 6 4 5 5 5 2 3 4;}
+@font-face
+	{font-family:"Copperplate Gothic Bold";
+	panose-1:2 14 7 5 2 2 6 2 4 4;}
+@font-face
+	{font-family:"Copperplate Gothic Light";
+	panose-1:2 14 5 7 2 2 6 2 4 4;}
+@font-face
+	{font-family:"Curlz MT";
+	panose-1:4 4 4 4 5 7 2 2 2 2;}
+@font-face
+	{font-family:"Edwardian Script ITC";
+	panose-1:3 3 3 2 4 7 7 13 8 4;}
+@font-face
+	{font-family:Elephant;
+	panose-1:2 2 9 4 9 5 5 2 3 3;}
+@font-face
+	{font-family:"Engravers MT";
+	panose-1:2 9 7 7 8 5 5 2 3 4;}
+@font-face
+	{font-family:"Eras Bold ITC";
+	panose-1:2 11 9 7 3 5 4 2 2 4;}
+@font-face
+	{font-family:"Eras Demi ITC";
+	panose-1:2 11 8 5 3 5 4 2 8 4;}
+@font-face
+	{font-family:"Eras Light ITC";
+	panose-1:2 11 4 2 3 5 4 2 8 4;}
+@font-face
+	{font-family:"Eras Medium ITC";
+	panose-1:2 11 6 2 3 5 4 2 8 4;}
+@font-face
+	{font-family:"Felix Titling";
+	panose-1:4 6 5 5 6 2 2 2 10 4;}
+@font-face
+	{font-family:Forte;
+	panose-1:3 6 9 2 4 5 2 7 2 3;}
+@font-face
+	{font-family:"Franklin Gothic Book";
+	panose-1:2 11 5 3 2 1 2 2 2 4;}
+@font-face
+	{font-family:"Franklin Gothic Demi";
+	panose-1:2 11 7 3 2 1 2 2 2 4;}
+@font-face
+	{font-family:"Franklin Gothic Demi Cond";
+	panose-1:2 11 7 6 3 4 2 2 2 4;}
+@font-face
+	{font-family:"Franklin Gothic Heavy";
+	panose-1:2 11 9 3 2 1 2 2 2 4;}
+@font-face
+	{font-family:"Franklin Gothic Medium Cond";
+	panose-1:2 11 6 6 3 4 2 2 2 4;}
+@font-face
+	{font-family:"French Script MT";
+	panose-1:3 2 4 2 4 6 7 4 6 5;}
+@font-face
+	{font-family:Gigi;
+	panose-1:4 4 5 4 6 16 7 2 13 2;}
+@font-face
+	{font-family:"Gill Sans MT";
+	panose-1:2 11 5 2 2 1 4 2 2 3;}
+@font-face
+	{font-family:"Gill Sans MT Condensed";
+	panose-1:2 11 5 6 2 1 4 2 2 3;}
+@font-face
+	{font-family:"Gill Sans Ultra Bold";
+	panose-1:2 11 10 2 2 1 4 2 2 3;}
+@font-face
+	{font-family:"Gill Sans Ultra Bold Condensed";
+	panose-1:2 11 10 6 2 1 4 2 2 3;}
+@font-face
+	{font-family:"Gill Sans MT Ext Condensed Bold";
+	panose-1:2 11 9 2 2 1 4 2 2 3;}
+@font-face
+	{font-family:"Gloucester MT Extra Condensed";
+	panose-1:2 3 8 8 2 6 1 1 1 1;}
+@font-face
+	{font-family:"Goudy Old Style";
+	panose-1:2 2 5 2 5 3 5 2 3 3;}
+@font-face
+	{font-family:"Goudy Stout";
+	panose-1:2 2 9 4 7 3 11 2 4 1;}
+@font-face
+	{font-family:"Imprint MT Shadow";
+	panose-1:4 2 6 5 6 3 3 3 2 2;}
+@font-face
+	{font-family:"Lucida Sans";
+	panose-1:2 11 6 2 3 5 4 2 2 4;}
+@font-face
+	{font-family:"Lucida Sans Typewriter";
+	panose-1:2 11 5 9 3 5 4 3 2 4;}
+@font-face
+	{font-family:"Maiandra GD";
+	panose-1:2 14 5 2 3 3 8 2 2 4;}
+@font-face
+	{font-family:"OCR A Extended";
+	panose-1:2 1 5 9 2 1 2 1 3 3;}
+@font-face
+	{font-family:"Palace Script MT";
+	panose-1:3 3 3 2 2 6 7 12 11 5;}
+@font-face
+	{font-family:Papyrus;
+	panose-1:3 7 5 2 6 5 2 3 2 5;}
+@font-face
+	{font-family:Perpetua;
+	panose-1:2 2 5 2 6 4 1 2 3 3;}
+@font-face
+	{font-family:"Perpetua Titling MT";
+	panose-1:2 2 5 2 6 5 5 2 8 4;}
+@font-face
+	{font-family:Pristina;
+	panose-1:3 6 4 2 4 4 6 8 2 4;}
+@font-face
+	{font-family:"Rage Italic";
+	panose-1:3 7 5 2 4 5 7 7 3 4;}
+@font-face
+	{font-family:Rockwell;
+	panose-1:2 6 6 3 2 2 5 2 4 3;}
+@font-face
+	{font-family:"Rockwell Condensed";
+	panose-1:2 6 6 3 5 4 5 2 1 4;}
+@font-face
+	{font-family:"Rockwell Extra Bold";
+	panose-1:2 6 9 3 4 5 5 2 4 3;}
+@font-face
+	{font-family:"Script MT Bold";
+	panose-1:3 4 6 2 4 6 7 8 9 4;}
+@font-face
+	{font-family:"Tw Cen MT";
+	panose-1:2 11 6 2 2 1 4 2 6 3;}
+@font-face
+	{font-family:"Tw Cen MT Condensed";
+	panose-1:2 11 6 6 2 1 4 2 2 3;}
+@font-face
+	{font-family:"Tw Cen MT Condensed Extra Bold";
+	panose-1:2 11 8 3 2 2 2 2 2 4;}
+@font-face
+	{font-family:Algerian;
+	panose-1:4 2 7 5 4 10 2 6 7 2;}
+@font-face
+	{font-family:"Baskerville Old Face";
+	panose-1:2 2 6 2 8 5 5 2 3 3;}
+@font-face
+	{font-family:"Bauhaus 93";
+	panose-1:4 3 9 5 2 11 2 2 12 2;}
+@font-face
+	{font-family:"Bell MT";
+	panose-1:2 2 5 3 6 3 5 2 3 3;}
+@font-face
+	{font-family:"Berlin Sans FB";
+	panose-1:2 14 6 2 2 5 2 2 3 6;}
+@font-face
+	{font-family:"Berlin Sans FB Demi";
+	panose-1:2 14 8 2 2 5 2 2 3 6;}
+@font-face
+	{font-family:"Bernard MT Condensed";
+	panose-1:2 5 8 6 6 9 5 2 4 4;}
+@font-face
+	{font-family:"Bodoni MT Poster Compressed";
+	panose-1:2 7 7 6 8 6 1 5 2 4;}
+@font-face
+	{font-family:"Britannic Bold";
+	panose-1:2 11 9 3 6 7 3 2 2 4;}
+@font-face
+	{font-family:Broadway;
+	panose-1:4 4 9 5 8 11 2 2 5 2;}
+@font-face
+	{font-family:"Brush Script MT";
+	panose-1:3 6 8 2 4 4 6 7 3 4;}
+@font-face
+	{font-family:"Californian FB";
+	panose-1:2 7 4 3 6 8 11 3 2 4;}
+@font-face
+	{font-family:Centaur;
+	panose-1:2 3 5 4 5 2 5 2 3 4;}
+@font-face
+	{font-family:Chiller;
+	panose-1:4 2 4 4 3 16 7 2 6 2;}
+@font-face
+	{font-family:"Colonna MT";
+	panose-1:4 2 8 5 6 2 2 3 2 3;}
+@font-face
+	{font-family:"Cooper Black";
+	panose-1:2 8 9 4 4 3 11 2 4 4;}
+@font-face
+	{font-family:"Footlight MT Light";
+	panose-1:2 4 6 2 6 3 10 2 3 4;}
+@font-face
+	{font-family:"Freestyle Script";
+	panose-1:3 8 4 2 3 2 5 11 4 4;}
+@font-face
+	{font-family:"Harlow Solid Italic";
+	panose-1:4 3 6 4 2 15 2 2 13 2;}
+@font-face
+	{font-family:Harrington;
+	panose-1:4 4 5 5 5 10 2 2 7 2;}
+@font-face
+	{font-family:"High Tower Text";
+	panose-1:2 4 5 2 5 5 6 3 3 3;}
+@font-face
+	{font-family:Jokerman;
+	panose-1:4 9 6 5 6 13 6 2 7 2;}
+@font-face
+	{font-family:"Juice ITC";
+	panose-1:4 4 4 3 4 10 2 2 2 2;}
+@font-face
+	{font-family:"Kristen ITC";
+	panose-1:3 5 5 2 4 2 2 3 2 2;}
+@font-face
+	{font-family:"Kunstler Script";
+	panose-1:3 3 4 2 2 6 7 13 13 6;}
+@font-face
+	{font-family:"Lucida Bright";
+	panose-1:2 4 6 2 5 5 5 2 3 4;}
+@font-face
+	{font-family:"Lucida Calligraphy";
+	panose-1:3 1 1 1 1 1 1 1 1 1;}
+@font-face
+	{font-family:"Lucida Fax";
+	panose-1:2 6 6 2 5 5 5 2 2 4;}
+@font-face
+	{font-family:"Lucida Handwriting";
+	panose-1:3 1 1 1 1 1 1 1 1 1;}
+@font-face
+	{font-family:Magneto;
+	panose-1:4 3 8 5 5 8 2 2 13 2;}
+@font-face
+	{font-family:"Matura MT Script Capitals";
+	panose-1:3 2 8 2 6 6 2 7 2 2;}
+@font-face
+	{font-family:Mistral;
+	panose-1:3 9 7 2 3 4 7 2 4 3;}
+@font-face
+	{font-family:"Modern No\. 20";
+	panose-1:2 7 7 4 7 5 5 2 3 3;}
+@font-face
+	{font-family:"Niagara Engraved";
+	panose-1:4 2 5 2 7 7 3 3 2 2;}
+@font-face
+	{font-family:"Niagara Solid";
+	panose-1:4 2 5 2 7 7 2 2 2 2;}
+@font-face
+	{font-family:"Old English Text MT";
+	panose-1:3 4 9 2 4 5 8 3 8 6;}
+@font-face
+	{font-family:Onyx;
+	panose-1:4 5 6 2 8 7 2 2 2 3;}
+@font-face
+	{font-family:Parchment;
+	panose-1:3 4 6 2 4 7 8 4 8 4;}
+@font-face
+	{font-family:Playbill;
+	panose-1:4 5 6 3 10 6 2 2 2 2;}
+@font-face
+	{font-family:"Poor Richard";
+	panose-1:2 8 5 2 5 5 5 2 7 2;}
+@font-face
+	{font-family:Ravie;
+	panose-1:4 4 8 5 5 8 9 2 6 2;}
+@font-face
+	{font-family:"Informal Roman";
+	panose-1:3 6 4 2 3 4 6 11 2 4;}
+@font-face
+	{font-family:"Showcard Gothic";
+	panose-1:4 2 9 4 2 1 2 2 6 4;}
+@font-face
+	{font-family:"Snap ITC";
+	panose-1:4 4 10 7 6 10 2 2 2 2;}
+@font-face
+	{font-family:Stencil;
+	panose-1:4 4 9 5 13 8 2 2 4 4;}
+@font-face
+	{font-family:"Tempus Sans ITC";
+	panose-1:4 2 4 4 3 13 7 2 2 2;}
+@font-face
+	{font-family:"Viner Hand ITC";
+	panose-1:3 7 5 2 3 5 2 2 2 3;}
+@font-face
+	{font-family:Vivaldi;
+	panose-1:3 2 6 2 5 5 6 9 8 4;}
+@font-face
+	{font-family:"Vladimir Script";
+	panose-1:3 5 4 2 4 4 7 7 3 5;}
+@font-face
+	{font-family:"Wide Latin";
+	panose-1:2 10 10 7 5 5 5 2 4 4;}
+@font-face
+	{font-family:"Wingdings 2";
+	panose-1:5 2 1 2 1 5 7 7 7 7;}
+@font-face
+	{font-family:"Wingdings 3";
+	panose-1:5 4 1 2 1 8 7 7 7 7;}
+@font-face
+	{font-family:"\@Arial Unicode MS";
+	panose-1:2 11 6 4 2 2 2 2 2 4;}
+@font-face
+	{font-family:"Derive Unicode";
+	panose-1:2 11 6 9 3 2 4 4 2 4;}
+@font-face
+	{font-family:"Euro Sign";
+	panose-1:2 11 6 3 2 2 1 2 1 1;}
+@font-face
+	{font-family:"MT Extra";
+	panose-1:5 5 1 2 1 2 5 2 2 2;}
+@font-face
+	{font-family:"Arial Narrow";
+	panose-1:2 11 6 6 2 2 2 3 2 4;}
+@font-face
+	{font-family:"Meiryo UI";
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"\@Meiryo UI";
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:Meiryo;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"\@Meiryo";
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:Aroania;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:Alexander;
+	panose-1:2 2 6 2 9 8 5 9 10 3;}
+@font-face
+	{font-family:Alfios;
+	panose-1:2 7 5 2 8 8 5 6 8 3;}
+@font-face
+	{font-family:Anaktoria;
+	panose-1:2 2 6 2 9 8 5 9 10 3;}
+@font-face
+	{font-family:"Euclid Extra";
+	panose-1:5 2 6 3 5 4 5 2 3 4;}
+@font-face
+	{font-family:Vinca;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"Minion Pro";
+	panose-1:2 4 5 3 5 2 1 2 2 3;}
+@font-face
+	{font-family:Nederhof;
+	panose-1:5 7 1 2 1 7 7 7 7 7;}
+@font-face
+	{font-family:Atavyros;
+	panose-1:2 2 6 2 9 8 5 9 10 3;}
+@font-face
+	{font-family:Avdira;
+	panose-1:2 8 5 2 3 2 2 6 8 3;}
+@font-face
+	{font-family:"Noto Sans Egyptian Hieroglyphs";
+	panose-1:2 11 5 2 4 5 4 2 2 4;}
+@font-face
+	{font-family:"Noto Sans Sumero-Akkadian Cunei";
+	panose-1:2 11 5 2 4 5 4 2 2 4;}
+@font-face
+	{font-family:"JSesh font";
+	panose-1:2 0 5 3 0 0 0 0 0 0;}
+@font-face
+	{font-family:SymbolaProposed;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:Brill;
+	panose-1:2 15 6 2 5 4 6 3 2 3;}
+@font-face
+	{font-family:"SBL Greek";
+	panose-1:2 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Aegyptus;
+	panose-1:5 7 1 2 1 7 7 7 7 7;}
+@font-face
+	{font-family:Akkadian;
+	panose-1:5 7 1 2 1 7 7 7 7 7;}
+@font-face
+	{font-family:Analecta;
+	panose-1:4 3 7 6 5 8 2 2 6 2;}
+@font-face
+	{font-family:Anatolian;
+	panose-1:5 7 1 2 1 7 7 7 7 7;}
+@font-face
+	{font-family:Asea;
+	panose-1:2 7 5 2 8 8 5 6 8 3;}
+@font-face
+	{font-family:Assyrian;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:Cretan;
+	panose-1:2 11 4 3 2 2 3 2 2 4;}
+@font-face
+	{font-family:CyproMinoan;
+	panose-1:0 0 4 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Gardiner;
+	panose-1:5 7 1 2 1 7 7 7 7 7;}
+@font-face
+	{font-family:Maya;
+	panose-1:5 7 1 2 1 7 7 7 7 7;}
+@font-face
+	{font-family:Musica;
+	panose-1:5 6 1 2 1 7 7 7 7 7;}
+@font-face
+	{font-family:Nilus;
+	panose-1:2 4 5 2 5 8 6 10 2 3;}
+@font-face
+	{font-family:Unidings;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:10.0pt;
+	margin-left:0cm;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+h2
+	{mso-style-link:"\0395\03C0\03B9\03BA\03B5\03C6\03B1\03BB\03AF\03B4\03B1 2 Char";
+	margin-top:10.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	page-break-after:avoid;
+	font-size:13.0pt;
+	font-family:"Cambria","serif";
+	color:#4F81BD;}
+h3
+	{mso-style-link:"\0395\03C0\03B9\03BA\03B5\03C6\03B1\03BB\03AF\03B4\03B1 3 Char";
+	margin-top:10.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	page-break-after:avoid;
+	font-size:11.0pt;
+	font-family:"Cambria","serif";
+	color:#4F81BD;}
+h4
+	{mso-style-link:"\0395\03C0\03B9\03BA\03B5\03C6\03B1\03BB\03AF\03B4\03B1 4 Char";
+	margin-top:10.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	page-break-after:avoid;
+	font-size:11.0pt;
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	font-style:italic;}
+p.MsoTitle, li.MsoTitle, div.MsoTitle
+	{mso-style-link:"\03A4\03AF\03C4\03BB\03BF\03C2 Char";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:15.0pt;
+	margin-left:0cm;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+p.MsoPlainText, li.MsoPlainText, div.MsoPlainText
+	{mso-style-link:"\0391\03C0\03BB\03CC \03BA\03B5\03AF\03BC\03B5\03BD\03BF Char1";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Courier New";}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-link:"\039A\03B5\03AF\03BC\03B5\03BD\03BF \03C0\03BB\03B1\03B9\03C3\03AF\03BF\03C5 Char";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";}
+p.MsoNoSpacing, li.MsoNoSpacing, div.MsoNoSpacing
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:10.0pt;
+	margin-left:36.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+span.2Char
+	{mso-style-name:"\0395\03C0\03B9\03BA\03B5\03C6\03B1\03BB\03AF\03B4\03B1 2 Char";
+	mso-style-link:"\0395\03C0\03B9\03BA\03B5\03C6\03B1\03BB\03AF\03B4\03B1 2";
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	font-weight:bold;}
+span.3Char
+	{mso-style-name:"\0395\03C0\03B9\03BA\03B5\03C6\03B1\03BB\03AF\03B4\03B1 3 Char";
+	mso-style-link:"\0395\03C0\03B9\03BA\03B5\03C6\03B1\03BB\03AF\03B4\03B1 3";
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	font-weight:bold;}
+span.4Char
+	{mso-style-name:"\0395\03C0\03B9\03BA\03B5\03C6\03B1\03BB\03AF\03B4\03B1 4 Char";
+	mso-style-link:"\0395\03C0\03B9\03BA\03B5\03C6\03B1\03BB\03AF\03B4\03B1 4";
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	font-weight:bold;
+	font-style:italic;}
+span.Char
+	{mso-style-name:"\03A4\03AF\03C4\03BB\03BF\03C2 Char";
+	mso-style-link:\03A4\03AF\03C4\03BB\03BF\03C2;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+span.Char0
+	{mso-style-name:"\0391\03C0\03BB\03CC \03BA\03B5\03AF\03BC\03B5\03BD\03BF Char";
+	mso-style-link:"\0391\03C0\03BB\03CC \03BA\03B5\03AF\03BC\03B5\03BD\03BF";
+	font-family:"Courier New";}
+span.Char1
+	{mso-style-name:"\039A\03B5\03AF\03BC\03B5\03BD\03BF \03C0\03BB\03B1\03B9\03C3\03AF\03BF\03C5 Char";
+	mso-style-link:"\039A\03B5\03AF\03BC\03B5\03BD\03BF \03C0\03BB\03B1\03B9\03C3\03AF\03BF\03C5";
+	font-family:"Tahoma","sans-serif";}
+p.msotitlecxspfirst, li.msotitlecxspfirst, div.msotitlecxspfirst
+	{mso-style-name:msotitlecxspfirst;
+	mso-style-link:"\03A4\03AF\03C4\03BB\03BF\03C2 Char";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+p.msotitlecxspmiddle, li.msotitlecxspmiddle, div.msotitlecxspmiddle
+	{mso-style-name:msotitlecxspmiddle;
+	mso-style-link:"\03A4\03AF\03C4\03BB\03BF\03C2 Char";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+p.msotitlecxsplast, li.msotitlecxsplast, div.msotitlecxsplast
+	{mso-style-name:msotitlecxsplast;
+	mso-style-link:"\03A4\03AF\03C4\03BB\03BF\03C2 Char";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:15.0pt;
+	margin-left:0cm;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+p.msolistparagraphcxspfirst, li.msolistparagraphcxspfirst, div.msolistparagraphcxspfirst
+	{mso-style-name:msolistparagraphcxspfirst;
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.msolistparagraphcxspmiddle, li.msolistparagraphcxspmiddle, div.msolistparagraphcxspmiddle
+	{mso-style-name:msolistparagraphcxspmiddle;
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.msolistparagraphcxsplast, li.msolistparagraphcxsplast, div.msolistparagraphcxsplast
+	{mso-style-name:msolistparagraphcxsplast;
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:10.0pt;
+	margin-left:36.0pt;
+	line-height:115%;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.msochpdefault, li.msochpdefault, div.msochpdefault
+	{mso-style-name:msochpdefault;
+	margin-right:0cm;
+	margin-left:0cm;
+	font-size:10.0pt;
+	font-family:"Times New Roman","serif";}
+span.Char10
+	{mso-style-name:"\0391\03C0\03BB\03CC \03BA\03B5\03AF\03BC\03B5\03BD\03BF Char1";
+	mso-style-link:"\0391\03C0\03BB\03CC \03BA\03B5\03AF\03BC\03B5\03BD\03BF";
+	font-family:Consolas;}
+ins
+	{text-decoration:none;}
+span.msoIns
+	{mso-style-name:"";
+	color:teal;}
+span.msoDel
+	{mso-style-name:"";
+	text-decoration:line-through;
+	color:red;}
+.MsoChpDefault
+	{font-size:10.0pt;}
+@page WordSection1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+-->
+</style>
+
+</head>
+
+<body lang=EL link=blue vlink=purple>
+
+<div class=WordSection1>
+
+<p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+text-align:center'><span lang=EN-US style='font-size:16.0pt;line-height:115%'>Letters
+in Symbola </span><span lang=EN-US style='font-size:12.0pt;line-height:115%'><br>
+an aid in choosing between hinted and unhinted versions</span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+lang=EN-US style='font-size:12.0pt;line-height:115%'>&nbsp;</span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+lang=EN-US style='font-size:10.0pt;line-height:115%;font-family:"Symbola","serif"'>0
+1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e
+f g h i j k l m n o p q r s t u v w x y z &#913; &#914; &#915; &#916; &#917;
+&#918; &#919; &#920; &#921; &#922; &#923; &#924; &#925; &#926; &#927; &#928;
+&#929; &#931; &#932; &#933; &#934; &#935; &#936; &#937; &#945; &#946; &#947;
+&#948; &#949; &#950; &#951; &#952; &#953; &#954; &#955; &#956; &#957; &#958;
+&#959; &#960; &#961; &#962; &#963; &#964; &#965; &#966; &#967; &#968; &#969; &#976;
+&#977; &#981; &#982; &#983; &#985; &#987; &#989; &#991; &#993; &#1040; &#1041;
+&#1042; &#1043; &#1044; &#1045; &#1046; &#1047; &#1048; &#1049; &#1050; &#1051;
+&#1052; &#1053; &#1054; &#1055; &#1056; &#1057; &#1058; &#1059; &#1060; &#1061;
+&#1062; &#1063; &#1064; &#1065; &#1066; &#1067; &#1068; &#1069; &#1070; &#1071;
+&#1072; &#1073; &#1074; &#1075; &#1076; &#1077; &#1078; &#1079; &#1080; &#1081;
+&#1082; &#1083; &#1084; &#1085; &#1086; &#1087; &#1088; &#1089; &#1090; &#1091;
+&#1092; &#1093; &#1094; &#1095; &#1096; &#1097; &#1098; &#1099; &#1100; &#1101;
+&#1102; &#1103; &#119808; &#119809; &#119810; &#119811; &#119812; &#119813; &#119814;
+&#119815; &#119816; &#119817; &#119818; &#119819; &#119820; &#119821; &#119822;
+&#119823; &#119824; &#119825; &#119826; &#119827; &#119828; &#119829; &#119830;
+&#119831; &#119832; &#119833; &#119834; &#119835; &#119836; &#119837; &#119838;
+&#119839; &#119840; &#119841; &#119842; &#119843; &#119844; &#119845; &#119846;
+&#119847; &#119848; &#119849; &#119850; &#119851; &#119852; &#119853; &#119854;
+&#119855; &#119856; &#119857; &#119858; &#119859; &#119860; &#119861; &#119862;
+&#119863; &#119864; &#119865; &#119866; &#119867; &#119868; &#119869; &#119870;
+&#119871; &#119872; &#119873; &#119874; &#119875; &#119876; &#119877; &#119878;
+&#119879; &#119880; &#119881; &#119882; &#119883; &#119884; &#119885; &#119886;
+&#119887; &#119888; &#119889; &#119890; &#119891; &#119892; &#119894; &#119895;
+&#119896; &#119897; &#119898; &#119899; &#119900; &#119901; &#119902; &#119903;
+&#119904; &#119905; &#119906; &#119907; &#119908; &#119909; &#119910; &#119911;
+&#119912; &#119913; &#119914; &#119915; &#119916; &#119917; &#119918; &#119919;
+&#119920; &#119921; &#119922; &#119923; &#119924; &#119925; &#119926; &#119927;
+&#119928; &#119929; &#119930; &#119931; &#119932; &#119933; &#119934; &#119935;
+&#119936; &#119937; &#119938; &#119939; &#119940; &#119941; &#119942; &#119943;
+&#119944; &#119945; &#119946; &#119947; &#119948; &#119949; &#119950; &#119951;
+&#119952; &#119953; &#119954; &#119955; &#119956; &#119957; &#119958; &#119959;
+&#119960; &#119961; &#119962; &#119963; &#119964; &#119966; &#119967; &#119970;
+&#119973; &#119974; &#119977; &#119978; &#119979; &#119980; &#119982; &#119983;
+&#119984; &#119985; &#119986; &#119987; &#119988; &#119989; &#119990; &#119991;
+&#119992; &#119993; &#119995; &#119997; &#119998; &#119999; &#120000; &#120001;
+&#120002; &#120003; &#120005; &#120006; &#120007; &#120008; &#120009; &#120010;
+&#120011; &#120012; &#120013; &#120014; &#120015; &#120016; &#120017; &#120018;
+&#120019; &#120020; &#120021; &#120022; &#120023; &#120024; &#120025; &#120026;
+&#120027; &#120028; &#120029; &#120030; &#120031; &#120032; &#120033; &#120034;
+&#120035; &#120036; &#120037; &#120038; &#120039; &#120040; &#120041; &#120042;
+&#120043; &#120044; &#120045; &#120046; &#120047; &#120048; &#120049; &#120050;
+&#120051; &#120052; &#120053; &#120054; &#120055; &#120056; &#120057; &#120058;
+&#120059; &#120060; &#120061; &#120062; &#120063; &#120064; &#120065; &#120066;
+&#120067; &#120068; &#120069; &#120071; &#120072; &#120073; &#120074; &#120077;
+&#120078; &#120079; &#120080; &#120081; &#120082; &#120083; &#120084; &#120086;
+&#120087; &#120088; &#120089; &#120090; &#120091; &#120092; &#120094; &#120095;
+&#120096; &#120097; &#120098; &#120099; &#120100; &#120101; &#120102; &#120103;
+&#120104; &#120105; &#120106; &#120107; &#120108; &#120109; &#120110; &#120111;
+&#120112; &#120113; &#120114; &#120115; &#120116; &#120117; &#120118; &#120119;
+&#120120; &#120121; &#120123; &#120124; &#120125; &#120126; &#120128; &#120129;
+&#120130; &#120131; &#120132; &#120134; &#120138; &#120139; &#120140; &#120141;
+&#120142; &#120143; &#120144; &#120146; &#120147; &#120148; &#120149; &#120150;
+&#120151; &#120152; &#120153; &#120154; &#120155; &#120156; &#120157; &#120158;
+&#120159; &#120160; &#120161; &#120162; &#120163; &#120164; &#120165; &#120166;
+&#120167; &#120168; &#120169; &#120170; &#120171; &#120172; &#120173; &#120174;
+&#120175; &#120176; &#120177; &#120178; &#120179; &#120180; &#120181; &#120182;
+&#120183; &#120184; &#120185; &#120186; &#120187; &#120188; &#120189; &#120190;
+&#120191; &#120192; &#120193; &#120194; &#120195; &#120196; &#120197; &#120198;
+&#120199; &#120200; &#120201; &#120202; &#120203; &#120204; &#120205; &#120206;
+&#120207; &#120208; &#120209; &#120210; &#120211; &#120212; &#120213; &#120214;
+&#120215; &#120216; &#120217; &#120218; &#120219; &#120220; &#120221; &#120222;
+&#120223; &#120224; &#120225; &#120226; &#120227; &#120228; &#120229; &#120230;
+&#120231; &#120232; &#120233; &#120234; &#120235; &#120236; &#120237; &#120238;
+&#120239; &#120240; &#120241; &#120242; &#120243; &#120244; &#120245; &#120246;
+&#120247; &#120248; &#120249; &#120250; &#120251; &#120252; &#120253; &#120254;
+&#120255; &#120256; &#120257; &#120258; &#120259; &#120260; &#120261; &#120262;
+&#120263; &#120264; &#120265; &#120266; &#120267; &#120268; &#120269; &#120270;
+&#120271; &#120272; &#120273; &#120274; &#120275; &#120276; &#120277; &#120278;
+&#120279; &#120280; &#120281; &#120282; &#120283; &#120284; &#120285; &#120286;
+&#120287; &#120288; &#120289; &#120290; &#120291; &#120292; &#120293; &#120294;
+&#120295; &#120296; &#120297; &#120298; &#120299; &#120300; &#120301; &#120302;
+&#120303; &#120304; &#120305; &#120306; &#120307; &#120308; &#120309; &#120310;
+&#120311; &#120312; &#120313; &#120314; &#120315; &#120316; &#120317; &#120318;
+&#120319; &#120320; &#120321; &#120322; &#120323; &#120324; &#120325; &#120326;
+&#120327; &#120328; &#120329; &#120330; &#120331; &#120332; &#120333; &#120334;
+&#120335; &#120336; &#120337; &#120338; &#120339; &#120340; &#120341; &#120342;
+&#120343; &#120344; &#120345; &#120346; &#120347; &#120348; &#120349; &#120350;
+&#120351; &#120352; &#120353; &#120354; &#120355; &#120356; &#120357; &#120358;
+&#120359; &#120360; &#120361; &#120362; &#120363; &#120364; &#120365; &#120366;
+&#120367; &#120368; &#120369; &#120370; &#120371; &#120372; &#120373; &#120374;
+&#120375; &#120376; &#120377; &#120378; &#120379; &#120380; &#120381; &#120382;
+&#120383; &#120384; &#120385; &#120386; &#120387; &#120388; &#120389; &#120390;
+&#120391; &#120392; &#120393; &#120394; &#120395; &#120396; &#120397; &#120398;
+&#120399; &#120400; &#120401; &#120402; &#120403; &#120404; &#120405; &#120406;
+&#120407; &#120408; &#120409; &#120410; &#120411; &#120412; &#120413; &#120414;
+&#120415; &#120416; &#120417; &#120418; &#120419; &#120420; &#120421; &#120422;
+&#120423; &#120424; &#120425; &#120426; &#120427; &#120428; &#120429; &#120430;
+&#120431; &#120432; &#120433; &#120434; &#120435; &#120436; &#120437; &#120438;
+&#120439; &#120440; &#120441; &#120442; &#120443; &#120444; &#120445; &#120446;
+&#120447; &#120448; &#120449; &#120450; &#120451; &#120452; &#120453; &#120454;
+&#120455; &#120456; &#120457; &#120458; &#120459; &#120460; &#120461; &#120462;
+&#120463; &#120464; &#120465; &#120466; &#120467; &#120468; &#120469; &#120470;
+&#120471; &#120472; &#120473; &#120474; &#120475; &#120476; &#120477; &#120478;
+&#120479; &#120480; &#120481; &#120482; &#120483; &#120484; &#120485; &#120488;
+&#120489; &#120490; &#120491; &#120492; &#120493; &#120494; &#120495; &#120496;
+&#120497; &#120498; &#120499; &#120500; &#120501; &#120502; &#120503; &#120504;
+&#120505; &#120506; &#120507; &#120508; &#120509; &#120510; &#120511; &#120512;
+&#120513; &#120514; &#120515; &#120516; &#120517; &#120518; &#120519; &#120520;
+&#120521; &#120522; &#120523; &#120524; &#120525; &#120526; &#120527; &#120528;
+&#120529; &#120530; &#120531; &#120532; &#120533; &#120534; &#120535; &#120536;
+&#120537; &#120538; &#120539; &#120540; &#120541; &#120542; &#120543; &#120544;
+&#120545; &#120546; &#120547; &#120548; &#120549; &#120550; &#120551; &#120552;
+&#120553; &#120554; &#120555; &#120556; &#120557; &#120558; &#120559; &#120560;
+&#120561; &#120562; &#120563; &#120564; &#120565; &#120566; &#120567; &#120568;
+&#120569; &#120570; &#120571; &#120572; &#120573; &#120574; &#120575; &#120576;
+&#120577; &#120578; &#120579; &#120580; &#120581; &#120582; &#120583; &#120584;
+&#120585; &#120586; &#120587; &#120588; &#120589; &#120590; &#120591; &#120592;
+&#120593; &#120594; &#120595; &#120596; &#120597; &#120598; &#120599; &#120600;
+&#120601; &#120602; &#120603; &#120604; &#120605; &#120606; &#120607; &#120608;
+&#120609; &#120610; &#120611; &#120612; &#120613; &#120614; &#120615; &#120616;
+&#120617; &#120618; &#120619; &#120620; &#120621; &#120622; &#120623; &#120624;
+&#120625; &#120626; &#120627; &#120628; &#120629; &#120630; &#120631; &#120632;
+&#120633; &#120634; &#120635; &#120636; &#120637; &#120638; &#120639; &#120640;
+&#120641; &#120642; &#120643; &#120644; &#120645; &#120646; &#120647; &#120648;
+&#120649; &#120650; &#120651; &#120652; &#120653; &#120654; &#120655; &#120656;
+&#120657; &#120658; &#120659; &#120660; &#120661; &#120662; &#120663; &#120664;
+&#120665; &#120666; &#120667; &#120668; &#120669; &#120670; &#120671; &#120672;
+&#120673; &#120674; &#120675; &#120676; &#120677; &#120678; &#120679; &#120680;
+&#120681; &#120682; &#120683; &#120684; &#120685; &#120686; &#120687; &#120688;
+&#120689; &#120690; &#120691; &#120692; &#120693; &#120694; &#120695; &#120696;
+&#120697; &#120698; &#120699; &#120700; &#120701; &#120702; &#120703; &#120704;
+&#120705; &#120706; &#120707; &#120708; &#120709; &#120710; &#120711; &#120712;
+&#120713; &#120714; &#120715; &#120716; &#120717; &#120718; &#120719; &#120720;
+&#120721; &#120722; &#120723; &#120724; &#120725; &#120726; &#120727; &#120728;
+&#120729; &#120730; &#120731; &#120732; &#120733; &#120734; &#120735; &#120736;
+&#120737; &#120738; &#120739; &#120740; &#120741; &#120742; &#120743; &#120744;
+&#120745; &#120746; &#120747; &#120748; &#120749; &#120750; &#120751; &#120752;
+&#120753; &#120754; &#120755; &#120756; &#120757; &#120758; &#120759; &#120760;
+&#120761; &#120762; &#120763; &#120764; &#120765; &#120766; &#120767; &#120768;
+&#120769; &#120770; &#120771; &#120772; &#120773; &#120774; &#120775; &#120776;
+&#120777; &#120778; &#120779; &#120782; &#120783; &#120784; &#120785; &#120786;
+&#120787; &#120788; &#120789; &#120790; &#120791; &#120792; &#120793; &#120794;
+&#120795; &#120796; &#120797; &#120798; &#120799; &#120800; &#120801; &#120802;
+&#120803; &#120804; &#120805; &#120806; &#120807; &#120808; &#120809; &#120810;
+&#120811; &#120812; &#120813; &#120814; &#120815; &#120816; &#120817; &#120818;
+&#120819; &#120820; &#120821; &#120822; &#120823; &#120824; &#120825; &#120826;
+&#120827; &#120828; &#120829; &#120830; &#120831;</span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+lang=EN-US style='font-size:12.0pt;line-height:115%;font-family:"Symbola","serif"'>&nbsp;</span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+lang=EN-US style='font-size:12.0pt;line-height:115%;font-family:"Symbola","serif"'>0
+1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e
+f g h i j k l m n o p q r s t u v w x y z &#913; &#914; &#915; &#916; &#917;
+&#918; &#919; &#920; &#921; &#922; &#923; &#924; &#925; &#926; &#927; &#928;
+&#929; &#931; &#932; &#933; &#934; &#935; &#936; &#937; &#945; &#946; &#947;
+&#948; &#949; &#950; &#951; &#952; &#953; &#954; &#955; &#956; &#957; &#958;
+&#959; &#960; &#961; &#962; &#963; &#964; &#965; &#966; &#967; &#968; &#969; &#976;
+&#977; &#981; &#982; &#983; &#985; &#987; &#989; &#991; &#993; &#1040; &#1041;
+&#1042; &#1043; &#1044; &#1045; &#1046; &#1047; &#1048; &#1049; &#1050; &#1051;
+&#1052; &#1053; &#1054; &#1055; &#1056; &#1057; &#1058; &#1059; &#1060; &#1061;
+&#1062; &#1063; &#1064; &#1065; &#1066; &#1067; &#1068; &#1069; &#1070; &#1071;
+&#1072; &#1073; &#1074; &#1075; &#1076; &#1077; &#1078; &#1079; &#1080; &#1081;
+&#1082; &#1083; &#1084; &#1085; &#1086; &#1087; &#1088; &#1089; &#1090; &#1091;
+&#1092; &#1093; &#1094; &#1095; &#1096; &#1097; &#1098; &#1099; &#1100; &#1101;
+&#1102; &#1103; &#119808; &#119809; &#119810; &#119811; &#119812; &#119813; &#119814;
+&#119815; &#119816; &#119817; &#119818; &#119819; &#119820; &#119821; &#119822;
+&#119823; &#119824; &#119825; &#119826; &#119827; &#119828; &#119829; &#119830;
+&#119831; &#119832; &#119833; &#119834; &#119835; &#119836; &#119837; &#119838;
+&#119839; &#119840; &#119841; &#119842; &#119843; &#119844; &#119845; &#119846;
+&#119847; &#119848; &#119849; &#119850; &#119851; &#119852; &#119853; &#119854;
+&#119855; &#119856; &#119857; &#119858; &#119859; &#119860; &#119861; &#119862;
+&#119863; &#119864; &#119865; &#119866; &#119867; &#119868; &#119869; &#119870;
+&#119871; &#119872; &#119873; &#119874; &#119875; &#119876; &#119877; &#119878;
+&#119879; &#119880; &#119881; &#119882; &#119883; &#119884; &#119885; &#119886;
+&#119887; &#119888; &#119889; &#119890; &#119891; &#119892; &#119894; &#119895;
+&#119896; &#119897; &#119898; &#119899; &#119900; &#119901; &#119902; &#119903;
+&#119904; &#119905; &#119906; &#119907; &#119908; &#119909; &#119910; &#119911;
+&#119912; &#119913; &#119914; &#119915; &#119916; &#119917; &#119918; &#119919;
+&#119920; &#119921; &#119922; &#119923; &#119924; &#119925; &#119926; &#119927;
+&#119928; &#119929; &#119930; &#119931; &#119932; &#119933; &#119934; &#119935;
+&#119936; &#119937; &#119938; &#119939; &#119940; &#119941; &#119942; &#119943;
+&#119944; &#119945; &#119946; &#119947; &#119948; &#119949; &#119950; &#119951;
+&#119952; &#119953; &#119954; &#119955; &#119956; &#119957; &#119958; &#119959;
+&#119960; &#119961; &#119962; &#119963; &#119964; &#119966; &#119967; &#119970;
+&#119973; &#119974; &#119977; &#119978; &#119979; &#119980; &#119982; &#119983;
+&#119984; &#119985; &#119986; &#119987; &#119988; &#119989; &#119990; &#119991;
+&#119992; &#119993; &#119995; &#119997; &#119998; &#119999; &#120000; &#120001;
+&#120002; &#120003; &#120005; &#120006; &#120007; &#120008; &#120009; &#120010;
+&#120011; &#120012; &#120013; &#120014; &#120015; &#120016; &#120017; &#120018;
+&#120019; &#120020; &#120021; &#120022; &#120023; &#120024; &#120025; &#120026;
+&#120027; &#120028; &#120029; &#120030; &#120031; &#120032; &#120033; &#120034;
+&#120035; &#120036; &#120037; &#120038; &#120039; &#120040; &#120041; &#120042;
+&#120043; &#120044; &#120045; &#120046; &#120047; &#120048; &#120049; &#120050;
+&#120051; &#120052; &#120053; &#120054; &#120055; &#120056; &#120057; &#120058;
+&#120059; &#120060; &#120061; &#120062; &#120063; &#120064; &#120065; &#120066;
+&#120067; &#120068; &#120069; &#120071; &#120072; &#120073; &#120074; &#120077;
+&#120078; &#120079; &#120080; &#120081; &#120082; &#120083; &#120084; &#120086;
+&#120087; &#120088; &#120089; &#120090; &#120091; &#120092; &#120094; &#120095;
+&#120096; &#120097; &#120098; &#120099; &#120100; &#120101; &#120102; &#120103;
+&#120104; &#120105; &#120106; &#120107; &#120108; &#120109; &#120110; &#120111;
+&#120112; &#120113; &#120114; &#120115; &#120116; &#120117; &#120118; &#120119;
+&#120120; &#120121; &#120123; &#120124; &#120125; &#120126; &#120128; &#120129;
+&#120130; &#120131; &#120132; &#120134; &#120138; &#120139; &#120140; &#120141;
+&#120142; &#120143; &#120144; &#120146; &#120147; &#120148; &#120149; &#120150;
+&#120151; &#120152; &#120153; &#120154; &#120155; &#120156; &#120157; &#120158;
+&#120159; &#120160; &#120161; &#120162; &#120163; &#120164; &#120165; &#120166;
+&#120167; &#120168; &#120169; &#120170; &#120171; &#120172; &#120173; &#120174;
+&#120175; &#120176; &#120177; &#120178; &#120179; &#120180; &#120181; &#120182;
+&#120183; &#120184; &#120185; &#120186; &#120187; &#120188; &#120189; &#120190;
+&#120191; &#120192; &#120193; &#120194; &#120195; &#120196; &#120197; &#120198;
+&#120199; &#120200; &#120201; &#120202; &#120203; &#120204; &#120205; &#120206;
+&#120207; &#120208; &#120209; &#120210; &#120211; &#120212; &#120213; &#120214;
+&#120215; &#120216; &#120217; &#120218; &#120219; &#120220; &#120221; &#120222;
+&#120223; &#120224; &#120225; &#120226; &#120227; &#120228; &#120229; &#120230;
+&#120231; &#120232; &#120233; &#120234; &#120235; &#120236; &#120237; &#120238;
+&#120239; &#120240; &#120241; &#120242; &#120243; &#120244; &#120245; &#120246;
+&#120247; &#120248; &#120249; &#120250; &#120251; &#120252; &#120253; &#120254;
+&#120255; &#120256; &#120257; &#120258; &#120259; &#120260; &#120261; &#120262;
+&#120263; &#120264; &#120265; &#120266; &#120267; &#120268; &#120269; &#120270;
+&#120271; &#120272; &#120273; &#120274; &#120275; &#120276; &#120277; &#120278;
+&#120279; &#120280; &#120281; &#120282; &#120283; &#120284; &#120285; &#120286;
+&#120287; &#120288; &#120289; &#120290; &#120291; &#120292; &#120293; &#120294;
+&#120295; &#120296; &#120297; &#120298; &#120299; &#120300; &#120301; &#120302;
+&#120303; &#120304; &#120305; &#120306; &#120307; &#120308; &#120309; &#120310;
+&#120311; &#120312; &#120313; &#120314; &#120315; &#120316; &#120317; &#120318;
+&#120319; &#120320; &#120321; &#120322; &#120323; &#120324; &#120325; &#120326;
+&#120327; &#120328; &#120329; &#120330; &#120331; &#120332; &#120333; &#120334;
+&#120335; &#120336; &#120337; &#120338; &#120339; &#120340; &#120341; &#120342;
+&#120343; &#120344; &#120345; &#120346; &#120347; &#120348; &#120349; &#120350;
+&#120351; &#120352; &#120353; &#120354; &#120355; &#120356; &#120357; &#120358;
+&#120359; &#120360; &#120361; &#120362; &#120363; &#120364; &#120365; &#120366;
+&#120367; &#120368; &#120369; &#120370; &#120371; &#120372; &#120373; &#120374;
+&#120375; &#120376; &#120377; &#120378; &#120379; &#120380; &#120381; &#120382;
+&#120383; &#120384; &#120385; &#120386; &#120387; &#120388; &#120389; &#120390;
+&#120391; &#120392; &#120393; &#120394; &#120395; &#120396; &#120397; &#120398;
+&#120399; &#120400; &#120401; &#120402; &#120403; &#120404; &#120405; &#120406;
+&#120407; &#120408; &#120409; &#120410; &#120411; &#120412; &#120413; &#120414;
+&#120415; &#120416; &#120417; &#120418; &#120419; &#120420; &#120421; &#120422;
+&#120423; &#120424; &#120425; &#120426; &#120427; &#120428; &#120429; &#120430;
+&#120431; &#120432; &#120433; &#120434; &#120435; &#120436; &#120437; &#120438;
+&#120439; &#120440; &#120441; &#120442; &#120443; &#120444; &#120445; &#120446;
+&#120447; &#120448; &#120449; &#120450; &#120451; &#120452; &#120453; &#120454;
+&#120455; &#120456; &#120457; &#120458; &#120459; &#120460; &#120461; &#120462;
+&#120463; &#120464; &#120465; &#120466; &#120467; &#120468; &#120469; &#120470;
+&#120471; &#120472; &#120473; &#120474; &#120475; &#120476; &#120477; &#120478;
+&#120479; &#120480; &#120481; &#120482; &#120483; &#120484; &#120485; &#120488;
+&#120489; &#120490; &#120491; &#120492; &#120493; &#120494; &#120495; &#120496;
+&#120497; &#120498; &#120499; &#120500; &#120501; &#120502; &#120503; &#120504;
+&#120505; &#120506; &#120507; &#120508; &#120509; &#120510; &#120511; &#120512;
+&#120513; &#120514; &#120515; &#120516; &#120517; &#120518; &#120519; &#120520;
+&#120521; &#120522; &#120523; &#120524; &#120525; &#120526; &#120527; &#120528;
+&#120529; &#120530; &#120531; &#120532; &#120533; &#120534; &#120535; &#120536;
+&#120537; &#120538; &#120539; &#120540; &#120541; &#120542; &#120543; &#120544;
+&#120545; &#120546; &#120547; &#120548; &#120549; &#120550; &#120551; &#120552;
+&#120553; &#120554; &#120555; &#120556; &#120557; &#120558; &#120559; &#120560;
+&#120561; &#120562; &#120563; &#120564; &#120565; &#120566; &#120567; &#120568;
+&#120569; &#120570; &#120571; &#120572; &#120573; &#120574; &#120575; &#120576;
+&#120577; &#120578; &#120579; &#120580; &#120581; &#120582; &#120583; &#120584;
+&#120585; &#120586; &#120587; &#120588; &#120589; &#120590; &#120591; &#120592;
+&#120593; &#120594; &#120595; &#120596; &#120597; &#120598; &#120599; &#120600;
+&#120601; &#120602; &#120603; &#120604; &#120605; &#120606; &#120607; &#120608;
+&#120609; &#120610; &#120611; &#120612; &#120613; &#120614; &#120615; &#120616;
+&#120617; &#120618; &#120619; &#120620; &#120621; &#120622; &#120623; &#120624;
+&#120625; &#120626; &#120627; &#120628; &#120629; &#120630; &#120631; &#120632;
+&#120633; &#120634; &#120635; &#120636; &#120637; &#120638; &#120639; &#120640;
+&#120641; &#120642; &#120643; &#120644; &#120645; &#120646; &#120647; &#120648;
+&#120649; &#120650; &#120651; &#120652; &#120653; &#120654; &#120655; &#120656;
+&#120657; &#120658; &#120659; &#120660; &#120661; &#120662; &#120663; &#120664;
+&#120665; &#120666; &#120667; &#120668; &#120669; &#120670; &#120671; &#120672;
+&#120673; &#120674; &#120675; &#120676; &#120677; &#120678; &#120679; &#120680;
+&#120681; &#120682; &#120683; &#120684; &#120685; &#120686; &#120687; &#120688;
+&#120689; &#120690; &#120691; &#120692; &#120693; &#120694; &#120695; &#120696;
+&#120697; &#120698; &#120699; &#120700; &#120701; &#120702; &#120703; &#120704;
+&#120705; &#120706; &#120707; &#120708; &#120709; &#120710; &#120711; &#120712;
+&#120713; &#120714; &#120715; &#120716; &#120717; &#120718; &#120719; &#120720;
+&#120721; &#120722; &#120723; &#120724; &#120725; &#120726; &#120727; &#120728;
+&#120729; &#120730; &#120731; &#120732; &#120733; &#120734; &#120735; &#120736;
+&#120737; &#120738; &#120739; &#120740; &#120741; &#120742; &#120743; &#120744;
+&#120745; &#120746; &#120747; &#120748; &#120749; &#120750; &#120751; &#120752;
+&#120753; &#120754; &#120755; &#120756; &#120757; &#120758; &#120759; &#120760;
+&#120761; &#120762; &#120763; &#120764; &#120765; &#120766; &#120767; &#120768;
+&#120769; &#120770; &#120771; &#120772; &#120773; &#120774; &#120775; &#120776;
+&#120777; &#120778; &#120779; &#120782; &#120783; &#120784; &#120785; &#120786;
+&#120787; &#120788; &#120789; &#120790; &#120791; &#120792; &#120793; &#120794;
+&#120795; &#120796; &#120797; &#120798; &#120799; &#120800; &#120801; &#120802;
+&#120803; &#120804; &#120805; &#120806; &#120807; &#120808; &#120809; &#120810;
+&#120811; &#120812; &#120813; &#120814; &#120815; &#120816; &#120817; &#120818;
+&#120819; &#120820; &#120821; &#120822; &#120823; &#120824; &#120825; &#120826;
+&#120827; &#120828; &#120829; &#120830; &#120831;</span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+lang=EN-US style='font-size:14.0pt;line-height:115%;font-family:"Symbola","serif"'>&nbsp;</span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+lang=EN-US style='font-size:14.0pt;line-height:115%;font-family:"Symbola","serif"'>0
+1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e
+f g h i j k l m n o p q r s t u v w x y z &#913; &#914; &#915; &#916; &#917;
+&#918; &#919; &#920; &#921; &#922; &#923; &#924; &#925; &#926; &#927; &#928;
+&#929; &#931; &#932; &#933; &#934; &#935; &#936; &#937; &#945; &#946; &#947;
+&#948; &#949; &#950; &#951; &#952; &#953; &#954; &#955; &#956; &#957; &#958;
+&#959; &#960; &#961; &#962; &#963; &#964; &#965; &#966; &#967; &#968; &#969; &#976;
+&#977; &#981; &#982; &#983; &#985; &#987; &#989; &#991; &#993; &#1040; &#1041;
+&#1042; &#1043; &#1044; &#1045; &#1046; &#1047; &#1048; &#1049; &#1050; &#1051;
+&#1052; &#1053; &#1054; &#1055; &#1056; &#1057; &#1058; &#1059; &#1060; &#1061;
+&#1062; &#1063; &#1064; &#1065; &#1066; &#1067; &#1068; &#1069; &#1070; &#1071;
+&#1072; &#1073; &#1074; &#1075; &#1076; &#1077; &#1078; &#1079; &#1080; &#1081;
+&#1082; &#1083; &#1084; &#1085; &#1086; &#1087; &#1088; &#1089; &#1090; &#1091;
+&#1092; &#1093; &#1094; &#1095; &#1096; &#1097; &#1098; &#1099; &#1100; &#1101;
+&#1102; &#1103; &#119808; &#119809; &#119810; &#119811; &#119812; &#119813; &#119814;
+&#119815; &#119816; &#119817; &#119818; &#119819; &#119820; &#119821; &#119822;
+&#119823; &#119824; &#119825; &#119826; &#119827; &#119828; &#119829; &#119830;
+&#119831; &#119832; &#119833; &#119834; &#119835; &#119836; &#119837; &#119838;
+&#119839; &#119840; &#119841; &#119842; &#119843; &#119844; &#119845; &#119846;
+&#119847; &#119848; &#119849; &#119850; &#119851; &#119852; &#119853; &#119854;
+&#119855; &#119856; &#119857; &#119858; &#119859; &#119860; &#119861; &#119862;
+&#119863; &#119864; &#119865; &#119866; &#119867; &#119868; &#119869; &#119870;
+&#119871; &#119872; &#119873; &#119874; &#119875; &#119876; &#119877; &#119878;
+&#119879; &#119880; &#119881; &#119882; &#119883; &#119884; &#119885; &#119886;
+&#119887; &#119888; &#119889; &#119890; &#119891; &#119892; &#119894; &#119895;
+&#119896; &#119897; &#119898; &#119899; &#119900; &#119901; &#119902; &#119903;
+&#119904; &#119905; &#119906; &#119907; &#119908; &#119909; &#119910; &#119911;
+&#119912; &#119913; &#119914; &#119915; &#119916; &#119917; &#119918; &#119919;
+&#119920; &#119921; &#119922; &#119923; &#119924; &#119925; &#119926; &#119927;
+&#119928; &#119929; &#119930; &#119931; &#119932; &#119933; &#119934; &#119935;
+&#119936; &#119937; &#119938; &#119939; &#119940; &#119941; &#119942; &#119943;
+&#119944; &#119945; &#119946; &#119947; &#119948; &#119949; &#119950; &#119951;
+&#119952; &#119953; &#119954; &#119955; &#119956; &#119957; &#119958; &#119959;
+&#119960; &#119961; &#119962; &#119963; &#119964; &#119966; &#119967; &#119970;
+&#119973; &#119974; &#119977; &#119978; &#119979; &#119980; &#119982; &#119983;
+&#119984; &#119985; &#119986; &#119987; &#119988; &#119989; &#119990; &#119991;
+&#119992; &#119993; &#119995; &#119997; &#119998; &#119999; &#120000; &#120001;
+&#120002; &#120003; &#120005; &#120006; &#120007; &#120008; &#120009; &#120010;
+&#120011; &#120012; &#120013; &#120014; &#120015; &#120016; &#120017; &#120018;
+&#120019; &#120020; &#120021; &#120022; &#120023; &#120024; &#120025; &#120026;
+&#120027; &#120028; &#120029; &#120030; &#120031; &#120032; &#120033; &#120034;
+&#120035; &#120036; &#120037; &#120038; &#120039; &#120040; &#120041; &#120042;
+&#120043; &#120044; &#120045; &#120046; &#120047; &#120048; &#120049; &#120050;
+&#120051; &#120052; &#120053; &#120054; &#120055; &#120056; &#120057; &#120058;
+&#120059; &#120060; &#120061; &#120062; &#120063; &#120064; &#120065; &#120066;
+&#120067; &#120068; &#120069; &#120071; &#120072; &#120073; &#120074; &#120077;
+&#120078; &#120079; &#120080; &#120081; &#120082; &#120083; &#120084; &#120086;
+&#120087; &#120088; &#120089; &#120090; &#120091; &#120092; &#120094; &#120095;
+&#120096; &#120097; &#120098; &#120099; &#120100; &#120101; &#120102; &#120103;
+&#120104; &#120105; &#120106; &#120107; &#120108; &#120109; &#120110; &#120111;
+&#120112; &#120113; &#120114; &#120115; &#120116; &#120117; &#120118; &#120119;
+&#120120; &#120121; &#120123; &#120124; &#120125; &#120126; &#120128; &#120129;
+&#120130; &#120131; &#120132; &#120134; &#120138; &#120139; &#120140; &#120141;
+&#120142; &#120143; &#120144; &#120146; &#120147; &#120148; &#120149; &#120150;
+&#120151; &#120152; &#120153; &#120154; &#120155; &#120156; &#120157; &#120158;
+&#120159; &#120160; &#120161; &#120162; &#120163; &#120164; &#120165; &#120166;
+&#120167; &#120168; &#120169; &#120170; &#120171; &#120172; &#120173; &#120174;
+&#120175; &#120176; &#120177; &#120178; &#120179; &#120180; &#120181; &#120182;
+&#120183; &#120184; &#120185; &#120186; &#120187; &#120188; &#120189; &#120190;
+&#120191; &#120192; &#120193; &#120194; &#120195; &#120196; &#120197; &#120198;
+&#120199; &#120200; &#120201; &#120202; &#120203; &#120204; &#120205; &#120206;
+&#120207; &#120208; &#120209; &#120210; &#120211; &#120212; &#120213; &#120214;
+&#120215; &#120216; &#120217; &#120218; &#120219; &#120220; &#120221; &#120222;
+&#120223; &#120224; &#120225; &#120226; &#120227; &#120228; &#120229; &#120230;
+&#120231; &#120232; &#120233; &#120234; &#120235; &#120236; &#120237; &#120238;
+&#120239; &#120240; &#120241; &#120242; &#120243; &#120244; &#120245; &#120246;
+&#120247; &#120248; &#120249; &#120250; &#120251; &#120252; &#120253; &#120254;
+&#120255; &#120256; &#120257; &#120258; &#120259; &#120260; &#120261; &#120262;
+&#120263; &#120264; &#120265; &#120266; &#120267; &#120268; &#120269; &#120270;
+&#120271; &#120272; &#120273; &#120274; &#120275; &#120276; &#120277; &#120278;
+&#120279; &#120280; &#120281; &#120282; &#120283; &#120284; &#120285; &#120286;
+&#120287; &#120288; &#120289; &#120290; &#120291; &#120292; &#120293; &#120294;
+&#120295; &#120296; &#120297; &#120298; &#120299; &#120300; &#120301; &#120302;
+&#120303; &#120304; &#120305; &#120306; &#120307; &#120308; &#120309; &#120310;
+&#120311; &#120312; &#120313; &#120314; &#120315; &#120316; &#120317; &#120318;
+&#120319; &#120320; &#120321; &#120322; &#120323; &#120324; &#120325; &#120326;
+&#120327; &#120328; &#120329; &#120330; &#120331; &#120332; &#120333; &#120334;
+&#120335; &#120336; &#120337; &#120338; &#120339; &#120340; &#120341; &#120342;
+&#120343; &#120344; &#120345; &#120346; &#120347; &#120348; &#120349; &#120350;
+&#120351; &#120352; &#120353; &#120354; &#120355; &#120356; &#120357; &#120358;
+&#120359; &#120360; &#120361; &#120362; &#120363; &#120364; &#120365; &#120366;
+&#120367; &#120368; &#120369; &#120370; &#120371; &#120372; &#120373; &#120374;
+&#120375; &#120376; &#120377; &#120378; &#120379; &#120380; &#120381; &#120382;
+&#120383; &#120384; &#120385; &#120386; &#120387; &#120388; &#120389; &#120390;
+&#120391; &#120392; &#120393; &#120394; &#120395; &#120396; &#120397; &#120398;
+&#120399; &#120400; &#120401; &#120402; &#120403; &#120404; &#120405; &#120406;
+&#120407; &#120408; &#120409; &#120410; &#120411; &#120412; &#120413; &#120414;
+&#120415; &#120416; &#120417; &#120418; &#120419; &#120420; &#120421; &#120422;
+&#120423; &#120424; &#120425; &#120426; &#120427; &#120428; &#120429; &#120430;
+&#120431; &#120432; &#120433; &#120434; &#120435; &#120436; &#120437; &#120438;
+&#120439; &#120440; &#120441; &#120442; &#120443; &#120444; &#120445; &#120446;
+&#120447; &#120448; &#120449; &#120450; &#120451; &#120452; &#120453; &#120454;
+&#120455; &#120456; &#120457; &#120458; &#120459; &#120460; &#120461; &#120462;
+&#120463; &#120464; &#120465; &#120466; &#120467; &#120468; &#120469; &#120470;
+&#120471; &#120472; &#120473; &#120474; &#120475; &#120476; &#120477; &#120478;
+&#120479; &#120480; &#120481; &#120482; &#120483; &#120484; &#120485; &#120488;
+&#120489; &#120490; &#120491; &#120492; &#120493; &#120494; &#120495; &#120496;
+&#120497; &#120498; &#120499; &#120500; &#120501; &#120502; &#120503; &#120504;
+&#120505; &#120506; &#120507; &#120508; &#120509; &#120510; &#120511; &#120512;
+&#120513; &#120514; &#120515; &#120516; &#120517; &#120518; &#120519; &#120520;
+&#120521; &#120522; &#120523; &#120524; &#120525; &#120526; &#120527; &#120528;
+&#120529; &#120530; &#120531; &#120532; &#120533; &#120534; &#120535; &#120536;
+&#120537; &#120538; &#120539; &#120540; &#120541; &#120542; &#120543; &#120544;
+&#120545; &#120546; &#120547; &#120548; &#120549; &#120550; &#120551; &#120552;
+&#120553; &#120554; &#120555; &#120556; &#120557; &#120558; &#120559; &#120560;
+&#120561; &#120562; &#120563; &#120564; &#120565; &#120566; &#120567; &#120568;
+&#120569; &#120570; &#120571; &#120572; &#120573; &#120574; &#120575; &#120576;
+&#120577; &#120578; &#120579; &#120580; &#120581; &#120582; &#120583; &#120584;
+&#120585; &#120586; &#120587; &#120588; &#120589; &#120590; &#120591; &#120592;
+&#120593; &#120594; &#120595; &#120596; &#120597; &#120598; &#120599; &#120600;
+&#120601; &#120602; &#120603; &#120604; &#120605; &#120606; &#120607; &#120608;
+&#120609; &#120610; &#120611; &#120612; &#120613; &#120614; &#120615; &#120616;
+&#120617; &#120618; &#120619; &#120620; &#120621; &#120622; &#120623; &#120624;
+&#120625; &#120626; &#120627; &#120628; &#120629; &#120630; &#120631; &#120632;
+&#120633; &#120634; &#120635; &#120636; &#120637; &#120638; &#120639; &#120640;
+&#120641; &#120642; &#120643; &#120644; &#120645; &#120646; &#120647; &#120648;
+&#120649; &#120650; &#120651; &#120652; &#120653; &#120654; &#120655; &#120656;
+&#120657; &#120658; &#120659; &#120660; &#120661; &#120662; &#120663; &#120664;
+&#120665; &#120666; &#120667; &#120668; &#120669; &#120670; &#120671; &#120672;
+&#120673; &#120674; &#120675; &#120676; &#120677; &#120678; &#120679; &#120680;
+&#120681; &#120682; &#120683; &#120684; &#120685; &#120686; &#120687; &#120688;
+&#120689; &#120690; &#120691; &#120692; &#120693; &#120694; &#120695; &#120696;
+&#120697; &#120698; &#120699; &#120700; &#120701; &#120702; &#120703; &#120704;
+&#120705; &#120706; &#120707; &#120708; &#120709; &#120710; &#120711; &#120712;
+&#120713; &#120714; &#120715; &#120716; &#120717; &#120718; &#120719; &#120720;
+&#120721; &#120722; &#120723; &#120724; &#120725; &#120726; &#120727; &#120728;
+&#120729; &#120730; &#120731; &#120732; &#120733; &#120734; &#120735; &#120736;
+&#120737; &#120738; &#120739; &#120740; &#120741; &#120742; &#120743; &#120744;
+&#120745; &#120746; &#120747; &#120748; &#120749; &#120750; &#120751; &#120752;
+&#120753; &#120754; &#120755; &#120756; &#120757; &#120758; &#120759; &#120760;
+&#120761; &#120762; &#120763; &#120764; &#120765; &#120766; &#120767; &#120768;
+&#120769; &#120770; &#120771; &#120772; &#120773; &#120774; &#120775; &#120776;
+&#120777; &#120778; &#120779; &#120782; &#120783; &#120784; &#120785; &#120786;
+&#120787; &#120788; &#120789; &#120790; &#120791; &#120792; &#120793; &#120794;
+&#120795; &#120796; &#120797; &#120798; &#120799; &#120800; &#120801; &#120802;
+&#120803; &#120804; &#120805; &#120806; &#120807; &#120808; &#120809; &#120810;
+&#120811; &#120812; &#120813; &#120814; &#120815; &#120816; &#120817; &#120818;
+&#120819; &#120820; &#120821; &#120822; &#120823; &#120824; &#120825; &#120826;
+&#120827; &#120828; &#120829; &#120830; &#120831;</span></p>
+
+</div>
+
+</body>
+
+</html>

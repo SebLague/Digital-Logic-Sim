@@ -19,7 +19,8 @@ namespace Seb.Vis
 		DepartureMono,
 
 		// -- Pixel --
-		Born2bSporty //
+		Born2bSporty,
+		Symbola //
 	}
 }
 
@@ -43,7 +44,8 @@ namespace Seb.Vis.Internal
 			(FontType.JetbrainsMonoSemiBold, "JetbrainsMono/JetBrainsMonoNL-SemiBold"),
 			(FontType.JetbrainsMonoRegular, "JetbrainsMono/JetBrainsMonoNL-Regular"),
 			(FontType.DepartureMono, "DepartureMono/DepartureMono-Regular"),
-			(FontType.Born2bSporty, "Born2bSporty/Born2bSportyV2") //
+			(FontType.Born2bSporty, "Born2bSporty/Born2bSportyV2"),
+			(FontType.Symbola, "symbola/symbola") //
 		};
 	}
 }
