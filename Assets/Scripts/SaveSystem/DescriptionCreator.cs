@@ -69,6 +69,16 @@ namespace DLS.SaveSystem
 
 		public static SubChipDescription CreateBuiltinSubChipDescriptionForPlacement(ChipType type, string name, int id, Vector2 position)
 		{
+			int ROMStorage = 256;
+			uint[] internalData = type switch
+			{
+				ChipType.Rom_256x2x8 => new uint[ROMStorage],
+				ChipType.Rom_256x16 => new uint[ROMStorage],
+				ChipType.Rom_256x32 => new uint[ROMStorage],
+				ChipType.Key => new uint[] { 'K' },
+				ChipType.Pulse => new uint[] { 50, 0, 0 },
+				_ => ChipTypeHelper.IsBusType(type) ? new uint[2] : null
+			};
 			return new SubChipDescription
 			(
 				name,

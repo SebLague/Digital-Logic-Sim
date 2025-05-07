@@ -882,7 +882,7 @@ namespace Seb.Helpers
 
 		public static int TwosComplement(uint unsignedValue, int numBits)
 		{
-			if (numBits < 32)
+			if (numBits <= 32)
 			{
 				uint unsignedRange = 1u << numBits;
 				uint firstNegativeValue = unsignedRange >> 1;

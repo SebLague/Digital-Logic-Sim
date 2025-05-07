@@ -26,7 +26,8 @@ namespace DLS.Description
 	{
 		Bit1 = 1,
 		Bit4 = 4,
-		Bit8 = 8
+		Bit8 = 8,
+		Bit16 = 16
 	}
 
 	public enum PinColour

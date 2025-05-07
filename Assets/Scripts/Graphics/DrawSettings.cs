@@ -13,10 +13,13 @@ namespace DLS.Graphics
 		public const float PinHeight1Bit = 0.185f;
 		public const float PinHeight4Bit = 0.3f;
 		public const float PinHeight8Bit = 0.43f;
+		public const float PinHeight16Bit = 0.56f;
 		public const float PinRadius = PinHeight1Bit / 2;
 
 		public const FontType FontBold = FontType.JetbrainsMonoBold;
 		public const FontType FontRegular = FontType.JetbrainsMonoRegular;
+
+		public const FontType FontAscii = FontType.Symbola;
 
 		public const float FontSizeChipName = 0.25f;
 		public const float FontSizePinLabel = 0.2f;
