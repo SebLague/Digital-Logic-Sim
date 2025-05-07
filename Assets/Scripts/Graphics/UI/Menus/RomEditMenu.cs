@@ -262,19 +262,28 @@ namespace DLS.Graphics
 				}
 			}catch (Exception e){
 				Debug.Log(e);
-				if (stringFormat is DataDisplayMode.Binary){
+				if (stringFormat is DataDisplayMode.Binary)
+				{
 					uintVal =(uint) ((ulong) (Convert.ToInt64(displayString, 2))& 0xFFFFFFFF);
 				}
 				uintVal = 0;
-				case DataDisplayMode.DecimalUnsigned:
-					uintVal = uint.Parse(displayString);
-					break;
-				case DataDisplayMode.HEX:
-					int value = Convert.ToInt32(displayString, 16);
-					uintVal = (uint)value;
-					break;
-				default:
-					throw new NotImplementedException("Unsupported display format: " + stringFormat);
+				switch (stringFormat){
+					case DataDisplayMode.DecimalUnsigned:
+					{
+						uintVal = uint.Parse(displayString);
+						break;
+					}
+					case DataDisplayMode.HEX:
+					{
+						int value = Convert.ToInt32(displayString, 16);
+						uintVal = (uint)value;
+						break;
+					}
+					default:
+					{
+						throw new NotImplementedException("Unsupported display format: " + stringFormat);
+					}
+				}
 			}
 			Debug.Log(uintVal);
 			return uintVal;

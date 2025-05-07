@@ -314,6 +314,10 @@ namespace DLS.Graphics
 				{
 					displayName = subchip.Description.Name;
 				}
+				if(subchip.ChipType == ChipType.DisplayAscii_8Bit)
+				{
+					displayName = "";
+				}
 
 				bool nameCentre = desc.NameLocation == NameDisplayLocation.Centre || isKeyChip;
 				Anchor textAnchor = nameCentre ? Anchor.TextCentre : Anchor.CentreTop;
@@ -446,6 +450,12 @@ namespace DLS.Graphics
 				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
 				bounds = DrawDisplay_DisplayRGBLED(posWorld, scaleWorld, isOn, sim);
 			}
+			else if (display.DisplayType == ChipType.DisplayAscii_8Bit)
+			{
+				bool simActive = sim != null; 
+				bool isOn = simActive && sim.InputPins[0].FirstBitHigh;
+				bounds = DrawDisplay_DisplayAscii8_Bit(posWorld, scaleWorld, isOn, sim);
+			}
 
 			display.LastDrawBounds = bounds;
 			return bounds;
@@ -572,6 +582,21 @@ namespace DLS.Graphics
 
 			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
 		}
+
+		public static Bounds2D DrawDisplay_DisplayAscii8_Bit(Vector2 centre, float scale, bool isOn, SimChip sim)
+		{
+			if(isOn){
+				string tmp = PinState.GetBitStates(sim.InputPins[1].State).ToString("X").PadLeft(4, '0');
+				ushort codeUnit = Convert.ToUInt16(tmp, 16);
+				string displayName = ((char)codeUnit).ToString();
+				Debug.Log("Name: " + displayName);
+				Anchor textAnchor = Anchor.TextCentre;
+				Vector2 textPos = centre;
+
+				Draw.Text(FontBold, displayName, FontSizeChipName, textPos, textAnchor, Color.white, ChipNameLineSpacing);
+			}
+			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+		}
 		public static Bounds2D DrawDisplay_DisplayRGBLED(Vector2 centre, float scale, bool isOn, SimChip sim)
 		{
 			const float pixelSizeT = 0.975f;
@@ -579,7 +604,7 @@ namespace DLS.Graphics
 
 			// Draw background
 			Draw.Quad(centre, Vector2.one * scale, Color.black);
-			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
+			Vector2 pixelDrawSize = Vector2.one * (scale * pixelSizeT);
 			Color onColor;
 			if (sim == null)
 			{
@@ -594,7 +619,7 @@ namespace DLS.Graphics
 						1
 					);
 			}
-			Color col = isOn ? onColor : ActiveTheme.DisplayLEDCols[0];
+			Color col = isOn ? onColor : new Color(0,0,0,1);
 			Draw.Quad(centre, pixelDrawSize, col);
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}

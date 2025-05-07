@@ -19,6 +19,8 @@ namespace DLS.Graphics
 		public const FontType FontBold = FontType.JetbrainsMonoBold;
 		public const FontType FontRegular = FontType.JetbrainsMonoRegular;
 
+		public const FontType FontAscii = FontType.Symbola;
+
 		public const float FontSizeChipName = 0.25f;
 		public const float FontSizePinLabel = 0.2f;
 
