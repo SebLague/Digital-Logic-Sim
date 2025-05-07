@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DLS.Description;
 using DLS.Game;
+using DLS.Mods;
 using Seb.Helpers;
 using Seb.Types;
 using Seb.Vis;
@@ -144,6 +145,23 @@ namespace DLS.Graphics
 		static void DrawStarredEntry(Vector2 topLeft, float width, int index, bool isLayoutPass)
 		{
 			StarredItem starredItem = project.description.StarredList[index];
+			object desc = starredItem.IsCollection
+				? GetCollectionAtIndex(index)
+				: project.chipLibrary.GetChipDescription(starredItem.Name);
+			
+			List<string> dependsOnModIDs = starredItem.IsCollection
+				? ((ChipCollection) desc)?.DependsOnModIDs
+				: ((ChipDescription) desc)?.DependsOnModIDs;
+			
+			if (desc == null)
+			{
+				return;
+			}
+			
+			if (dependsOnModIDs != null && !dependsOnModIDs.All(ModLoader.IsModLoaded))
+			{
+				return;
+			}
 			ButtonTheme theme = GetButtonTheme(starredItem.IsCollection, index == selectedStarredItemIndex);
 
 			interactableStates_starredList[0] = index < project.description.StarredList.Count - 1; // can move down
@@ -195,7 +213,12 @@ namespace DLS.Graphics
 			{
 				for (int chipIndex = 0; chipIndex < collection.Chips.Count; chipIndex++)
 				{
-					string chipName = collection.Chips[chipIndex];
+					ChipDescription chip = project.chipLibrary.GetChipDescription(collection.Chips[chipIndex]);
+					if (chip == null || !chip.DependsOnModIDs.All(ModLoader.IsModLoaded))
+					{
+						continue;
+					}
+					string chipName = chip.Name;
 					ButtonTheme activeChipTheme = collectionIndex == selectedCollectionIndex && chipIndex == selectedChipInCollectionIndex ? ActiveUITheme.ChipLibraryChipToggleOn : ActiveUITheme.ChipLibraryChipToggleOff;
 					Vector2 chipLabelPos = new(topLeft.x + nestedInset, UI.PrevBounds.Bottom - UILayoutHelper.DefaultSpacing);
 					bool chipPressed = UI.Button(chipName, activeChipTheme, chipLabelPos, new Vector2(width - nestedInset, 2), true, false, false, Anchor.TopLeft, true, 1, isScrolling);

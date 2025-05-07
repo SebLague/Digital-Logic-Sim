@@ -5,11 +5,15 @@ namespace DLS.ModdingAPI
 {
     public class DisplayBuilder
     {
+        public string modID;
         public Vector2 Position;
 		public float Scale;
         public Action<Vector2, float, uint[], uint[]> DrawFunction;
 
-        public DisplayBuilder() { }
+        public DisplayBuilder(string modID)
+        {
+            this.modID = modID;
+        }
 
         public DisplayBuilder SetPosition(Vector2 position)
         {

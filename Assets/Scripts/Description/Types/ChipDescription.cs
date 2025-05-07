@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DLS.Description
@@ -11,6 +12,7 @@ namespace DLS.Description
 
 		// ---- Data ----
 		public string DLSVersion;
+		public List<string> DependsOnModIDs = new();
 		public string Name;
 		public NameDisplayLocation NameLocation;
 		public ChipType ChipType;

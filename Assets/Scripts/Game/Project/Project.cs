@@ -518,11 +518,12 @@ namespace DLS.Game
 
 			simThreadActive = false;
 
-			List<ChipDescription> moddedChipsCopy = new(ModdedChipCreator.ModdedChips);
-			foreach (ChipDescription chip in moddedChipsCopy)
-			{
-				DeleteModdedChip(chip);
-			}			
+			// List<ChipDescription> moddedChipsCopy = new(ModdedChipCreator.ModdedChips);
+			// foreach (ChipDescription chip in moddedChipsCopy)
+			// {
+				
+			// 	DeleteModdedChip(chip);
+			// }			
 		}
 
 		void SimThread()

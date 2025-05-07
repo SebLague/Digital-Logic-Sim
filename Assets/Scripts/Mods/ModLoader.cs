@@ -57,5 +57,17 @@ namespace DLS.Mods
                 }
             }
         }
+
+        public static bool IsModLoaded(string modId)
+        {
+            foreach (IMod mod in loadedMods)
+            {
+                if (mod.ModID == modId)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

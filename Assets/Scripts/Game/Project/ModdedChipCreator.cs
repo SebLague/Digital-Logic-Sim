@@ -20,12 +20,13 @@ namespace DLS.Game
 			foreach (ChipBuilder chip in unbuiltChips)
 			{
 				Debug.Log(chip.displays);
-				RegisterChip(chip.name, chip.size, chip.color, ConvertToDescriptionPins(chip.inputs), ConvertToDescriptionPins(chip.outputs), chip.displays != null ? ModdedDisplayCreator.RegisterDisplays(chip.displays) : null, chip.hideName, chip.simulationFunction);
+				RegisterChip(chip.modID, chip.name, chip.size, chip.color, ConvertToDescriptionPins(chip.inputs), ConvertToDescriptionPins(chip.outputs), chip.displays != null ? ModdedDisplayCreator.RegisterDisplays(chip.displays) : null, chip.hideName, chip.simulationFunction);
 			}
 			return ModdedChips.ToArray();
 		}
 
         static void RegisterChip(
+			string modID,
 			string name,
             Vector2 size,
             Color col,
@@ -37,6 +38,7 @@ namespace DLS.Game
         {
             // Register the chip description
             ChipDescription chipDescription = CreateModdedChipDescription(name, ChipType.Modded, size, col, inputs, outputs, displays, hideName);
+			chipDescription.DependsOnModIDs.Add(modID);
             ModdedChips.Add(chipDescription);
 
             // Register the simulation function

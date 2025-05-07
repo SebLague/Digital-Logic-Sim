@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DLS.Description;
+using DLS.Mods;
 using UnityEngine;
 
 namespace DLS.Game
@@ -48,7 +49,13 @@ namespace DLS.Game
 			descriptionFromNameLookup.Clear();
 			foreach (ChipDescription desc in allChips)
 			{
-				descriptionFromNameLookup.Add(desc.Name, desc);
+				if (desc.DependsOnModIDs == null || desc.DependsOnModIDs.All(ModLoader.IsModLoaded))
+				{
+					if (!descriptionFromNameLookup.ContainsKey(desc.Name))
+					{
+						descriptionFromNameLookup.Add(desc.Name, desc);
+					}
+				}
 			}
 
 			foreach (ChipDescription desc in hiddenChips)
@@ -62,7 +69,16 @@ namespace DLS.Game
 
 		public bool HasChip(string name) => TryGetChipDescription(name, out _);
 
-		public ChipDescription GetChipDescription(string name) => descriptionFromNameLookup[name];
+		public ChipDescription GetChipDescription(string name)
+		{
+			try {
+				return descriptionFromNameLookup[name];
+			}
+			catch (KeyNotFoundException)
+			{
+				return null;
+			}
+		}
 
 		public bool TryGetChipDescription(string name, out ChipDescription description) => descriptionFromNameLookup.TryGetValue(name, out description);
 

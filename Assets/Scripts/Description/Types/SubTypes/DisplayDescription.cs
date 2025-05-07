@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DLS.Description
@@ -9,12 +10,14 @@ namespace DLS.Description
 		public int SubChipID;
 		public Vector2 Position;
 		public float Scale;
+		public List<string> DependsOnModIDs;
 
 		public DisplayDescription(int subChipID, Vector2 position, float scale)
 		{
 			SubChipID = subChipID;
 			Position = position;
 			Scale = scale;
+			DependsOnModIDs = new();
 		}
 	}
 }

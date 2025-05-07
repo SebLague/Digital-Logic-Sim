@@ -5,6 +5,7 @@ namespace DLS.ModdingAPI
 {
     public class ChipBuilder
     {
+        public readonly string modID;
         public readonly string name;
         public Vector2 size = Vector2.one;
         public Color color = Color.white;
@@ -14,8 +15,9 @@ namespace DLS.ModdingAPI
         public bool hideName = false;
         public Action<uint[], uint[]> simulationFunction = null;
 
-        public ChipBuilder(string name)
+        public ChipBuilder(string modID, string name)
         {
+            this.modID = modID;
             this.name = name;
         }
 

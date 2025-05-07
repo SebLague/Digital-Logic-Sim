@@ -4,6 +4,7 @@ namespace DLS.ModdingAPI
 {
     public abstract class IMod
     {
+        public abstract string ModID { get; }
         public abstract string Name { get; }
         public abstract string Version { get; }
         public abstract void Initialize();

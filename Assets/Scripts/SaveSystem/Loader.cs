@@ -5,6 +5,7 @@ using System.Linq;
 using DLS.Description;
 using DLS.Game;
 using DLS.Mods;
+using UnityEngine;
 
 namespace DLS.SaveSystem
 {
@@ -81,6 +82,8 @@ namespace DLS.SaveSystem
 
 		static ChipLibrary LoadChipLibrary(ProjectDescription projectDescription)
 		{
+			ChipDescription[] moddedChips = ModdedChipCreator.CreateAllModdedChipDescriptions();
+
 			string chipDirectoryPath = SavePaths.GetChipsPath(projectDescription.ProjectName);
 			ChipDescription[] loadedChips = new ChipDescription[projectDescription.AllCustomChipNames.Length];
 
@@ -89,14 +92,16 @@ namespace DLS.SaveSystem
 			ChipDescription[] builtinChips = BuiltinChipCreator.CreateAllBuiltinChipDescriptions();
 			HashSet<string> customChipNameHashset = new(ChipDescription.NameComparer);
 
-			ChipDescription[] moddedChips = ModdedChipCreator.CreateAllModdedChipDescriptions();
-
 			for (int i = 0; i < loadedChips.Length; i++)
 			{
 				string chipPath = Path.Combine(chipDirectoryPath, projectDescription.AllCustomChipNames[i] + ".json");
 				string chipSaveString = File.ReadAllText(chipPath);
 
 				ChipDescription chipDesc = Serializer.DeserializeChipDescription(chipSaveString);
+				foreach (string modId in chipDesc.DependsOnModIDs)
+				{
+					Debug.Log($"Chip '{chipDesc.Name}' depends on mod ID: {modId}");
+				}
 				loadedChips[i] = chipDesc;
 				customChipNameHashset.Add(chipDesc.Name);
 			}
