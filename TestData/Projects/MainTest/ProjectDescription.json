@@ -1,9 +1,9 @@
 {
   "ProjectName": "MainTest",
-  "DLSVersion_LastSaved": "2.1.5",
+  "DLSVersion_LastSaved": "2.1.6",
   "DLSVersion_EarliestCompatible": "2.0.0",
-  "CreationTime": "2025-03-14T18:23:30.404+01:00",
-  "LastSaveTime": "2025-05-04T09:15:41.061+02:00",
+  "CreationTime": "2025-03-14T10:23:30.404-07:00",
+  "LastSaveTime": "2025-05-06T16:17:16.888-07:00",
   "Prefs_MainPinNamesDisplayMode": 2,
   "Prefs_ChipPinNamesDisplayMode": 1,
   "Prefs_GridDisplayMode": 1,
@@ -62,7 +62,8 @@
     "RAM-sync",
     "TEST MergeSplit",
     "#",
-    "BuzzTest"
+    "BuzzTest",
+    "0x25D9"
   ],
   "StarredList":[
     {
@@ -95,6 +96,10 @@
     },
     {
       "Name":"BuzzTest",
+      "IsCollection":false
+    },
+    {
+      "Name":"0x25D9",
       "IsCollection":false
     }
   ],
@@ -140,7 +145,7 @@
       "Name":"TEST"
     },
     {
-      "Chips":["PULSE","TEST MergeSplit","IN-16","OUT-16","16-1BIT","16-4BIT","16-8BIT","1-16BIT","4-16BIT","8-16BIT","RGBLED","BUS-16","#","ROM 256×x2x8","ROM 256×32"],
+      "Chips":["PULSE","TEST MergeSplit","IN-16","OUT-16","16-1BIT","16-4BIT","16-8BIT","1-16BIT","4-16BIT","8-16BIT","RGBLED","BUS-16","#","ROM 256×x2x8","ROM 256×32","BUZZER","BuzzTest","0x25D9","Ascii 8Bit Display◙"],
       "IsToggledOpen":true,
       "Name":"OTHER"
     }
