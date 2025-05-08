@@ -1,0 +1,134 @@
+{
+  "DLSVersion": "2.1.6",
+  "Name": "Cell",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 1.325,
+    "y": 2.0
+  },
+  "Colour": {
+    "r": 0.214282215,
+    "g": 0.17916204,
+    "b": 0.250567675,
+    "a": 1
+  },
+  "InputPins":[
+    {
+      "Name":"IN",
+      "ID":1654440205,
+      "Position":{
+        "x":-4.15921,
+        "y":2.78237
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":1581717878,
+      "Position":{
+        "x":-4.15921,
+        "y":2.29318
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":947401921,
+      "Position":{
+        "x":-4.18978,
+        "y":1.74283
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":978201887,
+      "Position":{
+        "x":-4.21627,
+        "y":1.13983
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":706012741,
+      "Position":{
+        "x":-4.21627,
+        "y":0.65064
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":2013512178,
+      "Position":{
+        "x":-4.24684,
+        "y":0.10029
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":2121508483,
+      "Position":{
+        "x":-4.2988,
+        "y":-0.57087
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":874220063,
+      "Position":{
+        "x":-4.32937,
+        "y":-1.12122
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "OutputPins":[
+    {
+      "Name":"OUT",
+      "ID":1406079469,
+      "Position":{
+        "x":7.58859,
+        "y":0.19933
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "SubChips":[
+    {
+      "Name":"LED RGB",
+      "ID":1419469536,
+      "Label":"",
+      "Position":{
+        "x":2.41801,
+        "y":0.0814
+      },
+      "OutputPinColourInfo":[],
+      "InternalData":null
+    }
+  ],
+  "Wires":[],
+  "Displays": null
+}

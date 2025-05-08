@@ -19,6 +19,7 @@ namespace DLS.Description
 		DisplayRGB,
 		DisplayDot,
 		DisplayLED,
+		DisplayLED_RGB,
 
 		// ---- Merge / Split ----
 		Merge_1To4Bit,

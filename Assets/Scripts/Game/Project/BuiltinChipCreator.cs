@@ -43,6 +43,7 @@ namespace DLS.Game
 				CreateDisplayRGB(),
 				CreateDisplayDot(),
 				CreateDisplayLED(),
+				CreateDisplayLED_RGB(),
 				// ---- Bus ----
 				CreateBus(PinBitCount.Bit1),
 				CreateBusTerminus(PinBitCount.Bit1),
@@ -369,6 +370,36 @@ namespace DLS.Game
 			};
 
 			return CreateBuiltinChipDescription(ChipType.DisplayLED, size, col, inputPins, null, displays, NameDisplayLocation.Hidden);
+		}
+
+		static ChipDescription CreateDisplayLED_RGB()
+		{
+			PinDescription[] inputPins =
+			{
+				CreatePinDescription("R", 0),
+				CreatePinDescription("G", 1),
+				CreatePinDescription("B", 2)
+			};
+
+			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			float width = height;
+			float displayWidth = height - GridSize * 0.5f;
+
+			Color col = new(0.1f, 0.1f, 0.1f);
+			Vector2 size = new(width, height);
+
+
+			DisplayDescription[] displays =
+			{
+				new()
+				{
+					Position = Vector2.zero,
+					Scale = GridSize * 5,
+					SubChipID = -1
+				}
+			};
+
+			return CreateBuiltinChipDescription(ChipType.DisplayLED_RGB, size, col, inputPins, null, displays, NameDisplayLocation.Hidden);
 		}
 
 
