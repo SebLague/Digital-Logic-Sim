@@ -133,6 +133,7 @@ namespace DLS.Graphics
 			activeMenuScreen = MenuScreen.Main;
 			activePopup = PopupKind.None;
 			selectedProjectIndex = -1;
+			ModWarningPopup.MenuShown = false;
 		}
 
 		static void DrawMainScreen()

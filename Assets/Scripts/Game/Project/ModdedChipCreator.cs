@@ -19,7 +19,6 @@ namespace DLS.Game
 			unbuiltChips = Registry.moddedChips;
 			foreach (ChipBuilder chip in unbuiltChips)
 			{
-				Debug.Log(chip.displays);
 				RegisterChip(chip.modID, chip.name, chip.size, chip.color, ConvertToDescriptionPins(chip.inputs), ConvertToDescriptionPins(chip.outputs), chip.displays != null ? ModdedDisplayCreator.RegisterDisplays(chip.displays) : null, chip.hideName, chip.simulationFunction);
 			}
 			return ModdedChips.ToArray();

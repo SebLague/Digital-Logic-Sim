@@ -49,12 +49,9 @@ namespace DLS.Game
 			descriptionFromNameLookup.Clear();
 			foreach (ChipDescription desc in allChips)
 			{
-				if (desc.DependsOnModIDs == null || desc.DependsOnModIDs.All(ModLoader.IsModLoaded))
+				if (!descriptionFromNameLookup.ContainsKey(desc.Name))
 				{
-					if (!descriptionFromNameLookup.ContainsKey(desc.Name))
-					{
-						descriptionFromNameLookup.Add(desc.Name, desc);
-					}
+					descriptionFromNameLookup.Add(desc.Name, desc);
 				}
 			}
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DLS.Description;
 using DLS.Game;
+using DLS.Graphics;
 using DLS.Mods;
 using UnityEngine;
 
@@ -98,14 +99,9 @@ namespace DLS.SaveSystem
 				string chipSaveString = File.ReadAllText(chipPath);
 
 				ChipDescription chipDesc = Serializer.DeserializeChipDescription(chipSaveString);
-				foreach (string modId in chipDesc.DependsOnModIDs)
-				{
-					Debug.Log($"Chip '{chipDesc.Name}' depends on mod ID: {modId}");
-				}
 				loadedChips[i] = chipDesc;
 				customChipNameHashset.Add(chipDesc.Name);
 			}
-
 
 			// If built-in chip name conflicts with a custom chip, the built-in chip must have been added in a newer version.
 			// In that case, simply exclude the built-in chip. TODO: warn player that they should rename their chip if they want access to new builtin version

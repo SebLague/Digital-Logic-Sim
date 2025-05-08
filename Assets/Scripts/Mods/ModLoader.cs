@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using DLS.ModdingAPI;
+using UnityEngine;
 
 namespace DLS.Mods
 {
@@ -29,7 +30,7 @@ namespace DLS.Mods
 
         public static void InitializeMods(string modsDirectory)
         {
-            UnityEngine.Debug.Log("Loading mods...");
+            Debug.Log("Loading mods...");
             foreach (string dllPath in Directory.GetFiles(modsDirectory, "*.dls"))
             {
                 try
@@ -41,19 +42,19 @@ namespace DLS.Mods
                         IMod modInstance = (IMod) Activator.CreateInstance(type);
                         loadedMods.Add(modInstance);
                         modInstance.Initialize();
-                        UnityEngine.Debug.Log($"Loaded mod: {modInstance.Name} v{modInstance.Version}");
+                        Debug.Log($"Loaded mod: {modInstance.Name} v{modInstance.Version}");
                     }
                 }
                 catch (ReflectionTypeLoadException ex)
                 {
                     foreach (Exception inner in ex.LoaderExceptions)
                     {
-                        UnityEngine.Debug.LogError(inner.Message);
+                        Debug.LogError(inner.Message);
                     }
                 }
                 catch (FileLoadException ex)
                 {
-                    UnityEngine.Debug.LogError(ex.Message);
+                    Debug.LogError(ex.Message);
                 }
             }
         }

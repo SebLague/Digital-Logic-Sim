@@ -31,7 +31,7 @@ namespace DLS.SaveSystem
             List<string> dependsOnModIDs = new();
             foreach (var subchip in chip.GetSubchips())
             {
-                if (subchip.Description.ChipType == ChipType.Modded && subchip.Description.DependsOnModIDs != null)
+                if (subchip.Description.DependsOnModIDs != null && subchip.Description.DependsOnModIDs.Count != 0)
                 {
                     dependsOnModIDs.AddRange(subchip.Description.DependsOnModIDs);
                 }
