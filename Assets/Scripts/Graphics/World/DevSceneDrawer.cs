@@ -440,6 +440,10 @@ namespace DLS.Graphics
 
 				bounds = DrawDisplay_LED(posWorld, scaleWorld, col);
 			}
+			else if (display.DisplayType == ChipType.Buzzer)
+			{
+				bounds = DrawBuzzer(posWorld, scaleWorld, sim);
+			}
 
 			display.LastDrawBounds = bounds;
 			return bounds;
@@ -447,6 +451,40 @@ namespace DLS.Graphics
 
 
 		public static Vector2 CalculateChipNameBounds(string name) => Draw.CalculateTextBoundsSize(name, FontSizeChipName, FontBold, ChipNameLineSpacing);
+
+		public static Bounds2D DrawBuzzer(Vector2 centre, float scale, SimChip simSource)
+		{
+			if (simSource == null)
+			{
+				return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+			}
+
+			// Draw background
+			Draw.Quad(centre, 1.5f * scale * Vector2.one, new(0.1f, 0.1f, 0.1f));
+
+			uint frequency = simSource.InputPins[0].State;
+			uint amplitude = simSource.InputPins[1].State;
+
+			float remappedAmplitude = Mathf.Lerp(0.25f, 1f, Mathf.InverseLerp(2.5f, 20, amplitude));
+
+			float oscillation = Mathf.Sin(Time.time * frequency);
+
+			float minLargeScale = 0.45f * scale;
+			float maxLargeScale = amplitude == 0 ? minLargeScale : Mathf.Lerp(minLargeScale, 0.5f, remappedAmplitude);
+			float remappedLargeScale = Mathf.Lerp(minLargeScale, maxLargeScale, Mathf.InverseLerp(-1f, 1f, oscillation));
+
+			float minSmallScale = 0.075f * scale;
+			float maxSmallScale = amplitude == 0 ? minSmallScale : Mathf.Lerp(minSmallScale, 0.1f, remappedAmplitude);
+			float remappedSmallScale = Mathf.Lerp(minSmallScale, maxSmallScale, Mathf.InverseLerp(1f, -1f, oscillation));
+
+			Vector2 finalLargeScale = remappedLargeScale * Vector2.one;
+			Vector2 finalSmallScale = remappedSmallScale * Vector2.one;
+
+			Draw.Ellipse(centre, finalLargeScale * 1.05f, Color.black);
+			Draw.Ellipse(centre, finalLargeScale, new(0.25f, 0.25f, 0.25f));
+			Draw.Ellipse(centre, finalSmallScale, new(0.1f, 0.1f, 0.1f));
+			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+		}
 
 		public static Bounds2D DrawDisplay_RGB(Vector2 centre, float scale, SimChip simSource)
 		{
