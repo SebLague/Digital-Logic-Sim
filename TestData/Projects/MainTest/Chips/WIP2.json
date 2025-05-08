@@ -1,4 +1,5 @@
 {
+  "DLSVersion": "2.1.6",
   "Name": "WIP2",
   "NameLocation": 0,
   "ChipType": 0,
@@ -190,7 +191,7 @@
         "x":-9.20893,
         "y":5.13451
       },
-      "OutputPinColourInfo":[{"PinColour":2,"PinID":1151713402},{"PinColour":2,"PinID":349361804},{"PinColour":2,"PinID":883528113},{"PinColour":2,"PinID":1590314579},{"PinColour":2,"PinID":1175090400},{"PinColour":2,"PinID":805153383},{"PinColour":2,"PinID":1401872117},{"PinColour":2,"PinID":1118858130},{"PinColour":2,"PinID":742048505},{"PinColour":2,"PinID":1476868706},{"PinColour":2,"PinID":87848670},{"PinColour":0,"PinID":288562873},{"PinColour":0,"PinID":1148046748},{"PinColour":0,"PinID":1249996143},{"PinColour":0,"PinID":1157119205},{"PinColour":0,"PinID":845055315},{"PinColour":0,"PinID":895153575}],
+      "OutputPinColourInfo":[{"PinColour":3,"PinID":1151713402},{"PinColour":3,"PinID":349361804},{"PinColour":3,"PinID":883528113},{"PinColour":3,"PinID":1590314579},{"PinColour":3,"PinID":1175090400},{"PinColour":3,"PinID":805153383},{"PinColour":3,"PinID":1401872117},{"PinColour":3,"PinID":1118858130},{"PinColour":3,"PinID":742048505},{"PinColour":3,"PinID":1476868706},{"PinColour":3,"PinID":87848670},{"PinColour":0,"PinID":288562873},{"PinColour":0,"PinID":1148046748},{"PinColour":0,"PinID":1249996143},{"PinColour":0,"PinID":1157119205},{"PinColour":0,"PinID":845055315},{"PinColour":0,"PinID":895153575}],
       "InternalData":null
     },
     {

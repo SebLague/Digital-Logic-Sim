@@ -357,8 +357,7 @@ namespace DLS.Game
 
 			Color col = new(0.1f, 0.1f, 0.1f);
 			Vector2 size = new(width, height);
-
-
+			
 			DisplayDescription[] displays =
 			{
 				new()
@@ -383,11 +382,9 @@ namespace DLS.Game
 
 			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
 			float width = height;
-			float displayWidth = height - GridSize * 0.5f;
 
 			Color col = new(0.1f, 0.1f, 0.1f);
 			Vector2 size = new(width, height);
-
 
 			DisplayDescription[] displays =
 			{

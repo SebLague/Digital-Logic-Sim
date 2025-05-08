@@ -68,6 +68,9 @@ namespace DLS.Game
 		public bool simPaused => description.Prefs_SimPaused;
 		public double simAvgTicksPerSec { get; private set; }
 		public SimChip rootSimChip => editModeChip.SimChip;
+		float simulationGraphicalStateUpdateInterval;
+		float simGraphicalStateNextUpdateTime;
+		float currentTime;
 
 		public Project(ProjectDescription description, ChipLibrary chipLibrary)
 		{
@@ -93,6 +96,10 @@ namespace DLS.Game
 
 			inputPins = editModeChip.GetInputPins();
 			mainThreadFrameCount++;
+			currentTime = Time.time;
+			// Avoid updating graphical state from sim thread more frequently than screen can refresh.
+			// (fudge factor to try to avoid just missing a frame)
+			simulationGraphicalStateUpdateInterval = 1 / (float)(Screen.currentResolution.refreshRateRatio.value + 10);
 
 			if (debug_runSimMainThread)
 			{
@@ -499,13 +506,13 @@ namespace DLS.Game
 			{
 				Simulator.ApplyModifications();
 				// ---- A new frame has been reached on main thread  ----
-				if (mainThreadFrameCount > simLastMainThreadSyncFrame)
+				if (mainThreadFrameCount > simLastMainThreadSyncFrame && currentTime > simGraphicalStateNextUpdateTime)
 				{
 					simLastMainThreadSyncFrame = mainThreadFrameCount;
+					simGraphicalStateNextUpdateTime = currentTime + simulationGraphicalStateUpdateInterval;
 					// Update graphical state from sim
-					// Note: update graphical state even when paused so that subchips are automatically if viewed
+					// Note: update graphical state even when paused so that subchips are automatically updated if viewed
 					ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
-
 					// Log sim time
 					if (debug_logSimTime)
 					{
