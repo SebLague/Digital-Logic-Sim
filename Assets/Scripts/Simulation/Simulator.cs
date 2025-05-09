@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq;
 using DLS.Description;
 using DLS.Game;
 using Random = System.Random;
@@ -506,6 +507,23 @@ namespace DLS.Simulation
 					audioState.RegisterNote(freqIndex, (uint)volumeIndex);
 					break;
 				}
+				case ChipType.Modded:
+                {
+                    if (ModdedChipCreator.TryGetSimulationFunction(chip.Description, out var simulationFunction))
+                    {
+						uint[] inputStates = chip.InputPins.Select(pin => (uint) PinState.GetBitStates(pin.State)).ToArray();
+						uint[] outputStates = chip.OutputPins.Select(pin => (uint) PinState.GetBitStates(pin.State)).ToArray();
+
+                        // Call the modded chip's simulation function
+                        simulationFunction(inputStates, outputStates);
+
+						for (int i = 0; i < chip.OutputPins.Length; i++)
+						{
+							chip.OutputPins[i].State = outputStates[i];
+						}
+                    }
+                    break;
+                }
 				// ---- Bus types ----
 				default:
 				{

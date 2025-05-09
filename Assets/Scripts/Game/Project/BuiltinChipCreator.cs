@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DLS.Description;
 using UnityEngine;
 using static DLS.Graphics.DrawSettings;
@@ -54,6 +55,8 @@ namespace DLS.Game
 				CreateBuzzer()
 			};
 		}
+
+		
 
 		static ChipDescription CreateNand()
 		{

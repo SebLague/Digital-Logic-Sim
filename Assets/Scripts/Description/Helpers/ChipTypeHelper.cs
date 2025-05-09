@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DLS.Description
 {
@@ -49,7 +50,7 @@ namespace DLS.Description
 			{ ChipType.Bus_8Bit, "BUS-8" },
 			{ ChipType.BusTerminus_1Bit, "BUS-TERMINUS-1" },
 			{ ChipType.BusTerminus_4Bit, "BUS-TERMINUS-4" },
-			{ ChipType.BusTerminus_8Bit, "BUS-TERMINUS-8" }
+			{ ChipType.BusTerminus_8Bit, "BUS-TERMINUS-8" },
 		};
 
 		public static string GetName(ChipType type) => Names[type];

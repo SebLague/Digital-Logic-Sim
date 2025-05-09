@@ -1,0 +1,73 @@
+{
+  "DLSVersion": "2.1.5",
+  "DependsOnModIDs":[
+    "exmod"
+  ],
+  "Name": "display test",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 1.25,
+    "y": 0.5
+  },
+  "Colour": {
+    "r": 0.378672957,
+    "g": 0.4155134,
+    "b": 0.5271267,
+    "a": 1
+  },
+  "InputPins":[
+    {
+      "Name":"IN",
+      "ID":2122438459,
+      "Position":{
+        "x":-2.38431,
+        "y":1.92406
+      },
+      "BitCount":8,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "OutputPins":[],
+  "SubChips":[
+    {
+      "Name":"HUGE-LED",
+      "ID":1102152879,
+      "Label":"",
+      "Position":{
+        "x":0.75733,
+        "y":1.38436
+      },
+      "OutputPinColourInfo":[],
+      "InternalData":null
+    }
+  ],
+  "Wires":[
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":2122438459
+      },
+      "TargetPinAddress":{
+        "PinID":0,
+        "PinOwnerID":1102152879
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    }
+  ],
+  "Displays":[
+    {
+      "SubChipID":1102152879,
+      "Position":{
+        "x":-0.00286,
+        "y":-0.0116
+      },
+      "Scale":0.202367663,
+      "DependsOnModIDs":[]
+    }
+  ]
+}

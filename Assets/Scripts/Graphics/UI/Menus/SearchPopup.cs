@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DLS.Description;
 using DLS.Game;
+using DLS.Mods;
 using Seb.Helpers;
 using Seb.Types;
 using Seb.Vis;
@@ -131,6 +132,13 @@ namespace DLS.Graphics
 				HashSet<string> remainingChipNames = new(allChipNames);
 				remainingChipNames.ExceptWith(recentChipNames);
 
+				// Filter out chips with null descriptions or unloaded mod dependencies
+                remainingChipNames.RemoveWhere(chipName =>
+                {
+                    ChipDescription desc = Project.ActiveProject.chipLibrary.GetChipDescription(chipName);
+                    return desc == null || (desc.DependsOnModIDs != null && !desc.DependsOnModIDs.All(ModLoader.IsModLoaded));
+                });
+
 				List<string> sortedList = remainingChipNames.ToList();
 				sortedList.Sort();
 				sortedList.Reverse();
@@ -154,9 +162,15 @@ namespace DLS.Graphics
 			contains.ExceptWith(startsWith);
 			contains.ExceptWith(startsWith_Lenient);
 
-			List<string> all = ToSortedList(startsWith);
-			all.AddRange(ToSortedList(startsWith_Lenient));
-			all.AddRange(ToSortedList(contains));
+			// Filter out chips with null descriptions or unloaded mod dependencies
+            HashSet<string> allFiltered = new(startsWith.Concat(startsWith_Lenient).Concat(contains));
+            allFiltered.RemoveWhere(chipName =>
+            {
+                ChipDescription desc = Project.ActiveProject.chipLibrary.GetChipDescription(chipName);
+                return desc == null || (desc.DependsOnModIDs != null && !desc.DependsOnModIDs.All(ModLoader.IsModLoaded));
+            });
+
+			List<string> all = ToSortedList(allFiltered);
 			filteredChipNames = all.ToArray();
 
 			static string LenientString(string s)

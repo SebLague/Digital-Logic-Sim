@@ -1,5 +1,8 @@
+using System.Linq;
 using DLS.Game;
+using DLS.Mods;
 using Seb.Vis.UI;
+using UnityEngine;
 
 namespace DLS.Graphics
 {
@@ -20,7 +23,8 @@ namespace DLS.Graphics
 			PulseEdit,
 			UnsavedChanges,
 			Search,
-			ChipLabelPopup
+			ChipLabelPopup,
+			ModWarning
 		}
 
 		static MenuType activeMenuOld;
@@ -68,6 +72,7 @@ namespace DLS.Graphics
 			else if (menuToDraw == MenuType.Search) SearchPopup.DrawMenu();
 			else if (menuToDraw == MenuType.ChipLabelPopup) ChipLabelMenu.DrawMenu();
 			else if (menuToDraw == MenuType.PulseEdit) PulseEditMenu.DrawMenu();
+			else if (menuToDraw == MenuType.ModWarning) ModWarningPopup.DrawMenu();
 			else
 			{
 				bool showSimPausedBanner = project.simPaused;
@@ -98,10 +103,18 @@ namespace DLS.Graphics
 				else if (ActiveMenu == MenuType.Search) SearchPopup.OnMenuOpened();
 				else if (ActiveMenu == MenuType.ChipLabelPopup) ChipLabelMenu.OnMenuOpened();
 				else if (ActiveMenu == MenuType.PulseEdit) PulseEditMenu.OnMenuOpened();
+				else if (ActiveMenu == MenuType.ModWarning) ModWarningPopup.OnMenuOpened();
 
 				if (InInputBlockingMenu() && Project.ActiveProject != null && Project.ActiveProject.controller != null)
 				{
 					Project.ActiveProject.controller.CancelEverything();
+				}
+
+				// Trigger ModWarningPopup if there are chips dependent on unloaded mods
+				if (Project.ActiveProject != null && Project.ActiveProject.controller != null && Project.ActiveProject.chipLibrary.allChips.Any(chip => chip.DependsOnModIDs != null && !chip.DependsOnModIDs.All(ModLoader.IsModLoaded)) && ModWarningPopup.MenuShown == false)
+				{
+					SetActiveMenu(MenuType.ModWarning);
+					ModWarningPopup.OnMenuOpened();
 				}
 
 				activeMenuOld = ActiveMenu;

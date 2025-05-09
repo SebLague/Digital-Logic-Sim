@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using DLS.Description;
 using DLS.Game;
+using DLS.Mods;
 using Seb.Helpers;
 using Seb.Types;
 using Seb.Vis;
@@ -188,6 +191,24 @@ namespace DLS.Graphics
 				for (int i = 0; i < project.description.StarredList.Count; i++)
 				{
 					StarredItem starred = project.description.StarredList[i];
+					object desc = starred.IsCollection
+						? GetChipCollectionByName(starred.Name)
+						: project.chipLibrary.GetChipDescription(starred.Name);
+					
+					List<string> dependsOnModIDs = starred.IsCollection
+						? ((ChipCollection) desc)?.DependsOnModIDs
+						: ((ChipDescription) desc)?.DependsOnModIDs;
+					
+					if (desc == null)
+					{
+						continue;
+					}
+
+					if (dependsOnModIDs != null && !dependsOnModIDs.All(ModLoader.IsModLoaded))
+					{
+						continue;
+					}
+
 					bool isToggledOpenCollection = activeCollection != null && ChipDescription.NameMatch(starred.Name, activeCollection.Name);
 					string buttonName = starred.GetDisplayStringForBottomBar(isToggledOpenCollection);
 
@@ -358,6 +379,14 @@ namespace DLS.Graphics
 		static ChipCollection GetChipCollectionByName(string name)
 		{
 			foreach (ChipCollection c in Project.ActiveProject.description.ChipCollections)
+			{
+				if (ChipDescription.NameMatch(c.Name, name))
+				{
+					return c;
+				}
+			}
+
+			foreach (ChipCollection c in ModdedCollectionCreator.ModdedCollections)
 			{
 				if (ChipDescription.NameMatch(c.Name, name))
 				{

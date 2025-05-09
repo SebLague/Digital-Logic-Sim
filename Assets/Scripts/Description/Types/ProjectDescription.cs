@@ -81,6 +81,7 @@ namespace DLS.Description
 		[JsonIgnore] string displayName_open;
 		public bool IsToggledOpen;
 		public string Name;
+		public List<string> DependsOnModIDs = new();
 
 		public ChipCollection(string name, params string[] chips)
 		{

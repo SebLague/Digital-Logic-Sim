@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using DLS.Description;
 using DLS.Graphics;
+using DLS.Mods;
 using DLS.SaveSystem;
 using UnityEngine;
 
@@ -24,6 +25,8 @@ namespace DLS.Game
 		public static void Init(AudioState audioState)
 		{
 			SavePaths.EnsureDirectoryExists(SavePaths.ProjectsPath);
+			SavePaths.EnsureDirectoryExists(SavePaths.ModsPath);
+			ModLoader.InitializeMods(SavePaths.ModsPath);
 			SaveAndApplyAppSettings(Loader.LoadAppSettings());
 			Main.audioState = audioState;
 		}
@@ -68,6 +71,7 @@ namespace DLS.Game
 			else ActiveProject = CreateProject(projectName);
 
 			ActiveProject.LoadDevChipOrCreateNewIfDoesntExist(startupChipName);
+
 			ActiveProject.StartSimulation();
 			ActiveProject.audioState = audioState;
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);

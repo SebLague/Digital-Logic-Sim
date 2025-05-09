@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using DLS.Description;
 using DLS.Game;
+using DLS.Graphics;
+using DLS.Mods;
+using UnityEngine;
 
 namespace DLS.SaveSystem
 {
@@ -80,6 +83,8 @@ namespace DLS.SaveSystem
 
 		static ChipLibrary LoadChipLibrary(ProjectDescription projectDescription)
 		{
+			ChipDescription[] moddedChips = ModdedChipCreator.CreateAllModdedChipDescriptions();
+
 			string chipDirectoryPath = SavePaths.GetChipsPath(projectDescription.ProjectName);
 			ChipDescription[] loadedChips = new ChipDescription[projectDescription.AllCustomChipNames.Length];
 
@@ -98,13 +103,12 @@ namespace DLS.SaveSystem
 				customChipNameHashset.Add(chipDesc.Name);
 			}
 
-
 			// If built-in chip name conflicts with a custom chip, the built-in chip must have been added in a newer version.
 			// In that case, simply exclude the built-in chip. TODO: warn player that they should rename their chip if they want access to new builtin version
 			builtinChips = builtinChips.Where(b => !customChipNameHashset.Contains(b.Name)).ToArray();
 
 			UpgradeHelper.ApplyVersionChanges(loadedChips, builtinChips);
-			return new ChipLibrary(loadedChips, builtinChips);
+			return new ChipLibrary(loadedChips, builtinChips, moddedChips);
 		}
 	}
 }

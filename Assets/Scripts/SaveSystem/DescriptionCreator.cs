@@ -27,6 +27,19 @@ namespace DLS.SaveSystem
 			Vector2 minChipsSize = SubChipInstance.CalculateMinChipSize(inputPins, outputPins, name);
 			size = Vector2.Max(minChipsSize, size);
 
+			// Update DependsOnModIDs if any subchip is a modded chip
+            List<string> dependsOnModIDs = new();
+            foreach (var subchip in chip.GetSubchips())
+            {
+                if (subchip.Description.DependsOnModIDs != null && subchip.Description.DependsOnModIDs.Count != 0)
+                {
+                    dependsOnModIDs.AddRange(subchip.Description.DependsOnModIDs);
+                }
+            }
+
+            // Remove duplicates
+            dependsOnModIDs = dependsOnModIDs.Distinct().ToList();
+
 			UpdateWireIndicesForDescriptionCreation(chip);
 
 			// Create and return the chip description
@@ -43,7 +56,8 @@ namespace DLS.SaveSystem
 				OutputPins = outputPins,
 				Wires = chip.Wires.Select(CreateWireDescription).ToArray(),
 				Displays = displays,
-				ChipType = ChipType.Custom
+				ChipType = ChipType.Custom,
+				DependsOnModIDs = dependsOnModIDs
 			};
 		}
 

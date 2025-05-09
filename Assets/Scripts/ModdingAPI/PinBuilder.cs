@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace DLS.Description
+namespace DLS.ModdingAPI
 {
-	public struct PinDescription
+    public struct PinDescription
 	{
 		public string Name;
 		public int ID;
