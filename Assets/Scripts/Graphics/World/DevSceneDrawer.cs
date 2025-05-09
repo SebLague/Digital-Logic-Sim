@@ -151,9 +151,7 @@ namespace DLS.Graphics
 							break;
 						case SubChipInstance subchip:
 						{
-							// Get sim representation of this subchip (note: if the subchip has not yet been placed, this will be null)
-							SimChip sim = chip.SimChip.TryGetSubChipFromID(subchip.ID).chip;
-							DrawSubChip(subchip, sim);
+							DrawSubChip(subchip);
 							break;
 						}
 					}
@@ -260,7 +258,7 @@ namespace DLS.Graphics
 			return useBlackText ? ColHelper.Darken(chipCol, a) : ColHelper.Brighten(chipCol, a);
 		}
 
-		public static void DrawSubChip(SubChipInstance subchip, SimChip sim = null)
+		public static void DrawSubChip(SubChipInstance subchip)
 		{
 			ChipDescription desc = subchip.Description;
 			Color chipCol = desc.Colour;
@@ -588,12 +586,11 @@ namespace DLS.Graphics
 		public static Bounds2D DrawDisplay_LED(Vector2 centre, float scale, Color col)
 		{
 			const float pixelSizeT = 0.975f;
-			float pixelSize = scale;
-
-			// Draw background
+			Vector2 pixelDrawSize = Vector2.one * (scale * pixelSizeT);
+			
 			Draw.Quad(centre, Vector2.one * scale, Color.black);
-			Vector2 pixelDrawSize = Vector2.one * (pixelSize * pixelSizeT);
 			Draw.Quad(centre, pixelDrawSize, col);
+			
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
 

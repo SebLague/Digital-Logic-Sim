@@ -12,21 +12,23 @@ namespace DLS.Game
 {
 	public static class Main
 	{
-		public static readonly Version DLSVersion = new(2, 1, 5);
+		public static readonly Version DLSVersion = new(2, 1, 6);
 		public static readonly Version DLSVersion_EarliestCompatible = new(2, 0, 0);
-		public const string LastUpdatedString = "30 April 2025";
+		public const string LastUpdatedString = "5 May 2025";
 		public static AppSettings ActiveAppSettings;
 
 		public static Project ActiveProject { get; private set; }
 
 		public static Vector2Int FullScreenResolution => new(Display.main.systemWidth, Display.main.systemHeight);
+		public static AudioState audioState;
 
-		public static void Init()
+		public static void Init(AudioState audioState)
 		{
 			SavePaths.EnsureDirectoryExists(SavePaths.ProjectsPath);
 			SavePaths.EnsureDirectoryExists(SavePaths.ModsPath);
 			ModLoader.InitializeMods(SavePaths.ModsPath);
 			SaveAndApplyAppSettings(Loader.LoadAppSettings());
+			Main.audioState = audioState;
 		}
 
 		public static void Update()
@@ -71,6 +73,7 @@ namespace DLS.Game
 			ActiveProject.LoadDevChipOrCreateNewIfDoesntExist(startupChipName);
 
 			ActiveProject.StartSimulation();
+			ActiveProject.audioState = audioState;
 			UIDrawer.SetActiveMenu(UIDrawer.MenuType.None);
 		}
 

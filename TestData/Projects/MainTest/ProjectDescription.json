@@ -1,6 +1,7 @@
 {
   "ProjectName": "MainTest",
   "DLSVersion_LastSaved": "2.1.5",
+  "DLSVersion_LastSaved": "2.1.5",
   "DLSVersion_EarliestCompatible": "2.0.0",
   "CreationTime": "2025-03-14T17:23:30.404+00:00",
   "LastSaveTime": "2025-05-05T21:33:27.513+01:00",
@@ -61,7 +62,8 @@
     "RAM-256×8 (async)",
     "RAM-sync",
     "TEST MergeSplit",
-    "#"
+    "#",
+    "BuzzTest"
   ],
   "StarredList":[
     {
@@ -90,6 +92,10 @@
     },
     {
       "Name":"#",
+      "IsCollection":false
+    },
+    {
+      "Name":"BuzzTest",
       "IsCollection":false
     }
   ],

@@ -32,6 +32,8 @@ namespace DLS.Description
 			{ ChipType.SevenSegmentDisplay, "7-SEGMENT" },
 			{ ChipType.DisplayLED, "LED" },
 
+			{ ChipType.Buzzer, "BUZZER" },
+
 			// ---- Not really chips (but convenient to treat them as such anyway) ----
 
 			// ---- Inputs/Outputs ----
