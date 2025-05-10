@@ -459,35 +459,35 @@ namespace DLS.Graphics
 
 		public static Bounds2D DrawBuzzer(Vector2 centre, float scale, Color colour, SimChip simSource)
 		{
-			uint frequency = 0;
+			float frequency = 0;
 			uint amplitude = 0;
 
 			if (simSource != null)
 			{
-				frequency = simSource.InputPins[0].State;
+				frequency = simSource.InputPins[0].State > 27.5 ? SimAudio.CalculateFrequency(simSource.InputPins[0].State) : 27.5f;
 				amplitude = simSource.InputPins[1].State;
 			}
 
-			bool disconnectedOrMuted = simSource == null || amplitude == 0 || amplitude >= 16 || frequency >= 256;
+			bool disconnectedOrMuted = simSource == null || amplitude == 0 || simSource.InputPins[1].State >= 16 || simSource.InputPins[0].State >= 256;
 
 			float remappedAmplitude = Mathf.Lerp(0.25f, 1f, Mathf.InverseLerp(2.5f, 20, amplitude));
 
 			float oscillation = Mathf.Sin(Time.time * frequency);
 
 			float minLargeScale = 0.45f * scale;
-			float maxLargeScale = disconnectedOrMuted ? minLargeScale : Mathf.Lerp(minLargeScale, 0.5f, remappedAmplitude);
+			float maxLargeScale = Mathf.Lerp(minLargeScale, 0.5f * scale, remappedAmplitude);
 			float remappedLargeScale = Mathf.Lerp(minLargeScale, maxLargeScale, Mathf.InverseLerp(-1f, 1f, oscillation));
 
 			float minSmallScale = 0.075f * scale;
-			float maxSmallScale = disconnectedOrMuted ? minSmallScale : Mathf.Lerp(minSmallScale, 0.1f, remappedAmplitude);
+			float maxSmallScale = Mathf.Lerp(minSmallScale, 0.1f * scale, remappedAmplitude);
 			float remappedSmallScale = Mathf.Lerp(minSmallScale, maxSmallScale, Mathf.InverseLerp(1f, -1f, oscillation));
 
-			Vector2 finalLargeScale = remappedLargeScale * Vector2.one;
-			Vector2 finalSmallScale = remappedSmallScale * Vector2.one;
+			Vector2 finalLargeScale = disconnectedOrMuted ? minLargeScale * Vector2.one : remappedLargeScale * Vector2.one;
+			Vector2 finalSmallScale = disconnectedOrMuted ? minSmallScale * Vector2.one : remappedSmallScale * Vector2.one;
 
 			Draw.Ellipse(centre, finalLargeScale * 1.05f, GetChipOutlineCol(colour));
 			Draw.Ellipse(centre, finalLargeScale, ColHelper.Brighten(colour, 0.1f));
-			Draw.Ellipse(centre, finalSmallScale, colour);
+			Draw.Ellipse(centre, finalSmallScale, ColHelper.Darken(colour, 0.1f));
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
 
