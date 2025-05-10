@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
+using System.Collections.Generic;
 using DLS.Description;
 using DLS.Game;
 using Random = System.Random;
@@ -9,8 +9,93 @@ namespace DLS.Simulation
 {
 	public static class Simulator
 	{
+		// Dictionary to track NAND gate input states over time
+		private static readonly Dictionary<SimChip, NandGateTracker> nandGateTrackers = new Dictionary<SimChip, NandGateTracker>();
+		private static readonly Dictionary<SimChip, ChipInputTracker> chipInputTrackers = new Dictionary<SimChip, ChipInputTracker>();
+		
+		// Class to track NAND gate input states
+		private class NandGateTracker
+		{
+			public uint LastInput0State;
+			public uint LastInput1State;
+			public int UnchangedTickCount;
+			
+			public NandGateTracker(uint input0State, uint input1State)
+			{
+				LastInput0State = input0State;
+				LastInput1State = input1State;
+				UnchangedTickCount = 0;
+			}
+			
+			public bool CheckAndUpdateInputs(uint input0State, uint input1State)
+			{
+				bool inputsChanged = LastInput0State != input0State || LastInput1State != input1State;
+				
+				if (inputsChanged)
+				{
+					// Inputs changed, reset counter
+					LastInput0State = input0State;
+					LastInput1State = input1State;
+					UnchangedTickCount = 0;
+					return true;
+				}
+				else
+				{
+					// Inputs unchanged, increment counter
+					UnchangedTickCount++;
+					return false;
+				}
+			}
+		}
+
+		private class ChipInputTracker
+		{
+			public uint[] LastInputStates;
+			public int UnchangedTickCount;
+			
+			public ChipInputTracker(SimPin[] inputPins)
+			{
+				LastInputStates = new uint[inputPins.Length];
+				for (int i = 0; i < inputPins.Length; i++)
+				{
+					LastInputStates[i] = inputPins[i].State;
+				}
+				UnchangedTickCount = 0;
+			}
+			
+			public bool CheckAndUpdateInputs(SimPin[] inputPins)
+			{
+				bool inputsChanged = false;
+				
+				for (int i = 0; i < inputPins.Length; i++)
+				{
+					if (i < LastInputStates.Length && LastInputStates[i] != inputPins[i].State)
+					{
+						inputsChanged = true;
+						break;
+					}
+				}
+				
+				if (inputsChanged)
+				{
+					// Inputs changed, update states and reset counter
+					for (int i = 0; i < inputPins.Length && i < LastInputStates.Length; i++)
+					{
+						LastInputStates[i] = inputPins[i].State;
+					}
+					UnchangedTickCount = 0;
+					return true;
+				}
+				else
+				{
+					// Inputs unchanged, increment counter
+					UnchangedTickCount++;
+					return false;
+				}
+			}
+		}
+		
 		public static readonly Random rng = new();
-		static readonly Stopwatch stopwatch = Stopwatch.StartNew();
 		public static int stepsPerClockTransition;
 		public static int simulationFrame;
 		static uint pcg_rngState;
@@ -22,12 +107,15 @@ namespace DLS.Simulation
 		public static bool canDynamicReorderThisFrame;
 
 		static SimChip prevRootSimChip;
-		static double elapsedSecondsOld;
-		static double deltaTime;
-		static SimAudio audioState;
 
 		// Modifications to the sim are made from the main thread, but only applied on the sim thread to avoid conflicts
 		static readonly ConcurrentQueue<SimModifyCommand> modificationQueue = new();
+
+		public static void UpdateKeyboardInputFromMainThread()
+		{
+			SimKeyboardHelper.RefreshInputState();
+		}
+
 
 		// ---- Simulation outline ----
 		// 1) Forward the initial player-controlled input states to all connected pins.
@@ -45,11 +133,8 @@ namespace DLS.Simulation
 		//   (would have to make exception for chips containing things like clock or key chip, which can activate 'spontaneously')
 		// * Create simplified connections network allowing only builtin chips to be processed during simulation
 
-		public static void RunSimulationStep(SimChip rootSimChip, DevPinInstance[] inputPins, SimAudio audioState)
+		public static void RunSimulationStep(SimChip rootSimChip, DevPinInstance[] inputPins)
 		{
-			Simulator.audioState = audioState;
-			audioState.InitFrame();
-
 			if (rootSimChip != prevRootSimChip)
 			{
 				needsOrderPass = true;
@@ -58,7 +143,7 @@ namespace DLS.Simulation
 
 			pcg_rngState = (uint)rng.Next();
 			canDynamicReorderThisFrame = simulationFrame % 100 == 0;
-			simulationFrame++; //
+			simulationFrame++;
 
 			// Step 1) Get player-controlled input states and copy values to the sim
 			foreach (DevPinInstance input in inputPins)
@@ -86,26 +171,6 @@ namespace DLS.Simulation
 			{
 				StepChip(rootSimChip);
 			}
-
-			UpdateAudioState();
-		}
-
-		public static void UpdateInPausedState()
-		{
-			if (audioState != null)
-			{
-				audioState.InitFrame();
-				UpdateAudioState();
-			}
-		}
-
-		static void UpdateAudioState()
-		{
-			double elapsedSeconds = stopwatch.Elapsed.TotalSeconds;
-			if (simulationFrame <= 1) deltaTime = 0;
-			else deltaTime = elapsedSeconds - elapsedSecondsOld;
-			elapsedSecondsOld = stopwatch.Elapsed.TotalSeconds;
-			audioState.NotifyAllNotesRegistered(deltaTime);
 		}
 
 		// Recursively propagate signals through this chip and its subchips
@@ -113,6 +178,47 @@ namespace DLS.Simulation
 		{
 			// Propagate signal from all input dev-pins to all their connected pins
 			chip.Sim_PropagateInputs();
+
+			// Check if the chip is frozen (freeze pin is high)
+			bool isChipFrozen = FreezeChip.IsChipFrozen(chip);
+
+			// Check if auto freeze is enabled
+			bool autoFreezeEnabled = Project.ActiveProject != null && 
+									 Project.ActiveProject.description.Prefs_FreezeAuto;
+			
+			// Checky checky for auto freeze if not already frozen
+			bool skipDueToAutoFreeze = false;
+			if (autoFreezeEnabled && !isChipFrozen && chip.InputPins.Length > 0)
+			{
+				int freezeAutoTickRate = Project.ActiveProject.description.Prefs_FreezeAutoTickRate;
+				
+				// Get or create tracker for this chip
+				if (!chipInputTrackers.TryGetValue(chip, out ChipInputTracker tracker))
+				{
+					tracker = new ChipInputTracker(chip.InputPins);
+					chipInputTrackers[chip] = tracker;
+				}
+				
+				// Check if inputs have changed
+				bool inputsChanged = tracker.CheckAndUpdateInputs(chip.InputPins);
+				
+				// Skip processing if inputs haven't changed for the specified number of ticks
+				if (!inputsChanged && tracker.UnchangedTickCount >= freezeAutoTickRate)
+				{
+					skipDueToAutoFreeze = true;
+				}
+			}
+
+			// Skip processing if frozen or auto frozen
+			if (isChipFrozen || skipDueToAutoFreeze)
+			{
+				// uhhh yeah idk, forgoty
+				for (int i = chip.SubChips.Length - 1; i >= 0; i--)
+				{
+					chip.SubChips[i].Sim_PropagateOutputs();
+				}
+				return;
+			}
 
 			// NOTE: subchips are assumed to have been sorted in reverse order of desired visitation
 			for (int i = chip.SubChips.Length - 1; i >= 0; i--)
@@ -148,6 +254,9 @@ namespace DLS.Simulation
 		{
 			chip.Sim_PropagateInputs();
 
+			// Check if the chip is frozen
+			bool isChipFrozen = FreezeChip.IsChipFrozen(chip);
+
 			SimChip[] subChips = chip.SubChips;
 			int numRemaining = subChips.Length;
 
@@ -162,11 +271,16 @@ namespace DLS.Simulation
 				(subChips[nextSubChipIndex], subChips[numRemaining - 1]) = (subChips[numRemaining - 1], subChips[nextSubChipIndex]);
 				numRemaining--;
 
-				// Process chosen subchip
-				if (nextSubChip.ChipType == ChipType.Custom) StepChipReorder(nextSubChip); // Recursively process custom chip
-				else ProcessBuiltinChip(nextSubChip); // We've reached a built-in chip, so process it directly 
+				// Skip processing if the parent chip is frozen
+				if (!isChipFrozen)
+				{
+					// Process chosen subchip
+					if (nextSubChip.ChipType == ChipType.Custom) StepChipReorder(nextSubChip); // Recursively process custom chip
+					else ProcessBuiltinChip(nextSubChip); // We've reached a built-in chip, so process it directly 
+				}
 
 				// Step 3) Forward the outputs of the processed subchip to connected pins
+				// We still need to propagate outputs even if frozen, to maintain connections
 				nextSubChip.Sim_PropagateOutputs();
 			}
 		}
@@ -210,11 +324,6 @@ namespace DLS.Simulation
 			return nextSubChipIndex;
 		}
 
-		public static void UpdateKeyboardInputFromMainThread()
-		{
-			SimKeyboardHelper.RefreshInputState();
-		}
-
 		public static bool RandomBool()
 		{
 			pcg_rngState = pcg_rngState * 747796405 + 2891336453;
@@ -233,8 +342,7 @@ namespace DLS.Simulation
 					uint nandOp = 1 ^ (chip.InputPins[0].State & chip.InputPins[1].State);
 					chip.OutputPins[0].State = (ushort)(nandOp & 1);
 					break;
-				}
-				case ChipType.Clock:
+				}				case ChipType.Clock:
 				{
 					bool high = stepsPerClockTransition != 0 && ((simulationFrame / stepsPerClockTransition) & 1) == 0;
 					PinState.Set(ref chip.OutputPins[0].State, high ? PinState.LogicHigh : PinState.LogicLow);
@@ -499,13 +607,6 @@ namespace DLS.Simulation
 					chip.OutputPins[1].State = (ushort)(data & ByteMask);
 					break;
 				}
-				case ChipType.Buzzer:
-				{
-					int freqIndex = PinState.GetBitStates(chip.InputPins[0].State);
-					int volumeIndex = PinState.GetBitStates(chip.InputPins[1].State);
-					audioState.RegisterNote(freqIndex, (uint)volumeIndex);
-					break;
-				}
 				// ---- Bus types ----
 				default:
 				{
@@ -671,8 +772,7 @@ namespace DLS.Simulation
 		{
 			simulationFrame = 0;
 			modificationQueue?.Clear();
-			stopwatch.Restart();
-			elapsedSecondsOld = 0;
+			nandGateTrackers.Clear();  // Clear NAND gate trackers on reset
 		}
 
 		struct SimModifyCommand

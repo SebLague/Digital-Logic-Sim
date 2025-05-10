@@ -50,6 +50,11 @@ namespace DLS.Graphics
 			"Active",
 			"Paused"
 		};
+		static readonly string[] FreezeAutoOptions =
+		{
+			"Off",
+			"On"
+		};
 
 		static readonly Vector2 entrySize = new(menuWidth, DrawSettings.SelectorWheelHeight);
 		public static readonly Vector2 settingFieldSize = new(entrySize.x / 3, entrySize.y);
@@ -63,6 +68,10 @@ namespace DLS.Graphics
 		static readonly UIHandle ID_SimStatus = new("PREFS_SimStatus");
 		static readonly UIHandle ID_SimFrequencyField = new("PREFS_SimTickTarget");
 		static readonly UIHandle ID_ClockSpeedInput = new("PREFS_ClockSpeed");
+
+		static readonly UIHandle ID_FreezeAuto = new("PREFS_FreezeAuto");
+
+		static readonly UIHandle ID_FreezeAutoTick = new("PREFS_FreezeAutoTick");
 
 		static readonly string showGridLabel = "Show grid" + CreateShortcutString("Ctrl+G");
 		static readonly string simStatusLabel = "Sim Status" + CreateShortcutString("Ctrl+Space");
@@ -89,7 +98,7 @@ namespace DLS.Graphics
 			const float headerSpacing = 1.5f;
 			Color labelCol = Color.white;
 			Color headerCol = new(0.46f, 1, 0.54f);
-			Vector2 topLeft = UI.Centre + new Vector2(-menuWidth / 2, verticalOffset);
+			Vector2 topLeft = UI.Centre + new Vector2(-menuWidth / 2, verticalOffset) + Vector2.up * 5f;
 			Vector2 labelPosCurr = topLeft;
 
 			using (UI.BeginBoundsScope(true))
@@ -114,6 +123,11 @@ namespace DLS.Graphics
 				Vector2 tickLabelRight = MenuHelper.DrawLabelSectionOfLabelInputPair(labelPosCurr, entrySize, "Steps per second (current)", labelCol * 0.75f, true);
 				UI.DrawPanel(tickLabelRight, settingFieldSize, new Color(0.18f, 0.18f, 0.18f), Anchor.CentreRight);
 				UI.DrawText(currentSimSpeedString, theme.FontBold, theme.FontSizeRegular, tickLabelRight + new Vector2(inputTextPad - settingFieldSize.x, 0), Anchor.TextCentreLeft, currentSimSpeedStringColour);
+				
+				AddSpacing();
+				bool FreezeAuto = MenuHelper.LabeledOptionsWheel("Freeze Auto", labelCol, labelPosCurr, entrySize, ID_FreezeAuto, FreezeAutoOptions, settingFieldSize.x, true) == 1;
+				AddSpacing();
+				InputFieldState FreezeAutoTick = MenuHelper.LabeledInputField("Freeze Auto Tick", labelCol, labelPosCurr, entrySize, ID_FreezeAutoTick, integerInputValidator, settingFieldSize.x, true);
 
 				// Draw cancel/confirm buttons
 				Vector2 buttonTopLeft = new(labelPosCurr.x, UI.PrevBounds.Bottom);
@@ -131,6 +145,11 @@ namespace DLS.Graphics
 				targetSimTicksPerSecond = Mathf.Max(1, targetSimTicksPerSecond);
 				if (project.targetTicksPerSecond != targetSimTicksPerSecond || project.simPaused != pauseSim) lastSimTickRateSetTime = Time.time;
 
+				// Parse freeze auto tick
+				int.TryParse(FreezeAutoTick.text, out int FreezeAutoTickInt);
+				FreezeAutoTickInt = Mathf.Max(1, FreezeAutoTickInt);
+
+
 				// Assign changes immediately so can see them take effect in background
 				project.description.Prefs_MainPinNamesDisplayMode = mainPinNamesMode;
 				project.description.Prefs_ChipPinNamesDisplayMode = chipPinNamesMode;
@@ -140,6 +159,8 @@ namespace DLS.Graphics
 				project.description.Prefs_SimTargetStepsPerSecond = targetSimTicksPerSecond;
 				project.description.Prefs_SimStepsPerClockTick = clockSpeed;
 				project.description.Prefs_SimPaused = pauseSim;
+				project.description.Prefs_FreezeAuto = FreezeAuto;
+				project.description.Prefs_FreezeAutoTickRate = FreezeAutoTickInt;
 
 				// Cancel / Confirm
 				if (result == MenuHelper.CancelConfirmResult.Cancel)

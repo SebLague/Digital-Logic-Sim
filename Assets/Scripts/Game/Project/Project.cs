@@ -31,27 +31,21 @@ namespace DLS.Game
 		// ---- Display state ----
 		public bool ShowGrid => description.Prefs_GridDisplayMode == 1;
 		public bool PinNameDisplayIsTabToggledOn;
-
+		
 		// ---- Chip view / edit state ----
 		// At the bottom of the stack is the chip that currently is being edited. 
 		// If chips are entered in view mode, they will be placed above on the stack.
 		public readonly Stack<DevChipInstance> chipViewStack = new();
-
 		SimChip ViewedSimChip => ViewedChip.SimChip;
-
 		// The chip currently in view. This chip may be in view-only mode.
 		public DevChipInstance ViewedChip => chipViewStack.Peek();
 		public bool CanEditViewedChip => chipViewStack.Count == 1;
 		public string ActiveDevChipName => ViewedChip.ChipName;
-
 		public bool ChipHasBeenSavedBefore => ViewedChip.LastSavedDescription != null;
-
 		// String representation of the viewed chips stack for display purposes
 		public string viewedChipsString = string.Empty;
-
 		// The chip currently being edited. (This is not necessarily the currently viewed chip)
 		DevChipInstance editModeChip;
-		public AudioState audioState;
 
 		// ---- Simulation settings and state ----
 		static readonly bool debug_logSimTime = false;
@@ -519,7 +513,6 @@ namespace DLS.Game
 				// Also handle advancing a single step
 				if (simPaused && !advanceSingleSimStep)
 				{
-					Simulator.UpdateInPausedState();
 					stopwatchTotal.Stop();
 					Thread.Sleep(10);
 					continue;
@@ -540,7 +533,7 @@ namespace DLS.Game
 				Simulator.stepsPerClockTransition = stepsPerClockTransition;
 				SimChip simChip = rootSimChip;
 				if (simChip == null) continue; // Could potentially be null for a frame when switching between chips
-				Simulator.RunSimulationStep(simChip, inputPins, audioState.simAudio);
+				Simulator.RunSimulationStep(simChip, inputPins);
 
 				// ---- Wait some amount of time (if needed) to try to hit the target ticks per second ----
 				while (true)
@@ -581,7 +574,7 @@ namespace DLS.Game
 		{
 			Simulator.stepsPerClockTransition = stepsPerClockTransition;
 			Simulator.ApplyModifications();
-			Simulator.RunSimulationStep(rootSimChip, inputPins, audioState.simAudio);
+			Simulator.RunSimulationStep(rootSimChip, inputPins);
 			ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
 		}
 

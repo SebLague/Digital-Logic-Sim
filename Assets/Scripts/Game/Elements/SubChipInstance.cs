@@ -142,37 +142,53 @@ namespace DLS.Game
 
 		void CalculatePinLayout(PinInstance[] pins)
 		{
+			// Filter out freeze pins (ID = -1) for layout calculation
+			PinInstance[] pinsForLayout = pins.Where(p => p.Address.PinID != -1).ToArray();
+			
+			// If no pins after filtering, return
+			if (pinsForLayout.Length == 0)
+				return;
+				
 			// If only one pin, it should be placed in the centre
-			if (pins.Length == 1)
+			if (pinsForLayout.Length == 1)
 			{
-				pins[0].LocalPosY = 0;
+				pinsForLayout[0].LocalPosY = 0;
 				return;
 			}
 
 			float chipTop = Size.y / 2;
 			float startY = chipTop;
 
-			(float chipHeight, float[] pinGridY) info = CalculateDefaultPinLayout(pins.Select(s => s.bitCount).ToArray());
+			(float chipHeight, float[] pinGridY) info = CalculateDefaultPinLayout(pinsForLayout.Select(s => s.bitCount).ToArray());
 
 			// ---- First pass: layout pins without any spacing between them ----
-			for (int i = 0; i < pins.Length; i++)
+			for (int i = 0; i < pinsForLayout.Length; i++)
 			{
-				PinInstance pin = pins[i];
+				PinInstance pin = pinsForLayout[i];
 
 				float pinGridY = info.pinGridY[i];
 				pin.LocalPosY = startY + pinGridY * DrawSettings.GridSize;
 			}
-
 
 			// ---- Second pass: evenly distribute the remaining space between the pins ----
 			float spaceRemaining = Size.y - info.chipHeight;
 
 			if (spaceRemaining > 0)
 			{
-				float spacingBetweenPins = spaceRemaining / (pins.Length - 1);
-				for (int i = 1; i < pins.Length; i++)
+				float spacingBetweenPins = spaceRemaining / (pinsForLayout.Length - 1);
+				for (int i = 1; i < pinsForLayout.Length; i++)
 				{
-					pins[i].LocalPosY -= spacingBetweenPins * i;
+					pinsForLayout[i].LocalPosY -= spacingBetweenPins * i;
+				}
+			}
+			
+			// Handle freeze pins separately - position them at a fixed location
+			foreach (PinInstance pin in pins)
+			{
+				if (pin.Address.PinID == -1)
+				{
+					// Position freeze pin at the top of the chip
+					pin.LocalPosY = chipTop;
 				}
 			}
 		}

@@ -19,6 +19,12 @@ namespace DLS.Graphics
 			"Name: Hidden"
 		};
 
+		static readonly string[] FreezePinTogglesOptions =
+		{
+			"Freeze Pin: On",
+			"Freeze Pin: Off"
+		};
+
 
 		// ---- State ----
 		static SubChipInstance[] subChipsWithDisplays;
@@ -29,6 +35,7 @@ namespace DLS.Graphics
 		static readonly UIHandle ID_ColourPicker = new("CustomizeMenu_ChipCol");
 		static readonly UIHandle ID_ColourHexInput = new("CustomizeMenu_ChipColHexInput");
 		static readonly UIHandle ID_NameDisplayOptions = new("CustomizeMenu_NameDisplayOptions");
+		static readonly UIHandle ID_FreezePinToggle = new("CustomizeMenu_FreezePinToggle");
 		static readonly UI.ScrollViewDrawElementFunc drawDisplayScrollEntry = DrawDisplayScroll;
 		static readonly Func<string, bool> hexStringInputValidator = ValidateHexStringInput;
 
@@ -86,6 +93,11 @@ namespace DLS.Graphics
 			float scrollViewHeight = 20;
 			float scrollViewSpacing = UILayoutHelper.DefaultSpacing;
 			UI.DrawScrollView(ID_DisplaysScrollView, NextPos(), new Vector2(pw, scrollViewHeight), scrollViewSpacing, Anchor.TopLeft, theme.ScrollTheme, drawDisplayScrollEntry, subChipsWithDisplays.Length);
+			
+			// ---- Freeze pin UI ----
+			int freezePinToggleIndex = UI.WheelSelector(ID_FreezePinToggle, FreezePinTogglesOptions, NextPos(), new Vector2(pw, DrawSettings.ButtonHeight), theme.OptionsWheel, Anchor.TopLeft);
+			ChipSaveMenu.ActiveCustomizeDescription.FreezePinEnabled = freezePinToggleIndex == 0; // 0 = "Freeze Pin: On"
+
 
 			Vector2 NextPos(float extraPadding = 0)
 			{
@@ -151,12 +163,34 @@ namespace DLS.Graphics
 			// Init name display mode
 			WheelSelectorState nameDisplayWheelState = UI.GetWheelSelectorState(ID_NameDisplayOptions);
 			nameDisplayWheelState.index = (int)ChipSaveMenu.ActiveCustomizeDescription.NameLocation;
+
+			// Init freeze pin toggle based on actual state
+			WheelSelectorState freezePinToggleState = UI.GetWheelSelectorState(ID_FreezePinToggle);
+			
+			// Check if the chip has a freeze pin
+			bool hasFreezePinEnabled = false;
+			foreach (PinDescription pin in ChipSaveMenu.ActiveCustomizeDescription.InputPins)
+			{
+				if (pin.ID == -1) // Freeze pin
+				{
+					hasFreezePinEnabled = true;
+					break;
+				}
+			}
+			
+			// Set the toggle state accordingly (0 = On, 1 = Off)
+			freezePinToggleState.index = hasFreezePinEnabled ? 0 : 1;
 		}
 
 		static void UpdateCustomizeDescription()
 		{
 			List<DisplayInstance> displays = ChipSaveMenu.ActiveCustomizeChip.Displays;
 			ChipSaveMenu.ActiveCustomizeDescription.Displays = displays.Select(s => s.Desc).ToArray();
+			
+			// Update freeze pin using the existing method from DescriptionCreator
+			SaveSystem.DescriptionCreator.AddOrRemoveFreezePinToChipDescription(
+				ChipSaveMenu.ActiveCustomizeDescription, 
+				ChipSaveMenu.ActiveCustomizeDescription.FreezePinEnabled);
 		}
 
 		static void UpdateChipColHexStringFromColour(Color col)

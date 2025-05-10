@@ -22,6 +22,10 @@ namespace DLS.Description
 		public int Prefs_SimTargetStepsPerSecond;
 		public int Prefs_SimStepsPerClockTick;
 
+		public bool Prefs_FreezeAuto;
+
+		public int Prefs_FreezeAutoTickRate;
+
 		// List of all player-created chips (in order of creation -- oldest first)
 		public string[] AllCustomChipNames;
 

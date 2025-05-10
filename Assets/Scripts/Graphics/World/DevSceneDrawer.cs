@@ -146,6 +146,7 @@ namespace DLS.Graphics
 					switch (element)
 					{
 						case DevPinInstance pin:
+							if (pin.ID == -1) break;
 							DrawDevPin(pin);
 							break;
 						case SubChipInstance subchip:
@@ -195,6 +196,15 @@ namespace DLS.Graphics
 			string text = pin.Name;
 			if (string.IsNullOrWhiteSpace(text)) return;
 
+			if (pin.Name == "Freeze " && pin.parent is DevPinInstance) 
+			{
+				return;
+			}
+			else if (pin.Name == "Freeze ") 
+				text = "Freeze";
+			{}
+
+		
 			const float offsetX = PinRadius + 0.05f;
 			FontType font = FontBold;
 

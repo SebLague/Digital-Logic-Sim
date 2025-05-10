@@ -50,7 +50,6 @@ namespace DLS.Game
 				_ => (Vector2)StateGridDimensions * MultiBitPinStateDisplaySquareSize + Vector2.one * DevPinStateDisplayOutline
 			};
 		}
-
 		public Vector2 HandlePosition => Position;
 		public Vector2 StateDisplayPosition => HandlePosition + faceDir * (DevPinHandleWidth / 2 + StateGridSize.x / 2 + 0.065f);
 

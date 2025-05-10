@@ -267,10 +267,10 @@ namespace DLS.Graphics
 							bool moveWithinCurrentCollection = (moveSingleStepDown && canStepDownInCollection) || (moveJumpDown && !canJumpDownACollection);
 							if (moveWithinCurrentCollection) // move down in current collection
 							{
-								int targetIndex = moveJumpDown ? collection.Chips.Count - 1 : selectedChipInCollectionIndex + 1;
-								collection.Chips.RemoveAt(selectedChipInCollectionIndex);
-								collection.Chips.Insert(targetIndex, selectedChipName);
-								selectedChipInCollectionIndex = targetIndex;
+								int startIndex = selectedChipInCollectionIndex;
+								int endIndex = moveJumpDown ? collection.Chips.Count - 1 : selectedChipInCollectionIndex + 1;
+								(collection.Chips[startIndex], collection.Chips[endIndex]) = (collection.Chips[endIndex], collection.Chips[startIndex]);
+								selectedChipInCollectionIndex = endIndex;
 							}
 							else // move down to next collection
 							{
@@ -282,10 +282,10 @@ namespace DLS.Graphics
 							bool moveWithinCurrentCollection = (moveSingleStepUp && canStepUpInCollection) || (moveJumpUp && !canJumpUpACollection);
 							if (moveWithinCurrentCollection) // move up in current collection
 							{
-								int targetIndex = moveJumpUp ? 0 : selectedChipInCollectionIndex - 1;
-								collection.Chips.RemoveAt(selectedChipInCollectionIndex);
-								collection.Chips.Insert(targetIndex, selectedChipName);
-								selectedChipInCollectionIndex = targetIndex;
+								int startIndex = selectedChipInCollectionIndex;
+								int endIndex = moveJumpUp ? 0 : selectedChipInCollectionIndex - 1;
+								(collection.Chips[startIndex], collection.Chips[endIndex]) = (collection.Chips[endIndex], collection.Chips[startIndex]);
+								selectedChipInCollectionIndex = endIndex;
 							}
 							else // move up to next collection
 							{

@@ -1,4 +1,5 @@
 {
+  "DLSVersion": "2.1.5",
   "Name": "TEST MergeSplit",
   "NameLocation": 0,
   "ChipType": 0,
@@ -12,7 +13,19 @@
     "b": 0.6613721,
     "a": 1
   },
-  "InputPins":[],
+  "InputPins":[
+    {
+      "Name":"Freeze",
+      "ID":-1,
+      "Position":{
+        "x":0.8125,
+        "y":0.0
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
   "OutputPins":[
     {
       "Name":"OUT",
@@ -655,5 +668,6 @@
       "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
     }
   ],
-  "Displays": null
+  "Displays":[],
+  "FreezePinEnabled": true
 }

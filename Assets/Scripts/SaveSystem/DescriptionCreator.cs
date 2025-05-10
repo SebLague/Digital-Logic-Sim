@@ -169,5 +169,64 @@ namespace DLS.SaveSystem
 			float v = Mathf.Lerp(0.2f, 1, (float)rng.NextDouble());
 			return Color.HSVToRGB(h, s, v);
 		}
+
+		public static void AddOrRemoveFreezePinToChipDescription(ChipDescription description, bool enableFreezePin)
+		{
+			// Check if freeze pin already exists
+			bool freezePinExists = false;
+			int freezePinIndex = -1;
+			
+			for (int i = 0; i < description.InputPins.Length; i++)
+			{
+				if (description.InputPins[i].ID == -1) // Special ID for freeze pin
+				{
+					freezePinExists = true;
+					freezePinIndex = i;
+					break;
+				}
+			}
+			
+			// Add freeze pin if enabled and doesn't exist
+			if (enableFreezePin && !freezePinExists)
+			{
+				// Create a new array with one more pin
+				PinDescription[] newInputPins = new PinDescription[description.InputPins.Length + 1];
+				Array.Copy(description.InputPins, newInputPins, description.InputPins.Length);
+				
+				// Create freeze pin at middle top of chip
+				PinDescription freezePin = new PinDescription
+				{
+					ID = -1, // Special ID for freeze pin
+					BitCount = PinBitCount.Bit1, // Single bit pin
+					Name = "Freeze ",
+					Position = new Vector2(description.Size.x / 2, 0) // Middle top
+				};
+				
+				newInputPins[newInputPins.Length - 1] = freezePin;
+				description.InputPins = newInputPins;
+			}
+			// Remove freeze pin if disabled and exists
+			else if (!enableFreezePin && freezePinExists)
+			{
+				// Create a new array with one less pin
+				PinDescription[] newInputPins = new PinDescription[description.InputPins.Length - 1];
+				
+				// Copy all pins except the freeze pin
+				int newIndex = 0;
+				for (int i = 0; i < description.InputPins.Length; i++)
+				{
+					if (i != freezePinIndex)
+					{
+						newInputPins[newIndex] = description.InputPins[i];
+						newIndex++;
+					}
+				}
+				
+				description.InputPins = newInputPins;
+			}
+			
+			// Update the FreezePinEnabled property
+			description.FreezePinEnabled = enableFreezePin;
+		}
 	}
 }

@@ -22,6 +22,10 @@ namespace DLS.Description
 		public WireDescription[] Wires;
 		public DisplayDescription[] Displays;
 
+		// ---- Freeze Pin ----
+		public bool FreezePinEnabled { get; set; }
+
+
 		// ---- Convenience Functions ----
 		public bool HasDisplay() => Displays != null && Displays.Length > 0;
 		public bool NameMatch(string otherName) => NameMatch(Name, otherName);

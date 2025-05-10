@@ -1,0 +1,56 @@
+{
+  "DLSVersion": "2.1.5",
+  "Name": "test",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 0.725,
+    "y": 0.75
+  },
+  "Colour": {
+    "r": 0.1605448,
+    "g": 0.247028053,
+    "b": 0.12232063,
+    "a": 1
+  },
+  "InputPins":[
+    {
+      "Name":"IN",
+      "ID":568853500,
+      "Position":{
+        "x":-5.68724,
+        "y":1.30202
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"IN",
+      "ID":1409470861,
+      "Position":{
+        "x":-5.73585,
+        "y":0.58902
+      },
+      "BitCount":8,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"Freeze ",
+      "ID":-1,
+      "Position":{
+        "x":0.3625,
+        "y":0.0
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "OutputPins":[],
+  "SubChips":[],
+  "Wires":[],
+  "Displays":[],
+  "FreezePinEnabled": true
+}

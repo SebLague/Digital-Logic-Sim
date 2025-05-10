@@ -3,6 +3,7 @@ using DLS.Description;
 using DLS.Graphics;
 using DLS.Simulation;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace DLS.Game
 {
@@ -43,6 +44,18 @@ namespace DLS.Game
 
 		public Vector2 GetWorldPos()
 		{
+			// Special case for freeze pin (ID = -1)
+			if (Address.PinID == -1)
+			{
+				// For freeze pin, position at the middle top of the chip
+				if (parent is SubChipInstance subchip)
+				{
+					// Position above the handle
+					return subchip.Position + new Vector2(0, subchip.Size.y / 2 + .05f);
+				}
+			}
+			
+			// Original code for regular pins
 			switch (parent)
 			{
 				case DevPinInstance devPin:
