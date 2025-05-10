@@ -1,0 +1,34 @@
+{
+  "DLSVersion": "2.1.5",
+  "Name": "23",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 0.425,
+    "y": 0.375
+  },
+  "Colour": {
+    "r": 0.9311224,
+    "g": 0.176257536,
+    "b": 0.5021534,
+    "a": 1
+  },
+  "InputPins":[
+    {
+      "Name":"Freeze",
+      "ID":-1,
+      "Position":{
+        "x":0.2125,
+        "y":0.0
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "OutputPins":[],
+  "SubChips":[],
+  "Wires":[],
+  "Displays":[],
+  "FreezePinEnabled": true
+}

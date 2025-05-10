@@ -1,0 +1,16 @@
+{
+    "name": "SebVisDev",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d4f8eab5cdd4a544c9923829818c11c0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

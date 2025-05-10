@@ -1,0 +1,148 @@
+{
+  "DLSVersion": "2.1.5",
+  "Name": "22",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 0.425,
+    "y": 0.75
+  },
+  "Colour": {
+    "r": 0.583721638,
+    "g": 0.48778677,
+    "b": 0.7685808,
+    "a": 1
+  },
+  "InputPins":[
+    {
+      "Name":"IN",
+      "ID":1841709602,
+      "Position":{
+        "x":-0.70487,
+        "y":0.44045
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"A",
+      "ID":1879758800,
+      "Position":{
+        "x":-0.67446,
+        "y":-0.30914
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"B",
+      "ID":1457503041,
+      "Position":{
+        "x":-0.65164,
+        "y":-1.03024
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"Freeze",
+      "ID":-1,
+      "Position":{
+        "x":0.2125,
+        "y":0.0
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "OutputPins":[
+    {
+      "Name":"OUT",
+      "ID":1951241741,
+      "Position":{
+        "x":3.54263,
+        "y":-0.71076
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "SubChips":[
+    {
+      "Name":"nand test",
+      "ID":5488557,
+      "Label":"",
+      "Position":{
+        "x":1.47132,
+        "y":-0.70075
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":648058736}],
+      "InternalData":null
+    }
+  ],
+  "Wires":[
+    {
+      "SourcePinAddress":{
+        "PinID":648058736,
+        "PinOwnerID":5488557
+      },
+      "TargetPinAddress":{
+        "PinID":0,
+        "PinOwnerID":1951241741
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":1841709602
+      },
+      "TargetPinAddress":{
+        "PinID":-1,
+        "PinOwnerID":5488557
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":1879758800
+      },
+      "TargetPinAddress":{
+        "PinID":1802966010,
+        "PinOwnerID":5488557
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":1457503041
+      },
+      "TargetPinAddress":{
+        "PinID":2143149994,
+        "PinOwnerID":5488557
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    }
+  ],
+  "Displays":[],
+  "FreezePinEnabled": true
+}

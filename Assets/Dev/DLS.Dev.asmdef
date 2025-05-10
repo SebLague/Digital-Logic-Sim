@@ -1,0 +1,18 @@
+{
+    "name": "DLS.Dev",
+    "rootNamespace": "",
+    "references": [
+        "GUID:06b859b54912bd449812ba95518ecd6b",
+        "GUID:2b65bcfb6aad3f1459e94b356ff58293",
+        "GUID:d4f8eab5cdd4a544c9923829818c11c0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
