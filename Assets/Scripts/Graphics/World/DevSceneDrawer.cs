@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DLS.Description;
 using DLS.Game;
 using DLS.Simulation;
@@ -370,15 +371,19 @@ namespace DLS.Graphics
 		{
 			Color borderCol = GetChipDisplayBorderCol(rootChip.Description.Colour);
 
+			if (display.DisplayType == ChipType.Buzzer || display.ChildDisplays.Any(child => child.DisplayType == ChipType.Buzzer))
+			{
+				return DrawDisplay(display, pos, 1, rootChip, sim);
+			}
+
 			Draw.ID displayBorderID = Draw.ReserveQuad();
 			Draw.ID displayBackingID = Draw.ReserveQuad();
 
 
 			Bounds2D bounds = DrawDisplay(display, pos, 1, rootChip, sim);
 
-			// Border colour around display
+			// Border colour and black background behind display to fill any gaps
 			Draw.ModifyQuad(displayBorderID, bounds.Centre, bounds.Size + Vector2.one * 0.03f, borderCol);
-			// Black background behind display to fill any gaps
 			Draw.ModifyQuad(displayBackingID, bounds.Centre, bounds.Size, Color.black);
 
 			return bounds;
@@ -440,6 +445,10 @@ namespace DLS.Graphics
 
 				bounds = DrawDisplay_LED(posWorld, scaleWorld, col);
 			}
+			else if (display.DisplayType == ChipType.Buzzer)
+			{
+				bounds = DrawBuzzer(posWorld, scaleWorld, rootChip.Description.Colour, sim);
+			}
 
 			display.LastDrawBounds = bounds;
 			return bounds;
@@ -447,6 +456,40 @@ namespace DLS.Graphics
 
 
 		public static Vector2 CalculateChipNameBounds(string name) => Draw.CalculateTextBoundsSize(name, FontSizeChipName, FontBold, ChipNameLineSpacing);
+
+		public static Bounds2D DrawBuzzer(Vector2 centre, float scale, Color colour, SimChip simSource)
+		{
+			float frequency = 0;
+			uint amplitude = 0;
+
+			if (simSource != null)
+			{
+				frequency = simSource.InputPins[0].State > 27.5 ? SimAudio.CalculateFrequency(simSource.InputPins[0].State) : 27.5f;
+				amplitude = simSource.InputPins[1].State;
+			}
+
+			bool disconnectedOrMuted = simSource == null || amplitude == 0 || simSource.InputPins[1].State >= 16 || simSource.InputPins[0].State >= 256;
+
+			float remappedAmplitude = Mathf.Lerp(0.25f, 1f, Mathf.InverseLerp(2.5f, 20, amplitude));
+
+			float oscillation = Mathf.Sin(Time.time * frequency);
+
+			float minLargeScale = 0.45f * scale;
+			float maxLargeScale = Mathf.Lerp(minLargeScale, 0.5f * scale, remappedAmplitude);
+			float remappedLargeScale = Mathf.Lerp(minLargeScale, maxLargeScale, Mathf.InverseLerp(-1f, 1f, oscillation));
+
+			float minSmallScale = 0.075f * scale;
+			float maxSmallScale = Mathf.Lerp(minSmallScale, 0.1f * scale, remappedAmplitude);
+			float remappedSmallScale = Mathf.Lerp(minSmallScale, maxSmallScale, Mathf.InverseLerp(1f, -1f, oscillation));
+
+			Vector2 finalLargeScale = disconnectedOrMuted ? minLargeScale * Vector2.one : remappedLargeScale * Vector2.one;
+			Vector2 finalSmallScale = disconnectedOrMuted ? minSmallScale * Vector2.one : remappedSmallScale * Vector2.one;
+
+			Draw.Ellipse(centre, finalLargeScale * 1.05f, GetChipOutlineCol(colour));
+			Draw.Ellipse(centre, finalLargeScale, ColHelper.Brighten(colour, 0.1f));
+			Draw.Ellipse(centre, finalSmallScale, ColHelper.Darken(colour, 0.1f));
+			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+		}
 
 		public static Bounds2D DrawDisplay_RGB(Vector2 centre, float scale, SimChip simSource)
 		{
