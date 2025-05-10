@@ -61,16 +61,13 @@ namespace DLS.Game
 		bool simThreadActive;
 		public bool advanceSingleSimStep;
 		public int simPausedSingleStepCounter;
-		int mainThreadFrameCount;
 		DevPinInstance[] inputPins = Array.Empty<DevPinInstance>();
 		public int targetTicksPerSecond => Mathf.Max(1, description.Prefs_SimTargetStepsPerSecond);
 		public int stepsPerClockTransition => description.Prefs_SimStepsPerClockTick;
 		public bool simPaused => description.Prefs_SimPaused;
 		public double simAvgTicksPerSec { get; private set; }
 		public SimChip rootSimChip => editModeChip.SimChip;
-		float simulationGraphicalStateUpdateInterval;
 		float simGraphicalStateNextUpdateTime;
-		float currentTime;
 
 		public Project(ProjectDescription description, ChipLibrary chipLibrary)
 		{
@@ -95,11 +92,16 @@ namespace DLS.Game
 			}
 
 			inputPins = editModeChip.GetInputPins();
-			mainThreadFrameCount++;
-			currentTime = Time.time;
-			// Avoid updating graphical state from sim thread more frequently than screen can refresh.
-			// (fudge factor to try to avoid just missing a frame)
-			simulationGraphicalStateUpdateInterval = 1 / (float)(Screen.currentResolution.refreshRateRatio.value + 10);
+			
+			
+			if (Time.time > simGraphicalStateNextUpdateTime)
+			{
+				// Avoid updating graphical state from sim thread more frequently than screen can refresh.
+				float simulationGraphicalStateUpdateInterval = 1 / (float)(Screen.currentResolution.refreshRateRatio.value);
+				simGraphicalStateNextUpdateTime = Time.time + simulationGraphicalStateUpdateInterval;
+				
+				ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
+			}
 
 			if (debug_runSimMainThread)
 			{
@@ -497,7 +499,6 @@ namespace DLS.Game
 		{
 			const int performanceTimeWindowMs = (int)(SimulationPerformanceTimeWindowSec * 1000);
 			Queue<long> tickCounterOverTimeWindow = new();
-			int simLastMainThreadSyncFrame = -1;
 
 			Stopwatch stopwatch = new();
 			Stopwatch stopwatchTotal = Stopwatch.StartNew();
@@ -505,22 +506,6 @@ namespace DLS.Game
 			while (simThreadActive)
 			{
 				Simulator.ApplyModifications();
-				// ---- A new frame has been reached on main thread  ----
-				if (mainThreadFrameCount > simLastMainThreadSyncFrame && currentTime > simGraphicalStateNextUpdateTime)
-				{
-					simLastMainThreadSyncFrame = mainThreadFrameCount;
-					simGraphicalStateNextUpdateTime = currentTime + simulationGraphicalStateUpdateInterval;
-					// Update graphical state from sim
-					// Note: update graphical state even when paused so that subchips are automatically updated if viewed
-					ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
-					// Log sim time
-					if (debug_logSimTime)
-					{
-						double elapsedMs = stopwatchTotal.ElapsedTicks * (1000.0 / Stopwatch.Frequency);
-						int frame = Simulator.simulationFrame;
-						if (frame > 0) UnityEngine.Debug.Log($"Avg sim step time: {elapsedMs / frame} ms NumSteps: {frame} secs: {elapsedMs / 1000.0:0.00}");
-					}
-				}
 
 				// If sim is paused, sleep a bit and then check again
 				// Also handle advancing a single step
