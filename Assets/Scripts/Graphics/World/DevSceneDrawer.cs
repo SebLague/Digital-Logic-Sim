@@ -28,6 +28,7 @@ namespace DLS.Graphics
 
 		public static void DrawActiveScene()
 		{
+			if (!UnityMain.instance.testbool) return;
 			WorldDrawer.DrawGridIfActive(ActiveTheme.GridCol);
 
 			controller = Project.ActiveProject.controller;

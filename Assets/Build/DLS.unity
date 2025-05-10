@@ -244,7 +244,7 @@ MonoBehaviour:
   openInMainMenu: 0
   testProjectName: MainTest
   openA: 1
-  chipToOpenA: BuzzTest
+  chipToOpenA: Wip2
   chipToOpenB: TEST MergeSplit
   testVecA: {x: 100, y: 0.5333334}
   testVecB: {x: 1.71, y: 0.0025}

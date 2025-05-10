@@ -154,6 +154,7 @@ namespace DLS.Game
 		void OnDestroy()
 		{
 			if (Project.ActiveProject != null) Project.ActiveProject.NotifyExit();
+			SimThread.StopAll();
 		}
 
 		void OnValidate()

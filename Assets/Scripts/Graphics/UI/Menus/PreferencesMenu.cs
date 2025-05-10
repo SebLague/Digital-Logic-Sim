@@ -1,6 +1,7 @@
 using System;
 using DLS.Description;
 using DLS.Game;
+using DLS.Simulation;
 using Seb.Types;
 using Seb.Vis;
 using Seb.Vis.UI;
@@ -240,7 +241,7 @@ namespace DLS.Graphics
 		{
 			// Annoying if sim tick rate value flickers too much, so use slower refresh rate for ui
 			// (but if sim target rate has been recently changed, update fast so doesn't feel laggy)
-			bool slowModeSimUI = Time.time - lastSimTickRateSetTime > Project.SimulationPerformanceTimeWindowSec;
+			bool slowModeSimUI = Time.time - lastSimTickRateSetTime > SimThread.SimulationPerformanceTimeWindowSec;
 			const float slowModeRefreshDelay = 0.35f;
 			const float fastModeRefreshDelay = 0.05f;
 			float refreshDelay = slowModeSimUI ? slowModeRefreshDelay : fastModeRefreshDelay;

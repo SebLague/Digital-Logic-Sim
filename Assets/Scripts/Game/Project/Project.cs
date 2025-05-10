@@ -54,20 +54,18 @@ namespace DLS.Game
 		public AudioState audioState;
 
 		// ---- Simulation settings and state ----
-		static readonly bool debug_logSimTime = false;
 		static readonly bool debug_runSimMainThread = false;
-		public const float SimulationPerformanceTimeWindowSec = 1.5f;
 
-		bool simThreadActive;
 		public bool advanceSingleSimStep;
 		public int simPausedSingleStepCounter;
-		DevPinInstance[] inputPins = Array.Empty<DevPinInstance>();
+		public DevPinInstance[] inputPins = Array.Empty<DevPinInstance>();
 		public int targetTicksPerSecond => Mathf.Max(1, description.Prefs_SimTargetStepsPerSecond);
 		public int stepsPerClockTransition => description.Prefs_SimStepsPerClockTick;
 		public bool simPaused => description.Prefs_SimPaused;
-		public double simAvgTicksPerSec { get; private set; }
+		public double simAvgTicksPerSec;
 		public SimChip rootSimChip => editModeChip.SimChip;
 		float simGraphicalStateNextUpdateTime;
+		SimThread simThread;
 
 		public Project(ProjectDescription description, ChipLibrary chipLibrary)
 		{
@@ -92,20 +90,20 @@ namespace DLS.Game
 			}
 
 			inputPins = editModeChip.GetInputPins();
-			
-			
-			if (Time.time > simGraphicalStateNextUpdateTime)
+
+
+			if (Time.time > simGraphicalStateNextUpdateTime && UnityMain.instance.testbool)
 			{
 				// Avoid updating graphical state from sim thread more frequently than screen can refresh.
 				float simulationGraphicalStateUpdateInterval = 1 / (float)(Screen.currentResolution.refreshRateRatio.value);
 				simGraphicalStateNextUpdateTime = Time.time + simulationGraphicalStateUpdateInterval;
-				
+
 				ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
 			}
 
 			if (debug_runSimMainThread)
 			{
-				Debug_RunMainThreadSimStep();
+				SimThread.Debug_RunMainThreadSimStep(this);
 			}
 		}
 
@@ -117,14 +115,8 @@ namespace DLS.Game
 				return;
 			}
 
-			simThreadActive = true;
-			Thread simThread = new(SimThread)
-			{
-				Priority = System.Threading.ThreadPriority.Highest,
-				Name = "DLS_SimThread",
-				IsBackground = true
-			};
-			simThread.Start();
+			SimThread thread = new();
+			thread.Start(this);
 		}
 
 		public void EnterViewMode(SubChipInstance subchip)
@@ -492,90 +484,9 @@ namespace DLS.Game
 
 		public void NotifyExit()
 		{
-			simThreadActive = false;
+			SimThread.StopAll();
 		}
 
-		void SimThread()
-		{
-			const int performanceTimeWindowMs = (int)(SimulationPerformanceTimeWindowSec * 1000);
-			Queue<long> tickCounterOverTimeWindow = new();
-
-			Stopwatch stopwatch = new();
-			Stopwatch stopwatchTotal = Stopwatch.StartNew();
-
-			while (simThreadActive)
-			{
-				Simulator.ApplyModifications();
-
-				// If sim is paused, sleep a bit and then check again
-				// Also handle advancing a single step
-				if (simPaused && !advanceSingleSimStep)
-				{
-					Simulator.UpdateInPausedState();
-					stopwatchTotal.Stop();
-					Thread.Sleep(10);
-					continue;
-				}
-
-				if (advanceSingleSimStep)
-				{
-					simPausedSingleStepCounter++;
-					advanceSingleSimStep = false;
-				}
-				else simPausedSingleStepCounter = 0;
-
-				double targetTickDurationMs = 1000.0 / targetTicksPerSecond;
-				stopwatch.Restart();
-				if (!stopwatchTotal.IsRunning) stopwatchTotal.Start();
-
-				// ---- Run sim ----
-				Simulator.stepsPerClockTransition = stepsPerClockTransition;
-				SimChip simChip = rootSimChip;
-				if (simChip == null) continue; // Could potentially be null for a frame when switching between chips
-				Simulator.RunSimulationStep(simChip, inputPins, audioState.simAudio);
-
-				// ---- Wait some amount of time (if needed) to try to hit the target ticks per second ----
-				while (true)
-				{
-					double elapsedMs = stopwatch.ElapsedTicks * (1000.0 / Stopwatch.Frequency);
-					double waitMs = targetTickDurationMs - elapsedMs;
-
-					if (waitMs <= 0) break;
-
-					// Wait some cycles before checking timer again (todo: better approach?)
-					Thread.SpinWait(10);
-				}
-
-				// ---- Update perf counter (measures average num ticks over last n seconds) ----
-				long elapsedMsTotal = stopwatchTotal.ElapsedMilliseconds;
-				tickCounterOverTimeWindow.Enqueue(elapsedMsTotal);
-				while (tickCounterOverTimeWindow.Count > 0)
-				{
-					if (elapsedMsTotal - tickCounterOverTimeWindow.Peek() > performanceTimeWindowMs)
-					{
-						tickCounterOverTimeWindow.Dequeue();
-					}
-					else break;
-				}
-
-				if (tickCounterOverTimeWindow.Count > 0)
-				{
-					double activeWindowMs = elapsedMsTotal - tickCounterOverTimeWindow.Peek();
-					if (activeWindowMs > 0)
-					{
-						simAvgTicksPerSec = tickCounterOverTimeWindow.Count / activeWindowMs * 1000;
-					}
-				}
-			}
-		}
-
-		void Debug_RunMainThreadSimStep()
-		{
-			Simulator.stepsPerClockTransition = stepsPerClockTransition;
-			Simulator.ApplyModifications();
-			Simulator.RunSimulationStep(rootSimChip, inputPins, audioState.simAudio);
-			ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
-		}
 
 		public void UpdateAndSaveProjectDescription()
 		{
