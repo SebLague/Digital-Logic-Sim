@@ -7,25 +7,25 @@ namespace Seb.Types
 		public readonly Vector2 Min;
 		public readonly Vector2 Max;
 
-		public readonly Vector2 Size => Max - Min;
-		public readonly Vector2 Centre => (Min + Max) / 2;
+		public Vector2 Size => Max - Min;
+		public Vector2 Centre => (Min + Max) / 2;
 
-		public readonly float Width => Size.x;
-		public readonly float Height => Size.y;
+		public float Width => Size.x;
+		public float Height => Size.y;
 
-		public readonly Vector2 BottomLeft => Min;
-		public readonly Vector2 TopRight => Max;
-		public readonly Vector2 BottomRight => new(Max.x, Min.y);
-		public readonly Vector2 TopLeft => new(Min.x, Max.y);
-		public readonly Vector2 CentreLeft => new(Min.x, (Min.y + Max.y) / 2);
-		public readonly Vector2 CentreRight => new(Max.x, (Min.y + Max.y) / 2);
-		public readonly Vector2 CentreTop => new((Min.x + Max.x) / 2, Max.y);
-		public readonly Vector2 CentreBottom => new((Min.x + Max.x) / 2, Min.y);
+		public Vector2 BottomLeft => Min;
+		public Vector2 TopRight => Max;
+		public Vector2 BottomRight => new(Max.x, Min.y);
+		public Vector2 TopLeft => new(Min.x, Max.y);
+		public Vector2 CentreLeft => new(Min.x, (Min.y + Max.y) / 2);
+		public Vector2 CentreRight => new(Max.x, (Min.y + Max.y) / 2);
+		public Vector2 CentreTop => new((Min.x + Max.x) / 2, Max.y);
+		public Vector2 CentreBottom => new((Min.x + Max.x) / 2, Min.y);
 
-		public readonly float Left => Min.x;
-		public readonly float Right => Max.x;
-		public readonly float Top => Max.y;
-		public readonly float Bottom => Min.y;
+		public float Left => Min.x;
+		public float Right => Max.x;
+		public float Top => Max.y;
+		public float Bottom => Min.y;
 
 		public Bounds2D(Vector2 min, Vector2 max)
 		{

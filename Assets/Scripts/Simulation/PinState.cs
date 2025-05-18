@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace DLS.Simulation
 {
 	// Helper class for dealing with pin state.
@@ -12,17 +14,23 @@ namespace DLS.Simulation
 
 		// Mask for single bit value (bit state, and tristate flag)
 		public const uint SingleBitMask = 1 | (1 << 16);
-		
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ushort GetBitStates(uint state) => (ushort)state;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ushort GetTristateFlags(uint state) => (ushort)(state >> 16);
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Set(ref uint state, ushort bitStates, ushort tristateFlags)
 		{
 			state = (uint)(bitStates | (tristateFlags << 16));
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static void Set(ref uint state, uint other) => state = other;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static ushort GetBitTristatedValue(uint state, int bitIndex)
 		{
 			ushort bitState = (ushort)((GetBitStates(state) >> bitIndex) & 1);
@@ -30,7 +38,11 @@ namespace DLS.Simulation
 			return (ushort)(bitState | (tri << 1)); // Combine to form tri-stated value: 0 = LOW, 1 = HIGH, 2 = DISCONNECTED
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool FirstBitHigh(uint state) => (state & 1) == LogicHigh;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetAllDisconnected(ref uint state) => Set(ref state, 0, ushort.MaxValue);
 
 		public static void Set4BitFrom8BitSource(ref uint state, uint source8bit, bool firstNibble)
 		{
@@ -65,7 +77,5 @@ namespace DLS.Simulation
 			// Clear tristate flags (can't be disconnected if toggling as only input dev pins are allowed)
 			Set(ref state, bitStates, 0);
 		}
-
-		public static void SetAllDisconnected(ref uint state) => Set(ref state, 0, ushort.MaxValue);
 	}
 }

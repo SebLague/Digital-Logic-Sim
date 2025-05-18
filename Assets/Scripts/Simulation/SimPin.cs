@@ -34,8 +34,6 @@ namespace DLS.Simulation
 			PinState.SetAllDisconnected(ref State);
 		}
 
-		public bool FirstBitHigh => PinState.FirstBitHigh(State);
-
 		public void PropagateSignal()
 		{
 			int length = ConnectedTargetPins.Length;

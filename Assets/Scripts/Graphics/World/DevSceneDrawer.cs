@@ -28,7 +28,6 @@ namespace DLS.Graphics
 
 		public static void DrawActiveScene()
 		{
-			if (!UnityMain.instance.testbool) return;
 			WorldDrawer.DrawGridIfActive(ActiveTheme.GridCol);
 
 			controller = Project.ActiveProject.controller;
@@ -387,73 +386,82 @@ namespace DLS.Graphics
 
 		public static Bounds2D DrawDisplay(DisplayInstance display, Vector2 posParent, float parentScale, SubChipInstance rootChip, SimChip sim = null)
 		{
-			Bounds2D bounds = Bounds2D.CreateEmpty();
+			Bounds2D bounds;
 
 			Vector2 posLocal = display.Desc.Position;
 			Vector2 posWorld = posParent + posLocal * parentScale;
 			float scaleWorld = display.Desc.Scale * parentScale;
-
-			if (display.DisplayType is ChipType.Custom)
+			switch (display.DisplayType)
 			{
-				sim = sim?.GetSubChipFromID(display.Desc.SubChipID);
-
-				foreach (DisplayInstance child in display.ChildDisplays)
+				case ChipType.Custom:
 				{
-					Bounds2D childBounds = DrawDisplay(child, posWorld, scaleWorld, rootChip, sim);
-					bounds = Bounds2D.Grow(bounds, childBounds);
-				}
-			}
-			else if (display.DisplayType is ChipType.SevenSegmentDisplay)
-			{
-				bool simActive = sim != null;
-				// if this is the builtin 7Seg, highlight segments when mouse is over corresponding pin
-				bool hoverActive = rootChip.ChipType == ChipType.SevenSegmentDisplay;
-				PinInstance pin = InteractionState.PinUnderMouse;
-				int colOffset = simActive && sim.InputPins[7].FirstBitHigh ? 3 : 0;
+					bounds = Bounds2D.CreateEmpty();
+					sim = display.SimChip ?? sim?.GetSubChipFromID(display.Desc.SubChipID);
+					display.SimChip = sim;
 
-				int A = (simActive && sim.InputPins[0].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[0] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int B = (simActive && sim.InputPins[1].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[1] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int C = (simActive && sim.InputPins[2].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[2] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int D = (simActive && sim.InputPins[3].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[3] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int E = (simActive && sim.InputPins[4].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[4] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int F = (simActive && sim.InputPins[5].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[5] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				int G = (simActive && sim.InputPins[6].FirstBitHigh ? DisplayOnState : hoverActive && pin == rootChip.AllPins[6] ? DisplayHighlightState : DisplayOffState) + colOffset;
-				bounds = DrawDisplay_SevenSegment(posWorld, scaleWorld, A, B, C, D, E, F, G);
-			}
-			else if (display.DisplayType == ChipType.DisplayRGB)
-			{
-				bounds = DrawDisplay_RGB(posWorld, scaleWorld, sim);
-			}
-			else if (display.DisplayType == ChipType.DisplayDot)
-			{
-				bounds = DrawDisplay_Dot(posWorld, scaleWorld, sim);
-			}
-			else if (display.DisplayType == ChipType.DisplayLED)
-			{
-				bool simActive = sim != null;
-				Color col = Color.black;
-				if (simActive)
+					foreach (DisplayInstance child in display.ChildDisplays)
+					{
+						Bounds2D childBounds = DrawDisplay(child, posWorld, scaleWorld, rootChip, sim);
+						bounds = Bounds2D.Grow(bounds, childBounds);
+					}
+
+					break;
+				}
+				case ChipType.SevenSegmentDisplay:
 				{
-					bool isOn = sim.InputPins[0].FirstBitHigh;
-					uint displayColIndex = sim.InternalState[0];
-					col = GetStateColour(isOn, displayColIndex);
-				}
+					bool simActive = sim != null;
+					// if this is the builtin 7Seg, highlight segments when mouse is over corresponding pin
+					bool hoverActive = rootChip.ChipType == ChipType.SevenSegmentDisplay;
+					PinInstance pin = InteractionState.PinUnderMouse;
+					int colOffset = simActive && PinState.FirstBitHigh(sim.InputPins[7].State) ? 3 : 0;
 
-				bounds = DrawDisplay_LED(posWorld, scaleWorld, col);
-			}
-			else if (display.DisplayType == ChipType.DisplayLED_RGB)
-			{
-				bool simActive = sim != null;
-				Color col = Color.black;
-				if (simActive)
+					int A = (simActive && PinState.FirstBitHigh(sim.InputPins[0].State) ? DisplayOnState : hoverActive && pin == rootChip.AllPins[0] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int B = (simActive && PinState.FirstBitHigh(sim.InputPins[1].State) ? DisplayOnState : hoverActive && pin == rootChip.AllPins[1] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int C = (simActive && PinState.FirstBitHigh(sim.InputPins[2].State) ? DisplayOnState : hoverActive && pin == rootChip.AllPins[2] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int D = (simActive && PinState.FirstBitHigh(sim.InputPins[3].State) ? DisplayOnState : hoverActive && pin == rootChip.AllPins[3] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int E = (simActive && PinState.FirstBitHigh(sim.InputPins[4].State) ? DisplayOnState : hoverActive && pin == rootChip.AllPins[4] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int F = (simActive && PinState.FirstBitHigh(sim.InputPins[5].State) ? DisplayOnState : hoverActive && pin == rootChip.AllPins[5] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					int G = (simActive && PinState.FirstBitHigh(sim.InputPins[6].State) ? DisplayOnState : hoverActive && pin == rootChip.AllPins[6] ? DisplayHighlightState : DisplayOffState) + colOffset;
+					bounds = DrawDisplay_SevenSegment(posWorld, scaleWorld, A, B, C, D, E, F, G);
+					break;
+				}
+				case ChipType.DisplayRGB:
+					bounds = DrawDisplay_RGB(posWorld, scaleWorld, sim);
+					break;
+				case ChipType.DisplayDot:
+					bounds = DrawDisplay_Dot(posWorld, scaleWorld, sim);
+					break;
+				case ChipType.DisplayLED:
 				{
-					float r = sim.InputPins[0].FirstBitHigh ? 1 : 0;
-					float g = sim.InputPins[1].FirstBitHigh ? 1 : 0;
-					float b = sim.InputPins[2].FirstBitHigh ? 1 : 0;
-					col = new Color(r, g, b);
-				}
+					Color col = Color.black;
+					if (sim != null)
+					{
+						display.SimPin ??= sim.InputPins[0];
+						bool isOn = PinState.FirstBitHigh(display.SimPin.State);
+						uint displayColIndex = sim.InternalState[0];
+						col = GetStateColour(isOn, displayColIndex);
+					}
 
-				bounds = DrawDisplay_LED_RGB(posWorld, scaleWorld, col);
+					bounds = DrawDisplay_LED(posWorld, scaleWorld, col);
+					break;
+				}
+				case ChipType.DisplayLED_RGB:
+				{
+					bool simActive = sim != null;
+					Color col = Color.black;
+					if (simActive)
+					{
+						float r = PinState.FirstBitHigh(sim.InputPins[0].State) ? 1 : 0;
+						float g = PinState.FirstBitHigh(sim.InputPins[1].State) ? 1 : 0;
+						float b = PinState.FirstBitHigh(sim.InputPins[2].State) ? 1 : 0;
+						col = new Color(r, g, b);
+					}
+
+					bounds = DrawDisplay_LED_RGB(posWorld, scaleWorld, col);
+					break;
+				}
+				default:
+					throw new NotImplementedException("Display type not implemented: " + display.DisplayType);
 			}
 
 			display.LastDrawBounds = bounds;
@@ -590,21 +598,21 @@ namespace DLS.Graphics
 		{
 			const float pixelSizeT = 0.975f;
 			Vector2 pixelDrawSize = Vector2.one * (scale * pixelSizeT);
-			
+
 			Draw.Quad(centre, Vector2.one * scale, Color.black);
 			Draw.Quad(centre, pixelDrawSize, col);
-			
+
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
-		
+
 		public static Bounds2D DrawDisplay_LED_RGB(Vector2 centre, float scale, Color col)
 		{
 			const float pixelSizeT = 0.975f;
 			Vector2 pixelDrawSize = Vector2.one * (scale * pixelSizeT);
-			
+
 			Draw.Quad(centre, Vector2.one * scale, Color.black);
 			Draw.Quad(centre, pixelDrawSize, col);
-			
+
 			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
 		}
 

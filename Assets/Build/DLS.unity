@@ -242,9 +242,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   openSaveDirectory: 0
   openInMainMenu: 0
-  testProjectName: MainTest
+  testProjectName: GOL
   openA: 1
-  chipToOpenA: Wip2
+  chipToOpenA: GOL
   chipToOpenB: TEST MergeSplit
   testVecA: {x: 100, y: 0.5333334}
   testVecB: {x: 1.71, y: 0.0025}
