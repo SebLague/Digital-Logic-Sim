@@ -1,0 +1,136 @@
+{
+  "ProjectName": "GOL",
+  "DLSVersion_LastSaved": "2.1.6",
+  "DLSVersion_EarliestCompatible": "2.0.0",
+  "CreationTime": "2025-05-10T19:41:18.761+02:00",
+  "LastSaveTime": "2025-05-18T12:44:48.014+02:00",
+  "Prefs_MainPinNamesDisplayMode": 1,
+  "Prefs_ChipPinNamesDisplayMode": 1,
+  "Prefs_GridDisplayMode": 1,
+  "Prefs_Snapping": 1,
+  "Prefs_StraightWires": 0,
+  "Prefs_SimPaused": false,
+  "Prefs_SimTargetStepsPerSecond": 1000,
+  "Prefs_SimStepsPerClockTick": 4,
+  "AllCustomChipNames":[
+    "NOT",
+    "AND",
+    "OR",
+    "XOR",
+    "ADD0",
+    "ADD1",
+    "ADD1 8-INs",
+    "D LATCH",
+    "D LATCH+INIT",
+    "D FF",
+    "STATE CALCULATOR",
+    "CELL",
+    "CELLS 4x4",
+    "CELLS 4x4 WRAPPER",
+    "CELLS 16x16",
+    "DECODE 2",
+    "DECODE 2 +ENABLE",
+    "CELLS 16x16 WRAPPER",
+    "CELLS 32x32",
+    "CELLS 32x32 WRAPPER",
+    "CLOCK++",
+    "CELLS 64x64",
+    "CELLS 64x64 WRAPPER",
+    "CELLS 64x64 WW",
+    "GOL"
+  ],
+  "StarredList":[
+    {
+      "Name":"IN/OUT",
+      "IsCollection":true
+    },
+    {
+      "Name":"MERGE/SPLIT",
+      "IsCollection":true
+    },
+    {
+      "Name":"BASIC",
+      "IsCollection":true
+    },
+    {
+      "Name":"ALU",
+      "IsCollection":true
+    },
+    {
+      "Name":"REG",
+      "IsCollection":true
+    },
+    {
+      "Name":"GAME OF LIFE",
+      "IsCollection":true
+    },
+    {
+      "Name":"AND",
+      "IsCollection":false
+    },
+    {
+      "Name":"OR",
+      "IsCollection":false
+    },
+    {
+      "Name":"NOT",
+      "IsCollection":false
+    },
+    {
+      "Name":"GOL",
+      "IsCollection":false
+    }
+  ],
+  "ChipCollections":[
+    {
+      "Chips":["NAND","CLOCK","PULSE","KEY","3-STATE BUFFER"],
+      "IsToggledOpen":false,
+      "Name":"BASIC"
+    },
+    {
+      "Chips":["IN-1","IN-4","IN-8","OUT-1","OUT-4","OUT-8"],
+      "IsToggledOpen":false,
+      "Name":"IN/OUT"
+    },
+    {
+      "Chips":["1-4BIT","1-8BIT","4-8BIT","4-1BIT","8-4BIT","8-1BIT"],
+      "IsToggledOpen":false,
+      "Name":"MERGE/SPLIT"
+    },
+    {
+      "Chips":["BUS-1","BUS-4","BUS-8"],
+      "IsToggledOpen":false,
+      "Name":"BUS"
+    },
+    {
+      "Chips":["7-SEGMENT","DOT DISPLAY","RGB DISPLAY","LED","BUZZER"],
+      "IsToggledOpen":false,
+      "Name":"DISPLAY"
+    },
+    {
+      "Chips":["ROM 256×16"],
+      "IsToggledOpen":false,
+      "Name":"MEMORY"
+    },
+    {
+      "Chips":["XOR","ADD0","ADD1","ADD1 8-INs","DECODE 2","DECODE 2 +ENABLE","CLOCK++"],
+      "IsToggledOpen":false,
+      "Name":"ALU"
+    },
+    {
+      "Chips":["D LATCH","D LATCH+INIT","D FF"],
+      "IsToggledOpen":false,
+      "Name":"REG"
+    },
+    {
+      "Chips":["STATE CALCULATOR","CELL","CELLS 4x4","CELLS 4x4 WRAPPER","CELLS 16x16","CELLS 16x16 WRAPPER","CELLS 32x32","CELLS 32x32 WRAPPER","CELLS 64x64","CELLS 64x64 WRAPPER","CELLS 64x64 WW"],
+      "IsToggledOpen":true,
+      "Name":"GAME OF LIFE"
+    },
+    {
+      "Chips":["AND","OR","NOT","LED RGB"],
+      "IsToggledOpen":false,
+      "Name":"OTHER"
+    }
+  ]
+}

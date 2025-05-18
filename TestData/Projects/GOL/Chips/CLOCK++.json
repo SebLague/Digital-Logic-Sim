@@ -1,0 +1,186 @@
+{
+  "DLSVersion": "2.1.6",
+  "Name": "CLOCK++",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 1.175,
+    "y": 0.75
+  },
+  "Colour": {
+    "r": 0.42551446,
+    "g": 0.466627866,
+    "b": 0.556160152,
+    "a": 1
+  },
+  "InputPins":[
+    {
+      "Name":"MANUAL MODE",
+      "ID":64247495,
+      "Position":{
+        "x":61.5,
+        "y":-1.625
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    },
+    {
+      "Name":"MANUAL CLOCK",
+      "ID":732763890,
+      "Position":{
+        "x":61.5,
+        "y":-2.25
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "OutputPins":[
+    {
+      "Name":"CLOCK OUT",
+      "ID":395196720,
+      "Position":{
+        "x":68.125,
+        "y":-1.625
+      },
+      "BitCount":1,
+      "Colour":0,
+      "ValueDisplayMode":0
+    }
+  ],
+  "SubChips":[
+    {
+      "Name":"CLOCK",
+      "ID":1397169225,
+      "Label":"",
+      "Position":{
+        "x":63.49,
+        "y":-1.125
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":0}],
+      "InternalData":null
+    },
+    {
+      "Name":"AND",
+      "ID":1916690439,
+      "Label":"",
+      "Position":{
+        "x":65.1725,
+        "y":-1.5
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":538757880}],
+      "InternalData":null
+    },
+    {
+      "Name":"NOT",
+      "ID":1686815985,
+      "Label":"",
+      "Position":{
+        "x":63.6725,
+        "y":-1.625
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":1217052323}],
+      "InternalData":null
+    },
+    {
+      "Name":"OR",
+      "ID":610432955,
+      "Label":"",
+      "Position":{
+        "x":66.4725,
+        "y":-1.625
+      },
+      "OutputPinColourInfo":[{"PinColour":0,"PinID":1277159647}],
+      "InternalData":null
+    }
+  ],
+  "Wires":[
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":1397169225
+      },
+      "TargetPinAddress":{
+        "PinID":2094861701,
+        "PinOwnerID":1916690439
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":64.4375,"y":-1.125},{"x":64.4375,"y":-1.375},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":1217052323,
+        "PinOwnerID":1686815985
+      },
+      "TargetPinAddress":{
+        "PinID":1542826689,
+        "PinOwnerID":1916690439
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":64247495
+      },
+      "TargetPinAddress":{
+        "PinID":1930228764,
+        "PinOwnerID":1686815985
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":538757880,
+        "PinOwnerID":1916690439
+      },
+      "TargetPinAddress":{
+        "PinID":764163701,
+        "PinOwnerID":610432955
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":0,
+        "PinOwnerID":732763890
+      },
+      "TargetPinAddress":{
+        "PinID":1903774816,
+        "PinOwnerID":610432955
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":65.875,"y":-2.25},{"x":65.875,"y":-1.75},{"x":0.0,"y":0.0}]
+    },
+    {
+      "SourcePinAddress":{
+        "PinID":1277159647,
+        "PinOwnerID":610432955
+      },
+      "TargetPinAddress":{
+        "PinID":0,
+        "PinOwnerID":395196720
+      },
+      "ConnectionType":0,
+      "ConnectedWireIndex":-1,
+      "ConnectedWireSegmentIndex":-1,
+      "Points":[{"x":0.0,"y":0.0},{"x":0.0,"y":0.0}]
+    }
+  ],
+  "Displays":[]
+}
