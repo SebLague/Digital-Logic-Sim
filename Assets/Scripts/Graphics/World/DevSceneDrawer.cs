@@ -373,8 +373,13 @@ namespace DLS.Graphics
 			Draw.ID displayBorderID = Draw.ReserveQuad();
 			Draw.ID displayBackingID = Draw.ReserveQuad();
 
+			Vector2 boundsMin = new(float.MaxValue, float.MaxValue);
+			Vector2 boundsMax = new(float.MinValue, float.MinValue);
 
-			Bounds2D bounds = DrawDisplay(display, pos, 1, rootChip, sim);
+			DrawDisplay(display, pos, 1, rootChip, sim, ref boundsMin, ref boundsMax);
+
+			Bounds2D bounds = new(boundsMin, boundsMax);
+			display.LastDrawBounds = bounds;
 
 			// Border colour around display
 			Draw.ModifyQuad(displayBorderID, bounds.Centre, bounds.Size + Vector2.one * 0.03f, borderCol);
@@ -384,25 +389,22 @@ namespace DLS.Graphics
 			return bounds;
 		}
 
-		public static Bounds2D DrawDisplay(DisplayInstance display, Vector2 posParent, float parentScale, SubChipInstance rootChip, SimChip sim = null)
+		public static void DrawDisplay(DisplayInstance display, Vector2 posParent, float parentScale, SubChipInstance rootChip, SimChip sim, ref Vector2 boundsMin, ref Vector2 boundsMax)
 		{
-			Bounds2D bounds;
-
 			Vector2 posLocal = display.Desc.Position;
 			Vector2 posWorld = posParent + posLocal * parentScale;
 			float scaleWorld = display.Desc.Scale * parentScale;
+
 			switch (display.DisplayType)
 			{
 				case ChipType.Custom:
 				{
-					bounds = Bounds2D.CreateEmpty();
 					sim = display.SimChip ?? sim?.GetSubChipFromID(display.Desc.SubChipID);
 					display.SimChip = sim;
 
 					foreach (DisplayInstance child in display.ChildDisplays)
 					{
-						Bounds2D childBounds = DrawDisplay(child, posWorld, scaleWorld, rootChip, sim);
-						bounds = Bounds2D.Grow(bounds, childBounds);
+						DrawDisplay(child, posWorld, scaleWorld, rootChip, sim, ref boundsMin, ref boundsMax);
 					}
 
 					break;
@@ -422,14 +424,14 @@ namespace DLS.Graphics
 					int E = (simActive && PinState.FirstBitHigh(sim.InputPins[4].State) ? DisplayOnState : hoverActive && pin == rootChip.AllPins[4] ? DisplayHighlightState : DisplayOffState) + colOffset;
 					int F = (simActive && PinState.FirstBitHigh(sim.InputPins[5].State) ? DisplayOnState : hoverActive && pin == rootChip.AllPins[5] ? DisplayHighlightState : DisplayOffState) + colOffset;
 					int G = (simActive && PinState.FirstBitHigh(sim.InputPins[6].State) ? DisplayOnState : hoverActive && pin == rootChip.AllPins[6] ? DisplayHighlightState : DisplayOffState) + colOffset;
-					bounds = DrawDisplay_SevenSegment(posWorld, scaleWorld, A, B, C, D, E, F, G);
+					DrawDisplay_SevenSegment(posWorld, scaleWorld, A, B, C, D, E, F, G, ref boundsMin, ref boundsMax);
 					break;
 				}
 				case ChipType.DisplayRGB:
-					bounds = DrawDisplay_RGB(posWorld, scaleWorld, sim);
+					DrawDisplay_RGB(posWorld, scaleWorld, sim, ref boundsMin, ref boundsMax);
 					break;
 				case ChipType.DisplayDot:
-					bounds = DrawDisplay_Dot(posWorld, scaleWorld, sim);
+					DrawDisplay_Dot(posWorld, scaleWorld, sim, ref boundsMin, ref boundsMax);
 					break;
 				case ChipType.DisplayLED:
 				{
@@ -442,7 +444,7 @@ namespace DLS.Graphics
 						col = GetStateColour(isOn, displayColIndex);
 					}
 
-					bounds = DrawDisplay_LED(posWorld, scaleWorld, col);
+					DrawDisplay_LED(posWorld, scaleWorld, col, ref boundsMin, ref boundsMax);
 					break;
 				}
 				case ChipType.DisplayLED_RGB:
@@ -457,27 +459,25 @@ namespace DLS.Graphics
 						col = new Color(r, g, b);
 					}
 
-					bounds = DrawDisplay_LED_RGB(posWorld, scaleWorld, col);
+					DrawDisplay_LED_RGB(posWorld, scaleWorld, col, ref boundsMin, ref boundsMax);
 					break;
 				}
 				default:
 					throw new NotImplementedException("Display type not implemented: " + display.DisplayType);
 			}
-
-			display.LastDrawBounds = bounds;
-			return bounds;
 		}
 
 
 		public static Vector2 CalculateChipNameBounds(string name) => Draw.CalculateTextBoundsSize(name, FontSizeChipName, FontBold, ChipNameLineSpacing);
 
-		public static Bounds2D DrawDisplay_RGB(Vector2 centre, float scale, SimChip simSource)
+		public static void DrawDisplay_RGB(Vector2 centre, float scale, SimChip simSource, ref Vector2 boundsMin, ref Vector2 boundsMax)
 		{
 			const int pixelsPerRow = 16;
 			const float borderFrac = 0.95f;
 			const float pixelSizeT = 0.925f;
 			// Draw background
-			Draw.Quad(centre, Vector2.one * scale, Color.black);
+			Vector2 bgSize = Vector2.one * scale;
+			Draw.Quad(centre, bgSize, Color.black);
 			float size = scale * borderFrac;
 
 			bool useSim = simSource != null;
@@ -506,21 +506,21 @@ namespace DLS.Graphics
 				}
 			}
 
-			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+			boundsMin = Vector2.Min(boundsMin, centre - bgSize / 2);
+			boundsMax = Vector2.Max(boundsMax, centre + bgSize / 2);
+			return;
 
-			float Unpack4BitColChannel(uint raw)
-			{
-				return (raw & 0b1111) / 15f;
-			}
+			static float Unpack4BitColChannel(uint raw) => (raw & 0b1111) / 15f;
 		}
 
-		public static Bounds2D DrawDisplay_Dot(Vector2 centre, float scale, SimChip simSource)
+		public static void DrawDisplay_Dot(Vector2 centre, float scale, SimChip simSource, ref Vector2 boundsMin, ref Vector2 boundsMax)
 		{
 			const int pixelsPerRow = 16;
 			const float borderFrac = 0.95f;
 			const float pixelSizeT = 0.925f;
 			// Draw background
-			Draw.Quad(centre, Vector2.one * scale, Color.black);
+			Vector2 bgSize = Vector2.one * scale;
+			Draw.Quad(centre, bgSize, Color.black);
 			float size = scale * borderFrac;
 
 			bool useSim = simSource != null;
@@ -548,10 +548,11 @@ namespace DLS.Graphics
 				}
 			}
 
-			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+			boundsMin = Vector2.Min(boundsMin, centre - bgSize / 2);
+			boundsMax = Vector2.Max(boundsMax, centre + bgSize / 2);
 		}
 
-		public static Bounds2D DrawDisplay_SevenSegment(Vector2 centre, float scale, int A, int B, int C, int D, int E, int F, int G)
+		public static void DrawDisplay_SevenSegment(Vector2 centre, float scale, int A, int B, int C, int D, int E, int F, int G, ref Vector2 boundsMin, ref Vector2 boundsMax)
 		{
 			const float targetHeightAspect = 1.75f;
 			const float segmentThicknessFac = 0.165f;
@@ -591,10 +592,11 @@ namespace DLS.Graphics
 			Draw.Diamond(centre + offsetX + offsetY, segmentSizeVertical, cols[B]); // right top
 			Draw.Diamond(centre + offsetX - offsetY, segmentSizeVertical, cols[C]); // right bottom
 
-			return Bounds2D.CreateFromCentreAndSize(centre, boundsSize);
+			boundsMin = Vector2.Min(boundsMin, centre - boundsSize / 2);
+			boundsMax = Vector2.Max(boundsMax, centre + boundsSize / 2);
 		}
 
-		public static Bounds2D DrawDisplay_LED(Vector2 centre, float scale, Color col)
+		public static void DrawDisplay_LED(Vector2 centre, float scale, Color col, ref Vector2 boundsMin, ref Vector2 boundsMax)
 		{
 			const float pixelSizeT = 0.975f;
 			Vector2 pixelDrawSize = Vector2.one * (scale * pixelSizeT);
@@ -602,18 +604,21 @@ namespace DLS.Graphics
 			Draw.Quad(centre, Vector2.one * scale, Color.black);
 			Draw.Quad(centre, pixelDrawSize, col);
 
-			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+			boundsMin = Vector2.Min(boundsMin, centre - pixelDrawSize / 2);
+			boundsMax = Vector2.Max(boundsMax, centre + pixelDrawSize / 2);
 		}
 
-		public static Bounds2D DrawDisplay_LED_RGB(Vector2 centre, float scale, Color col)
+		public static void DrawDisplay_LED_RGB(Vector2 centre, float scale, Color col, ref Vector2 boundsMin, ref Vector2 boundsMax)
 		{
 			const float pixelSizeT = 0.975f;
-			Vector2 pixelDrawSize = Vector2.one * (scale * pixelSizeT);
+			float pixelDrawSize = scale * pixelSizeT;
+			Vector2 bgSize = Vector2.one * scale;
 
-			Draw.Quad(centre, Vector2.one * scale, Color.black);
-			Draw.Quad(centre, pixelDrawSize, col);
+			Draw.Quad(centre, bgSize, Color.black);
+			Draw.Quad(centre, new Vector2(pixelDrawSize, pixelDrawSize), col);
 
-			return Bounds2D.CreateFromCentreAndSize(centre, Vector2.one * scale);
+			boundsMin = Vector2.Min(boundsMin, centre - bgSize / 2);
+			boundsMax = Vector2.Max(boundsMax, centre + bgSize / 2);
 		}
 
 		public static void DrawDevPin(DevPinInstance devPin)

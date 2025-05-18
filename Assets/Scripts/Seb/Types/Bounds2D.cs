@@ -86,5 +86,7 @@ namespace Seb.Types
 		}
 
 		public float Area => Size.x * Size.y;
+
+		public override string ToString() => $"Bounds2D: Min: {Min}, Max: {Max}";
 	}
 }
