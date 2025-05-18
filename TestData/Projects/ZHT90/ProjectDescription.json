@@ -1,0 +1,185 @@
+{
+  "ProjectName": "ZHT90",
+  "DLSVersion_LastSaved": "2.1.6",
+  "DLSVersion_EarliestCompatible": "2.0.0",
+  "CreationTime": "2025-04-13T06:19:48.080+02:00",
+  "LastSaveTime": "2025-05-18T12:30:01.240+02:00",
+  "Prefs_MainPinNamesDisplayMode": 1,
+  "Prefs_ChipPinNamesDisplayMode": 1,
+  "Prefs_GridDisplayMode": 1,
+  "Prefs_Snapping": 1,
+  "Prefs_StraightWires": 1,
+  "Prefs_SimPaused": false,
+  "Prefs_SimTargetStepsPerSecond": 100000,
+  "Prefs_SimStepsPerClockTick": 3,
+  "AllCustomChipNames":[
+    "AND",
+    "OR",
+    "XOR",
+    "NOR",
+    "D-Latch",
+    "NOT",
+    "REG-1",
+    "ALU-4",
+    "ALU 8xx",
+    "7-Segment Driver",
+    "Dabble",
+    "REG-4x",
+    "NEG-8",
+    "INV-8",
+    "3 Digit (Sig)",
+    "BUF -8-",
+    "Decode 2",
+    "MEM-16x",
+    "MEM-1",
+    "MEM-16x16x",
+    "RAM 256x8x",
+    "JK Flip-Flop x",
+    "Count 8x",
+    "3 Digit (Uns)",
+    "Model",
+    "Count-4",
+    "Step-4",
+    "REG-8 INST",
+    "JK Latch",
+    "REG-8x",
+    "Clock Control",
+    "ZHT81",
+    "BUF -4-",
+    "ZHT80",
+    "ALU-16",
+    "JX160",
+    "5 Digit (Sig)",
+    "JK Flip Flop",
+    "Count-16x",
+    "5 Digit (Uns)",
+    "5 Digit Mini",
+    "3 D Mini",
+    "BUF -16",
+    "REG-16",
+    "MEM-16",
+    "STP-2",
+    "Count-16",
+    "Program Counter",
+    "BIT INS",
+    "24 CTRL",
+    "CTRL LGIC",
+    "RAM 256x16x",
+    "Decode 4",
+    "MEM-16x16b",
+    "RAM 16x16b",
+    "Decode 2-2",
+    "NEG-16",
+    "ZHT90",
+    "ALU-8x",
+    "Count-8",
+    "MEM-8",
+    "Decode 3-3",
+    "RAM 64x8",
+    "MEM 16x8",
+    "RAM 256x8",
+    "REG-8",
+    "REG-4",
+    "JMP LGC",
+    "RAM 16x8",
+    "ALU-8",
+    "Dabblex",
+    "7-Segment Driverx",
+    "ZHT92",
+    "16-4",
+    "SRN CTL",
+    "ZHT91",
+    "USER CTRL",
+    "BUF 8x2",
+    "Console"
+  ],
+  "StarredList":[
+    {
+      "Name":"IN/OUT",
+      "IsCollection":true
+    },
+    {
+      "Name":"SPLIT",
+      "IsCollection":true
+    },
+    {
+      "Name":"BUS",
+      "IsCollection":true
+    },
+    {
+      "Name":"BASIC",
+      "IsCollection":true
+    },
+    {
+      "Name":"CTRL",
+      "IsCollection":true
+    },
+    {
+      "Name":"DISP",
+      "IsCollection":true
+    },
+    {
+      "Name":"MEM",
+      "IsCollection":true
+    },
+    {
+      "Name":"CALC",
+      "IsCollection":true
+    },
+    {
+      "Name":"ZHT91",
+      "IsCollection":false
+    },
+    {
+      "Name":"Console",
+      "IsCollection":false
+    }
+  ],
+  "ChipCollections":[
+    {
+      "Chips":["IN-1","IN-4","IN-8","OUT-1","OUT-4","OUT-8"],
+      "IsToggledOpen":false,
+      "Name":"IN/OUT"
+    },
+    {
+      "Chips":["4-1BIT","8-1BIT","8-4BIT","1-4BIT","1-8BIT","4-8BIT"],
+      "IsToggledOpen":false,
+      "Name":"SPLIT"
+    },
+    {
+      "Chips":["BUS-1","BUS-4","BUS-8","BUF -4-","BUF -8-","BUF -16"],
+      "IsToggledOpen":false,
+      "Name":"BUS"
+    },
+    {
+      "Chips":["AND","NAND","NOT","OR","NOR","XOR","INV-8","3-STATE BUFFER","KEY","CLOCK","PULSE","BUZZER"],
+      "IsToggledOpen":false,
+      "Name":"BASIC"
+    },
+    {
+      "Chips":["BIT INS","Decode 2","Decode 2-2","Decode 3-3","Decode 4"],
+      "IsToggledOpen":false,
+      "Name":"CTRL"
+    },
+    {
+      "Chips":["7-SEGMENT","7-Segment Driver","3 Digit (Sig)","3 Digit (Uns)","3 D Mini","5 Digit (Sig)","5 Digit (Uns)","5 Digit Mini","Dabble","DOT DISPLAY","RGB DISPLAY","LED"],
+      "IsToggledOpen":false,
+      "Name":"DISP"
+    },
+    {
+      "Chips":["ROM 256×16","D-Latch","JK Latch","JK Flip Flop","JK Flip-Flop x","REG-1","MEM-1","REG-4x","REG-8","REG-8x","REG-8 INST","MEM-8","MEM 16x8","RAM 64x8","RAM 256x8","RAM 256x8x","REG-16","MEM-16","MEM-16x","MEM-16x16b","MEM-16x16x","RAM 16x16b","RAM 256x16x"],
+      "IsToggledOpen":false,
+      "Name":"MEM"
+    },
+    {
+      "Chips":["ALU-4","ALU-8x","ALU 8xx","ALU-16","NEG-8","NEG-16","STP-2","Step-4","Count-4","Count-8","Count 8x","Program Counter","Count-16","Count-16x"],
+      "IsToggledOpen":false,
+      "Name":"CALC"
+    },
+    {
+      "Chips":["Model","Clock Control","ZHT81","ZHT80","JX160","24 CTRL","CTRL LGIC","ZHT90","REG-4","JMP LGC","RAM 16x8","ALU-8","Dabblex","7-Segment Driverx","ZHT92","16-4","SRN CTL","ZHT91","USER CTRL","BUF 8x2","Console"],
+      "IsToggledOpen":true,
+      "Name":"OTHER"
+    }
+  ]
+}

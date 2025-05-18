@@ -1,0 +1,33 @@
+{
+  "DLSVersion": "2.1.6",
+  "Name": "Console",
+  "NameLocation": 0,
+  "ChipType": 0,
+  "Size": {
+    "x": 1.175,
+    "y": 0.375
+  },
+  "Colour": {
+    "r": 0.288971633,
+    "g": 0.293868363,
+    "b": 0.0603715926,
+    "a": 1
+  },
+  "InputPins":[],
+  "OutputPins":[],
+  "SubChips":[
+    {
+      "Name":"ZHT91",
+      "ID":2079166288,
+      "Label":"",
+      "Position":{
+        "x":-0.625,
+        "y":-1.8125
+      },
+      "OutputPinColourInfo":[],
+      "InternalData":null
+    }
+  ],
+  "Wires":[],
+  "Displays": null
+}
