@@ -41,7 +41,6 @@ namespace DLS.Graphics
 		public static void OnMenuOpened()
 		{
 			ActiveCustomizeChip ??= CreateCustomizationState();
-			Debug.Log("Create with size: " + ActiveCustomizeChip.Size + "   " + Project.ActiveProject.ViewedChip.LastSavedDescription.Size);
 			InitUIFromDescription(ActiveCustomizeChip.Description);
 		}
 
@@ -87,7 +86,7 @@ namespace DLS.Graphics
 				{
 					OpenCustomizationMenu();
 				}
-				else if (buttonIndex == SaveButtonIndex || confirmShortcut)
+				else if (buttonIndex == SaveButtonIndex || (confirmShortcut && saveButtonEnabled))
 				{
 					Save(renaming ? Project.SaveMode.Rename : Project.SaveMode.Normal);
 				}
