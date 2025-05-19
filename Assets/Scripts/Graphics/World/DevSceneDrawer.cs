@@ -458,21 +458,6 @@ namespace DLS.Graphics
 					DrawDisplay_LED(posWorld, scaleWorld, col, ref boundsMin, ref boundsMax);
 					break;
 				}
-				case ChipType.DisplayLED_RGB:
-				{
-					bool simActive = sim != null;
-					Color col = Color.black;
-					if (simActive)
-					{
-						float r = PinState.FirstBitHigh(sim.InputPins[0].State) ? 1 : 0;
-						float g = PinState.FirstBitHigh(sim.InputPins[1].State) ? 1 : 0;
-						float b = PinState.FirstBitHigh(sim.InputPins[2].State) ? 1 : 0;
-						col = new Color(r, g, b);
-					}
-
-					DrawDisplay_LED_RGB(posWorld, scaleWorld, col, ref boundsMin, ref boundsMax);
-					break;
-				}
 				default:
 					throw new NotImplementedException("Display type not implemented: " + display.DisplayType);
 			}
@@ -617,19 +602,6 @@ namespace DLS.Graphics
 
 			boundsMin = Vector2.Min(boundsMin, centre - pixelDrawSize / 2);
 			boundsMax = Vector2.Max(boundsMax, centre + pixelDrawSize / 2);
-		}
-
-		public static void DrawDisplay_LED_RGB(Vector2 centre, float scale, Color col, ref Vector2 boundsMin, ref Vector2 boundsMax)
-		{
-			const float pixelSizeT = 0.975f;
-			float pixelDrawSize = scale * pixelSizeT;
-			Vector2 bgSize = Vector2.one * scale;
-
-			Draw.Quad(centre, bgSize, Color.black);
-			Draw.Quad(centre, new Vector2(pixelDrawSize, pixelDrawSize), col);
-
-			boundsMin = Vector2.Min(boundsMin, centre - bgSize / 2);
-			boundsMax = Vector2.Max(boundsMax, centre + bgSize / 2);
 		}
 
 		public static void DrawDevPin(DevPinInstance devPin)
