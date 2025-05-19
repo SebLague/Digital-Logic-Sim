@@ -584,7 +584,7 @@ namespace Seb.Vis.UI
 		{
 			if (IsRendering)
 			{
-				Draw.Line(UIToScreenSpace(a), UIToScreenSpace(b), thickness * scale, col);
+				Draw.LineThickAA(UIToScreenSpace(a), UIToScreenSpace(b), thickness * scale, col);
 			}
 		}
 

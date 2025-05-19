@@ -153,6 +153,15 @@ namespace Seb.Vis
 			ShapeData data = ShapeData.CreateLine(a, b, thickness, col, activeMaskMin, activeMaskMax);
 			shapeDrawer.AddToLayer(data);
 		}
+		
+		public static void LineThickAA(Vector2 a, Vector2 b, float thickness, Color col, float t = 1)
+		{
+			if (thickness == 0 || t == 0 || a == b || col.a == 0) return;
+
+			if (t < 1) b = Vector2.Lerp(a, b, t);
+			ShapeData data = ShapeData.CreateLine_ThickAA(a, b, thickness, col, activeMaskMin, activeMaskMax);
+			shapeDrawer.AddToLayer(data);
+		}
 
 		// ------ Composite Draw Functions ------
 

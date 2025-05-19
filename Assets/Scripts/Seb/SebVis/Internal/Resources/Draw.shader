@@ -57,13 +57,14 @@ Shader "Vis/Draw"
             uint InstanceOffset;
 
             static const int LINE_TYPE = 0;
-            static const int POINT_TYPE = 1;
-            static const int QUAD_TYPE = 2;
-            static const int TRIANGLE_TYPE = 3;
-            static const int SATVAL_TYPE = 4;
-            static const int HUE_TYPE = 5;
-            static const int DIAMOND_TYPE = 6;
-            static const int POINT_OUTLINE_TYPE = 7;
+            static const int LINE_THICKAA_TYPE = 1;
+            static const int POINT_TYPE = 2;
+            static const int QUAD_TYPE = 3;
+            static const int TRIANGLE_TYPE = 4;
+            static const int SATVAL_TYPE = 5;
+            static const int HUE_TYPE = 6;
+            static const int DIAMOND_TYPE = 7;
+            static const int POINT_OUTLINE_TYPE = 8;
 
             static const bool AA_Enabled = true;
 
@@ -104,7 +105,7 @@ Shader "Vis/Draw"
                 o.invTexelSize = 1.0 / texelSize.x;
 
                 // Line
-                if (instance.type == LINE_TYPE)
+                if (instance.type == LINE_TYPE || instance.type == LINE_THICKAA_TYPE)
                 {
                     float2 worldPosA = instance.a * LayerScale + LayerOffset;
                     float2 worldPosB = instance.b * LayerScale + LayerOffset;
@@ -318,7 +319,8 @@ Shader "Vis/Draw"
                 // Mask
                 if (!inBounds(i.worldPos, i.maskMinMax.xy * LayerScale + LayerOffset, i.maskMinMax.zw * LayerScale + LayerOffset)) return 0;
 
-                if (i.shapeType == LINE_TYPE) return lineDraw_aa2(i);
+                if (i.shapeType == LINE_TYPE) return lineDraw(i);
+                if (i.shapeType == LINE_THICKAA_TYPE) return lineDraw_aa2(i);
                 if (i.shapeType == POINT_TYPE) return circleDraw(i);
                 if (i.shapeType == POINT_OUTLINE_TYPE) return circleOutlineDraw(i);
                 if (i.shapeType == QUAD_TYPE) return quadDraw(i);

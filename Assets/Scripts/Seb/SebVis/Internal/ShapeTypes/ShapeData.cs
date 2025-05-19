@@ -6,13 +6,14 @@ namespace Seb.Vis.Internal
 	public enum ShapeType
 	{
 		Line = 0,
-		Point = 1,
-		Quad = 2,
-		Triangle = 3,
-		SatVal = 4,
-		HueQuad = 5,
-		Diamond = 6,
-		PointOutline = 7
+		LineThickAA = 1,
+		Point = 2,
+		Quad = 3,
+		Triangle = 4,
+		SatVal = 5,
+		HueQuad = 6,
+		Diamond = 7,
+		PointOutline = 8
 	}
 
 	public struct ShapeData
@@ -49,6 +50,7 @@ namespace Seb.Vis.Internal
 		}
 
 		public static ShapeData CreateLine(Vector2 a, Vector2 b, float thickness, Color col, Vector2 maskMin, Vector2 maskMax) => new(ShapeType.Line, a, b, thickness, col, maskMin, maskMax);
+		public static ShapeData CreateLine_ThickAA(Vector2 a, Vector2 b, float thickness, Color col, Vector2 maskMin, Vector2 maskMax) => new(ShapeType.LineThickAA, a, b, thickness, col, maskMin, maskMax);
 
 		public static ShapeData CreatePoint(Vector2 centre, Vector2 size, Color col, Vector2 maskMin, Vector2 maskMax) => new(ShapeType.Point, centre, size, 0, col, maskMin, maskMax);
 

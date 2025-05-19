@@ -259,6 +259,7 @@ namespace DLS.Graphics
 
 		public static void DrawSubChip(SubChipInstance subchip)
 		{
+			bool outlineTest = UnityMain.instance.testbool;
 			ChipDescription desc = subchip.Description;
 			Color chipCol = desc.Colour;
 			Vector2 pos = subchip.Position;
@@ -289,11 +290,9 @@ namespace DLS.Graphics
 
 				DrawPin(subchip.AllPins[i]);
 			}
-
-
-			// Draw outline and body
-			Draw.Quad(pos, desc.Size + Vector2.one * ChipOutlineWidth, outlineCol);
-			Draw.Quad(pos, desc.Size, chipCol);
+			
+			// Draw chip body
+			Draw.Quad(pos, desc.Size + Vector2.one * ChipOutlineWidth / 2, chipCol);
 
 			// Mouse over detection
 			if (InputHelper.MouseInsideBounds_World(pos, desc.Size))
@@ -315,26 +314,37 @@ namespace DLS.Graphics
 					displayName = subchip.Description.Name;
 				}
 
-				bool nameCentre = desc.NameLocation == NameDisplayLocation.Centre || isKeyChip;
-				Anchor textAnchor = nameCentre ? Anchor.TextCentre : Anchor.CentreTop;
-				Vector2 textPos = nameCentre ? pos : pos + Vector2.up * Mathf.Max(0, subchip.Size.y / 2 - GridSize / 2);
+				Anchor textAnchor = Anchor.TextCentre;
+				Vector2 textPos = pos;
 
 				// Draw background band behind text if placed at top (so it doesn't look out of place..)
 				if (desc.NameLocation == NameDisplayLocation.Top)
 				{
-					Color bgBandCol = GetChipDisplayBorderCol(chipCol);
-					Vector2 topLeft = pos + new Vector2(-desc.Size.x / 2, desc.Size.y / 2);
-					TextRenderer.BoundingBox textBounds = Draw.CalculateTextBounds(displayName, FontBold, FontSizeChipName, textPos, textAnchor, ChipNameLineSpacing);
-					float h = (topLeft.y - textBounds.Centre.y) * 2;
-					h = Mathf.Min(h, subchip.Description.Size.y);
+					Vector2 textBoundsSize = Draw.CalculateTextBoundsSize(displayName, FontSizeChipName, FontBold, ChipNameLineSpacing);
+					textPos = pos + Vector2.up * desc.Size.y / 2;
+					textPos.y -= textBoundsSize.y / 2 + Mathf.Min(subchip.Size.y - textBoundsSize.y, GridSize / 2);
 
-					Vector2 s = new(desc.Size.x, h);
-					Vector2 c = topLeft + new Vector2(s.x, -s.y) / 2;
-					Draw.Quad(c, s, bgBandCol);
+					Color bgBandCol = GetChipDisplayBorderCol(chipCol);
+					float bgHeight = Mathf.Min(subchip.Size.y, textBoundsSize.y + GridSize);
+					Vector2 bgSize = new(subchip.Size.x, bgHeight);
+					Vector2 bgCentre = new(pos.x, pos.y + subchip.Size.y / 2 - bgSize.y / 2);
+					Vector2 pad = Vector2.one * ChipOutlineWidth / 8;
+					Draw.Quad(bgCentre, bgSize + pad, bgBandCol);
 				}
 
 				Draw.Text(FontBold, displayName, FontSizeChipName, textPos, textAnchor, nameTextCol, ChipNameLineSpacing);
 			}
+
+			// Draw outline
+			const float w = ChipOutlineWidth / 4;
+			Vector2 bl = pos - subchip.Size / 2 - Vector2.one * w;
+			Vector2 tr = pos + subchip.Size / 2 + Vector2.one * w;
+			Vector2 tl = new(bl.x, tr.y);
+			Vector2 br = new(tr.x, bl.y);
+			Draw.Line(bl, tl, w, outlineCol);
+			Draw.Line(tl, tr, w, outlineCol);
+			Draw.Line(tr, br, w, outlineCol);
+			Draw.Line(bl, br, w, outlineCol);
 		}
 
 		public static void DrawSubchipDisplays(SubChipInstance subchip, SimChip sim = null, bool outOfBoundsDisplay = false)
@@ -954,7 +964,7 @@ namespace DLS.Graphics
 				int xInt = Mathf.RoundToInt(px / GridSize);
 				if (xInt % skip == 0)
 				{
-					Draw.Line(new Vector2(px, bottom), new Vector2(px, top), thickness, gridCol);
+					Draw.LineThickAA(new Vector2(px, bottom), new Vector2(px, top), thickness, gridCol);
 				}
 			}
 
@@ -963,7 +973,7 @@ namespace DLS.Graphics
 				int yInt = Mathf.RoundToInt(py / GridSize);
 				if (yInt % skip == 0)
 				{
-					Draw.Line(new Vector2(left, py), new Vector2(right, py), thickness, gridCol);
+					Draw.LineThickAA(new Vector2(left, py), new Vector2(right, py), thickness, gridCol);
 				}
 			}
 
