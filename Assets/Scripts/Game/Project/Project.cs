@@ -31,6 +31,8 @@ namespace DLS.Game
 		// ---- Display state ----
 		public bool ShowGrid => description.Prefs_GridDisplayMode == 1;
 		public bool PinNameDisplayIsTabToggledOn;
+		public bool AlwaysDrawDevPinNames => AlwaysDrawPinNames(description.Prefs_MainPinNamesDisplayMode);
+		public bool AlwaysDrawSubChipPinNames => AlwaysDrawPinNames(description.Prefs_ChipPinNamesDisplayMode);
 
 		// ---- Chip view / edit state ----
 		// At the bottom of the stack is the chip that currently is being edited. 
@@ -64,7 +66,6 @@ namespace DLS.Game
 		public bool simPaused => description.Prefs_SimPaused;
 		public double simAvgTicksPerSec;
 		public SimChip rootSimChip => editModeChip.SimChip;
-		float simGraphicalStateNextUpdateTime;
 		SimThread simThread;
 
 		public Project(ProjectDescription description, ChipLibrary chipLibrary)
@@ -73,6 +74,18 @@ namespace DLS.Game
 			this.description = description;
 			this.chipLibrary = chipLibrary;
 			SearchPopup.ClearRecentChips();
+		}
+
+		public void StartSimulation()
+		{
+			if (debug_runSimMainThread)
+			{
+				Debug.Log("Simulation will run on main thread (debug mode)");
+				return;
+			}
+
+			SimThread thread = new();
+			thread.Start(this);
 		}
 
 		public void Update()
@@ -84,39 +97,17 @@ namespace DLS.Game
 				controller.Update();
 			}
 
-			if (UIDrawer.ActiveMenu == UIDrawer.MenuType.None)
-			{
-				Simulator.UpdateKeyboardInputFromMainThread();
-			}
-
-			inputPins = editModeChip.GetInputPins();
-
-
-			if (Time.time > simGraphicalStateNextUpdateTime && UnityMain.instance.testbool)
-			{
-				// Avoid updating graphical state from sim thread more frequently than screen can refresh.
-				float simulationGraphicalStateUpdateInterval = 1 / (float)(Screen.currentResolution.refreshRateRatio.value);
-				simGraphicalStateNextUpdateTime = Time.time + simulationGraphicalStateUpdateInterval;
-
-				ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
-			}
-
-			if (debug_runSimMainThread)
-			{
-				SimThread.Debug_RunMainThreadSimStep(this);
-			}
+			SimStateUpdate();
 		}
 
-		public void StartSimulation()
+		void SimStateUpdate()
 		{
-			if (debug_runSimMainThread)
-			{
-				Debug.Log("Simulation will run on main thread");
-				return;
-			}
+			inputPins = editModeChip.GetInputPins();
 
-			SimThread thread = new();
-			thread.Start(this);
+			if (UIDrawer.ActiveMenu == UIDrawer.MenuType.None) Simulator.UpdateKeyboardInputFromMainThread();
+			if (debug_runSimMainThread) SimThread.Debug_RunMainThreadSimStep(this);
+
+			ViewedChip.UpdateStateFromSim(ViewedSimChip, !CanEditViewedChip);
 		}
 
 		public void EnterViewMode(SubChipInstance subchip)
@@ -144,10 +135,6 @@ namespace DLS.Game
 			}
 		}
 
-		public bool AlwaysDrawDevPinNames => AlwaysDrawPinNames(description.Prefs_MainPinNamesDisplayMode);
-		public bool AlwaysDrawSubChipPinNames => AlwaysDrawPinNames(description.Prefs_ChipPinNamesDisplayMode);
-
-		bool AlwaysDrawPinNames(int prefIndex) => prefIndex == PreferencesMenu.DisplayMode_Always || (prefIndex == PreferencesMenu.DisplayMode_TabToggle && PinNameDisplayIsTabToggledOn);
 
 		void HandleProjectInput()
 		{
@@ -592,6 +579,11 @@ namespace DLS.Game
 					}
 				}
 			}
+		}
+
+		bool AlwaysDrawPinNames(int prefIndex)
+		{
+			return prefIndex == PreferencesMenu.DisplayMode_Always || (prefIndex == PreferencesMenu.DisplayMode_TabToggle && PinNameDisplayIsTabToggledOn);
 		}
 	}
 }
