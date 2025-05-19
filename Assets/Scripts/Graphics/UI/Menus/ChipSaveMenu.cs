@@ -41,6 +41,7 @@ namespace DLS.Graphics
 		public static void OnMenuOpened()
 		{
 			ActiveCustomizeChip ??= CreateCustomizationState();
+			Debug.Log("Create with size: " + ActiveCustomizeChip.Size + "   " + Project.ActiveProject.ViewedChip.LastSavedDescription.Size);
 			InitUIFromDescription(ActiveCustomizeChip.Description);
 		}
 
@@ -105,7 +106,7 @@ namespace DLS.Graphics
 					if (ActiveCustomizeDescription.Name != newName)
 					{
 						ActiveCustomizeDescription.Name = newName;
-						Vector2 minChipSize = SubChipInstance.CalculateMinChipSize(ActiveCustomizeDescription.InputPins, ActiveCustomizeDescription.OutputPins, newName);
+						Vector2 minChipSize = SubChipHelper.CalculateMinChipSize(ActiveCustomizeDescription.InputPins, ActiveCustomizeDescription.OutputPins, newName, ActiveCustomizeDescription.NameLocation);
 						Vector2 chipSizeNew = Vector2.Max(minChipSize, ActiveCustomizeDescription.Size);
 						ActiveCustomizeDescription.Size = chipSizeNew;
 					}

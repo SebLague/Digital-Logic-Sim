@@ -26,19 +26,20 @@ namespace DLS.Graphics
 
 		public static bool IsPlacingDisplay => displayInteractState == DisplayInteractState.Placing;
 
+		static NameDisplayLocation chipMinSize_NameDisplayMode;
+		static Vector2 chipMinSize;
+
 		public static void DrawCustomizationScene()
 		{
-			SubChipInstance chip = ChipSaveMenu.ActiveCustomizeChip;
-
 			HandleKeyboardShortcuts();
 
-			DevSceneDrawer.DrawSubChip(chip);
+			DevSceneDrawer.DrawSubChip(CustomizeChip);
 			WorldDrawer.DrawGridIfActive(ColHelper.MakeCol255(0, 0, 0, 100));
 
 			Draw.StartLayer(Vector2.zero, 1, false);
-			DevSceneDrawer.DrawSubchipDisplays(chip, null, true);
+			DevSceneDrawer.DrawSubchipDisplays(CustomizeChip, null, true);
 
-			bool chipResizeHascontrol = HandleChipResizing(chip);
+			bool chipResizeHascontrol = HandleChipResizing(CustomizeChip);
 			HandleDisplaySelection(!chipResizeHascontrol);
 
 			if (SelectedDisplay == null)
@@ -63,11 +64,16 @@ namespace DLS.Graphics
 				Draw.StartLayer(Vector2.zero, 1, false);
 				DevSceneDrawer.DrawPinLabel(highlightedPin);
 			}
+
+			if (CustomizeChip.Description.NameLocation != chipMinSize_NameDisplayMode)
+			{
+				UpdateChipMinSize();
+				UpdateChipSize(CustomizeChip.Description.Size); // Update size in case name display mode has changed
+			}
 		}
 
 		static void HandleKeyboardShortcuts()
 		{
-			
 		}
 
 		public static void StartPlacingDisplay(SubChipInstance subChipToDisplay)
@@ -87,6 +93,13 @@ namespace DLS.Graphics
 
 		public static void OnCustomizationMenuOpened()
 		{
+			UpdateChipMinSize();
+		}
+
+		static void UpdateChipMinSize()
+		{
+			chipMinSize = SubChipHelper.CalculateMinChipSize(CustomizeChip.Description);
+			chipMinSize_NameDisplayMode = CustomizeChip.Description.NameLocation;
 		}
 
 		static void HandleDisplayScaling()
@@ -296,13 +309,14 @@ namespace DLS.Graphics
 			const float h = 1.1f;
 			const float size = 0.12f;
 			bool canInteract = displayInteractState == DisplayInteractState.None;
-			bool hascontrol = false;
+			bool hasControl = false;
 			// Draw resize arrow handles on all sides of chip
-			hascontrol |= DrawScaleHandle(chip.SelectionBoundingBox.CentreRight, Vector2Int.right);
-			hascontrol |= DrawScaleHandle(chip.SelectionBoundingBox.CentreLeft, Vector2Int.left);
-			hascontrol |= DrawScaleHandle(chip.SelectionBoundingBox.CentreTop, Vector2Int.up);
-			hascontrol |= DrawScaleHandle(chip.SelectionBoundingBox.CentreBottom, Vector2Int.down);
-			return hascontrol;
+			hasControl |= DrawScaleHandle(chip.SelectionBoundingBox.CentreRight, Vector2Int.right);
+			hasControl |= DrawScaleHandle(chip.SelectionBoundingBox.CentreLeft, Vector2Int.left);
+			hasControl |= DrawScaleHandle(chip.SelectionBoundingBox.CentreTop, Vector2Int.up);
+			hasControl |= DrawScaleHandle(chip.SelectionBoundingBox.CentreBottom, Vector2Int.down);
+			if (hasControl) UpdateChipMinSize(); // chip min size may change when resizing due to name switching between single and multi-line mode
+			return hasControl;
 
 			bool DrawScaleHandle(Vector2 edge, Vector2Int dir)
 			{
@@ -332,18 +346,12 @@ namespace DLS.Graphics
 					Vector2 desiredSize = chipResizeStartSize + Vector2.Scale(dir, mouseDelta) * 2;
 
 					// Always snap chip height so that pins align with grid lines/centers
-					float deltaY = GridHelper.SnapToGrid(desiredSize.y - chip.MinSize.y);
-					desiredSize.y = chip.MinSize.y + deltaY;
+					float deltaY = GridHelper.SnapToGrid(desiredSize.y - chipMinSize.y);
+					desiredSize.y = chipMinSize.y + deltaY;
 					// Snap chip width to grid lines if in snap mode
 					if (Project.ActiveProject.ShouldSnapToGrid && dir.x != 0) desiredSize.x = GridHelper.SnapToGridForceEven(desiredSize.x) - DrawSettings.ChipOutlineWidth;
 
-					Vector2 sizeNew = Vector2.Max(desiredSize, chip.MinSize);
-
-					if (sizeNew != chip.Size)
-					{
-						chip.Description.Size = Vector2.Max(desiredSize, chip.MinSize);
-						ChipSaveMenu.ActiveCustomizeChip.UpdatePinLayout();
-					}
+					UpdateChipSize(desiredSize);
 				}
 				// Highlight opposite handle to selected handle
 				else if (dir == -selectedChipResizeDir)
@@ -354,6 +362,16 @@ namespace DLS.Graphics
 				Draw.Triangle(a, b, c, col);
 				return mouseOver || selected;
 			}
+		}
+
+
+		public static void UpdateChipSize(Vector2 targetSize)
+		{
+			Vector2 sizeNew = Vector2.Max(targetSize, chipMinSize);
+			if (sizeNew == CustomizeChip.Size) return;
+
+			CustomizeChip.Description.Size = sizeNew;
+			ChipSaveMenu.ActiveCustomizeChip.UpdatePinLayout();
 		}
 
 		public static void Reset()

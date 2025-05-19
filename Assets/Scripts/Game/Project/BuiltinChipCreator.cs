@@ -77,7 +77,7 @@ namespace DLS.Game
 				CreatePinDescription("VOLUME", 0, PinBitCount.Bit4),
 			};
 
-			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			float height = SubChipHelper.MinChipHeightForPins(inputPins, null);
 			Vector2 size = new(CalculateGridSnappedWidth(GridSize * 9), height);
 
 			return CreateBuiltinChipDescription(ChipType.Buzzer, size, col, inputPins, null, null);
@@ -96,7 +96,7 @@ namespace DLS.Game
 				CreatePinDescription("CLOCK", 4)
 			};
 			PinDescription[] outputPins = { CreatePinDescription("OUT", 5, PinBitCount.Bit8) };
-			Vector2 size = new(GridSize * 10, SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
+			Vector2 size = new(GridSize * 10, SubChipHelper.MinChipHeightForPins(inputPins, outputPins));
 
 			return CreateBuiltinChipDescription(ChipType.dev_Ram_8Bit, size, col, inputPins, outputPins);
 		}
@@ -114,7 +114,7 @@ namespace DLS.Game
 			};
 
 			Color col = new(0.25f, 0.35f, 0.5f);
-			Vector2 size = new(GridSize * 12, SubChipInstance.MinChipHeightForPins(inputPins, outputPins));
+			Vector2 size = new(GridSize * 12, SubChipHelper.MinChipHeightForPins(inputPins, outputPins));
 
 			return CreateBuiltinChipDescription(ChipType.Rom_256x16, size, col, inputPins, outputPins);
 		}
@@ -177,7 +177,7 @@ namespace DLS.Game
 				outputPins[i] = CreatePinDescription(pinName, numIn + i, bitCountOut);
 			}
 
-			float height = SubChipInstance.MinChipHeightForPins(inputPins, outputPins);
+			float height = SubChipHelper.MinChipHeightForPins(inputPins, outputPins);
 			Vector2 size = new(GridSize * 9, height);
 
 			return CreateBuiltinChipDescription(chipType, size, ChipCol_SplitMerge, inputPins, outputPins);
@@ -205,7 +205,7 @@ namespace DLS.Game
 			};
 
 			Color col = new(0.1f, 0.1f, 0.1f);
-			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			float height = SubChipHelper.MinChipHeightForPins(inputPins, null);
 			Vector2 size = new(GridSize * 10, height);
 			float displayWidth = size.x - GridSize * 2;
 
@@ -279,7 +279,7 @@ namespace DLS.Game
 				CreatePinDescription("PIXEL OUT", 6)
 			};
 
-			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			float height = SubChipHelper.MinChipHeightForPins(inputPins, null);
 			float width = height;
 			float displayWidth = height - GridSize * 2;
 
@@ -351,7 +351,7 @@ namespace DLS.Game
 				CreatePinDescription("IN", 0)
 			};
 
-			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			float height = SubChipHelper.MinChipHeightForPins(inputPins, null);
 			float width = height;
 			float displayWidth = height - GridSize * 0.5f;
 
@@ -380,7 +380,7 @@ namespace DLS.Game
 				CreatePinDescription("B", 2)
 			};
 
-			float height = SubChipInstance.MinChipHeightForPins(inputPins, null);
+			float height = SubChipHelper.MinChipHeightForPins(inputPins, null);
 			float width = height;
 
 			Color col = new(0.1f, 0.1f, 0.1f);

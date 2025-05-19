@@ -310,22 +310,23 @@ namespace DLS.Graphics
 			{
 				// Display on single line if name fits comfortably, otherwise use 'formatted' version (split across multiple lines)
 				string displayName = isKeyChip ? subchip.activationKeyString : subchip.MultiLineName;
-				if (Draw.CalculateTextBoundsSize(subchip.Description.Name, FontSizeChipName, FontBold).x < subchip.Size.x - PinRadius * 2.5f)
+				if (SubChipHelper.UseSingleLineName(subchip.Description.Name, subchip.Size.x))
 				{
 					displayName = subchip.Description.Name;
 				}
 
 				bool nameCentre = desc.NameLocation == NameDisplayLocation.Centre || isKeyChip;
 				Anchor textAnchor = nameCentre ? Anchor.TextCentre : Anchor.CentreTop;
-				Vector2 textPos = nameCentre ? pos : pos + Vector2.up * (subchip.Size.y / 2 - GridSize / 2);
+				Vector2 textPos = nameCentre ? pos : pos + Vector2.up * Mathf.Max(0, subchip.Size.y / 2 - GridSize / 2);
 
 				// Draw background band behind text if placed at top (so it doesn't look out of place..)
 				if (desc.NameLocation == NameDisplayLocation.Top)
 				{
 					Color bgBandCol = GetChipDisplayBorderCol(chipCol);
 					Vector2 topLeft = pos + new Vector2(-desc.Size.x / 2, desc.Size.y / 2);
-					TextRenderer.BoundingBox textBounds = Draw.CalculateTextBounds(displayName, FontBold, FontSizeChipName, textPos, textAnchor);
+					TextRenderer.BoundingBox textBounds = Draw.CalculateTextBounds(displayName, FontBold, FontSizeChipName, textPos, textAnchor, ChipNameLineSpacing);
 					float h = (topLeft.y - textBounds.Centre.y) * 2;
+					h = Mathf.Min(h, subchip.Description.Size.y);
 
 					Vector2 s = new(desc.Size.x, h);
 					Vector2 c = topLeft + new Vector2(s.x, -s.y) / 2;
@@ -914,7 +915,7 @@ namespace DLS.Graphics
 			Vector2 pinPos = pin.GetWorldPos();
 			Vector2 pinSelectionBoundsPos = pinPos + Vector2.right * ((pin.IsSourcePin ? 1 : -1) * 0.02f);
 			const float pinWidth = PinRadius * 2 * 0.95f;
-			float pinHeight = SubChipInstance.PinHeightFromBitCount(pin.bitCount);
+			float pinHeight = SubChipHelper.PinHeightFromBitCount(pin.bitCount);
 			Vector2 pinSize = new(pinWidth, pinHeight);
 
 			bool mouseOverPin = !InteractionState.MouseIsOverUI && InputHelper.MouseInsideBounds_World(pinSelectionBoundsPos, pinSize);
