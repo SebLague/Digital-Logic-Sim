@@ -111,7 +111,8 @@ namespace DLS.Game
 		public Vector2 SnapPoint
 		{
 			get
-			{
+			{	
+				if (IsBus) return Position; // Snap bus chips to their centre to avoid misalignment when flipping
 				if (InputPins.Length != 0) return InputPins[0].GetWorldPos();
 				if (OutputPins.Length != 0) return OutputPins[0].GetWorldPos();
 				return Position;
