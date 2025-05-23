@@ -47,7 +47,10 @@ namespace DLS.Description
 		BusTerminus_8Bit,
 		
 		// ---- Audio ----
-		Buzzer
+		Buzzer,
+
+		// ---- Time ----
+		RTC,
 
 	}
 }

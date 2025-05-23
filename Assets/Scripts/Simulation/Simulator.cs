@@ -506,6 +506,16 @@ namespace DLS.Simulation
 					audioState.RegisterNote(freqIndex, (uint)volumeIndex);
 					break;
 				}
+				case ChipType.RTC:
+				{
+					const uint ByteMask = 0b11111111;
+					int unixTime = (int) DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+					chip.OutputPins[0].State = (ushort)((unixTime >> 24) & ByteMask);
+					chip.OutputPins[1].State = (ushort)((unixTime >> 16) & ByteMask);
+					chip.OutputPins[2].State = (ushort)((unixTime >> 8) & ByteMask);
+					chip.OutputPins[3].State = (ushort)(unixTime & ByteMask);
+					break;
+				}
 				// ---- Bus types ----
 				default:
 				{
