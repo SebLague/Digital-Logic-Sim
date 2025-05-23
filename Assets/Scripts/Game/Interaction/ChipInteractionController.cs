@@ -465,7 +465,6 @@ namespace DLS.Game
 					else if (CanAddWirePoint())
 					{
 						WireToPlace.AddWirePoint(InputHelper.MousePosWorld);
-						if(Project.ActiveProject.ShouldRouteWires) WireToPlace.AddWirePoint(InputHelper.MousePosWorld);
 					}
 				}
 				// Place subchip / devpin
