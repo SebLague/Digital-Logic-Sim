@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine.TextCore.Text;
 
 namespace DLS.Description
 {
@@ -32,6 +33,8 @@ namespace DLS.Description
 			{ ChipType.DisplayLED, "LED" },
 
 			{ ChipType.Buzzer, "BUZZER" },
+
+			{ ChipType.RTC, "RTC" },
 
 			// ---- Not really chips (but convenient to treat them as such anyway) ----
 
