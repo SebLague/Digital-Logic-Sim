@@ -207,10 +207,25 @@ namespace DLS.Game
 		public void SetWirePointWithSnapping(Vector2 p, int i, Vector2 straightLineRefPoint)
 		{
 			if (Project.ActiveProject.ShouldSnapToGrid) p = GridHelper.SnapToGrid(p, true, true);
-			if (Project.ActiveProject.ForceStraightWires) p = GridHelper.ForceStraightLine(straightLineRefPoint, p);
+			if (Project.ActiveProject.ForceStraightWires && !Project.ActiveProject.ShouldRouteWires) p = GridHelper.ForceStraightLine(straightLineRefPoint, p);
+			if (Project.ActiveProject.ForceStraightWires && Project.ActiveProject.ShouldRouteWires && WirePoints.Count > 3)
+			{
+				// If routing wires, we need to route the wire to the new point
+				Vector2[] points = GridHelper.RouteWire(GetWirePoint(WirePoints.Count - 3), p);
+				p = points[1];
+				SetWirePoint((points[0]), WirePoints.Count - 2);
+			}
+			else if (Project.ActiveProject.ShouldRouteWires && WirePoints.Count > 2)
+			{
+				Vector2[] points = GridHelper.RouteWire(GetWirePoint(WirePoints.Count - 3), p);
+				p = points[1];
+				SetWirePoint((points[0]), WirePoints.Count - 2);
+			}
 			
 			SetWirePoint(p, i);
 		}
+
+
 
 		public void SetLastWirePoint(Vector2 p)
 		{
