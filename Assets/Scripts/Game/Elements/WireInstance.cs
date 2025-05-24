@@ -66,7 +66,7 @@ namespace DLS.Game
 
 			if (Project.ActiveProject.ShouldRouteWires) WirePoints.Add(WirePoints[0]); // add second point to allow routing wires
 			
-			WirePoints.Add(WirePoints[WirePoints.Count - 1]); // end point to be controlled by mouse during placement mode
+			WirePoints.Add(WirePoints[^1]); // end point to be controlled by mouse during placement mode
 
 			BitWires = new BitWire[(int)bitCount];
 			this.spawnOrder = spawnOrder;
@@ -120,9 +120,17 @@ namespace DLS.Game
 			PinInstance endPin = connection.pin;
 			WirePoints[^1] = endPin.GetWorldPos();
 
+			if (Project.ActiveProject.ShouldRouteWires)
+			{
+				// If routing wires, we need to router the second last point to the end pin
+				Vector2[] points = GridHelper.RouteWire(GetWirePoint(WirePoints.Count - 2), endPin.GetWorldPos());
+				SetWirePoint(points[0], WirePoints.Count - 2);
+
+			}
+
 			// If wire connection started out at another wire, it is not known (until now when we have the end pin) whether that
-			// initial connection should be to the source or target pin of that wire (so correct if needed)
-			ConnectionInfo correctedFirstConnection = FirstConnectionInfo;
+				// initial connection should be to the source or target pin of that wire (so correct if needed)
+				ConnectionInfo correctedFirstConnection = FirstConnectionInfo;
 			if (FirstConnectionInfo.pin.IsSourcePin == endPin.IsSourcePin) // same type, must fix
 			{
 				Debug.Assert(FirstConnectionInfo.IsConnectedAtWire, "Connection is source->source or target->target, but connection didn't start from wire?!");
