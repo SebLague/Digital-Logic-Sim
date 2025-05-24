@@ -63,7 +63,10 @@ namespace DLS.Game
 			bitCount = firstPin.bitCount;
 			originalWireConnectionPoint = firstConnectionInfo.connectionPoint;
 			WirePoints.Add(GetAttachmentPoint(firstConnectionInfo));
-			WirePoints.Add(WirePoints[0]); // end point to be controlled by mouse during placement mode
+
+			if (Project.ActiveProject.ShouldRouteWires) WirePoints.Add(WirePoints[0]); // add second point to allow routing wires
+			
+			WirePoints.Add(WirePoints[WirePoints.Count - 1]); // end point to be controlled by mouse during placement mode
 
 			BitWires = new BitWire[(int)bitCount];
 			this.spawnOrder = spawnOrder;
@@ -207,20 +210,15 @@ namespace DLS.Game
 		public void SetWirePointWithSnapping(Vector2 p, int i, Vector2 straightLineRefPoint)
 		{
 			if (Project.ActiveProject.ShouldSnapToGrid) p = GridHelper.SnapToGrid(p, true, true);
-			if (Project.ActiveProject.ForceStraightWires && !Project.ActiveProject.ShouldRouteWires) p = GridHelper.ForceStraightLine(straightLineRefPoint, p);
-			if (Project.ActiveProject.ForceStraightWires && Project.ActiveProject.ShouldRouteWires && WirePoints.Count > 3)
+			if (Project.ActiveProject.ForceStraightWires && (!Project.ActiveProject.ShouldRouteWires || IsFullyConnected) ) p = GridHelper.ForceStraightLine(straightLineRefPoint, p);
+			if (Project.ActiveProject.ForceStraightWires && Project.ActiveProject.ShouldRouteWires && WirePoints.Count > 2 && !IsFullyConnected)
 			{
 				// If routing wires, we need to route the wire to the new point
 				Vector2[] points = GridHelper.RouteWire(GetWirePoint(WirePoints.Count - 3), p);
 				p = points[1];
-				SetWirePoint((points[0]), WirePoints.Count - 2);
+				SetWirePoint(points[0], WirePoints.Count - 2);
 			}
-			else if (Project.ActiveProject.ShouldRouteWires && WirePoints.Count > 2)
-			{
-				Vector2[] points = GridHelper.RouteWire(GetWirePoint(WirePoints.Count - 3), p);
-				p = points[1];
-				SetWirePoint((points[0]), WirePoints.Count - 2);
-			}
+
 			
 			SetWirePoint(p, i);
 		}
@@ -232,7 +230,12 @@ namespace DLS.Game
 			SetWirePointWithSnapping(p, WirePoints.Count - 1, GetWirePoint(WirePoints.Count - 2));
 		}
 
-		public void AddWirePoint(Vector2 p) => WirePoints.Add(p);
+		public void AddWirePoint(Vector2 p)
+		{
+			WirePoints.Add(p);
+			if (!Project.ActiveProject.ShouldRouteWires) return;
+			WirePoints.Add(p);
+		}		
 
 		public void DeleteWirePoint(int i)
 		{
