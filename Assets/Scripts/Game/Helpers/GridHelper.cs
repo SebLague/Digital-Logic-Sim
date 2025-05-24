@@ -52,5 +52,33 @@ namespace DLS.Game
 
 			return prev + offset;
 		}
+
+		public static Vector2[] RouteWire(Vector2 prev, Vector2 curr)
+		{
+			Vector2[] points = new Vector2[2];
+			Vector2 offset = curr - prev;
+
+			if (Mathf.Abs(offset.x) > Mathf.Abs(offset.y))
+			{
+				// Horizontal mode: move horizontally, then 45-degree diagonal to curr
+				float diagLen = Mathf.Min(Mathf.Abs(offset.x), Mathf.Abs(offset.y));
+				float signX = Mathf.Sign(offset.x);
+				float signY = Mathf.Sign(offset.y);
+				Vector2 bend = new Vector2(curr.x - diagLen * signX, prev.y);
+				points[0] = bend;
+				points[1] = curr;
+			}
+			else
+			{
+				// Vertical mode: move vertically, then 45-degree diagonal to curr
+				float diagLen = Mathf.Min(Mathf.Abs(offset.x), Mathf.Abs(offset.y));
+				float signX = Mathf.Sign(offset.x);
+				float signY = Mathf.Sign(offset.y);
+				Vector2 bend = new Vector2(prev.x, curr.y - diagLen * signY);
+				points[0] = bend;
+				points[1] = curr;
+			}
+			return points;
+		}
 	}
 }
